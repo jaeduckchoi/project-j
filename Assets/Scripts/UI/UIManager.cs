@@ -375,6 +375,24 @@ public class UIManager : MonoBehaviour
     }
 
     /*
+     * 해상도 차이로 UI 블록이 뭉개지지 않도록 캔버스 스케일 기준을 고정합니다.
+     */
+    private void ApplyCanvasScaleSettings()
+    {
+        CanvasScaler scaler = GetComponent<CanvasScaler>();
+        if (scaler == null)
+        {
+            return;
+        }
+
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+        scaler.referencePixelsPerUnit = 100f;
+    }
+
+    /*
      * 에디터 플레이 기준으로 UI 텍스트와 배경 패널을 다시 정리해 가독성을 높입니다.
      */
     private void ApplyTextPresentation()
@@ -385,14 +403,27 @@ public class UIManager : MonoBehaviour
                 ? interactionPromptText.font
                 : null;
 
+        ApplyCanvasScaleSettings();
+
+        Color parchment = new(0.97f, 0.94f, 0.89f, 0.86f);
+        Color paper = new(0.98f, 0.98f, 0.99f, 0.84f);
+        Color glass = new(0.97f, 0.98f, 0.99f, 0.80f);
+        Color ink = new(0.11f, 0.13f, 0.18f, 1f);
+        Color oceanAccent = new(0.18f, 0.50f, 0.58f, 0.95f);
+        Color forestAccent = new(0.33f, 0.49f, 0.27f, 0.95f);
+        Color amberAccent = new(0.77f, 0.49f, 0.16f, 0.95f);
+        Color coralAccent = new(0.69f, 0.37f, 0.28f, 0.95f);
+        Color goldAccent = new(0.68f, 0.57f, 0.17f, 0.95f);
+        Color nightDock = new(0.10f, 0.15f, 0.22f, 0.90f);
+
         EnsureUiBackdrop(
             "TopLeftPanel",
             new Vector2(0f, 1f),
             new Vector2(0f, 1f),
             new Vector2(0f, 1f),
             new Vector2(18f, -18f),
-            new Vector2(328f, 100f),
-            new Color(0.97f, 0.97f, 0.98f, 0.80f));
+            new Vector2(336f, 98f),
+            parchment);
         EnsureUiBackdrop(
             "BottomLeftPanel",
             new Vector2(0f, 0f),
@@ -400,15 +431,15 @@ public class UIManager : MonoBehaviour
             new Vector2(0f, 0f),
             new Vector2(18f, 18f),
             new Vector2(372f, 364f),
-            new Color(0.98f, 0.98f, 0.99f, 0.82f));
+            new Color(0.96f, 0.98f, 0.98f, 0.08f));
         EnsureUiBackdrop(
             "CenterBottomPanel",
             new Vector2(0.5f, 0f),
             new Vector2(0.5f, 0f),
             new Vector2(0.5f, 0f),
             new Vector2(0f, 18f),
-            new Vector2(608f, 54f),
-            new Color(0.08f, 0.10f, 0.14f, 0.72f));
+            new Vector2(620f, 58f),
+            new Color(0.07f, 0.11f, 0.17f, 0.78f));
         EnsureUiBackdrop(
             "TopRightPanel",
             new Vector2(1f, 1f),
@@ -416,41 +447,110 @@ public class UIManager : MonoBehaviour
             new Vector2(1f, 1f),
             new Vector2(-18f, -18f),
             new Vector2(494f, 364f),
-            new Color(0.98f, 0.98f, 0.99f, 0.80f));
+            new Color(0.97f, 0.98f, 0.99f, 0.08f));
         EnsureUiBackdrop(
             "TopCenterPanel",
             new Vector2(0.5f, 1f),
             new Vector2(0.5f, 1f),
             new Vector2(0.5f, 1f),
             new Vector2(0f, -14f),
-            new Vector2(760f, 86f),
-            new Color(0.98f, 0.98f, 0.99f, 0.78f));
+            new Vector2(782f, 92f),
+            glass);
+        EnsureUiBackdrop(
+            "InventoryCard",
+            new Vector2(0f, 0f),
+            new Vector2(0f, 0f),
+            new Vector2(0f, 0f),
+            new Vector2(18f, 206f),
+            new Vector2(372f, 176f),
+            paper);
+        EnsureUiBackdrop(
+            "StorageCard",
+            new Vector2(0f, 0f),
+            new Vector2(0f, 0f),
+            new Vector2(0f, 0f),
+            new Vector2(18f, 18f),
+            new Vector2(372f, 176f),
+            paper);
+        EnsureUiBackdrop(
+            "RecipeCard",
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(-18f, -18f),
+            new Vector2(494f, 170f),
+            paper);
+        EnsureUiBackdrop(
+            "ResultCard",
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(-18f, -192f),
+            new Vector2(494f, 128f),
+            paper);
+        EnsureUiBackdrop(
+            "UpgradeCard",
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(-18f, -324f),
+            new Vector2(494f, 118f),
+            paper);
+        EnsureUiBackdrop(
+            "ActionDock",
+            new Vector2(1f, 0f),
+            new Vector2(1f, 0f),
+            new Vector2(1f, 0f),
+            new Vector2(-18f, 18f),
+            new Vector2(186f, 154f),
+            nightDock);
 
-        ApplyRectLayout(sceneNameText != null ? sceneNameText.rectTransform : null, new Vector2(28f, -22f), new Vector2(284f, 40f));
-        ApplyRectLayout(goldText != null ? goldText.rectTransform : null, new Vector2(28f, -58f), new Vector2(316f, 38f));
-        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, new Vector2(28f, 188f), new Vector2(342f, 166f));
-        ApplyRectLayout(storageText != null ? storageText.rectTransform : null, new Vector2(28f, 24f), new Vector2(342f, 154f));
-        ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, new Vector2(0f, 22f), new Vector2(576f, 46f));
-        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, new Vector2(-28f, -22f), new Vector2(452f, 152f));
-        ApplyRectLayout(restaurantResultText != null ? restaurantResultText.rectTransform : null, new Vector2(-28f, -170f), new Vector2(452f, 120f));
-        ApplyRectLayout(upgradeText != null ? upgradeText.rectTransform : null, new Vector2(-28f, -286f), new Vector2(452f, 104f));
-        ApplyRectLayout(dayPhaseText != null ? dayPhaseText.rectTransform : null, new Vector2(0f, -18f), new Vector2(470f, 38f));
-        ApplyRectLayout(guideText != null ? guideText.rectTransform : null, new Vector2(0f, -52f), new Vector2(724f, 70f));
+        EnsureUiAccentBar("TopLeftAccent", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(336f, 8f), amberAccent);
+        EnsureUiAccentBar("TopCenterAccent", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(782f, 8f), amberAccent);
+        EnsureUiAccentBar("InventoryAccent", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 374f), new Vector2(372f, 8f), oceanAccent);
+        EnsureUiAccentBar("StorageAccent", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 186f), new Vector2(372f, 8f), forestAccent);
+        EnsureUiAccentBar("RecipeAccent", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 8f), amberAccent);
+        EnsureUiAccentBar("ResultAccent", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -192f), new Vector2(494f, 8f), coralAccent);
+        EnsureUiAccentBar("UpgradeAccent", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -324f), new Vector2(494f, 8f), goldAccent);
+        EnsureUiAccentBar("ActionAccent", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 164f), new Vector2(186f, 8f), amberAccent);
 
-        ApplyScreenTextStyle(sceneNameText, preferredFont, 28f, new Color(0.10f, 0.12f, 0.16f), TextAlignmentOptions.TopLeft, false, 0f, new Vector4(8f, 6f, 8f, 6f), true);
-        ApplyScreenTextStyle(goldText, preferredFont, 24f, new Color(0.15f, 0.17f, 0.21f), TextAlignmentOptions.TopLeft, false, 0f, new Vector4(8f, 6f, 8f, 6f), false);
-        ApplyScreenTextStyle(inventoryText, preferredFont, 22f, new Color(0.13f, 0.14f, 0.18f), TextAlignmentOptions.TopLeft, true, 7f, new Vector4(10f, 8f, 10f, 8f), false);
-        ApplyScreenTextStyle(storageText, preferredFont, 21f, new Color(0.13f, 0.14f, 0.18f), TextAlignmentOptions.TopLeft, true, 7f, new Vector4(10f, 8f, 10f, 8f), false);
+        EnsureUiCaption("StatusCaption", "상태", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -22f), new Vector2(120f, 22f), preferredFont, amberAccent, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("FlowCaption", "오늘의 흐름", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -22f), new Vector2(180f, 22f), preferredFont, amberAccent, TextAlignmentOptions.Top);
+        EnsureUiCaption("InventoryCaption", "가방", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 350f), new Vector2(120f, 22f), preferredFont, oceanAccent, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("StorageCaption", "창고", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 162f), new Vector2(120f, 22f), preferredFont, forestAccent, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("RecipeCaption", "오늘의 메뉴", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -22f), new Vector2(160f, 22f), preferredFont, amberAccent, TextAlignmentOptions.TopRight);
+        EnsureUiCaption("ResultCaption", "영업 결과", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -196f), new Vector2(160f, 22f), preferredFont, coralAccent, TextAlignmentOptions.TopRight);
+        EnsureUiCaption("UpgradeCaption", "업그레이드", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -328f), new Vector2(160f, 22f), preferredFont, goldAccent, TextAlignmentOptions.TopRight);
+        EnsureUiCaption("ActionCaption", "빠른 행동", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 150f), new Vector2(120f, 22f), preferredFont, new Color(1f, 0.93f, 0.78f, 1f), TextAlignmentOptions.TopRight);
+
+        ApplyRectLayout(sceneNameText != null ? sceneNameText.rectTransform : null, new Vector2(28f, -42f), new Vector2(286f, 34f));
+        ApplyRectLayout(goldText != null ? goldText.rectTransform : null, new Vector2(28f, -72f), new Vector2(312f, 30f));
+        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, new Vector2(28f, 212f), new Vector2(342f, 132f));
+        ApplyRectLayout(storageText != null ? storageText.rectTransform : null, new Vector2(28f, 24f), new Vector2(342f, 132f));
+        ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, new Vector2(0f, 22f), new Vector2(580f, 44f));
+        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, new Vector2(-28f, -40f), new Vector2(452f, 114f));
+        ApplyRectLayout(restaurantResultText != null ? restaurantResultText.rectTransform : null, new Vector2(-28f, -212f), new Vector2(452f, 74f));
+        ApplyRectLayout(upgradeText != null ? upgradeText.rectTransform : null, new Vector2(-28f, -344f), new Vector2(452f, 64f));
+        ApplyRectLayout(dayPhaseText != null ? dayPhaseText.rectTransform : null, new Vector2(0f, -32f), new Vector2(540f, 30f));
+        ApplyRectLayout(guideText != null ? guideText.rectTransform : null, new Vector2(0f, -58f), new Vector2(736f, 42f));
+
+        ApplyScreenTextStyle(sceneNameText, preferredFont, 30f, ink, TextAlignmentOptions.TopLeft, false, 0f, new Vector4(8f, 4f, 8f, 2f), true);
+        ApplyScreenTextStyle(goldText, preferredFont, 22f, new Color(0.22f, 0.24f, 0.29f), TextAlignmentOptions.TopLeft, false, 0f, new Vector4(8f, 2f, 8f, 4f), false);
+        ApplyScreenTextStyle(inventoryText, preferredFont, 21f, ink, TextAlignmentOptions.TopLeft, true, 6f, new Vector4(12f, 6f, 12f, 8f), false);
+        ApplyScreenTextStyle(storageText, preferredFont, 20f, ink, TextAlignmentOptions.TopLeft, true, 6f, new Vector4(12f, 6f, 12f, 8f), false);
         ApplyScreenTextStyle(interactionPromptText, preferredFont, 24f, Color.white, TextAlignmentOptions.Center, false, 0f, new Vector4(12f, 8f, 12f, 8f), true);
-        ApplyScreenTextStyle(selectedRecipeText, preferredFont, 22f, new Color(0.13f, 0.14f, 0.18f), TextAlignmentOptions.TopRight, true, 6f, new Vector4(10f, 8f, 10f, 8f), false);
-        ApplyScreenTextStyle(restaurantResultText, preferredFont, 20f, new Color(0.13f, 0.14f, 0.18f), TextAlignmentOptions.TopRight, true, 6f, new Vector4(10f, 8f, 10f, 8f), false);
-        ApplyScreenTextStyle(upgradeText, preferredFont, 19f, new Color(0.13f, 0.14f, 0.18f), TextAlignmentOptions.TopRight, true, 5f, new Vector4(10f, 8f, 10f, 8f), false);
-        ApplyScreenTextStyle(dayPhaseText, preferredFont, 23f, new Color(0.10f, 0.12f, 0.16f), TextAlignmentOptions.Top, false, 0f, new Vector4(8f, 6f, 8f, 4f), true);
-        ApplyScreenTextStyle(guideText, preferredFont, 19f, new Color(0.15f, 0.17f, 0.21f), TextAlignmentOptions.Top, true, 4f, new Vector4(12f, 4f, 12f, 8f), false);
+        ApplyScreenTextStyle(selectedRecipeText, preferredFont, 21f, ink, TextAlignmentOptions.TopRight, true, 5f, new Vector4(12f, 8f, 12f, 8f), false);
+        ApplyScreenTextStyle(restaurantResultText, preferredFont, 19f, ink, TextAlignmentOptions.TopRight, true, 5f, new Vector4(12f, 8f, 12f, 8f), false);
+        ApplyScreenTextStyle(upgradeText, preferredFont, 18f, ink, TextAlignmentOptions.TopRight, true, 4f, new Vector4(12f, 8f, 12f, 8f), false);
+        ApplyScreenTextStyle(dayPhaseText, preferredFont, 24f, ink, TextAlignmentOptions.Top, false, 0f, new Vector4(8f, 2f, 8f, 2f), true);
+        ApplyScreenTextStyle(guideText, preferredFont, 18f, new Color(0.23f, 0.26f, 0.31f), TextAlignmentOptions.Top, true, 3f, new Vector4(12f, 2f, 12f, 8f), false);
 
-        ApplyButtonPresentation(skipExplorationButton, preferredFont);
-        ApplyButtonPresentation(skipServiceButton, preferredFont);
-        ApplyButtonPresentation(nextDayButton, preferredFont);
+        ApplyButtonLayout(skipExplorationButton, new Vector2(-28f, 102f), new Vector2(154f, 38f));
+        ApplyButtonLayout(skipServiceButton, new Vector2(-28f, 58f), new Vector2(154f, 38f));
+        ApplyButtonLayout(nextDayButton, new Vector2(-28f, 14f), new Vector2(154f, 38f));
+        ApplyButtonPresentation(skipExplorationButton, preferredFont, oceanAccent);
+        ApplyButtonPresentation(skipServiceButton, preferredFont, coralAccent);
+        ApplyButtonPresentation(nextDayButton, preferredFont, goldAccent);
         ApplyWorldTextPresentation(preferredFont);
     }
 
@@ -499,6 +599,105 @@ public class UIManager : MonoBehaviour
 
         image.color = color;
         image.raycastTarget = false;
+
+        Shadow shadow = backdropObject.GetComponent<Shadow>();
+        if (shadow == null)
+        {
+            shadow = backdropObject.AddComponent<Shadow>();
+        }
+
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.18f);
+        shadow.effectDistance = new Vector2(0f, -4f);
+        shadow.useGraphicAlpha = true;
+    }
+
+    /*
+     * 카드 상단에 가는 강조선을 추가해 섹션 위계를 분명하게 만듭니다.
+     */
+    private void EnsureUiAccentBar(
+        string name,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 pivot,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        Color color)
+    {
+        Transform existing = transform.Find(name);
+        GameObject accentObject = existing != null ? existing.gameObject : new GameObject(name);
+        if (existing == null)
+        {
+            accentObject.transform.SetParent(transform, false);
+        }
+
+        RectTransform rect = accentObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = accentObject.AddComponent<RectTransform>();
+        }
+
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = pivot;
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+        rect.SetSiblingIndex(1);
+
+        Image image = accentObject.GetComponent<Image>();
+        if (image == null)
+        {
+            image = accentObject.AddComponent<Image>();
+        }
+
+        image.color = color;
+        image.raycastTarget = false;
+    }
+
+    /*
+     * 각 카드 위에 짧은 캡션을 추가해 정보 구역 이름을 분명하게 보여줍니다.
+     */
+    private void EnsureUiCaption(
+        string name,
+        string content,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 pivot,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        TMP_FontAsset font,
+        Color color,
+        TextAlignmentOptions alignment)
+    {
+        Transform existing = transform.Find(name);
+        GameObject captionObject = existing != null ? existing.gameObject : new GameObject(name);
+        if (existing == null)
+        {
+            captionObject.transform.SetParent(transform, false);
+        }
+
+        RectTransform rect = captionObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = captionObject.AddComponent<RectTransform>();
+        }
+
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = pivot;
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+        rect.SetSiblingIndex(2);
+
+        TextMeshProUGUI text = captionObject.GetComponent<TextMeshProUGUI>();
+        if (text == null)
+        {
+            text = captionObject.AddComponent<TextMeshProUGUI>();
+        }
+
+        text.text = content;
+        ApplyScreenTextStyle(text, font, 15f, color, alignment, false, 0f, new Vector4(0f, 0f, 0f, 0f), true);
+        text.characterSpacing = 2f;
+        text.raycastTarget = false;
     }
 
     /*
@@ -563,7 +762,27 @@ public class UIManager : MonoBehaviour
     /*
      * 하단 액션 버튼과 라벨을 현재 UI 스타일에 맞게 다시 맞춥니다.
      */
-    private void ApplyButtonPresentation(Button button, TMP_FontAsset font)
+    private static void ApplyButtonLayout(Button button, Vector2 anchoredPosition, Vector2 sizeDelta)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            return;
+        }
+
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+    }
+
+    /*
+     * 하단 액션 버튼과 라벨을 현재 UI 스타일에 맞게 다시 맞춥니다.
+     */
+    private void ApplyButtonPresentation(Button button, TMP_FontAsset font, Color accentColor)
     {
         if (button == null)
         {
@@ -573,11 +792,21 @@ public class UIManager : MonoBehaviour
         Image image = button.GetComponent<Image>();
         if (image != null)
         {
-            image.color = new Color(0.12f, 0.16f, 0.22f, 0.90f);
+            image.color = accentColor;
         }
 
         TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
         ApplyScreenTextStyle(label, font, 20f, Color.white, TextAlignmentOptions.Center, false, 0f, new Vector4(8f, 6f, 8f, 6f), true);
+
+        Shadow shadow = button.GetComponent<Shadow>();
+        if (shadow == null)
+        {
+            shadow = button.gameObject.AddComponent<Shadow>();
+        }
+
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
+        shadow.effectDistance = new Vector2(0f, -3f);
+        shadow.useGraphicAlpha = true;
     }
 
     /*

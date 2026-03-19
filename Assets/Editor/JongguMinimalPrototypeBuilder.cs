@@ -753,43 +753,119 @@ public static class JongguMinimalPrototypeBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void CreateUiCanvas()
+    /*
+     * 새로 생성하는 씬에도 카드형 HUD 기본 배치와 텍스트 스타일을 바로 심어 둡니다.
+     */
+    private static void CreateUiCanvas()
     {
         GameObject canvasObject = new("Canvas");
         Canvas canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasObject.AddComponent<CanvasScaler>();
+        CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
         canvasObject.AddComponent<GraphicRaycaster>();
 
-        CreatePanel("TopLeftPanel", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(328f, 100f), new Color(0.97f, 0.97f, 0.98f, 0.80f));
-        CreatePanel("BottomLeftPanel", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 18f), new Vector2(372f, 364f), new Color(0.98f, 0.98f, 0.99f, 0.82f));
-        CreatePanel("CenterBottomPanel", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(608f, 54f), new Color(0.08f, 0.10f, 0.14f, 0.72f));
-        CreatePanel("TopRightPanel", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 364f), new Color(0.98f, 0.98f, 0.99f, 0.80f));
-        CreatePanel("TopCenterPanel", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(760f, 86f), new Color(0.98f, 0.98f, 0.99f, 0.78f));
+        CreatePanel("TopLeftPanel", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(336f, 98f), new Color(0.97f, 0.94f, 0.89f, 0.86f));
+        CreatePanel("BottomLeftPanel", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 18f), new Vector2(372f, 364f), new Color(0.96f, 0.98f, 0.98f, 0.08f));
+        CreatePanel("CenterBottomPanel", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(620f, 58f), new Color(0.07f, 0.11f, 0.17f, 0.78f));
+        CreatePanel("TopRightPanel", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 364f), new Color(0.97f, 0.98f, 0.99f, 0.08f));
+        CreatePanel("TopCenterPanel", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(782f, 92f), new Color(0.97f, 0.98f, 0.99f, 0.80f));
+        CreatePanel("InventoryCard", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 206f), new Vector2(372f, 176f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
+        CreatePanel("StorageCard", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 18f), new Vector2(372f, 176f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
+        CreatePanel("RecipeCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 170f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
+        CreatePanel("ResultCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -192f), new Vector2(494f, 128f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
+        CreatePanel("UpgradeCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -324f), new Vector2(494f, 118f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
+        CreatePanel("ActionDock", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 18f), new Vector2(186f, 154f), new Color(0.10f, 0.15f, 0.22f, 0.90f));
+        CreatePanel("TopLeftAccent", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(336f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        CreatePanel("TopCenterAccent", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(782f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        CreatePanel("InventoryAccent", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 374f), new Vector2(372f, 8f), new Color(0.18f, 0.50f, 0.58f, 0.95f));
+        CreatePanel("StorageAccent", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 186f), new Vector2(372f, 8f), new Color(0.33f, 0.49f, 0.27f, 0.95f));
+        CreatePanel("RecipeAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        CreatePanel("ResultAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -192f), new Vector2(494f, 8f), new Color(0.69f, 0.37f, 0.28f, 0.95f));
+        CreatePanel("UpgradeAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -324f), new Vector2(494f, 8f), new Color(0.68f, 0.57f, 0.17f, 0.95f));
+        CreatePanel("ActionAccent", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 164f), new Vector2(186f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
 
-        UIManager uiManager = canvasObject.AddComponent<UIManager>();
+        UIManager uiManager = canvasObject.AddComponent<UIManager>();
+
+        TextMeshProUGUI statusCaption = CreateScreenText("StatusCaption", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -22f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        TextMeshProUGUI flowCaption = CreateScreenText("FlowCaption", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -22f), new Vector2(180f, 22f), 15, TextAlignmentOptions.Top, new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        TextMeshProUGUI inventoryCaption = CreateScreenText("InventoryCaption", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 350f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.18f, 0.50f, 0.58f, 0.95f));
+        TextMeshProUGUI storageCaption = CreateScreenText("StorageCaption", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 162f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.33f, 0.49f, 0.27f, 0.95f));
+        TextMeshProUGUI recipeCaption = CreateScreenText("RecipeCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -22f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.77f, 0.49f, 0.16f, 0.95f));
+        TextMeshProUGUI resultCaption = CreateScreenText("ResultCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -196f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.69f, 0.37f, 0.28f, 0.95f));
+        TextMeshProUGUI upgradeCaption = CreateScreenText("UpgradeCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -328f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.68f, 0.57f, 0.17f, 0.95f));
+        TextMeshProUGUI actionCaption = CreateScreenText("ActionCaption", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 150f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopRight, new Color(1f, 0.93f, 0.78f, 1f));
 
-        TextMeshProUGUI sceneNameText = CreateScreenText("SceneNameText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -22f), new Vector2(260f, 36f), 26, TextAlignmentOptions.TopLeft, Color.black);
-        TextMeshProUGUI goldText = CreateScreenText("GoldText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -56f), new Vector2(300f, 36f), 24, TextAlignmentOptions.TopLeft, Color.black);
-        TextMeshProUGUI inventoryText = CreateScreenText("InventoryText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 186f), new Vector2(330f, 150f), 21, TextAlignmentOptions.TopLeft, Color.black);
-        TextMeshProUGUI storageText = CreateScreenText("StorageText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 24f), new Vector2(330f, 148f), 20, TextAlignmentOptions.TopLeft, Color.black);
-        TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(520f, 40f), 24, TextAlignmentOptions.Center, Color.white);
-        TextMeshProUGUI selectedRecipeText = CreateScreenText("SelectedRecipeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -22f), new Vector2(430f, 130f), 22, TextAlignmentOptions.TopRight, Color.black);
-        TextMeshProUGUI resultText = CreateScreenText("RestaurantResultText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -150f), new Vector2(430f, 96f), 20, TextAlignmentOptions.TopRight, Color.black);
-        TextMeshProUGUI upgradeText = CreateScreenText("UpgradeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -252f), new Vector2(430f, 82f), 18, TextAlignmentOptions.TopRight, Color.black);
-        TextMeshProUGUI dayPhaseText = CreateScreenText("DayPhaseText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(420f, 32f), 22, TextAlignmentOptions.Top, new Color(0.12f, 0.12f, 0.12f));
-        TextMeshProUGUI guideText = CreateScreenText("GuideText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -52f), new Vector2(680f, 42f), 18, TextAlignmentOptions.Top, new Color(0.18f, 0.18f, 0.18f));
-        Button skipExplorationButton = CreateUiButton("SkipExplorationButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 116f), new Vector2(150f, 40f), "탐험 스킵");
-        Button skipServiceButton = CreateUiButton("SkipServiceButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 68f), new Vector2(150f, 40f), "장사 스킵");
-        Button nextDayButton = CreateUiButton("NextDayButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 20f), new Vector2(150f, 40f), "다음 날");
+        TextMeshProUGUI sceneNameText = CreateScreenText("SceneNameText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -42f), new Vector2(286f, 34f), 30, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI goldText = CreateScreenText("GoldText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -72f), new Vector2(312f, 30f), 22, TextAlignmentOptions.TopLeft, new Color(0.22f, 0.24f, 0.29f));
+        TextMeshProUGUI inventoryText = CreateScreenText("InventoryText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 212f), new Vector2(342f, 132f), 21, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI storageText = CreateScreenText("StorageText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 24f), new Vector2(342f, 132f), 20, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 22f), new Vector2(580f, 44f), 24, TextAlignmentOptions.Center, Color.white);
+        TextMeshProUGUI selectedRecipeText = CreateScreenText("SelectedRecipeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -40f), new Vector2(452f, 114f), 21, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI resultText = CreateScreenText("RestaurantResultText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -212f), new Vector2(452f, 74f), 19, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI upgradeText = CreateScreenText("UpgradeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -344f), new Vector2(452f, 64f), 18, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI dayPhaseText = CreateScreenText("DayPhaseText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -32f), new Vector2(540f, 30f), 24, TextAlignmentOptions.Top, new Color(0.11f, 0.13f, 0.18f, 1f));
+        TextMeshProUGUI guideText = CreateScreenText("GuideText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -58f), new Vector2(736f, 42f), 18, TextAlignmentOptions.Top, new Color(0.23f, 0.26f, 0.31f));
+        Button skipExplorationButton = CreateUiButton("SkipExplorationButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 102f), new Vector2(154f, 38f), "탐험 스킵");
+        Button skipServiceButton = CreateUiButton("SkipServiceButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 58f), new Vector2(154f, 38f), "장사 스킵");
+        Button nextDayButton = CreateUiButton("NextDayButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 14f), new Vector2(154f, 38f), "다음 날");
+        statusCaption.text = "상태";
+        flowCaption.text = "오늘의 흐름";
+        inventoryCaption.text = "가방";
+        storageCaption.text = "창고";
+        recipeCaption.text = "오늘의 메뉴";
+        resultCaption.text = "영업 결과";
+        upgradeCaption.text = "업그레이드";
+        actionCaption.text = "빠른 행동";
+
+        statusCaption.fontStyle = FontStyles.Bold;
+        flowCaption.fontStyle = FontStyles.Bold;
+        inventoryCaption.fontStyle = FontStyles.Bold;
+        storageCaption.fontStyle = FontStyles.Bold;
+        recipeCaption.fontStyle = FontStyles.Bold;
+        resultCaption.fontStyle = FontStyles.Bold;
+        upgradeCaption.fontStyle = FontStyles.Bold;
+        actionCaption.fontStyle = FontStyles.Bold;
+        statusCaption.characterSpacing = 2f;
+        flowCaption.characterSpacing = 2f;
+        inventoryCaption.characterSpacing = 2f;
+        storageCaption.characterSpacing = 2f;
+        recipeCaption.characterSpacing = 2f;
+        resultCaption.characterSpacing = 2f;
+        upgradeCaption.characterSpacing = 2f;
+        actionCaption.characterSpacing = 2f;
+        statusCaption.margin = Vector4.zero;
+        flowCaption.margin = Vector4.zero;
+        inventoryCaption.margin = Vector4.zero;
+        storageCaption.margin = Vector4.zero;
+        recipeCaption.margin = Vector4.zero;
+        resultCaption.margin = Vector4.zero;
+        upgradeCaption.margin = Vector4.zero;
+        actionCaption.margin = Vector4.zero;
+
+        sceneNameText.fontStyle = FontStyles.Bold;
+        dayPhaseText.fontStyle = FontStyles.Bold;
+        inventoryText.textWrappingMode = TextWrappingModes.Normal;
+        storageText.textWrappingMode = TextWrappingModes.Normal;
+        selectedRecipeText.textWrappingMode = TextWrappingModes.Normal;
+        resultText.textWrappingMode = TextWrappingModes.Normal;
+        upgradeText.textWrappingMode = TextWrappingModes.Normal;
+        guideText.textWrappingMode = TextWrappingModes.Normal;
+
+        skipExplorationButton.GetComponent<Image>().color = new Color(0.18f, 0.50f, 0.58f, 0.95f);
+        skipServiceButton.GetComponent<Image>().color = new Color(0.69f, 0.37f, 0.28f, 0.95f);
+        nextDayButton.GetComponent<Image>().color = new Color(0.68f, 0.57f, 0.17f, 0.95f);
 
         sceneNameText.text = "종구의 식당";
         goldText.text = "골드: 0   평판: 0";
         inventoryText.text = "인벤토리 0/8칸\n- 비어 있음";
         storageText.text = "창고\n- 비어 있음";
         promptText.text = "이동: WASD / 방향키   상호작용: E";
-        selectedRecipeText.text = "선택 메뉴: 없음";
-        resultText.text = "영업 결과 없음";
+        selectedRecipeText.text = "선택 메뉴\n- 아직 고르지 않았습니다.";
+        resultText.text = "영업 결과\n- 아직 영업 전입니다.";
         upgradeText.text = "업그레이드\n- 인벤토리 8칸 -> 12칸";
         dayPhaseText.text = "1일차 · 오전 탐험";
         guideText.text = "오전 탐험 준비 시간입니다. 오늘 갈 지역을 정하고 출발하세요.";
@@ -812,7 +888,10 @@ public static class JongguMinimalPrototypeBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static TextMeshProUGUI CreateScreenText(
+    /*
+     * 화면 고정 UI 텍스트를 만들고 generated 한글 폰트와 기본 여백을 같이 적용합니다.
+     */
+    private static TextMeshProUGUI CreateScreenText(
         string name,
         Transform parent,
         Vector2 anchorMin,
@@ -839,6 +918,7 @@ public static class JongguMinimalPrototypeBuilder
         text.fontSize = fontSize;
         text.alignment = alignment;
         text.color = color;
+        text.raycastTarget = false;
         text.textWrappingMode = TextWrappingModes.NoWrap;
         text.margin = new Vector4(10f, 8f, 10f, 8f);
         text.overflowMode = TextOverflowModes.Overflow;
@@ -855,7 +935,10 @@ public static class JongguMinimalPrototypeBuilder
         return text;
     }
 
-    private static void CreatePanel(
+    /*
+     * 카드 배경이나 포인트 바 같은 평면 UI 블록을 그림자와 함께 생성합니다.
+     */
+    private static void CreatePanel(
         string name,
         Transform parent,
         Vector2 anchorMin,
@@ -876,10 +959,22 @@ public static class JongguMinimalPrototypeBuilder
         rect.sizeDelta = sizeDelta;
 
         Image image = panelObject.AddComponent<Image>();
-        image.color = color;
+        image.color = color;
+        image.raycastTarget = false;
+
+        if (!name.EndsWith("Accent"))
+        {
+            Shadow shadow = panelObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.18f);
+            shadow.effectDistance = new Vector2(0f, -4f);
+            shadow.useGraphicAlpha = true;
+        }
     }
 
-    private static Button CreateUiButton(
+    /*
+     * 빠른 행동 버튼을 만들고 텍스트와 그림자까지 기본 스타일로 맞춥니다.
+     */
+    private static Button CreateUiButton(
         string name,
         Transform parent,
         Vector2 anchorMin,
@@ -900,7 +995,11 @@ public static class JongguMinimalPrototypeBuilder
         rect.sizeDelta = sizeDelta;
 
         Image image = buttonObject.AddComponent<Image>();
-        image.color = new Color(0.18f, 0.18f, 0.18f, 0.82f);
+        image.color = new Color(0.18f, 0.18f, 0.18f, 0.82f);
+        Shadow shadow = buttonObject.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
+        shadow.effectDistance = new Vector2(0f, -3f);
+        shadow.useGraphicAlpha = true;
 
         Button button = buttonObject.AddComponent<Button>();
 
@@ -915,7 +1014,9 @@ public static class JongguMinimalPrototypeBuilder
             20,
             TextAlignmentOptions.Center,
             Color.white);
-        labelText.text = label;
+        labelText.text = label;
+        labelText.fontStyle = FontStyles.Bold;
+        labelText.margin = new Vector4(8f, 6f, 8f, 6f);
 
         return button;
     }
