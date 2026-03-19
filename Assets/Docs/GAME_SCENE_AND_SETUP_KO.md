@@ -1,0 +1,105 @@
+# 종구의 식당 씬 및 세팅 가이드
+
+## 1. 씬 구성
+
+### Hub
+
+- 허브 메인 씬이다.
+- 메뉴 선택대, 영업대, 창고, 작업대, 지역 포탈이 들어간다.
+- 창고 선택 패드와 폐광산 포탈이 직렬화되어 있다.
+
+### Beach
+
+- 입문 탐험 지역이다.
+- 기본 채집 루프와 허브 복귀 흐름을 확인한다.
+
+### DeepForest
+
+- 중반 탐험 지역이다.
+- 버섯 / 약초 수집과 감속 지형이 들어간다.
+
+### AbandonedMine
+
+- 후반 탐험 지역이다.
+- 랜턴 요구 조건, `GlowMoss`, 어둠 구간, 잔해 감속이 들어간다.
+
+### WindHill
+
+- 최종 탐험 지역이다.
+- 강풍 존과 평판 기반 숏컷을 확인한다.
+
+## 2. 공통 런타임 구성
+
+### GameManager
+
+아래 참조가 핵심이다.
+
+- `InventoryManager`
+- `StorageManager`
+- `EconomyManager`
+- `ToolManager`
+- `DayCycleManager`
+- `UpgradeManager`
+
+참조가 비어 있어도 런타임 보정이 일부 들어가 있지만, 씬에 직접 연결되어 있으면 확인과 유지보수가 쉽다.
+
+### UIManager
+
+주요 연결 대상은 아래와 같다.
+
+- `interactionPromptText`
+- `inventoryText`
+- `storageText`
+- `upgradeText`
+- `sceneNameText`
+- `goldText`
+- `selectedRecipeText`
+- `restaurantResultText`
+- `dayPhaseText`
+- `guideText`
+
+최근 가독성 수정으로 런타임에서 텍스트 배경 패널, 여백, 줄간격, 버튼 라벨 스타일도 다시 조정한다.
+
+## 3. 허브 체크 포인트
+
+- `RestaurantManager.availableRecipes`
+- `StorageStation.stationAction`
+- `UpgradeStation`
+- `ScenePortal.targetSceneName`
+- `ScenePortal.targetSpawnPointId`
+
+허브에서는 아래 흐름이 끊기지 않는지 보면 된다.
+
+1. 메뉴 선택
+2. 창고 품목 선택
+3. 맡기기 / 꺼내기
+4. 업그레이드 확인
+5. 지역 이동
+6. 장사 실행
+
+## 4. 탐험 지역 체크 포인트
+
+- `GatherableResource.resourceData`
+- `GatherableResource.requiredToolType`
+- 귀환용 `ScenePortal`
+- `MovementModifierZone`
+- `DarknessZone`
+- `WindGustZone`
+
+핵심은 `상호작용 가능 여부`, `막힌 이유 안내`, `귀환 포탈 동작`, `위험 구간 체감` 이다.
+
+## 5. 플레이 테스트 권장 순서
+
+1. `Hub` 에서 텍스트 가독성, 창고 선택 패드, 메뉴 선택 UI 확인
+2. `Beach` 에서 기본 채집 후 허브 복귀 확인
+3. `DeepForest` 에서 버섯 / 약초 수집과 감속 구간 확인
+4. 허브 작업대에서 인벤토리 확장 또는 랜턴 해금 비용 확인
+5. `AbandonedMine` 진입 후 `GlowMoss`, 어둠, 잔해 구간 확인
+6. 평판을 올린 뒤 `WindHillShortcut` 사용 가능 여부 확인
+7. 허브에서 메뉴 선택, 장사, 정산, 다음 날 전환 확인
+
+## 6. 현재 리스크
+
+- Unity 실행과 C# 컴파일 검증은 이 환경에서 직접 하지 못했다.
+- 밸런스 수치는 실제 플레이 후 재조정이 필요할 수 있다.
+- `PrototypeSceneRuntimeAugmenter` 안전망은 남겨둔 상태라, 씬 직렬화가 안정되면 의존을 더 줄여도 된다.
