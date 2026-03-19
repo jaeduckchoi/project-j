@@ -115,6 +115,7 @@ public static class JongguMinimalPrototypeBuilder
         EnsureFolder("Assets", "Scenes");
 
         generatedKoreanFont = CreateKoreanFontAsset();
+        EnsurePreferredTmpFontAsset();
         SpriteLibrary sprites = CreateSprites();
         ResourceLibrary resources = CreateResources();
         RecipeLibrary recipes = CreateRecipes(resources);
@@ -913,6 +914,7 @@ public static class JongguMinimalPrototypeBuilder
         rect.anchoredPosition = anchoredPosition;
         rect.sizeDelta = sizeDelta;
 
+        TMP_FontAsset preferredFont = EnsurePreferredTmpFontAsset();
         TextMeshProUGUI text = go.AddComponent<TextMeshProUGUI>();
         text.text = string.Empty;
         text.fontSize = fontSize;
@@ -923,9 +925,9 @@ public static class JongguMinimalPrototypeBuilder
         text.margin = new Vector4(10f, 8f, 10f, 8f);
         text.overflowMode = TextOverflowModes.Overflow;
 
-        if (generatedKoreanFont != null)
+        if (preferredFont != null)
         {
-            text.font = generatedKoreanFont;
+            text.font = preferredFont;
         }
         else if (TMP_Settings.defaultFontAsset != null)
         {
@@ -1021,9 +1023,11 @@ public static class JongguMinimalPrototypeBuilder
         return button;
     }
 
-    private static void CreateWorldLabel(string name, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
-    {
-        GameObject labelObject = new(name);
+    private static void CreateWorldLabel(string name, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
+    {
+        TMP_FontAsset preferredFont = EnsurePreferredTmpFontAsset();
+
+        GameObject labelObject = new(name);
         if (parent != null)
         {
             labelObject.transform.SetParent(parent, false);
@@ -1042,14 +1046,11 @@ public static class JongguMinimalPrototypeBuilder
         text.textWrappingMode = TextWrappingModes.NoWrap;
         text.characterSpacing = 1.5f;
         text.fontStyle = FontStyles.Bold;
-        text.outlineWidth = 0.18f;
-        text.outlineColor = color.grayscale < 0.45f
-            ? new Color(1f, 1f, 1f, 0.90f)
-            : new Color(0f, 0f, 0f, 0.88f);
+        // Runtime presentation applies world-text outlines without leaking edit-mode materials.
 
-        if (generatedKoreanFont != null)
+        if (preferredFont != null)
         {
-            text.font = generatedKoreanFont;
+            text.font = preferredFont;
         }
         else if (TMP_Settings.defaultFontAsset != null)
         {
@@ -1326,8 +1327,33 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("movementBounds").objectReferenceValue = movementBounds;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
-
-    private static TMP_FontAsset CreateKoreanFontAsset()
+
+    /*
+     * TMP 컴포넌트 생성 전에 builder가 선호하는 기본 폰트를 다시 묶어 누락 경고를 막습니다.
+     */
+    private static TMP_FontAsset EnsurePreferredTmpFontAsset()
+    {
+        TMP_FontAsset preferredFont = generatedKoreanFont;
+
+        if (preferredFont == null)
+        {
+            preferredFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontRoot + "/MalgunGothic SDF.asset");
+        }
+
+        if (preferredFont != null && TMP_Settings.defaultFontAsset != preferredFont)
+        {
+            TMP_Settings.defaultFontAsset = preferredFont;
+
+            if (TMP_Settings.instance != null)
+            {
+                EditorUtility.SetDirty(TMP_Settings.instance);
+            }
+        }
+
+        return preferredFont != null ? preferredFont : TMP_Settings.defaultFontAsset;
+    }
+
+    private static TMP_FontAsset CreateKoreanFontAsset()
     {
         string sourceFontPath = FindSystemKoreanFontPath();
         if (string.IsNullOrWhiteSpace(sourceFontPath))
@@ -1352,7 +1378,15 @@ public static class JongguMinimalPrototypeBuilder
         TMP_FontAsset existingFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(fontAssetPath);
         if (existingFont != null)
         {
-            AssetDatabase.DeleteAsset(fontAssetPath);
+            existingFont.TryAddCharacters(CollectRequiredCharacters());
+            EditorUtility.SetDirty(existingFont);
+
+            if (existingFont.material != null)
+            {
+                EditorUtility.SetDirty(existingFont.material);
+            }
+
+            return existingFont;
         }
 
         TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
