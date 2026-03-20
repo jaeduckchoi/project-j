@@ -1,10 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
-using System.Collections.Generic;
 
-// 탑다운 플레이어 이동과 상호작용 입력을 처리한다.
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
@@ -27,7 +26,7 @@ public class PlayerController : MonoBehaviour
     public float EffectiveMoveSpeed => moveSpeed * GetMovementMultiplier();
 
     /*
-     * 이동과 상호작용에 필요한 컴포넌트와 입력 액션을 준비합니다.
+     * 이동에 필요한 물리/상호작용 참조를 캐시하고, 방향 스프라이트를 보정합니다.
      */
     private void Awake()
     {
@@ -38,13 +37,15 @@ public class PlayerController : MonoBehaviour
             interactionDetector = GetComponentInChildren<InteractionDetector>();
         }
 
+        EnsureDirectionalSprite();
+
 #if ENABLE_INPUT_SYSTEM
         SetupInputActions();
 #endif
     }
 
     /*
-     * 입력 액션을 활성화합니다.
+     * 동적 입력 액션을 씬 활성화 상태와 맞춰 함께 켭니다.
      */
     private void OnEnable()
     {
@@ -55,7 +56,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 비활성화 시 외부 이동 보정 상태와 입력 액션을 정리합니다.
+     * 씬 비활성화 중에는 외부 속도 보정과 입력 리스너를 함께 비웁니다.
      */
     private void OnDisable()
     {
@@ -69,7 +70,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 동적으로 만든 입력 액션 리소스를 해제합니다.
+     * 런타임에 만든 입력 액션은 파괴 시점에 함께 해제합니다.
      */
     private void OnDestroy()
     {
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 프레임마다 이동 입력을 읽고 상호작용 키 입력을 처리합니다.
+     * 매 프레임 이동 입력과 상호작용 키 입력을 읽습니다.
      */
     private void Update()
     {
@@ -93,7 +94,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 입력 속도와 외부 힘을 합쳐 Rigidbody2D 속도를 적용합니다.
+     * Rigidbody2D에는 입력 이동과 외부 힘 보정을 합친 최종 속도만 반영합니다.
      */
     private void FixedUpdate()
     {
@@ -108,7 +109,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 스폰 포인트 이동 시 플레이어 좌표와 물리 상태를 함께 초기화합니다.
+     * 스폰 직후 위치 보정이 필요할 때 Transform과 Rigidbody를 함께 맞춥니다.
      */
     public void SetWorldPosition(Vector3 position)
     {
@@ -127,7 +128,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 특정 출처가 주는 이동 배율을 등록하거나 갱신합니다.
+     * 늪, 강풍 같은 구역이 이동 속도 배율을 소스별로 등록하도록 열어 둡니다.
      */
     public void SetMovementMultiplierSource(object source, float multiplier)
     {
@@ -147,7 +148,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 특정 출처가 주던 이동 배율을 제거합니다.
+     * 특정 구역 보정이 끝나면 등록한 이동 배율을 제거합니다.
      */
     public void ClearMovementMultiplierSource(object source)
     {
@@ -160,7 +161,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 바람이나 강제 이동 같은 외부 속도 출처를 등록합니다.
+     * 밀쳐짐이나 바람처럼 입력과 별개인 외부 속도를 소스별로 누적합니다.
      */
     public void SetExternalVelocitySource(object source, Vector2 velocity)
     {
@@ -179,7 +180,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 특정 외부 속도 출처를 제거합니다.
+     * 외부 힘 효과가 끝나면 해당 소스의 속도 보정을 해제합니다.
      */
     public void ClearExternalVelocitySource(object source)
     {
@@ -192,14 +193,13 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 새 입력 시스템과 레거시 입력 시스템을 모두 고려해 이동 입력을 합칩니다.
+     * 새 입력 시스템과 레거시 입력 시스템을 모두 읽어 프로젝트 설정 차이를 흡수합니다.
      */
     private Vector2 ReadMoveInput()
     {
         Vector2 input = Vector2.zero;
 
 #if ENABLE_INPUT_SYSTEM
-        // 새 입력 시스템이 켜져 있으면 Action 과 키보드 상태를 함께 읽습니다.
         if (moveAction != null)
         {
             input += moveAction.ReadValue<Vector2>();
@@ -231,7 +231,6 @@ public class PlayerController : MonoBehaviour
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
-        // 레거시 입력 시스템도 동시에 지원해 프로젝트 설정 차이를 흡수합니다.
         Vector2 legacyInput = Vector2.zero;
 
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
@@ -263,7 +262,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 상호작용 키가 이번 프레임에 눌렸는지 확인합니다.
+     * 상호작용 키도 두 입력 시스템에서 모두 읽어 동일하게 처리합니다.
      */
     private bool ReadInteractPressed()
     {
@@ -290,7 +289,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 현재 등록된 모든 이동 배율 출처를 곱해 최종 배율을 계산합니다.
+     * 여러 구역 배율이 겹칠 수 있으므로 곱셈으로 합치고 과한 값은 제한합니다.
      */
     private float GetMovementMultiplier()
     {
@@ -305,7 +304,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /*
-     * 현재 등록된 모든 외부 속도 출처를 합쳐 최종 속도를 계산합니다.
+     * 외부 속도는 벡터 합으로 합쳐 한 번에 Rigidbody에 적용합니다.
      */
     private Vector2 GetExternalVelocity()
     {
@@ -319,9 +318,29 @@ public class PlayerController : MonoBehaviour
         return combinedVelocity;
     }
 
+    /*
+     * PlayerVisual 자식이 있으면 그 렌더러를 우선 사용해 그림자나 보조 스프라이트를 피합니다.
+     */
+    private void EnsureDirectionalSprite()
+    {
+        SpriteRenderer renderer = transform.Find("PlayerVisual")?.GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            renderer = GetComponent<SpriteRenderer>();
+        }
+
+        PlayerDirectionalSprite directionalSprite = GetComponent<PlayerDirectionalSprite>();
+        if (directionalSprite == null)
+        {
+            directionalSprite = gameObject.AddComponent<PlayerDirectionalSprite>();
+        }
+
+        directionalSprite.Configure(renderer, null, null, null);
+    }
+
 #if ENABLE_INPUT_SYSTEM
     /*
-     * 키보드 기반 이동 / 상호작용 InputAction 을 동적으로 구성합니다.
+     * 이동과 상호작용에 필요한 최소 InputAction만 코드에서 직접 만듭니다.
      */
     private void SetupInputActions()
     {

@@ -1,24 +1,33 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TMPro;
-using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEngine.TextCore.LowLevel;
-using UnityEngine.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.TextCore.LowLevel;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+#endif
 
-public static class JongguMinimalPrototypeBuilder
-{
-    private const string GeneratedRoot = "Assets/Generated";
-    private const string DataRoot = GeneratedRoot + "/GameData";
-    private const string SpriteRoot = GeneratedRoot + "/Sprites";
-    private const string SceneRoot = "Assets/Scenes";
-    private const string FontRoot = GeneratedRoot + "/Fonts";
+public static class JongguMinimalPrototypeBuilder
+{
+    private const string GeneratedRoot = "Assets/Generated";
+    private const string DataRoot = GeneratedRoot + "/GameData";
+    private const string SpriteRoot = GeneratedRoot + "/Sprites";
+    private const string SceneRoot = "Assets/Scenes";
+    private const string FontRoot = GeneratedRoot + "/Fonts";
+    private const string ResourceSpriteRoot = "Assets/Resources/Generated/Sprites";
+    private const float PlayerSpritePixelsPerUnit = 1000f;
+    private const float PlayerVisualScale = 0.76f;
 
-    private static TMP_FontAsset generatedKoreanFont;
+    private static TMP_FontAsset generatedKoreanFont;
+    private static TMP_FontAsset generatedHeadingFont;
 
     private sealed class ResourceLibrary
     {
@@ -43,7 +52,9 @@ public static class JongguMinimalPrototypeBuilder
 
     private sealed class SpriteLibrary
     {
-        public Sprite Player;
+        public Sprite PlayerFront;
+        public Sprite PlayerBack;
+        public Sprite PlayerSide;
         public Sprite Portal;
         public Sprite Selector;
         public Sprite Counter;
@@ -114,6 +125,7 @@ public static class JongguMinimalPrototypeBuilder
         EnsureFolder(GeneratedRoot, "Fonts");
         EnsureFolder("Assets", "Scenes");
 
+        generatedHeadingFont = CreateHeadingFontAsset();
         generatedKoreanFont = CreateKoreanFontAsset();
         EnsurePreferredTmpFontAsset();
         SpriteLibrary sprites = CreateSprites();
@@ -147,7 +159,7 @@ public static class JongguMinimalPrototypeBuilder
         const float mapHeight = 16f;
 
         GameObject gameManagerObject = CreateGameManager("Hub", "Beach", resources);
-        GameObject player = CreatePlayer(new Vector3(-1f, -3f, 0f), sprites.Player);
+        GameObject player = CreatePlayer(new Vector3(-1f, -3f, 0f), sprites);
         CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.94f, 0.90f, 0.82f), 6.2f);
         BoxCollider2D movementBounds = CreateMovementBounds("HubMovementBounds", mapWidth - 2.2f, mapHeight - 2.2f);
         AttachPlayerBoundsLimiter(player, movementBounds);
@@ -167,16 +179,12 @@ public static class JongguMinimalPrototypeBuilder
         CreateDecorBlock("WorkbenchWall", new Vector3(6.2f, -1.9f, 0f), new Vector3(4.8f, 2.2f, 1f), sprites.Floor, new Color(0.46f, 0.33f, 0.23f), 1);
 
         CreateWorldLabel("RestaurantTitle", null, new Vector3(0f, 6f, 0f), "종구의 식당", Color.black, 4.6f, 40);
-        CreateWorldLabel("ExitSign", null, new Vector3(8.5f, -0.4f, 0f), "바닷가로", Color.black, 3.2f, 40);
-        CreateWorldLabel("ForestSign", null, new Vector3(11.1f, -0.4f, 0f), "깊은 숲", Color.black, 3.0f, 40);
-        CreateWorldLabel("MineSign", null, new Vector3(8.5f, 2.2f, 0f), "폐광산", Color.black, 2.8f, 40);
-        CreateWorldLabel("WindHillSign", null, new Vector3(11.1f, 2.2f, 0f), "바람 언덕", Color.black, 2.8f, 40);
         CreateWorldLabel("StorageSign", null, new Vector3(6.2f, 3.1f, 0f), "창고 구역", Color.black, 3f, 40);
         CreateWorldLabel("WorkbenchSign", null, new Vector3(6.2f, -0.1f, 0f), "작업대", Color.black, 3f, 40);
 
         CreateSpawnPoint("HubEntry", new Vector3(0f, -4.6f, 0f), "HubEntry");
-        CreatePortal("GoToBeach", new Vector3(8.5f, -3f, 0f), sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동");
-        CreatePortal("GoToDeepForest", new Vector3(11.1f, -3f, 0f), sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동");
+        CreatePortal("GoToBeach", new Vector3(8.5f, -3f, 0f), sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로");
+        CreatePortal("GoToDeepForest", new Vector3(11.1f, -3f, 0f), sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲");
         CreatePortal(
             "GoToAbandonedMine",
             new Vector3(8.5f, -0.2f, 0f),
@@ -184,11 +192,12 @@ public static class JongguMinimalPrototypeBuilder
             "AbandonedMine",
             "MineEntry",
             "폐광산으로 이동",
+            "폐광산",
             true,
             ToolType.Lantern,
             0,
             "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.");
-        CreatePortal("GoToWindHill", new Vector3(11.1f, -0.2f, 0f), sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동");
+        CreatePortal("GoToWindHill", new Vector3(11.1f, -0.2f, 0f), sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕");
         CreateFeaturePad("PortalPad", new Vector3(8.5f, -3.7f, 0f), new Vector3(2.6f, 0.6f, 1f), sprites.Floor, new Color(0.98f, 0.83f, 0.51f));
         CreateFeaturePad("ForestPortalPad", new Vector3(11.1f, -3.7f, 0f), new Vector3(2.1f, 0.6f, 1f), sprites.Floor, new Color(0.70f, 0.86f, 0.44f));
         CreateFeaturePad("MinePortalPad", new Vector3(8.5f, -0.9f, 0f), new Vector3(2.0f, 0.6f, 1f), sprites.Floor, new Color(0.74f, 0.74f, 0.78f));
@@ -205,7 +214,7 @@ public static class JongguMinimalPrototypeBuilder
         CreateStorageStation("StorageWithdraw", new Vector3(7.5f, 0.5f, 0f), new Vector3(1.6f, 1.0f, 1f), sprites.Floor, new Color(0.68f, 0.54f, 0.29f), "꺼내기", storageManager, StorageStationAction.WithdrawSelected);
         CreateUpgradeStation(new Vector3(6.2f, -1.9f, 0f), new Vector3(2.2f, 1.4f, 1f), sprites.Floor, new Color(0.54f, 0.72f, 0.78f), upgradeManager);
 
-        CreateUiCanvas();
+        CreateUiCanvas(true);
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Hub.unity");
     }
 
@@ -217,7 +226,7 @@ public static class JongguMinimalPrototypeBuilder
         const float mapHeight = 18f;
 
         CreateGameManager("Hub", "Beach", resources);
-        GameObject player = CreatePlayer(new Vector3(-8.5f, -2.2f, 0f), sprites.Player);
+        GameObject player = CreatePlayer(new Vector3(-8.5f, -2.2f, 0f), sprites);
         CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.67f, 0.86f, 0.96f), 6.8f);
         BoxCollider2D movementBounds = CreateMovementBounds("BeachMovementBounds", mapWidth - 2.2f, mapHeight - 2.2f);
         AttachPlayerBoundsLimiter(player, movementBounds);
@@ -234,10 +243,8 @@ public static class JongguMinimalPrototypeBuilder
         CreateDecorBlock("BoatMark", new Vector3(-11f, -2.1f, 0f), new Vector3(1.8f, 2.8f, 1f), sprites.Floor, new Color(0.87f, 0.38f, 0.21f), 2);
 
         CreateWorldLabel("BeachTitle", null, new Vector3(0f, 7.1f, 0f), "바닷가", Color.black, 4.2f, 40);
-        CreateWorldLabel("BoatLabel", null, new Vector3(-11f, -0.2f, 0f), "식당 복귀", Color.black, 3.2f, 40);
-
         CreateSpawnPoint("BeachEntry", new Vector3(-9.2f, -2.4f, 0f), "BeachEntry");
-        CreatePortal("ReturnToHub", new Vector3(-11f, -3f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동");
+        CreatePortal("ReturnToHub", new Vector3(-11f, -3f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
         CreateGatherable("FishSpot01", new Vector3(-2f, 2.2f, 0f), sprites.Fish, resources.Fish, ToolType.FishingRod, 1, 2, "생선");
         CreateGatherable("FishSpot02", new Vector3(2.8f, 4f, 0f), sprites.Fish, resources.Fish, ToolType.FishingRod, 1, 2, "생선");
@@ -245,7 +252,7 @@ public static class JongguMinimalPrototypeBuilder
         CreateGatherable("ShellSpot02", new Vector3(4.5f, -1.8f, 0f), sprites.Shell, resources.Shell, ToolType.Rake, 1, 1, "조개");
         CreateGatherable("SeaweedSpot01", new Vector3(7f, 3.8f, 0f), sprites.Seaweed, resources.Seaweed, ToolType.Sickle, 1, 2, "해초");
 
-        CreateUiCanvas();
+        CreateUiCanvas(false);
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Beach.unity");
     }
 
@@ -257,7 +264,7 @@ public static class JongguMinimalPrototypeBuilder
         const float mapHeight = 20f;
 
         CreateGameManager("Hub", "Beach", resources);
-        GameObject player = CreatePlayer(new Vector3(-11f, -6f, 0f), sprites.Player);
+        GameObject player = CreatePlayer(new Vector3(-11f, -6f, 0f), sprites);
         CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.63f, 0.74f, 0.56f), 7.2f);
 
         BoxCollider2D movementBounds = CreateMovementBounds("ForestMovementBounds", mapWidth - 2.4f, mapHeight - 2.4f);
@@ -273,10 +280,8 @@ public static class JongguMinimalPrototypeBuilder
         CreateDecorBlock("NarrowPathRock", new Vector3(8.5f, -2.4f, 0f), new Vector3(2.4f, 1.4f, 1f), sprites.Floor, new Color(0.35f, 0.38f, 0.34f), 2);
 
         CreateWorldLabel("ForestTitle", null, new Vector3(0f, 8.2f, 0f), "깊은 숲", Color.black, 4.2f, 40);
-        CreateWorldLabel("ForestBoatLabel", null, new Vector3(-12f, -4.4f, 0f), "식당 복귀", Color.black, 3.0f, 40);
-
         CreateSpawnPoint("ForestEntry", new Vector3(-11.5f, -6.4f, 0f), "ForestEntry");
-        CreatePortal("ReturnFromForest", new Vector3(-12f, -6f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동");
+        CreatePortal("ReturnFromForest", new Vector3(-12f, -6f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
         CreateGuideTriggerZone("ForestGuide", new Vector3(-8.4f, -4.6f, 0f), new Vector2(3.4f, 2.2f), "forest_intro", "숲은 갈림길과 늪지대 때문에 인벤토리보다 귀환 동선을 더 자주 확인해야 합니다.");
         CreateMovementModifierZone("ForestSwampZone", new Vector3(1.8f, 1f, 0f), new Vector2(9f, 4.2f), 0.55f, "늪지에서는 이동이 느려집니다. 좁은 길을 따라 움직이면 더 안전합니다.");
@@ -286,7 +291,7 @@ public static class JongguMinimalPrototypeBuilder
         CreateGatherable("MushroomPatch01", new Vector3(2.6f, 4.1f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
         CreateGatherable("MushroomPatch02", new Vector3(8.5f, 5.2f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
 
-        CreateUiCanvas();
+        CreateUiCanvas(false);
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/DeepForest.unity");
     }
 
@@ -298,7 +303,7 @@ public static class JongguMinimalPrototypeBuilder
         const float mapHeight = 20f;
 
         CreateGameManager("Hub", "Beach", resources);
-        GameObject player = CreatePlayer(new Vector3(-11.5f, -5.8f, 0f), sprites.Player);
+        GameObject player = CreatePlayer(new Vector3(-11.5f, -5.8f, 0f), sprites);
         CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.18f, 0.19f, 0.22f), 7.2f);
 
         BoxCollider2D movementBounds = CreateMovementBounds("MineBounds", mapWidth - 2.4f, mapHeight - 2.4f);
@@ -314,10 +319,8 @@ public static class JongguMinimalPrototypeBuilder
         CreateDecorBlock("MineRockC", new Vector3(10.8f, -2.5f, 0f), new Vector3(3.2f, 1.6f, 1f), sprites.Floor, new Color(0.28f, 0.29f, 0.32f), 2);
 
         CreateWorldLabel("MineTitle", null, new Vector3(0f, 8.1f, 0f), "폐광산", Color.white, 4.2f, 40);
-        CreateWorldLabel("MineReturnLabel", null, new Vector3(-12f, -4.4f, 0f), "식당 복귀", Color.white, 3.0f, 40);
-
         CreateSpawnPoint("MineEntry", new Vector3(-12f, -6.2f, 0f), "MineEntry");
-        CreatePortal("ReturnFromMine", new Vector3(-12f, -5.8f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동");
+        CreatePortal("ReturnFromMine", new Vector3(-12f, -5.8f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
         CreateGuideTriggerZone("MineGuide", new Vector3(-8.8f, -4.6f, 0f), new Vector2(3.4f, 2.2f), "mine_intro", "폐광산은 어둡고 동선이 좁습니다. 안쪽으로 들어가기 전 귀환 길을 먼저 확인하세요.");
         CreateDarknessZone("MineDarkness", new Vector3(4.8f, 0.6f, 0f), new Vector2(18f, 10.8f));
@@ -326,7 +329,7 @@ public static class JongguMinimalPrototypeBuilder
         CreateGatherable("GlowMoss02", new Vector3(8.2f, 1.0f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
         CreateGatherable("GlowMoss03", new Vector3(11.6f, 4.4f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
 
-        CreateUiCanvas();
+        CreateUiCanvas(false);
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/AbandonedMine.unity");
     }
 
@@ -338,7 +341,7 @@ public static class JongguMinimalPrototypeBuilder
         const float mapHeight = 18f;
 
         CreateGameManager("Hub", "Beach", resources);
-        GameObject player = CreatePlayer(new Vector3(-11.5f, -5.2f, 0f), sprites.Player);
+        GameObject player = CreatePlayer(new Vector3(-11.5f, -5.2f, 0f), sprites);
         CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.85f, 0.92f, 0.98f), 6.8f);
 
         BoxCollider2D movementBounds = CreateMovementBounds("WindHillBounds", mapWidth - 2.2f, mapHeight - 2.2f);
@@ -353,18 +356,16 @@ public static class JongguMinimalPrototypeBuilder
         CreateDecorBlock("CliffRockB", new Vector3(4.8f, 4.8f, 0f), new Vector3(2.6f, 1.2f, 1f), sprites.Floor, new Color(0.48f, 0.50f, 0.46f), 2);
 
         CreateWorldLabel("WindHillTitle", null, new Vector3(0f, 7.1f, 0f), "바람 언덕", Color.black, 4.2f, 40);
-        CreateWorldLabel("WindReturnLabel", null, new Vector3(-12f, -3.8f, 0f), "식당 복귀", Color.black, 3.0f, 40);
-        CreateWorldLabel("WindShortcutLabel", null, new Vector3(-6.8f, -1.0f, 0f), "정상 지름길", Color.black, 2.8f, 40);
-
         CreateSpawnPoint("WindHillEntry", new Vector3(-12f, -5.6f, 0f), "WindHillEntry");
         CreateSpawnPoint("WindHillShortcutEntry", new Vector3(7.8f, 4.4f, 0f), "WindHillShortcutEntry");
-        CreatePortal("ReturnFromWindHill", new Vector3(-12f, -5f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동");
+        CreatePortal("ReturnFromWindHill", new Vector3(-12f, -5f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
         CreatePortal(
             "WindHillShortcut",
             new Vector3(-6.8f, -2.8f, 0f),
             sprites.Portal,
             "WindHill",
             "WindHillShortcutEntry",
+            "정상 지름길",
             "정상 지름길",
             true,
             ToolType.None,
@@ -378,7 +379,7 @@ public static class JongguMinimalPrototypeBuilder
         CreateGatherable("WindHerb02", new Vector3(8.6f, 4.6f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
         CreateGatherable("WindHerb03", new Vector3(10.8f, -0.2f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
 
-        CreateUiCanvas();
+        CreateUiCanvas(false);
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/WindHill.unity");
     }
 
@@ -438,29 +439,63 @@ public static class JongguMinimalPrototypeBuilder
         return go;
     }
 
-    private static GameObject CreatePlayer(Vector3 position, Sprite sprite)
-    {
-        GameObject player = new("Player");
-        player.transform.position = position;
-
-        GameObject shadow = CreateDecorBlock("Shadow", Vector3.zero, new Vector3(1f, 0.35f, 1f), sprite, new Color(0f, 0f, 0f, 0.20f), 9, player.transform);
-        shadow.transform.localPosition = new Vector3(0f, -0.42f, 0f);
-
-        SpriteRenderer renderer = player.AddComponent<SpriteRenderer>();
-        renderer.sprite = sprite;
-        renderer.color = new Color(0.22f, 0.47f, 0.94f);
-        renderer.sortingOrder = 12;
-
-        Rigidbody2D body = player.AddComponent<Rigidbody2D>();
-        body.gravityScale = 0f;
-        body.freezeRotation = true;
-        body.interpolation = RigidbodyInterpolation2D.Interpolate;
-        body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-        CapsuleCollider2D collider = player.AddComponent<CapsuleCollider2D>();
-        collider.size = new Vector2(0.9f, 1.05f);
-
-        PlayerController controller = player.AddComponent<PlayerController>();
+    private static GameObject CreatePlayer(Vector3 position, SpriteLibrary sprites)
+    {
+        GameObject player = new("Jonggu");
+        player.transform.position = position;
+
+        Sprite frontSprite = sprites.PlayerFront != null ? sprites.PlayerFront : sprites.PlayerSide;
+        GameObject shadow = CreateDecorBlock("Shadow", Vector3.zero, new Vector3(0.46f, 0.14f, 1f), sprites.Floor, new Color(0f, 0f, 0f, 0.20f), 9, player.transform);
+        shadow.transform.localPosition = new Vector3(0f, -0.28f, 0f);
+
+        // Keep physics on the root object and scale only the visual child to fit the map.
+        GameObject visualRoot = new("PlayerVisual");
+        visualRoot.transform.SetParent(player.transform, false);
+        visualRoot.transform.localPosition = Vector3.zero;
+        visualRoot.transform.localScale = Vector3.one * PlayerVisualScale;
+
+        SpriteRenderer renderer = visualRoot.GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            renderer = visualRoot.AddComponent<SpriteRenderer>();
+        }
+
+        renderer.sprite = frontSprite;
+        renderer.color = Color.white;
+        renderer.sortingOrder = 12;
+
+        Rigidbody2D body = player.GetComponent<Rigidbody2D>();
+        if (body == null)
+        {
+            body = player.AddComponent<Rigidbody2D>();
+        }
+
+        body.gravityScale = 0f;
+        body.freezeRotation = true;
+        body.interpolation = RigidbodyInterpolation2D.Interpolate;
+        body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
+        CapsuleCollider2D collider = player.GetComponent<CapsuleCollider2D>();
+        if (collider == null)
+        {
+            collider = player.AddComponent<CapsuleCollider2D>();
+        }
+
+        collider.size = new Vector2(0.9f, 1.05f);
+
+        PlayerController controller = player.GetComponent<PlayerController>();
+        if (controller == null)
+        {
+            controller = player.AddComponent<PlayerController>();
+        }
+
+        PlayerDirectionalSprite directionalSprite = player.GetComponent<PlayerDirectionalSprite>();
+        if (directionalSprite == null)
+        {
+            directionalSprite = player.AddComponent<PlayerDirectionalSprite>();
+        }
+
+        directionalSprite.Configure(renderer, sprites.PlayerFront, sprites.PlayerBack, sprites.PlayerSide);
 
         GameObject interactionRange = new("InteractionRange");
         interactionRange.transform.SetParent(player.transform, false);
@@ -473,9 +508,9 @@ public static class JongguMinimalPrototypeBuilder
         controllerSo.FindProperty("interactionDetector").objectReferenceValue = detector;
         controllerSo.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel("PlayerLabel", player.transform, new Vector3(0f, 1.15f, 0f), "종구", new Color(0.05f, 0.08f, 0.16f), 3f, 50);
-        return player;
-    }
+        CreateWorldLabel("PlayerLabel", player.transform, new Vector3(0f, 0.46f, 0f), "Jonggu", new Color(0.05f, 0.08f, 0.16f), 3f, 50);
+        return player;
+    }
 
     private static void CreateCamera(Transform target, float mapWidth, float mapHeight, Color backgroundColor, float orthographicSize)
     {
@@ -526,6 +561,7 @@ public static class JongguMinimalPrototypeBuilder
         string targetSceneName,
         string targetSpawnPointId,
         string promptLabel,
+        string worldLabel = null,
         bool requireMorningExplore = true,
         ToolType requiredToolType = ToolType.None,
         int requiredReputation = 0,
@@ -547,7 +583,8 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("lockedGuideText").stringValue = lockedGuideText;
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel(name + "_Label", portal.transform, new Vector3(0f, 1.5f, 0f), promptLabel, Color.black, 2.6f, 50);
+        string displayLabel = string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel;
+        CreateWorldLabel(name + "_Label", portal.transform, new Vector3(0f, 0.90f, 0f), displayLabel, Color.black, 2.6f, 50);
         return portal;
     }
 
@@ -584,7 +621,7 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("promptLabel").stringValue = "메뉴 변경";
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 1.35f, 0f), "메뉴판", Color.black, 2.6f, 50);
+        CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 0.86f, 0f), "메뉴판", Color.black, 2.6f, 50);
     }
 
     private static void CreateServiceCounter(Vector3 position, Sprite sprite, RestaurantManager restaurantManager)
@@ -600,7 +637,7 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("promptLabel").stringValue = "영업 시작";
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 1.35f, 0f), "영업대", Color.black, 2.6f, 50);
+        CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.86f, 0f), "영업대", Color.black, 2.6f, 50);
     }
 
     private static void CreateStorageStation(string name, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action)
@@ -626,7 +663,7 @@ public static class JongguMinimalPrototypeBuilder
         };
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel(name + "_Label", go.transform, new Vector3(0f, 1.2f, 0f), label, Color.black, 2.6f, 50);
+        CreateWorldLabel(name + "_Label", go.transform, new Vector3(0f, 0.78f, 0f), label, Color.black, 2.6f, 50);
     }
 
     private static void CreateUpgradeStation(Vector3 position, Vector3 size, Sprite sprite, Color color, UpgradeManager upgradeManager)
@@ -642,7 +679,7 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("promptLabel").stringValue = "작업대 사용";
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 1.25f, 0f), "작업대", Color.black, 2.6f, 50);
+        CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 0.82f, 0f), "작업대", Color.black, 2.6f, 50);
     }
 
     private static void CreateGatherable(string name, Vector3 position, Sprite sprite, ResourceData resource, ToolType requiredToolType, int minAmount, int maxAmount, string label)
@@ -668,7 +705,7 @@ public static class JongguMinimalPrototypeBuilder
             .SetValue(gatherable, resource);
         EditorUtility.SetDirty(gatherable);
 
-        CreateWorldLabel(name + "_Label", go.transform, new Vector3(0f, 1.0f, 0f), label, Color.black, 2.4f, 45);
+        CreateWorldLabel(name + "_Label", go.transform, new Vector3(0f, 0.64f, 0f), label, Color.black, 2.4f, 45);
     }
 
     private static void CreateGuideTriggerZone(string name, Vector3 position, Vector2 size, string hintId, string guideText)
@@ -755,140 +792,332 @@ public static class JongguMinimalPrototypeBuilder
     }
 
     /*
-     * 새로 생성하는 씬에도 카드형 HUD 기본 배치와 텍스트 스타일을 바로 심어 둡니다.
+     * 새로 생성하는 씬에는 현재 HUD 구조만 심습니다.
+     * 더 이상 쓰지 않는 레거시 카드와 텍스트는 여기서 만들지 않습니다.
      */
-    private static void CreateUiCanvas()
-    {
-        GameObject canvasObject = new("Canvas");
-        Canvas canvas = canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+    private static void CreateUiCanvas(bool isHubScene)
+    {
+        GameObject canvasObject = new("Canvas");
+        Canvas canvas = canvasObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
         CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         scaler.matchWidthOrHeight = 0.5f;
-        canvasObject.AddComponent<GraphicRaycaster>();
-
-        CreatePanel("TopLeftPanel", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(336f, 98f), new Color(0.97f, 0.94f, 0.89f, 0.86f));
-        CreatePanel("BottomLeftPanel", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 18f), new Vector2(372f, 364f), new Color(0.96f, 0.98f, 0.98f, 0.08f));
-        CreatePanel("CenterBottomPanel", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(620f, 58f), new Color(0.07f, 0.11f, 0.17f, 0.78f));
-        CreatePanel("TopRightPanel", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 364f), new Color(0.97f, 0.98f, 0.99f, 0.08f));
-        CreatePanel("TopCenterPanel", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(782f, 92f), new Color(0.97f, 0.98f, 0.99f, 0.80f));
-        CreatePanel("InventoryCard", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 206f), new Vector2(372f, 176f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
-        CreatePanel("StorageCard", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 18f), new Vector2(372f, 176f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
-        CreatePanel("RecipeCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 170f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
-        CreatePanel("ResultCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -192f), new Vector2(494f, 128f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
-        CreatePanel("UpgradeCard", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -324f), new Vector2(494f, 118f), new Color(0.98f, 0.98f, 0.99f, 0.84f));
-        CreatePanel("ActionDock", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 18f), new Vector2(186f, 154f), new Color(0.10f, 0.15f, 0.22f, 0.90f));
-        CreatePanel("TopLeftAccent", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(336f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        CreatePanel("TopCenterAccent", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -14f), new Vector2(782f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        CreatePanel("InventoryAccent", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 374f), new Vector2(372f, 8f), new Color(0.18f, 0.50f, 0.58f, 0.95f));
-        CreatePanel("StorageAccent", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(18f, 186f), new Vector2(372f, 8f), new Color(0.33f, 0.49f, 0.27f, 0.95f));
-        CreatePanel("RecipeAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(494f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        CreatePanel("ResultAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -192f), new Vector2(494f, 8f), new Color(0.69f, 0.37f, 0.28f, 0.95f));
-        CreatePanel("UpgradeAccent", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -324f), new Vector2(494f, 8f), new Color(0.68f, 0.57f, 0.17f, 0.95f));
-        CreatePanel("ActionAccent", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 164f), new Vector2(186f, 8f), new Color(0.77f, 0.49f, 0.16f, 0.95f));
-
+        canvasObject.AddComponent<GraphicRaycaster>();
+
+        EnsureUiEventSystem();
+
+        Color chromeDark = new(0.10f, 0.10f, 0.10f, 0.88f);
+        Color chromeSurface = new(0.12f, 0.12f, 0.12f, 0.92f);
+        Color chromeGlass = new(0.16f, 0.16f, 0.16f, 0.84f);
+        Color chromeOverlay = new(0f, 0f, 0f, 0.52f);
+        Color chromeAccent = new(0.72f, 0.72f, 0.72f, 0.96f);
+        Color chromeAccentSoft = new(0.62f, 0.62f, 0.62f, 0.96f);
+        Color chromeAccentStrong = new(0.80f, 0.80f, 0.80f, 0.96f);
+        Color chromeText = new(0.94f, 0.94f, 0.94f, 1f);
+        Color chromeDock = new(0.08f, 0.08f, 0.08f, 0.94f);
+
+        CreatePanel("TopLeftPanel", canvasObject.transform, PrototypeUiLayout.TopLeftPanel, chromeDark);
+        CreatePanel("TopLeftAccent", canvasObject.transform, PrototypeUiLayout.TopLeftAccent, chromeAccent);
+        CreatePanel("PhaseBadge", canvasObject.transform, PrototypeUiLayout.PhaseBadge, chromeGlass);
+        CreatePanel("PromptBackdrop", canvasObject.transform, PrototypeUiLayout.PromptBackdrop(isHubScene), new Color(0.08f, 0.08f, 0.08f, 0.82f));
+        CreatePanel("GuideBackdrop", canvasObject.transform, PrototypeUiLayout.GuideBackdrop(isHubScene), new Color(0.10f, 0.10f, 0.10f, 0.78f));
+        CreatePanel("ResultBackdrop", canvasObject.transform, PrototypeUiLayout.ResultBackdrop(isHubScene), new Color(0.14f, 0.14f, 0.14f, 0.80f));
+        CreatePanel("InventoryCard", canvasObject.transform, PrototypeUiLayout.InventoryCard(isHubScene), chromeSurface);
+        CreatePanel("InventoryAccent", canvasObject.transform, PrototypeUiLayout.InventoryAccent(isHubScene), chromeAccent);
+
+        if (isHubScene)
+        {
+            CreatePanel("CenterBottomPanel", canvasObject.transform, PrototypeUiLayout.HubCenterBottomPanel, chromeDark);
+            CreatePanel("PopupOverlay", canvasObject.transform, PrototypeUiLayout.HubPopupOverlay, chromeOverlay);
+            CreatePanel("StorageCard", canvasObject.transform, PrototypeUiLayout.HubStorageCard, chromeSurface);
+            CreatePanel("RecipeCard", canvasObject.transform, PrototypeUiLayout.HubRecipeCard, chromeSurface);
+            CreatePanel("UpgradeCard", canvasObject.transform, PrototypeUiLayout.HubUpgradeCard, chromeSurface);
+            CreatePanel("ActionDock", canvasObject.transform, PrototypeUiLayout.HubActionDock, chromeDock);
+            CreatePanel("StorageAccent", canvasObject.transform, PrototypeUiLayout.HubStorageAccent, chromeAccentSoft);
+            CreatePanel("RecipeAccent", canvasObject.transform, PrototypeUiLayout.HubRecipeAccent, chromeAccent);
+            CreatePanel("UpgradeAccent", canvasObject.transform, PrototypeUiLayout.HubUpgradeAccent, chromeAccentStrong);
+            CreatePanel("ActionAccent", canvasObject.transform, PrototypeUiLayout.HubActionAccent, chromeAccent);
+        }
+
         UIManager uiManager = canvasObject.AddComponent<UIManager>();
 
-        TextMeshProUGUI statusCaption = CreateScreenText("StatusCaption", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -22f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        TextMeshProUGUI flowCaption = CreateScreenText("FlowCaption", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -22f), new Vector2(180f, 22f), 15, TextAlignmentOptions.Top, new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        TextMeshProUGUI inventoryCaption = CreateScreenText("InventoryCaption", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 350f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.18f, 0.50f, 0.58f, 0.95f));
-        TextMeshProUGUI storageCaption = CreateScreenText("StorageCaption", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 162f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopLeft, new Color(0.33f, 0.49f, 0.27f, 0.95f));
-        TextMeshProUGUI recipeCaption = CreateScreenText("RecipeCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -22f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.77f, 0.49f, 0.16f, 0.95f));
-        TextMeshProUGUI resultCaption = CreateScreenText("ResultCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -196f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.69f, 0.37f, 0.28f, 0.95f));
-        TextMeshProUGUI upgradeCaption = CreateScreenText("UpgradeCaption", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -328f), new Vector2(160f, 22f), 15, TextAlignmentOptions.TopRight, new Color(0.68f, 0.57f, 0.17f, 0.95f));
-        TextMeshProUGUI actionCaption = CreateScreenText("ActionCaption", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 150f), new Vector2(120f, 22f), 15, TextAlignmentOptions.TopRight, new Color(1f, 0.93f, 0.78f, 1f));
-
-        TextMeshProUGUI sceneNameText = CreateScreenText("SceneNameText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -42f), new Vector2(286f, 34f), 30, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI goldText = CreateScreenText("GoldText", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -72f), new Vector2(312f, 30f), 22, TextAlignmentOptions.TopLeft, new Color(0.22f, 0.24f, 0.29f));
-        TextMeshProUGUI inventoryText = CreateScreenText("InventoryText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 212f), new Vector2(342f, 132f), 21, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI storageText = CreateScreenText("StorageText", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 24f), new Vector2(342f, 132f), 20, TextAlignmentOptions.TopLeft, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 22f), new Vector2(580f, 44f), 24, TextAlignmentOptions.Center, Color.white);
-        TextMeshProUGUI selectedRecipeText = CreateScreenText("SelectedRecipeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -40f), new Vector2(452f, 114f), 21, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI resultText = CreateScreenText("RestaurantResultText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -212f), new Vector2(452f, 74f), 19, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI upgradeText = CreateScreenText("UpgradeText", canvasObject.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -344f), new Vector2(452f, 64f), 18, TextAlignmentOptions.TopRight, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI dayPhaseText = CreateScreenText("DayPhaseText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -32f), new Vector2(540f, 30f), 24, TextAlignmentOptions.Top, new Color(0.11f, 0.13f, 0.18f, 1f));
-        TextMeshProUGUI guideText = CreateScreenText("GuideText", canvasObject.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -58f), new Vector2(736f, 42f), 18, TextAlignmentOptions.Top, new Color(0.23f, 0.26f, 0.31f));
-        Button skipExplorationButton = CreateUiButton("SkipExplorationButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 102f), new Vector2(154f, 38f), "탐험 스킵");
-        Button skipServiceButton = CreateUiButton("SkipServiceButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 58f), new Vector2(154f, 38f), "장사 스킵");
-        Button nextDayButton = CreateUiButton("NextDayButton", canvasObject.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 14f), new Vector2(154f, 38f), "다음 날");
-        statusCaption.text = "상태";
-        flowCaption.text = "오늘의 흐름";
-        inventoryCaption.text = "가방";
-        storageCaption.text = "창고";
-        recipeCaption.text = "오늘의 메뉴";
-        resultCaption.text = "영업 결과";
-        upgradeCaption.text = "업그레이드";
-        actionCaption.text = "빠른 행동";
+        TextMeshProUGUI inventoryCaption = CreateScreenText("InventoryCaption", canvasObject.transform, PrototypeUiLayout.InventoryCaption(isHubScene), 16, TextAlignmentOptions.TopLeft, chromeAccent);
+        TextMeshProUGUI storageCaption = null;
+        TextMeshProUGUI recipeCaption = null;
+        TextMeshProUGUI upgradeCaption = null;
+        TextMeshProUGUI actionCaption = null;
 
-        statusCaption.fontStyle = FontStyles.Bold;
-        flowCaption.fontStyle = FontStyles.Bold;
+        if (isHubScene)
+        {
+            storageCaption = CreateScreenText("StorageCaption", canvasObject.transform, PrototypeUiLayout.HubStorageCaption, 16, TextAlignmentOptions.TopLeft, chromeAccentSoft);
+            recipeCaption = CreateScreenText("RecipeCaption", canvasObject.transform, PrototypeUiLayout.HubRecipeCaption, 16, TextAlignmentOptions.TopLeft, chromeAccent);
+            upgradeCaption = CreateScreenText("UpgradeCaption", canvasObject.transform, PrototypeUiLayout.HubUpgradeCaption, 16, TextAlignmentOptions.TopLeft, chromeAccentStrong);
+            actionCaption = CreateScreenText("ActionCaption", canvasObject.transform, PrototypeUiLayout.HubActionCaption, 15, TextAlignmentOptions.TopRight, new Color(0.88f, 0.88f, 0.88f, 1f));
+        }
+
+        TextMeshProUGUI goldText = CreateScreenText("GoldText", canvasObject.transform, PrototypeUiLayout.GoldText, 20, TextAlignmentOptions.TopLeft, chromeText);
+        TextMeshProUGUI inventoryText = CreateScreenText("InventoryText", canvasObject.transform, PrototypeUiLayout.InventoryText(isHubScene), 19, TextAlignmentOptions.TopLeft, chromeText);
+        TextMeshProUGUI storageText = isHubScene
+            ? CreateScreenText("StorageText", canvasObject.transform, PrototypeUiLayout.HubStorageText, 18, TextAlignmentOptions.TopLeft, chromeText)
+            : null;
+        TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", canvasObject.transform, PrototypeUiLayout.PromptText(isHubScene), 21, TextAlignmentOptions.Center, chromeText);
+        TextMeshProUGUI guideText = CreateScreenText("GuideText", canvasObject.transform, PrototypeUiLayout.GuideText(isHubScene), 18, TextAlignmentOptions.Center, chromeText);
+        TextMeshProUGUI resultText = CreateScreenText("RestaurantResultText", canvasObject.transform, PrototypeUiLayout.ResultText(isHubScene), 18, TextAlignmentOptions.Center, chromeText);
+        TextMeshProUGUI selectedRecipeText = isHubScene
+            ? CreateScreenText("SelectedRecipeText", canvasObject.transform, PrototypeUiLayout.HubRecipeText, 18, TextAlignmentOptions.TopLeft, chromeText)
+            : null;
+        TextMeshProUGUI upgradeText = isHubScene
+            ? CreateScreenText("UpgradeText", canvasObject.transform, PrototypeUiLayout.HubUpgradeText, 18, TextAlignmentOptions.TopLeft, chromeText)
+            : null;
+        TextMeshProUGUI dayPhaseText = CreateScreenText("DayPhaseText", canvasObject.transform, PrototypeUiLayout.DayPhaseText, 20, TextAlignmentOptions.Center, chromeText);
+
+        Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", canvasObject.transform, PrototypeUiLayout.HubSkipExplorationButton, "탐험 스킵") : null;
+        Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", canvasObject.transform, PrototypeUiLayout.HubSkipServiceButton, "영업 스킵") : null;
+        Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", canvasObject.transform, PrototypeUiLayout.HubNextDayButton, "다음 날") : null;
+        Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", canvasObject.transform, PrototypeUiLayout.HubRecipePanelButton, "요리 메뉴") : null;
+        Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", canvasObject.transform, PrototypeUiLayout.HubUpgradePanelButton, "업그레이드") : null;
+        Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", canvasObject.transform, PrototypeUiLayout.HubMaterialPanelButton, "재료") : null;
+
+        inventoryCaption.text = isHubScene ? "재료" : "재료 / 가방";
+        if (storageCaption != null) storageCaption.text = "창고";
+        if (recipeCaption != null) recipeCaption.text = "요리 메뉴";
+        if (upgradeCaption != null) upgradeCaption.text = "업그레이드";
+        if (actionCaption != null) actionCaption.text = "진행";
+
         inventoryCaption.fontStyle = FontStyles.Bold;
-        storageCaption.fontStyle = FontStyles.Bold;
-        recipeCaption.fontStyle = FontStyles.Bold;
-        resultCaption.fontStyle = FontStyles.Bold;
-        upgradeCaption.fontStyle = FontStyles.Bold;
-        actionCaption.fontStyle = FontStyles.Bold;
-        statusCaption.characterSpacing = 2f;
-        flowCaption.characterSpacing = 2f;
-        inventoryCaption.characterSpacing = 2f;
-        storageCaption.characterSpacing = 2f;
-        recipeCaption.characterSpacing = 2f;
-        resultCaption.characterSpacing = 2f;
-        upgradeCaption.characterSpacing = 2f;
-        actionCaption.characterSpacing = 2f;
-        statusCaption.margin = Vector4.zero;
-        flowCaption.margin = Vector4.zero;
+        if (storageCaption != null) storageCaption.fontStyle = FontStyles.Bold;
+        if (recipeCaption != null) recipeCaption.fontStyle = FontStyles.Bold;
+        if (upgradeCaption != null) upgradeCaption.fontStyle = FontStyles.Bold;
+        if (actionCaption != null) actionCaption.fontStyle = FontStyles.Bold;
+        inventoryCaption.characterSpacing = 0.5f;
+        if (storageCaption != null) storageCaption.characterSpacing = 0.5f;
+        if (recipeCaption != null) recipeCaption.characterSpacing = 0.5f;
+        if (upgradeCaption != null) upgradeCaption.characterSpacing = 0.5f;
+        if (actionCaption != null) actionCaption.characterSpacing = 0.5f;
         inventoryCaption.margin = Vector4.zero;
-        storageCaption.margin = Vector4.zero;
-        recipeCaption.margin = Vector4.zero;
-        resultCaption.margin = Vector4.zero;
-        upgradeCaption.margin = Vector4.zero;
-        actionCaption.margin = Vector4.zero;
+        if (storageCaption != null) storageCaption.margin = Vector4.zero;
+        if (recipeCaption != null) recipeCaption.margin = Vector4.zero;
+        if (upgradeCaption != null) upgradeCaption.margin = Vector4.zero;
+        if (actionCaption != null) actionCaption.margin = Vector4.zero;
 
-        sceneNameText.fontStyle = FontStyles.Bold;
         dayPhaseText.fontStyle = FontStyles.Bold;
         inventoryText.textWrappingMode = TextWrappingModes.Normal;
-        storageText.textWrappingMode = TextWrappingModes.Normal;
-        selectedRecipeText.textWrappingMode = TextWrappingModes.Normal;
-        resultText.textWrappingMode = TextWrappingModes.Normal;
-        upgradeText.textWrappingMode = TextWrappingModes.Normal;
-        guideText.textWrappingMode = TextWrappingModes.Normal;
+        if (storageText != null) storageText.textWrappingMode = TextWrappingModes.Normal;
+        if (selectedRecipeText != null) selectedRecipeText.textWrappingMode = TextWrappingModes.Normal;
+        if (upgradeText != null) upgradeText.textWrappingMode = TextWrappingModes.Normal;
 
-        skipExplorationButton.GetComponent<Image>().color = new Color(0.18f, 0.50f, 0.58f, 0.95f);
-        skipServiceButton.GetComponent<Image>().color = new Color(0.69f, 0.37f, 0.28f, 0.95f);
-        nextDayButton.GetComponent<Image>().color = new Color(0.68f, 0.57f, 0.17f, 0.95f);
-
-        sceneNameText.text = "종구의 식당";
-        goldText.text = "골드: 0   평판: 0";
+        if (skipExplorationButton != null) skipExplorationButton.GetComponent<Image>().color = new Color(0.46f, 0.46f, 0.46f, 0.95f);
+        if (skipServiceButton != null) skipServiceButton.GetComponent<Image>().color = new Color(0.52f, 0.52f, 0.52f, 0.95f);
+        if (nextDayButton != null) nextDayButton.GetComponent<Image>().color = new Color(0.60f, 0.60f, 0.60f, 0.95f);
+        if (recipePanelButton != null) recipePanelButton.GetComponent<Image>().color = new Color(0.50f, 0.50f, 0.50f, 0.95f);
+        if (upgradePanelButton != null) upgradePanelButton.GetComponent<Image>().color = new Color(0.58f, 0.58f, 0.58f, 0.95f);
+        if (materialPanelButton != null) materialPanelButton.GetComponent<Image>().color = new Color(0.46f, 0.46f, 0.46f, 0.95f);
+
+        goldText.text = "코인: 0   평판: 0";
         inventoryText.text = "인벤토리 0/8칸\n- 비어 있음";
-        storageText.text = "창고\n- 비어 있음";
+        if (storageText != null) storageText.text = "- 비어 있음";
         promptText.text = "이동: WASD / 방향키   상호작용: E";
-        selectedRecipeText.text = "선택 메뉴\n- 아직 고르지 않았습니다.";
-        resultText.text = "영업 결과\n- 아직 영업 전입니다.";
-        upgradeText.text = "업그레이드\n- 인벤토리 8칸 -> 12칸";
+        guideText.text = string.Empty;
+        resultText.text = string.Empty;
+        if (selectedRecipeText != null) selectedRecipeText.text = "선택 메뉴: 없음";
+        if (upgradeText != null) upgradeText.text = "- 인벤토리 8칸 -> 12칸";
         dayPhaseText.text = "1일차 · 오전 탐험";
-        guideText.text = "오전 탐험 준비 시간입니다. 오늘 갈 지역을 정하고 출발하세요.";
-
-        SerializedObject so = new(uiManager);
+
+        if (isHubScene)
+        {
+            SetChildActive(canvasObject.transform, "CenterBottomPanel", false);
+            SetChildActive(canvasObject.transform, "PopupOverlay", false);
+            SetChildActive(canvasObject.transform, "StorageCard", false);
+            SetChildActive(canvasObject.transform, "RecipeCard", false);
+            SetChildActive(canvasObject.transform, "UpgradeCard", false);
+            SetChildActive(canvasObject.transform, "ActionDock", false);
+            SetChildActive(canvasObject.transform, "StorageAccent", false);
+            SetChildActive(canvasObject.transform, "RecipeAccent", false);
+            SetChildActive(canvasObject.transform, "UpgradeAccent", false);
+            SetChildActive(canvasObject.transform, "ActionAccent", false);
+        }
+
+        SetChildActive(canvasObject.transform, "PromptBackdrop", false);
+        SetChildActive(canvasObject.transform, "GuideBackdrop", false);
+        SetChildActive(canvasObject.transform, "ResultBackdrop", false);
+        SetChildActive(canvasObject.transform, "InventoryCard", false);
+        SetChildActive(canvasObject.transform, "InventoryAccent", false);
+        inventoryCaption.gameObject.SetActive(false);
+        if (storageCaption != null) storageCaption.gameObject.SetActive(false);
+        if (recipeCaption != null) recipeCaption.gameObject.SetActive(false);
+        if (upgradeCaption != null) upgradeCaption.gameObject.SetActive(false);
+        if (actionCaption != null) actionCaption.gameObject.SetActive(false);
+        inventoryText.gameObject.SetActive(false);
+        if (storageText != null) storageText.gameObject.SetActive(false);
+        guideText.gameObject.SetActive(false);
+        resultText.gameObject.SetActive(false);
+        if (selectedRecipeText != null) selectedRecipeText.gameObject.SetActive(false);
+        if (upgradeText != null) upgradeText.gameObject.SetActive(false);
+        if (skipExplorationButton != null) skipExplorationButton.gameObject.SetActive(false);
+        if (skipServiceButton != null) skipServiceButton.gameObject.SetActive(false);
+        if (nextDayButton != null) nextDayButton.gameObject.SetActive(false);
+        if (recipePanelButton != null) recipePanelButton.gameObject.SetActive(false);
+        if (upgradePanelButton != null) upgradePanelButton.gameObject.SetActive(false);
+        if (materialPanelButton != null) materialPanelButton.gameObject.SetActive(false);
+
+        SerializedObject so = new(uiManager);
         so.FindProperty("interactionPromptText").objectReferenceValue = promptText;
         so.FindProperty("inventoryText").objectReferenceValue = inventoryText;
         so.FindProperty("storageText").objectReferenceValue = storageText;
         so.FindProperty("upgradeText").objectReferenceValue = upgradeText;
-        so.FindProperty("sceneNameText").objectReferenceValue = sceneNameText;
         so.FindProperty("goldText").objectReferenceValue = goldText;
         so.FindProperty("selectedRecipeText").objectReferenceValue = selectedRecipeText;
-        so.FindProperty("restaurantResultText").objectReferenceValue = resultText;
-        so.FindProperty("dayPhaseText").objectReferenceValue = dayPhaseText;
-        so.FindProperty("guideText").objectReferenceValue = guideText;
-        so.FindProperty("skipExplorationButton").objectReferenceValue = skipExplorationButton;
-        so.FindProperty("skipServiceButton").objectReferenceValue = skipServiceButton;
-        so.FindProperty("nextDayButton").objectReferenceValue = nextDayButton;
-        so.FindProperty("defaultPromptText").stringValue = "이동: WASD / 방향키   상호작용: E";
-        so.ApplyModifiedPropertiesWithoutUndo();
-    }
-
+        so.FindProperty("dayPhaseText").objectReferenceValue = dayPhaseText;
+        so.FindProperty("guideText").objectReferenceValue = guideText;
+        so.FindProperty("resultText").objectReferenceValue = resultText;
+        so.FindProperty("bodyFontAsset").objectReferenceValue = generatedKoreanFont;
+        so.FindProperty("headingFontAsset").objectReferenceValue = generatedHeadingFont;
+        so.FindProperty("skipExplorationButton").objectReferenceValue = skipExplorationButton;
+        so.FindProperty("skipServiceButton").objectReferenceValue = skipServiceButton;
+        so.FindProperty("nextDayButton").objectReferenceValue = nextDayButton;
+        so.FindProperty("recipePanelButton").objectReferenceValue = recipePanelButton;
+        so.FindProperty("upgradePanelButton").objectReferenceValue = upgradePanelButton;
+        so.FindProperty("materialPanelButton").objectReferenceValue = materialPanelButton;
+        so.FindProperty("defaultPromptText").stringValue = "이동: WASD / 방향키   상호작용: E";
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void EnsureUiEventSystem()
+    {
+        if (UnityEngine.Object.FindFirstObjectByType<EventSystem>() != null)
+        {
+            return;
+        }
+
+        GameObject eventSystemObject = new("EventSystem");
+        eventSystemObject.AddComponent<EventSystem>();
+#if ENABLE_INPUT_SYSTEM
+        InputSystemUIInputModule inputModule = eventSystemObject.AddComponent<InputSystemUIInputModule>();
+        ConfigureInputSystemUiModule(inputModule);
+#else
+        eventSystemObject.AddComponent<StandaloneInputModule>();
+#endif
+    }
+
+#if ENABLE_INPUT_SYSTEM
+    /*
+     * Input System 기본 액션 생성 경로가 에디터에서 예외를 내는 환경이 있어
+     * 프로젝트 내부 UI 액션 에셋을 직접 만들고 모듈에 연결합니다.
+     */
+    private static void ConfigureInputSystemUiModule(InputSystemUIInputModule inputModule)
+    {
+        InputActionAsset asset = EnsureUiInputActionsAsset();
+
+        inputModule.actionsAsset = asset;
+        inputModule.point = InputActionReference.Create(asset.FindAction("UI/Point", true));
+        inputModule.leftClick = InputActionReference.Create(asset.FindAction("UI/LeftClick", true));
+        inputModule.rightClick = InputActionReference.Create(asset.FindAction("UI/RightClick", true));
+        inputModule.middleClick = InputActionReference.Create(asset.FindAction("UI/MiddleClick", true));
+        inputModule.scrollWheel = InputActionReference.Create(asset.FindAction("UI/ScrollWheel", true));
+        inputModule.move = InputActionReference.Create(asset.FindAction("UI/Move", true));
+        inputModule.submit = InputActionReference.Create(asset.FindAction("UI/Submit", true));
+        inputModule.cancel = InputActionReference.Create(asset.FindAction("UI/Cancel", true));
+        inputModule.trackedDevicePosition = InputActionReference.Create(asset.FindAction("UI/TrackedDevicePosition", true));
+        inputModule.trackedDeviceOrientation = InputActionReference.Create(asset.FindAction("UI/TrackedDeviceOrientation", true));
+    }
+
+    private static InputActionAsset EnsureUiInputActionsAsset()
+    {
+        string assetPath = DataRoot + "/GeneratedUiInputActions.asset";
+        InputActionAsset existingAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(assetPath);
+        if (existingAsset != null && HasRequiredUiActions(existingAsset))
+        {
+            return existingAsset;
+        }
+
+        if (existingAsset != null)
+        {
+            AssetDatabase.DeleteAsset(assetPath);
+        }
+
+        InputActionAsset asset = ScriptableObject.CreateInstance<InputActionAsset>();
+        asset.name = "GeneratedUiInputActions";
+        InputActionMap uiMap = new("UI");
+        asset.AddActionMap(uiMap);
+
+        InputAction pointAction = uiMap.AddAction("Point", InputActionType.PassThrough);
+        pointAction.expectedControlType = "Vector2";
+        pointAction.AddBinding("<Mouse>/position");
+        pointAction.AddBinding("<Pen>/position");
+        pointAction.AddBinding("<Touchscreen>/primaryTouch/position");
+
+        InputAction leftClickAction = uiMap.AddAction("LeftClick", InputActionType.PassThrough);
+        leftClickAction.expectedControlType = "Button";
+        leftClickAction.AddBinding("<Mouse>/leftButton");
+        leftClickAction.AddBinding("<Pen>/tip");
+        leftClickAction.AddBinding("<Touchscreen>/primaryTouch/press");
+
+        InputAction rightClickAction = uiMap.AddAction("RightClick", InputActionType.PassThrough);
+        rightClickAction.expectedControlType = "Button";
+        rightClickAction.AddBinding("<Mouse>/rightButton");
+
+        InputAction middleClickAction = uiMap.AddAction("MiddleClick", InputActionType.PassThrough);
+        middleClickAction.expectedControlType = "Button";
+        middleClickAction.AddBinding("<Mouse>/middleButton");
+
+        InputAction scrollWheelAction = uiMap.AddAction("ScrollWheel", InputActionType.PassThrough);
+        scrollWheelAction.expectedControlType = "Vector2";
+        scrollWheelAction.AddBinding("<Mouse>/scroll");
+
+        InputAction moveAction = uiMap.AddAction("Move", InputActionType.PassThrough);
+        moveAction.expectedControlType = "Vector2";
+        moveAction.AddCompositeBinding("2DVector")
+            .With("Up", "<Keyboard>/upArrow")
+            .With("Down", "<Keyboard>/downArrow")
+            .With("Left", "<Keyboard>/leftArrow")
+            .With("Right", "<Keyboard>/rightArrow");
+        moveAction.AddBinding("<Gamepad>/leftStick");
+        moveAction.AddBinding("<Gamepad>/dpad");
+
+        InputAction submitAction = uiMap.AddAction("Submit", InputActionType.Button);
+        submitAction.expectedControlType = "Button";
+        submitAction.AddBinding("<Keyboard>/enter");
+        submitAction.AddBinding("<Keyboard>/numpadEnter");
+        submitAction.AddBinding("<Keyboard>/space");
+        submitAction.AddBinding("<Gamepad>/buttonSouth");
+
+        InputAction cancelAction = uiMap.AddAction("Cancel", InputActionType.Button);
+        cancelAction.expectedControlType = "Button";
+        cancelAction.AddBinding("<Keyboard>/escape");
+        cancelAction.AddBinding("<Gamepad>/buttonEast");
+
+        InputAction trackedPositionAction = uiMap.AddAction("TrackedDevicePosition", InputActionType.PassThrough);
+        trackedPositionAction.expectedControlType = "Vector3";
+        trackedPositionAction.AddBinding("<XRController>/devicePosition");
+
+        InputAction trackedOrientationAction = uiMap.AddAction("TrackedDeviceOrientation", InputActionType.PassThrough);
+        trackedOrientationAction.expectedControlType = "Quaternion";
+        trackedOrientationAction.AddBinding("<XRController>/deviceRotation");
+
+        AssetDatabase.CreateAsset(asset, assetPath);
+        AssetDatabase.SaveAssets();
+        return asset;
+    }
+
+    private static bool HasRequiredUiActions(InputActionAsset asset)
+    {
+        return asset.FindAction("UI/Point") != null
+            && asset.FindAction("UI/LeftClick") != null
+            && asset.FindAction("UI/RightClick") != null
+            && asset.FindAction("UI/MiddleClick") != null
+            && asset.FindAction("UI/ScrollWheel") != null
+            && asset.FindAction("UI/Move") != null
+            && asset.FindAction("UI/Submit") != null
+            && asset.FindAction("UI/Cancel") != null
+            && asset.FindAction("UI/TrackedDevicePosition") != null
+            && asset.FindAction("UI/TrackedDeviceOrientation") != null;
+    }
+#endif
+
     /*
      * 화면 고정 UI 텍스트를 만들고 generated 한글 폰트와 기본 여백을 같이 적용합니다.
      */
@@ -938,6 +1167,30 @@ public static class JongguMinimalPrototypeBuilder
     }
 
     /*
+     * 공용 레이아웃 프리셋을 바로 넘겨 HUD 텍스트 생성 중복을 줄입니다.
+     */
+    private static TextMeshProUGUI CreateScreenText(
+        string name,
+        Transform parent,
+        PrototypeUiRect layout,
+        float fontSize,
+        TextAlignmentOptions alignment,
+        Color color)
+    {
+        return CreateScreenText(
+            name,
+            parent,
+            layout.AnchorMin,
+            layout.AnchorMax,
+            layout.Pivot,
+            layout.AnchoredPosition,
+            layout.SizeDelta,
+            fontSize,
+            alignment,
+            color);
+    }
+
+    /*
      * 카드 배경이나 포인트 바 같은 평면 UI 블록을 그림자와 함께 생성합니다.
      */
     private static void CreatePanel(
@@ -973,6 +1226,40 @@ public static class JongguMinimalPrototypeBuilder
         }
     }
 
+    /*
+     * 공용 레이아웃 프리셋으로 배경 패널을 생성합니다.
+     */
+    private static void CreatePanel(
+        string name,
+        Transform parent,
+        PrototypeUiRect layout,
+        Color color)
+    {
+        CreatePanel(
+            name,
+            parent,
+            layout.AnchorMin,
+            layout.AnchorMax,
+            layout.Pivot,
+            layout.AnchoredPosition,
+            layout.SizeDelta,
+            color);
+    }
+
+    private static void SetChildActive(Transform parent, string name, bool isActive)
+    {
+        if (parent == null)
+        {
+            return;
+        }
+
+        Transform child = parent.Find(name);
+        if (child != null)
+        {
+            child.gameObject.SetActive(isActive);
+        }
+    }
+
     /*
      * 빠른 행동 버튼을 만들고 텍스트와 그림자까지 기본 스타일로 맞춥니다.
      */
@@ -1017,15 +1304,41 @@ public static class JongguMinimalPrototypeBuilder
             TextAlignmentOptions.Center,
             Color.white);
         labelText.text = label;
+        if (generatedHeadingFont != null)
+        {
+            labelText.font = generatedHeadingFont;
+        }
         labelText.fontStyle = FontStyles.Bold;
         labelText.margin = new Vector4(8f, 6f, 8f, 6f);
 
         return button;
     }
 
+    /*
+     * 공용 레이아웃 프리셋으로 버튼을 생성해 허브 메뉴/액션 배치를 통일합니다.
+     */
+    private static Button CreateUiButton(
+        string name,
+        Transform parent,
+        PrototypeUiRect layout,
+        string label)
+    {
+        return CreateUiButton(
+            name,
+            parent,
+            layout.AnchorMin,
+            layout.AnchorMax,
+            layout.Pivot,
+            layout.AnchoredPosition,
+            layout.SizeDelta,
+            label);
+    }
+
     private static void CreateWorldLabel(string name, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
     {
-        TMP_FontAsset preferredFont = EnsurePreferredTmpFontAsset();
+        bool isLargeLabel = fontSize >= 3.4f;
+        bool isPrimaryLabel = fontSize >= 2.5f;
+        TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
 
         GameObject labelObject = new(name);
         if (parent != null)
@@ -1044,8 +1357,10 @@ public static class JongguMinimalPrototypeBuilder
         text.alignment = TextAlignmentOptions.Center;
         text.color = color;
         text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.characterSpacing = 1.5f;
-        text.fontStyle = FontStyles.Bold;
+        text.characterSpacing = isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f;
+        text.wordSpacing = 0f;
+        text.lineSpacing = 0f;
+        text.fontStyle = isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal;
         // Runtime presentation applies world-text outlines without leaking edit-mode materials.
 
         if (preferredFont != null)
@@ -1189,13 +1504,15 @@ public static class JongguMinimalPrototypeBuilder
         };
     }
 
-    private static SpriteLibrary CreateSprites()
-    {
-        return new SpriteLibrary
-        {
-            Player = CreateColorSprite(SpriteRoot + "/Player.png", new Color(0.23f, 0.48f, 0.94f)),
-            Portal = CreateColorSprite(SpriteRoot + "/Portal.png", new Color(0.95f, 0.52f, 0.22f)),
-            Selector = CreateColorSprite(SpriteRoot + "/Selector.png", new Color(0.98f, 0.84f, 0.23f)),
+    private static SpriteLibrary CreateSprites()
+    {
+        return new SpriteLibrary
+        {
+            PlayerFront = CreatePlayerSprite(SpriteRoot + "/PlayerFront.png", "image (2).png"),
+            PlayerBack = CreatePlayerSprite(SpriteRoot + "/PlayerBack.png", "image (1).png"),
+            PlayerSide = CreatePlayerSprite(SpriteRoot + "/PlayerSide.png", "image.png"),
+            Portal = CreateColorSprite(SpriteRoot + "/Portal.png", new Color(0.95f, 0.52f, 0.22f)),
+            Selector = CreateColorSprite(SpriteRoot + "/Selector.png", new Color(0.98f, 0.84f, 0.23f)),
             Counter = CreateColorSprite(SpriteRoot + "/Counter.png", new Color(0.84f, 0.34f, 0.24f)),
             Fish = CreateColorSprite(SpriteRoot + "/Fish.png", new Color(0.19f, 0.73f, 0.92f)),
             Shell = CreateColorSprite(SpriteRoot + "/Shell.png", new Color(0.90f, 0.79f, 0.66f)),
@@ -1206,6 +1523,31 @@ public static class JongguMinimalPrototypeBuilder
             WindHerb = CreateColorSprite(SpriteRoot + "/WindHerb.png", new Color(0.79f, 0.93f, 0.61f)),
             Floor = CreateColorSprite(SpriteRoot + "/Floor.png", Color.white)
         };
+    }
+
+    private static Sprite CreatePlayerSprite(string assetPath, string sourceFileName)
+    {
+        string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), "temperature", sourceFileName);
+        string targetFullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+        string resourceAssetPath = assetPath.Replace(SpriteRoot, ResourceSpriteRoot);
+        string resourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
+
+        if (File.Exists(sourceFullPath))
+        {
+            CopyFileIfDifferent(sourceFullPath, targetFullPath);
+            CopyFileIfDifferent(sourceFullPath, resourceFullPath);
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+        }
+
+        Sprite importedSprite = ConfigureSpriteAsset(assetPath, PlayerSpritePixelsPerUnit);
+        ConfigureSpriteAsset(resourceAssetPath, PlayerSpritePixelsPerUnit);
+        if (importedSprite != null)
+        {
+            return importedSprite;
+        }
+
+        return CreateColorSprite(assetPath, Color.white);
     }
 
     private static ResourceData CreateResourceAsset(string assetPath, string id, string displayName, string description, string regionTag, int sellPrice, ResourceRarity rarity)
@@ -1269,44 +1611,82 @@ public static class JongguMinimalPrototypeBuilder
         return asset;
     }
 
-    private static Sprite CreateColorSprite(string assetPath, Color color)
-    {
-        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-        if (existing != null)
-        {
-            return existing;
-        }
-
-        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
-
-        Texture2D texture = new(32, 32, TextureFormat.RGBA32, false);
-        Color[] pixels = new Color[32 * 32];
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            pixels[i] = color;
-        }
-
-        texture.SetPixels(pixels);
-        texture.Apply();
-
-        File.WriteAllBytes(fullPath, texture.EncodeToPNG());
-        UnityEngine.Object.DestroyImmediate(texture);
-
-        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-
-        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
-        importer.textureType = TextureImporterType.Sprite;
-        importer.spriteImportMode = SpriteImportMode.Single;
-        importer.filterMode = FilterMode.Point;
-        importer.mipmapEnabled = false;
-        importer.alphaIsTransparency = true;
-        importer.SaveAndReimport();
-
-        return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-    }
-
-    private static BoxCollider2D CreateMovementBounds(string name, float width, float height)
+    private static Sprite CreateColorSprite(string assetPath, Color color)
+    {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+
+        Texture2D texture = new(32, 32, TextureFormat.RGBA32, false);
+        Color[] pixels = new Color[32 * 32];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = color;
+        }
+
+        texture.SetPixels(pixels);
+        texture.Apply();
+
+        File.WriteAllBytes(fullPath, texture.EncodeToPNG());
+        UnityEngine.Object.DestroyImmediate(texture);
+
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+        return ConfigureSpriteAsset(assetPath, 100f);
+    }
+
+    private static Sprite ConfigureSpriteAsset(string assetPath, float pixelsPerUnit)
+    {
+        TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+        if (importer == null)
+        {
+            return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        }
+
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.filterMode = FilterMode.Bilinear;
+        importer.mipmapEnabled = false;
+        importer.alphaIsTransparency = true;
+        importer.wrapMode = TextureWrapMode.Clamp;
+        importer.spritePixelsPerUnit = pixelsPerUnit;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.compressionQuality = 100;
+
+        TextureImporterSettings spriteSettings = new TextureImporterSettings();
+        importer.ReadTextureSettings(spriteSettings);
+        spriteSettings.spriteMeshType = SpriteMeshType.FullRect;
+        spriteSettings.spriteAlignment = (int)SpriteAlignment.Custom;
+        spriteSettings.spritePivot = new Vector2(0.5f, 0.08f);
+        importer.SetTextureSettings(spriteSettings);
+
+        ApplyUncompressedPlatformSettings(importer, "DefaultTexturePlatform");
+        ApplyUncompressedPlatformSettings(importer, "Standalone");
+        ApplyUncompressedPlatformSettings(importer, "WebGL");
+
+        importer.SaveAndReimport();
+
+        return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+    }
+
+    private static void ApplyUncompressedPlatformSettings(TextureImporter importer, string platformName)
+    {
+        TextureImporterPlatformSettings platformSettings = importer.GetPlatformTextureSettings(platformName);
+        platformSettings.name = platformName;
+        platformSettings.overridden = true;
+        platformSettings.maxTextureSize = 2048;
+        platformSettings.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
+        platformSettings.textureCompression = TextureImporterCompression.Uncompressed;
+        platformSettings.compressionQuality = 100;
+        platformSettings.crunchedCompression = false;
+        importer.SetPlatformTextureSettings(platformSettings);
+    }
+
+    private static BoxCollider2D CreateMovementBounds(string name, float width, float height)
     {
         GameObject boundsObject = new(name);
         BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
@@ -1337,7 +1717,7 @@ public static class JongguMinimalPrototypeBuilder
 
         if (preferredFont == null)
         {
-            preferredFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontRoot + "/MalgunGothic SDF.asset");
+            preferredFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontRoot + "/maplestoryLightSdf.asset");
         }
 
         if (preferredFont != null && TMP_Settings.defaultFontAsset != preferredFont)
@@ -1353,31 +1733,43 @@ public static class JongguMinimalPrototypeBuilder
         return preferredFont != null ? preferredFont : TMP_Settings.defaultFontAsset;
     }
 
+    private static TMP_FontAsset EnsureHeadingTmpFontAsset()
+    {
+        TMP_FontAsset headingFont = generatedHeadingFont;
+
+        if (headingFont == null)
+        {
+            headingFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontRoot + "/maplestoryBoldSdf.asset");
+        }
+
+        return headingFont != null ? headingFont : EnsurePreferredTmpFontAsset();
+    }
+
+    private static TMP_FontAsset CreateHeadingFontAsset()
+    {
+        return CreateProjectFontAsset(FontRoot + "/maplestoryBold.ttf", "maplestoryBoldSdf");
+    }
+
     private static TMP_FontAsset CreateKoreanFontAsset()
-    {
-        string sourceFontPath = FindSystemKoreanFontPath();
-        if (string.IsNullOrWhiteSpace(sourceFontPath))
-        {
-            Debug.LogWarning("시스템에서 한글 폰트를 찾지 못해 기본 TMP 폰트를 사용합니다.");
-            return TMP_Settings.defaultFontAsset;
-        }
-
-        string importedFontPath = FontRoot + "/MalgunGothic.ttf";
-        string importedFontFullPath = Path.Combine(Directory.GetCurrentDirectory(), importedFontPath);
-        CopyFileIfDifferent(sourceFontPath, importedFontFullPath);
-        AssetDatabase.ImportAsset(importedFontPath, ImportAssetOptions.ForceUpdate);
-
-        Font sourceFont = AssetDatabase.LoadAssetAtPath<Font>(importedFontPath);
-        if (sourceFont == null)
-        {
-            Debug.LogWarning("가져온 한글 폰트를 불러오지 못해 기본 TMP 폰트를 사용합니다.");
-            return TMP_Settings.defaultFontAsset;
-        }
-
-        string fontAssetPath = FontRoot + "/MalgunGothic SDF.asset";
-        TMP_FontAsset existingFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(fontAssetPath);
-        if (existingFont != null)
-        {
+    {
+        return CreateProjectFontAsset(FontRoot + "/maplestoryLight.ttf", "maplestoryLightSdf");
+    }
+
+    private static TMP_FontAsset CreateProjectFontAsset(string importedFontPath, string fontAssetName)
+    {
+        AssetDatabase.ImportAsset(importedFontPath, ImportAssetOptions.ForceUpdate);
+
+        Font sourceFont = AssetDatabase.LoadAssetAtPath<Font>(importedFontPath);
+        if (sourceFont == null)
+        {
+            Debug.LogWarning($"프로젝트 폰트 '{importedFontPath}'를 불러오지 못해 기본 TMP 폰트를 사용합니다.");
+            return TMP_Settings.defaultFontAsset;
+        }
+
+        string fontAssetPath = $"{FontRoot}/{fontAssetName}.asset";
+        TMP_FontAsset existingFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(fontAssetPath);
+        if (existingFont != null)
+        {
             existingFont.TryAddCharacters(CollectRequiredCharacters());
             EditorUtility.SetDirty(existingFont);
 
@@ -1387,73 +1779,51 @@ public static class JongguMinimalPrototypeBuilder
             }
 
             return existingFont;
-        }
-
-        TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
-        if (fontAsset == null)
-        {
-            Debug.LogWarning("한글 TMP 폰트 자산 생성에 실패해 기본 폰트를 사용합니다.");
-            return TMP_Settings.defaultFontAsset;
-        }
-
-        fontAsset.name = "MalgunGothic SDF";
-        fontAsset.TryAddCharacters(CollectRequiredCharacters());
-        AssetDatabase.CreateAsset(fontAsset, fontAssetPath);
-
-        if (fontAsset.atlasTextures != null)
-        {
-            for (int index = 0; index < fontAsset.atlasTextures.Length; index++)
-            {
-                Texture2D atlasTexture = fontAsset.atlasTextures[index];
-                if (atlasTexture == null || AssetDatabase.Contains(atlasTexture))
-                {
-                    continue;
-                }
-
-                atlasTexture.name = $"MalgunGothic Atlas {index}";
-                AssetDatabase.AddObjectToAsset(atlasTexture, fontAsset);
-            }
-        }
-
-        if (fontAsset.material != null && !AssetDatabase.Contains(fontAsset.material))
-        {
-            fontAsset.material.name = "MalgunGothic Material";
-            AssetDatabase.AddObjectToAsset(fontAsset.material, fontAsset);
-        }
-
-        EditorUtility.SetDirty(fontAsset);
-        if (fontAsset.material != null)
-        {
-            EditorUtility.SetDirty(fontAsset.material);
-        }
-
-        return fontAsset;
-    }
-
-    private static string FindSystemKoreanFontPath()
-    {
-        string fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
-        string[] candidates =
-        {
-            Path.Combine(fontsFolder, "malgun.ttf"),
-            Path.Combine(fontsFolder, "malgunbd.ttf"),
-            Path.Combine(fontsFolder, "gulim.ttc")
-        };
-
-        foreach (string candidate in candidates)
-        {
-            if (File.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        return string.Empty;
-    }
-
+        }
+
+        TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+        if (fontAsset == null)
+        {
+            Debug.LogWarning($"TMP 폰트 자산 '{fontAssetName}' 생성에 실패해 기본 폰트를 사용합니다.");
+            return TMP_Settings.defaultFontAsset;
+        }
+
+        fontAsset.name = fontAssetName;
+        fontAsset.TryAddCharacters(CollectRequiredCharacters());
+        AssetDatabase.CreateAsset(fontAsset, fontAssetPath);
+
+        if (fontAsset.atlasTextures != null)
+        {
+            for (int index = 0; index < fontAsset.atlasTextures.Length; index++)
+            {
+                Texture2D atlasTexture = fontAsset.atlasTextures[index];
+                if (atlasTexture == null || AssetDatabase.Contains(atlasTexture))
+                {
+                    continue;
+                }
+
+                atlasTexture.name = $"{fontAssetName} Atlas {index}";
+                AssetDatabase.AddObjectToAsset(atlasTexture, fontAsset);
+            }
+        }
+
+        if (fontAsset.material != null && !AssetDatabase.Contains(fontAsset.material))
+        {
+            fontAsset.material.name = $"{fontAssetName} Material";
+            AssetDatabase.AddObjectToAsset(fontAsset.material, fontAsset);
+        }
+
+        EditorUtility.SetDirty(fontAsset);
+        if (fontAsset.material != null)
+        {
+            EditorUtility.SetDirty(fontAsset.material);
+        }
+
+        return fontAsset;
+    }
     private static string CollectRequiredCharacters()
     {
-        return "종구의 식당바닷가 깊은 숲 폐광산 바람 언덕 이동 방향키 상호작용 메뉴 변경 영업 시작 메뉴판 영업대 채집하기 생선 조개 해초 약초 버섯 향초 발광 이끼 인벤토리 비어 있음 골드 평판 선택 가능 수량 결과 없음 메뉴를 고르고 영업을 시작하세요 선택된 메뉴가 없습니다 재료가 부족합니다 접시 판매 식당으로 이동 바닷가로 이동 깊은 숲으로 이동 폐광산으로 이동 바람 언덕으로 이동 식당 복귀 생선 한 접시 해물탕 약초 생선탕 숲 버섯 모둠 광채 해물탕 향초 해초 무침 늪지 강풍 랜턴 맡길 품목 꺼낼 품목 지름길 정상 어두운 / : + [] WASD E";
+        return "종구의 식당바닷가 깊은 숲 폐광산 바람 언덕 이동 방향키 상호작용 메뉴 변경 영업 시작 메뉴판 영업대 채집하기 생선 조개 해초 약초 버섯 향초 발광 이끼 인벤토리 비어 있음 골드 코인 평판 선택 가능 수량 결과 없음 메뉴를 고르고 영업을 시작하세요 선택된 메뉴가 없습니다 재료가 부족합니다 접시 판매 식당으로 이동 바닷가로 이동 깊은 숲으로 이동 폐광산으로 이동 바람 언덕으로 이동 식당 복귀 생선 한 접시 해물탕 약초 생선탕 숲 버섯 모둠 광채 해물탕 향초 해초 무침 늪지 강풍 랜턴 맡길 품목 꺼낼 품목 지름길 정상 어두운 업그레이드 재료 창고 닫기 열기 / : + [] WASD E";
     }
 
     private static void CopyFileIfDifferent(string sourcePath, string targetPath)
@@ -1525,3 +1895,4 @@ public static class JongguMinimalPrototypeBuilder
 }
 #endif
 
+

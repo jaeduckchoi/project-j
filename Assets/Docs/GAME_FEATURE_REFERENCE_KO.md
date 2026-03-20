@@ -143,7 +143,7 @@
 ## 5. 텍스트와 한글 처리 기준
 
 - 모든 주요 UI 텍스트는 TextMesh Pro 기반이다.
-- 기본 폰트는 `Assets/Generated/Fonts/MalgunGothic SDF.asset` 기준으로 통일했다.
+- 기본 폰트는 `Assets/Generated/Fonts/malgunGothicSdf.asset` 기준으로 통일했다.
 - TMP 설정에서 한글 줄바꿈 규칙을 사용하도록 맞췄다.
 - UI 패널과 텍스트 배치도 런타임에서 다시 조정해 밝은 배경 / 어두운 배경 어느 쪽에서도 읽기 쉽게 보강했다.
 

@@ -74,11 +74,10 @@ public class RestaurantManager : MonoBehaviour
 
         if (availableRecipes.Count == 0)
         {
-            return "메뉴 선택\n- 등록된 메뉴가 없습니다.";
+            return "- 등록된 메뉴가 없습니다.";
         }
 
         StringBuilder builder = new();
-        builder.AppendLine("메뉴 선택");
 
         foreach (RecipeData recipe in availableRecipes)
         {

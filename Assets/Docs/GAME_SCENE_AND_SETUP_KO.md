@@ -51,14 +51,25 @@
 - `inventoryText`
 - `storageText`
 - `upgradeText`
-- `sceneNameText`
 - `goldText`
 - `selectedRecipeText`
-- `restaurantResultText`
 - `dayPhaseText`
-- `guideText`
+- `bodyFontAsset`
+- `headingFontAsset`
+- `skipExplorationButton`
+- `skipServiceButton`
+- `nextDayButton`
+- `recipePanelButton`
+- `upgradePanelButton`
+- `materialPanelButton`
 
-최근 가독성 수정으로 런타임에서 텍스트 배경 패널, 여백, 줄간격, 버튼 라벨 스타일도 다시 조정한다.
+최근 UI 구조는 아래 기준으로 동작한다.
+
+- 좌측 상단에는 `코인 / 평판`만 표시한다.
+- 허브에서는 하단 중앙 버튼으로 `요리 메뉴`, `업그레이드`, `재료` 팝업을 연다.
+- 허브 팝업이 열리면 게임 진행이 일시정지된다.
+- 창고는 `StorageStation` 상호작용 시 팝업 형태로만 열린다.
+- 탐험 지역에서는 우측 상단 카드로 `재료 / 가방`을 확인한다.
 
 ## 3. 허브 체크 포인트
 

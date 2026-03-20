@@ -261,8 +261,6 @@ public class StorageManager : MonoBehaviour
         InitializeIfNeeded();
 
         StringBuilder builder = new();
-        builder.AppendLine("창고");
-
         if (runtimeItems.Count == 0)
         {
             builder.AppendLine("- 보관 중인 재료 없음");

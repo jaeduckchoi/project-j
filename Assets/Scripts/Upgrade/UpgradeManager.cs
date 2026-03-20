@@ -257,7 +257,6 @@ public class UpgradeManager : MonoBehaviour
         InitializeIfNeeded();
 
         StringBuilder builder = new();
-        builder.AppendLine("업그레이드");
         builder.AppendLine($"- 보유 도구: {BuildUnlockedToolSummary()}");
 
         ToolUnlockCost nextToolUnlock = GetNextToolUnlockCost();

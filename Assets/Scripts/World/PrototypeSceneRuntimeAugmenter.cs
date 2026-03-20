@@ -2,12 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// 씬 재생성 전에도 필요한 상호작용을 현재 장면에 즉시 보강한다.
+// 기존 씬 직렬화에 남아 있는 보강 오브젝트를 런타임에서 정리한다.
 public static class PrototypeSceneRuntimeAugmenter
 {
-    /*
-     * 현재 씬 이름에 맞는 프로토타입 보강 작업을 실행합니다.
-     */
     public static void EnsureSceneReady(Scene scene)
     {
         if (!scene.IsValid() || !scene.isLoaded)
@@ -21,6 +18,14 @@ public static class PrototypeSceneRuntimeAugmenter
                 EnsureHubReady();
                 break;
 
+            case "Beach":
+                EnsureBeachReady();
+                break;
+
+            case "DeepForest":
+                EnsureDeepForestReady();
+                break;
+
             case "AbandonedMine":
                 EnsureAbandonedMineReady();
                 break;
@@ -31,11 +36,15 @@ public static class PrototypeSceneRuntimeAugmenter
         }
     }
 
-    /*
-     * 허브 씬의 창고 선택 패드와 폐광산 포탈을 보강합니다.
-     */
+    // 허브는 예전 독립 표지판을 제거하고 현재 포털 자식 라벨만 남긴다.
     private static void EnsureHubReady()
     {
+        CleanupLegacyObjects("ExitSign", "ForestSign", "MineSign", "WindHillSign");
+        UpdatePortalDisplayLabel("GoToBeach", "바닷가로");
+        UpdatePortalDisplayLabel("GoToDeepForest", "깊은 숲");
+        UpdatePortalDisplayLabel("GoToAbandonedMine", "폐광산");
+        UpdatePortalDisplayLabel("GoToWindHill", "바람 언덕");
+
         StorageManager storage = GameManager.Instance != null
             ? GameManager.Instance.Storage
             : Object.FindFirstObjectByType<StorageManager>();
@@ -92,11 +101,24 @@ public static class PrototypeSceneRuntimeAugmenter
         EnsureMinePortal();
     }
 
-    /*
-     * 바람 언덕 숏컷 포탈과 숏컷용 스폰 포인트를 보강합니다.
-     */
+    private static void EnsureBeachReady()
+    {
+        CleanupLegacyObjects("BoatLabel");
+        UpdatePortalDisplayLabel("ReturnToHub", "식당 복귀");
+    }
+
+    private static void EnsureDeepForestReady()
+    {
+        CleanupLegacyObjects("ForestBoatLabel");
+        UpdatePortalDisplayLabel("ReturnFromForest", "식당 복귀");
+    }
+
+    // 바람 언덕은 복귀 포털 중복 라벨을 제거하고 지름길 포털을 유지한다.
     private static void EnsureWindHillReady()
     {
+        CleanupLegacyObjects("WindReturnLabel", "WindShortcutLabel");
+        UpdatePortalDisplayLabel("ReturnFromWindHill", "식당 복귀");
+
         EnsureSpawnPoint("WindHillShortcutEntry", "WindHillShortcutEntry", new Vector3(7.8f, 4.4f, 0f));
 
         ScenePortal templatePortal = FindComponentByName<ScenePortal>("ReturnFromWindHill");
@@ -119,6 +141,7 @@ public static class PrototypeSceneRuntimeAugmenter
             "WindHill",
             "WindHillShortcutEntry",
             "정상 지름길",
+            "정상 지름길",
             true,
             ToolType.None,
             6,
@@ -126,11 +149,12 @@ public static class PrototypeSceneRuntimeAugmenter
             new Color(0.55f, 0.77f, 0.95f));
     }
 
-    /*
-     * 폐광산의 채집, 어둠, 잔해, 안내 문구를 보강합니다.
-     */
+    // 폐광산은 복귀 라벨 정리와 탐험 보강을 함께 처리한다.
     private static void EnsureAbandonedMineReady()
     {
+        CleanupLegacyObjects("MineReturnLabel");
+        UpdatePortalDisplayLabel("ReturnFromMine", "식당 복귀");
+
         EnsureSpawnPoint("MineEntry", "MineEntry", new Vector3(-12f, -6.2f, 0f));
         EnsureMineDarknessZone();
         ConfigureMineSlowZone();
@@ -157,9 +181,7 @@ public static class PrototypeSceneRuntimeAugmenter
         UpdateTextByObjectName("MineTitle", "폐광산");
     }
 
-    /*
-     * 허브에 폐광산 이동 포탈이 없으면 기존 포탈을 복제해 추가합니다.
-     */
+    // 허브에 폐광산 포털이 빠져 있으면 기존 포털을 복제해 채운다.
     private static void EnsureMinePortal()
     {
         ScenePortal templatePortal = FindComponentByName<ScenePortal>("GoToWindHill");
@@ -187,6 +209,7 @@ public static class PrototypeSceneRuntimeAugmenter
             "AbandonedMine",
             "MineEntry",
             "폐광산으로 이동",
+            "폐광산",
             true,
             ToolType.Lantern,
             0,
@@ -194,9 +217,6 @@ public static class PrototypeSceneRuntimeAugmenter
             new Color(0.72f, 0.74f, 0.78f));
     }
 
-    /*
-     * 폐광산 내부 어둠 지대를 찾거나 새로 만들어 설정합니다.
-     */
     private static void EnsureMineDarknessZone()
     {
         GameObject zone = GameObject.Find("MineDarkness");
@@ -228,9 +248,6 @@ public static class PrototypeSceneRuntimeAugmenter
             "mine_darkness");
     }
 
-    /*
-     * 폐광산 잔해 구간의 감속 지대 이름과 수치를 정리합니다.
-     */
     private static void ConfigureMineSlowZone()
     {
         MovementModifierZone slowZone = FindComponentByName<MovementModifierZone>("MineLooseRubble");
@@ -252,9 +269,6 @@ public static class PrototypeSceneRuntimeAugmenter
             "mine_loose_rubble");
     }
 
-    /*
-     * placeholder 채집 오브젝트를 발광 이끼 전용 채집 지점으로 바꿉니다.
-     */
     private static void ConfigureMineGatherable(string objectName, Vector3 position)
     {
         GatherableResource gatherable = FindComponentByName<GatherableResource>(objectName);
@@ -270,9 +284,6 @@ public static class PrototypeSceneRuntimeAugmenter
         UpdateWorldLabel(gatherable.gameObject, "발광 이끼");
     }
 
-    /*
-     * 창고 패드 복제본을 찾거나 새로 만든 뒤 원하는 동작으로 설정합니다.
-     */
     private static void EnsureStorageStationClone(
         string objectName,
         GameObject template,
@@ -294,9 +305,6 @@ public static class PrototypeSceneRuntimeAugmenter
         ConfigureStorageStation(station, storage, action, label, color);
     }
 
-    /*
-     * 창고 패드의 액션, 색상, 월드 라벨을 함께 설정합니다.
-     */
     private static void ConfigureStorageStation(
         StorageStation station,
         StorageManager storage,
@@ -314,14 +322,12 @@ public static class PrototypeSceneRuntimeAugmenter
         UpdateWorldLabel(station.gameObject, label);
     }
 
-    /*
-     * 포탈 목적지, 잠금 조건, 색상, 월드 라벨을 함께 설정합니다.
-     */
     private static void ConfigurePortal(
         ScenePortal portal,
         string targetSceneName,
         string spawnPointId,
-        string label,
+        string promptLabel,
+        string worldLabel,
         bool requireMorningExplore,
         ToolType requiredToolType,
         int requiredReputation,
@@ -336,19 +342,16 @@ public static class PrototypeSceneRuntimeAugmenter
         portal.Configure(
             targetSceneName,
             spawnPointId,
-            label,
+            promptLabel,
             requireMorningExplore,
             requiredToolType,
             requiredReputation,
             lockedGuideText);
 
         UpdatePrimaryRendererColor(portal.gameObject, color);
-        UpdateWorldLabel(portal.gameObject, label);
+        UpdateWorldLabel(portal.gameObject, string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel);
     }
 
-    /*
-     * 필요한 스폰 포인트를 찾거나 새로 만든 뒤 위치와 id 를 맞춥니다.
-     */
     private static void EnsureSpawnPoint(string objectName, string spawnId, Vector3 position)
     {
         SceneSpawnPoint spawnPoint = FindComponentByName<SceneSpawnPoint>(objectName);
@@ -363,9 +366,37 @@ public static class PrototypeSceneRuntimeAugmenter
         spawnPoint.Configure(spawnId);
     }
 
-    /*
-     * 오브젝트의 기본 SpriteRenderer 색상을 바꿉니다.
-     */
+    private static void CleanupLegacyObjects(params string[] objectNames)
+    {
+        if (objectNames == null)
+        {
+            return;
+        }
+
+        foreach (string objectName in objectNames)
+        {
+            if (string.IsNullOrWhiteSpace(objectName))
+            {
+                continue;
+            }
+
+            GameObject go = GameObject.Find(objectName);
+            if (go != null)
+            {
+                Object.Destroy(go);
+            }
+        }
+    }
+
+    private static void UpdatePortalDisplayLabel(string objectName, string worldLabel)
+    {
+        ScenePortal portal = FindComponentByName<ScenePortal>(objectName);
+        if (portal != null)
+        {
+            UpdateWorldLabel(portal.gameObject, worldLabel);
+        }
+    }
+
     private static void UpdatePrimaryRendererColor(GameObject root, Color color)
     {
         if (root == null)
@@ -374,15 +405,17 @@ public static class PrototypeSceneRuntimeAugmenter
         }
 
         SpriteRenderer renderer = root.GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            renderer = root.GetComponentInChildren<SpriteRenderer>();
+        }
+
         if (renderer != null)
         {
             renderer.color = color;
         }
     }
 
-    /*
-     * 오브젝트 자식의 TextMeshPro 라벨 문자열을 갱신합니다.
-     */
     private static void UpdateWorldLabel(GameObject root, string labelText)
     {
         if (root == null || string.IsNullOrWhiteSpace(labelText))
@@ -398,11 +431,9 @@ public static class PrototypeSceneRuntimeAugmenter
 
         label.text = labelText;
         label.gameObject.name = root.name + "_Label";
+        ApplyCompactLabelOffset(root, label);
     }
 
-    /*
-     * 특정 이름의 TextMeshPro 오브젝트에 직접 문자열을 씁니다.
-     */
     private static void UpdateTextByObjectName(string objectName, string text)
     {
         if (string.IsNullOrWhiteSpace(objectName) || string.IsNullOrWhiteSpace(text))
@@ -423,12 +454,53 @@ public static class PrototypeSceneRuntimeAugmenter
         }
     }
 
-    /*
-     * 이름으로 GameObject 를 찾은 뒤 원하는 컴포넌트를 반환합니다.
-     */
     private static T FindComponentByName<T>(string objectName) where T : Component
     {
         GameObject go = GameObject.Find(objectName);
         return go != null ? go.GetComponent<T>() : null;
+    }
+
+    private static void ApplyCompactLabelOffset(GameObject root, TextMeshPro label)
+    {
+        if (root == null || label == null)
+        {
+            return;
+        }
+
+        float? compactY = null;
+
+        if (root.GetComponent<ScenePortal>() != null)
+        {
+            compactY = 0.90f;
+        }
+        else if (root.GetComponent<RecipeSelectorStation>() != null || root.GetComponent<ServiceCounterStation>() != null)
+        {
+            compactY = 0.86f;
+        }
+        else if (root.GetComponent<StorageStation>() != null)
+        {
+            compactY = 0.78f;
+        }
+        else if (root.GetComponent<UpgradeStation>() != null)
+        {
+            compactY = 0.82f;
+        }
+        else if (root.GetComponent<GatherableResource>() != null)
+        {
+            compactY = 0.64f;
+        }
+        else if (root.GetComponent<PlayerController>() != null)
+        {
+            compactY = 0.46f;
+        }
+
+        if (!compactY.HasValue)
+        {
+            return;
+        }
+
+        Transform labelTransform = label.transform;
+        Vector3 localPosition = labelTransform.localPosition;
+        labelTransform.localPosition = new Vector3(localPosition.x, compactY.Value, localPosition.z);
     }
 }
