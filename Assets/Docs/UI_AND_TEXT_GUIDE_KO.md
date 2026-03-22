@@ -3,7 +3,9 @@
 ## 1. UI 디자인 방향
 
 UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 -> 실행` 흐름이 한눈에 보이도록 카드형 구조로 정리한다.
-전체 인상은 `밝은 종이 카드 + 짙은 액션 독 + 기능별 포인트 컬러` 조합을 기준으로 잡는다.
+전체 인상은 `brown/grey 벡터 패널 + 짙은 액션 독 + 기능별 포인트 컬러` 조합을 기준으로 잡는다.
+기본 스킨은 `Assets/Design/UIDesign/Vector` 원본 SVG를 기준으로 하고, 실제 런타임에서 쓰는 최소 SVG만 `Assets/Resources/Generated/UI/Vector` 아래에 따로 둔다.
+즉 `Assets/Design` 은 디자인 원본 보관용, `Assets/Resources/Generated/UI/Vector` 는 현재 게임에서 직접 쓰는 런타임 리소스용으로 구분한다.
 
 ## 2. 현재 HUD 배치
 
@@ -24,6 +26,7 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - `가방` 카드
 - `창고` 카드
 - 같은 계열 정보는 좌측에 세로로 묶어 자원 정리 흐름을 분명히 보이게 함
+- 창고 카드는 근접 자동 노출이 아니라 `StorageStation` 에서 `E`를 눌렀을 때 팝업으로 연다.
 
 ### 우측 3단 카드
 
@@ -59,6 +62,8 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - 카드 텍스트는 여백과 줄간격을 따로 줘서 다중 줄 정보가 뭉치지 않게 한다.
 - 캡션은 작은 볼드체와 넓은 자간으로 카드 구역을 빠르게 구분하게 한다.
 - 월드 라벨은 굵은 글자와 외곽선을 사용해 바닥색에 덜 묻히도록 한다.
+- 다중 줄 본문 텍스트는 자동 축소 + 마스킹 기준으로 카드 Rect 밖으로 넘치지 않게 유지한다.
+- 한 줄 텍스트와 버튼 라벨도 자동 축소 + 말줄임표 기준을 써서 작은 해상도에서 튀어나오지 않게 한다.
 
 ## 5. 한글 처리 기준
 
@@ -69,22 +74,58 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 ## 6. 런타임과 빌더 역할 분리
 
 - `Assets/Scripts/UI/UIManager.cs`
-  플레이 시 기존 씬 UI를 카드형 배치와 텍스트 스타일 기준으로 다시 보정한다.
+  플레이 중 실제 UI 동작과 상태 갱신을 담당하는 메인 진입점이다.
+- `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+  편집 모드 프리뷰와 디자인 확인용 상태를 따로 들고, `UIManager`에 현재 프리뷰 패널을 전달한다.
+  Canvas 내부 오브젝트를 `HUDRoot`, `PopupRoot`로 정리하는 기준도 같이 맞춘다.
+- `Assets/Scripts/UI/Content/PrototypeUIPopupCatalog.cs`
+  허브 팝업 제목, 좌우 캡션, 편집 모드 샘플 문구를 한곳에서 관리한다.
+- `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`
+  `PrototypeUIRect` 공용 타입과 레이아웃 진입점을 유지한다.
+- `Assets/Scripts/UI/Layout/UI/PrototypeUILayout.UI.cs`
+  일반 HUD와 허브 기본 UI 배치를 모아 관리한다.
+- `Assets/Scripts/UI/Layout/Popup/PrototypeUILayout.Popup.cs`
+  허브 팝업 프레임, 본문, 닫기 버튼 배치를 모아 관리한다.
+- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`
+  UI/HUD와 Popup 스킨 매핑의 공용 진입점을 유지한다.
+- `Assets/Scripts/UI/Style/UI/PrototypeUISkinCatalog.UI.cs`
+  일반 HUD 패널과 버튼의 SVG 매핑을 관리한다.
+- `Assets/Scripts/UI/Style/Popup/PrototypeUISkinCatalog.Popup.cs`
+  팝업 외곽, 내부 본문, 닫기 버튼의 SVG 매핑을 관리한다.
+- `Assets/Scripts/UI/Style/PrototypeUISkin.cs`
+  `Assets/Resources/Generated/UI/Vector` 아래 SVG 스프라이트를 직접 불러와 9-slice 스프라이트로 다시 만들어 런타임/빌더 공용으로 적용한다. 실제 렌더링과 캐시만 담당한다.
+- `Assets/Scripts/UI/Style/PrototypeUITheme.cs`
+  씬별 색상 테마와 공통 UI 색 기준을 관리한다.
+- `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`
+  인스펙터에서 현재 SVG 매핑 경로를 바로 확인하고, `Canvas 그룹 정리`, 편집 모드 프리뷰 적용, 캐시 새로고침을 실행한다.
+- `Assets/Editor/UI/UIManagerEditor.cs`
+  런타임 UI 매니저에서 `Canvas 그룹 정리`와 디자인 컨트롤러 연결/선택 진입점을 제공한다.
 - `Assets/Editor/JongguMinimalPrototypeBuilder.cs`
-  새로 씬을 생성할 때도 같은 카드 구조와 버튼 독이 기본으로 나오게 한다.
+  새로 씬을 생성할 때도 같은 카드 구조, SVG 버튼/패널 스킨, 텍스트 마스킹 기준과 디자인 컨트롤러 구성이 기본으로 나오게 한다.
 - `Assets/TextMesh Pro/Resources/TMP Settings.asset`
   한글 폰트와 줄바꿈 규칙을 전역 기본값으로 유지한다.
 
-## 7. 해상도 대응
+## 7. 편집 모드 프리뷰
+
+- `PrototypeUIDesignController` 인스펙터의 `Editor Preview` 항목에서 허브 팝업 프리뷰 여부와 대상 패널을 고를 수 있다.
+- 현재 씬의 `Canvas` 아래 오브젝트는 `HUDRoot`, `PopupRoot`로 정리하고, 같은 기준으로 런타임 탐색과 새 씬 생성도 맞춘다.
+- `현재 설정 프리뷰 적용` 버튼을 누르면 Play 모드 없이도 Scene 뷰에서 카드와 팝업 스킨 배치를 바로 확인할 수 있다.
+- `Canvas 그룹 정리` 버튼을 누르면 기존 평면 구조 Canvas도 관리용 그룹 구조로 재배치된다.
+- `SVG 캐시 새로고침` 버튼은 `PrototypeUISkin`이 만든 임시 스프라이트 캐시를 비우고 다시 렌더링한다.
+- 팝업 외곽은 `PanelGreyBolts`, 내부 본문은 `PanelGrey`, 일반 HUD/하단 버튼은 `PanelBrown`과 `ButtonBrown`, 닫기 버튼은 `ButtonGreyClose`를 쓴다.
+
+## 8. 해상도 대응
 
 - 캔버스는 `1920 x 1080` 기준 해상도에 맞춰 스케일한다.
 - 폭과 높이 비중을 반반으로 맞춰 16:9 기준 배치가 과하게 무너지지 않게 한다.
 - 기존 씬도 런타임에서 스케일러 설정을 다시 적용한다.
 
-## 8. 확인할 포인트
+## 9. 확인할 포인트
 
 - 에디터 Play 기준 한글이 깨지지 않는지
 - 탐험 지역마다 프롬프트와 상단 안내가 충분히 읽히는지
 - 가방 / 창고 / 메뉴 / 업그레이드 다중 줄 텍스트가 카드 밖으로 과하게 넘치지 않는지
+- 창고 패널이 허브에서 `E` 상호작용으로 열리고 `Esc` 로 닫히며, 열려 있는 동안 시간이 멈추는지
 - 버튼 독이 우하단 카드와 겹치지 않는지
 - 월드 라벨이 밝은 바닥과 어두운 바닥 모두에서 읽히는지
+

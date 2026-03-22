@@ -62,14 +62,36 @@
 - `recipePanelButton`
 - `upgradePanelButton`
 - `materialPanelButton`
+- `popupCloseButton`
 
 최근 UI 구조는 아래 기준으로 동작한다.
 
 - 좌측 상단에는 `코인 / 평판`만 표시한다.
 - 허브에서는 하단 중앙 버튼으로 `요리 메뉴`, `업그레이드`, `재료` 팝업을 연다.
-- 허브 팝업이 열리면 게임 진행이 일시정지된다.
-- 창고는 `StorageStation` 상호작용 시 팝업 형태로만 열린다.
+- 허브 팝업이 열리면 게임 진행이 일시정지되고 `Esc` 로 닫으면 원래 시간 흐름으로 복구된다.
+- 허브 팝업 우측 상단에는 `PopupCloseButton` 이 따로 있고 같은 닫기 동작을 수행한다.
+- 창고는 근접 자동 노출이 아니라 `StorageStation` 앞에서 `E` 상호작용 시 팝업 형태로 열린다.
+- 허브 씬의 창고 월드 오브젝트는 `StorageArea` 아래에 `StorageWall`, `StorageSign`, `StorageStation` 순으로 묶어 관리한다.
 - 탐험 지역에서는 우측 상단 카드로 `재료 / 가방`을 확인한다.
+- 주요 패널 / 버튼 이미지는 `Assets/Resources/Generated/UI/Vector` 아래 SVG 리소스를 공용으로 사용한다.
+
+### PrototypeUIDesignController
+
+- 경로: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+
+- `uiManager`
+- `showEditorPreview`
+- `editorPreviewPanel`
+
+편집 모드 프리뷰와 SVG 경로 확인은 이 컴포넌트에서 따로 다룬다.
+
+- 일반 HUD 레이아웃/스킨은 `Assets/Scripts/UI/Layout/UI`, `Assets/Scripts/UI/Style/UI` 아래에서 관리한다.
+- 팝업 레이아웃/스킨은 `Assets/Scripts/UI/Layout/Popup`, `Assets/Scripts/UI/Style/Popup` 아래에서 관리한다.
+- `Canvas` 내부 오브젝트는 `HUDRoot`, `PopupRoot` 기준으로 묶고, 런타임과 빌더도 같은 구조를 기준으로 찾는다.
+
+- `현재 설정 프리뷰 적용` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.
+- `Canvas 그룹 정리` 버튼으로 기존 씬의 평면 Canvas 자식도 같은 그룹 구조로 맞출 수 있다.
+- `SVG 캐시 새로고침` 버튼으로 `PrototypeUISkin` 임시 스프라이트를 다시 렌더링할 수 있다.
 
 ## 3. 허브 체크 포인트
 
@@ -101,7 +123,7 @@
 
 ## 5. 플레이 테스트 권장 순서
 
-1. `Hub` 에서 텍스트 가독성, 창고 선택 패드, 메뉴 선택 UI 확인
+1. `Hub` 에서 텍스트 가독성, 창고 `E` 팝업, 메뉴 선택 UI 확인
 2. `Beach` 에서 기본 채집 후 허브 복귀 확인
 3. `DeepForest` 에서 버섯 / 약초 수집과 감속 구간 확인
 4. 허브 작업대에서 인벤토리 확장 또는 랜턴 해금 비용 확인
@@ -114,3 +136,4 @@
 - Unity 실행과 C# 컴파일 검증은 이 환경에서 직접 하지 못했다.
 - 밸런스 수치는 실제 플레이 후 재조정이 필요할 수 있다.
 - `PrototypeSceneRuntimeAugmenter` 안전망은 남겨둔 상태라, 씬 직렬화가 안정되면 의존을 더 줄여도 된다.
+

@@ -44,6 +44,49 @@ public static class PrototypeSceneRuntimeAugmenter
         UpdatePortalDisplayLabel("GoToDeepForest", "깊은 숲");
         UpdatePortalDisplayLabel("GoToAbandonedMine", "폐광산");
         UpdatePortalDisplayLabel("GoToWindHill", "바람 언덕");
+        EnsureObjectPosition("MenuBoardBack", new Vector3(-7.1f, 0.25f, 0f));
+        EnsureObjectScale("MenuBoardBack", new Vector3(2.6f, 3.0f, 1f));
+        EnsureObjectPosition("RecipeSelector", new Vector3(-7.1f, 0.35f, 0f));
+        EnsureObjectScale("RecipeSelector", new Vector3(1.55f, 1.55f, 1f));
+        EnsureObjectScale("KitchenCounter", new Vector3(10.8f, 0.9f, 1f));
+        EnsureObjectPosition("ServiceCounter", new Vector3(0f, 1.92f, 0f));
+        EnsureObjectScale("ServiceCounter", new Vector3(1.95f, 1.55f, 1f));
+        EnsureObjectPosition("StorageWall", new Vector3(6.15f, 1.18f, 0f));
+        EnsureObjectScale("StorageWall", new Vector3(4.2f, 2.45f, 1f));
+        EnsureObjectPosition("StorageSelectDeposit", new Vector3(5.0f, 1.8f, 0f));
+        EnsureObjectScale("StorageSelectDeposit", new Vector3(1.4f, 0.9f, 1f));
+        EnsureObjectPosition("StorageDeposit", new Vector3(7.3f, 1.8f, 0f));
+        EnsureObjectScale("StorageDeposit", new Vector3(1.4f, 0.9f, 1f));
+        EnsureObjectPosition("StorageSelectWithdraw", new Vector3(5.0f, 0.65f, 0f));
+        EnsureObjectScale("StorageSelectWithdraw", new Vector3(1.4f, 0.9f, 1f));
+        EnsureObjectPosition("StorageWithdraw", new Vector3(7.3f, 0.65f, 0f));
+        EnsureObjectScale("StorageWithdraw", new Vector3(1.4f, 0.9f, 1f));
+        EnsureObjectPosition("WorkbenchWall", new Vector3(6.05f, -1.98f, 0f));
+        EnsureObjectScale("WorkbenchWall", new Vector3(4.1f, 1.95f, 1f));
+        EnsureObjectPosition("UpgradeStation", new Vector3(5.25f, -2.35f, 0f));
+        EnsureObjectScale("UpgradeStation", new Vector3(1.95f, 1.2f, 1f));
+        EnsureObjectPosition("GoToBeach", new Vector3(9.55f, -3.05f, 0f));
+        EnsureObjectScale("GoToBeach", new Vector3(1.35f, 1.9f, 1f));
+        EnsureObjectPosition("GoToDeepForest", new Vector3(11.35f, -3.05f, 0f));
+        EnsureObjectScale("GoToDeepForest", new Vector3(1.35f, 1.9f, 1f));
+        EnsureObjectPosition("GoToAbandonedMine", new Vector3(9.55f, -0.65f, 0f));
+        EnsureObjectScale("GoToAbandonedMine", new Vector3(1.35f, 1.9f, 1f));
+        EnsureObjectPosition("GoToWindHill", new Vector3(11.35f, -0.65f, 0f));
+        EnsureObjectScale("GoToWindHill", new Vector3(1.35f, 1.9f, 1f));
+        EnsureObjectPosition("DoorPad", new Vector3(10.45f, -3.0f, 0f));
+        EnsureObjectScale("DoorPad", new Vector3(3.9f, 3.8f, 1f));
+        EnsureObjectPosition("DoorFrame", new Vector3(10.45f, -2.15f, 0f));
+        EnsureObjectScale("DoorFrame", new Vector3(1.8f, 3.0f, 1f));
+        EnsureObjectPosition("PortalPad", new Vector3(9.55f, -3.72f, 0f));
+        EnsureObjectScale("PortalPad", new Vector3(2.0f, 0.55f, 1f));
+        EnsureObjectPosition("ForestPortalPad", new Vector3(11.35f, -3.72f, 0f));
+        EnsureObjectScale("ForestPortalPad", new Vector3(2.0f, 0.55f, 1f));
+        EnsureObjectPosition("MinePortalPad", new Vector3(9.55f, -1.32f, 0f));
+        EnsureObjectScale("MinePortalPad", new Vector3(2.0f, 0.55f, 1f));
+        EnsureObjectPosition("WindPortalPad", new Vector3(11.35f, -1.32f, 0f));
+        EnsureObjectScale("WindPortalPad", new Vector3(2.0f, 0.55f, 1f));
+        EnsureObjectPosition("StorageSign", new Vector3(5.4f, 3.45f, 0f));
+        EnsureObjectPosition("WorkbenchSign", new Vector3(5.4f, -0.55f, 0f));
 
         StorageManager storage = GameManager.Instance != null
             ? GameManager.Instance.Storage
@@ -78,7 +121,7 @@ public static class PrototypeSceneRuntimeAugmenter
                 EnsureStorageStationClone(
                     "StorageSelectDeposit",
                     depositStation.gameObject,
-                    new Vector3(4.9f, 1.8f, 0f),
+                    new Vector3(5.0f, 1.8f, 0f),
                     storage,
                     StorageStationAction.CycleInventorySelection,
                     "맡길 품목",
@@ -90,7 +133,7 @@ public static class PrototypeSceneRuntimeAugmenter
                 EnsureStorageStationClone(
                     "StorageSelectWithdraw",
                     withdrawStation.gameObject,
-                    new Vector3(4.9f, 0.5f, 0f),
+                    new Vector3(5.0f, 0.65f, 0f),
                     storage,
                     StorageStationAction.CycleStorageSelection,
                     "꺼낼 품목",
@@ -104,12 +147,17 @@ public static class PrototypeSceneRuntimeAugmenter
     private static void EnsureBeachReady()
     {
         CleanupLegacyObjects("BoatLabel");
+        EnsureObjectPosition("BoatMark", new Vector3(-13.1f, -2.0f, 0f));
+        EnsureObjectPosition("ReturnToHub", new Vector3(-10.7f, -3.35f, 0f));
+        EnsureSpawnPoint("BeachEntry", "BeachEntry", new Vector3(-8.25f, -2.25f, 0f));
         UpdatePortalDisplayLabel("ReturnToHub", "식당 복귀");
     }
 
     private static void EnsureDeepForestReady()
     {
         CleanupLegacyObjects("ForestBoatLabel");
+        EnsureObjectPosition("ReturnFromForest", new Vector3(-13.6f, -6.15f, 0f));
+        EnsureSpawnPoint("ForestEntry", "ForestEntry", new Vector3(-10.3f, -6.1f, 0f));
         UpdatePortalDisplayLabel("ReturnFromForest", "식당 복귀");
     }
 
@@ -117,8 +165,10 @@ public static class PrototypeSceneRuntimeAugmenter
     private static void EnsureWindHillReady()
     {
         CleanupLegacyObjects("WindReturnLabel", "WindShortcutLabel");
+        EnsureObjectPosition("ReturnFromWindHill", new Vector3(-13.6f, -5.15f, 0f));
         UpdatePortalDisplayLabel("ReturnFromWindHill", "식당 복귀");
 
+        EnsureSpawnPoint("WindHillEntry", "WindHillEntry", new Vector3(-10.7f, -5.35f, 0f));
         EnsureSpawnPoint("WindHillShortcutEntry", "WindHillShortcutEntry", new Vector3(7.8f, 4.4f, 0f));
 
         ScenePortal templatePortal = FindComponentByName<ScenePortal>("ReturnFromWindHill");
@@ -153,9 +203,10 @@ public static class PrototypeSceneRuntimeAugmenter
     private static void EnsureAbandonedMineReady()
     {
         CleanupLegacyObjects("MineReturnLabel");
+        EnsureObjectPosition("ReturnFromMine", new Vector3(-13.6f, -6.0f, 0f));
         UpdatePortalDisplayLabel("ReturnFromMine", "식당 복귀");
 
-        EnsureSpawnPoint("MineEntry", "MineEntry", new Vector3(-12f, -6.2f, 0f));
+        EnsureSpawnPoint("MineEntry", "MineEntry", new Vector3(-10.7f, -6.0f, 0f));
         EnsureMineDarknessZone();
         ConfigureMineSlowZone();
         ConfigureMineGatherable("MushroomPatch01", new Vector3(4.4f, 3.2f, 0f));
@@ -200,7 +251,7 @@ public static class PrototypeSceneRuntimeAugmenter
         {
             GameObject clone = Object.Instantiate(templatePortal.gameObject);
             clone.name = "GoToAbandonedMine";
-            clone.transform.position = new Vector3(8.5f, -0.2f, 0f);
+            clone.transform.position = new Vector3(9.55f, -0.65f, 0f);
             minePortal = clone.GetComponent<ScenePortal>();
         }
 
@@ -460,6 +511,38 @@ public static class PrototypeSceneRuntimeAugmenter
         return go != null ? go.GetComponent<T>() : null;
     }
 
+    private static void EnsureObjectPosition(string objectName, Vector3 position)
+    {
+        if (string.IsNullOrWhiteSpace(objectName))
+        {
+            return;
+        }
+
+        GameObject go = GameObject.Find(objectName);
+        if (go == null)
+        {
+            return;
+        }
+
+        go.transform.position = position;
+    }
+
+    private static void EnsureObjectScale(string objectName, Vector3 scale)
+    {
+        if (string.IsNullOrWhiteSpace(objectName))
+        {
+            return;
+        }
+
+        GameObject go = GameObject.Find(objectName);
+        if (go == null)
+        {
+            return;
+        }
+
+        go.transform.localScale = scale;
+    }
+
     private static void ApplyCompactLabelOffset(GameObject root, TextMeshPro label)
     {
         if (root == null || label == null)
@@ -471,19 +554,19 @@ public static class PrototypeSceneRuntimeAugmenter
 
         if (root.GetComponent<ScenePortal>() != null)
         {
-            compactY = 0.90f;
+            compactY = 0.82f;
         }
         else if (root.GetComponent<RecipeSelectorStation>() != null || root.GetComponent<ServiceCounterStation>() != null)
         {
-            compactY = 0.86f;
+            compactY = 0.80f;
         }
         else if (root.GetComponent<StorageStation>() != null)
         {
-            compactY = 0.78f;
+            compactY = 0.72f;
         }
         else if (root.GetComponent<UpgradeStation>() != null)
         {
-            compactY = 0.82f;
+            compactY = 0.68f;
         }
         else if (root.GetComponent<GatherableResource>() != null)
         {

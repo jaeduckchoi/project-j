@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.UI;
 #endif
 
@@ -14,6 +15,63 @@ using UnityEngine.InputSystem.UI;
 // 코인/평판, 재료, 업그레이드, 상호작용 문구, 단계 표시를 모두 여기서 동기화합니다.
 public class UIManager : MonoBehaviour
 {
+    private const string HudRootName = "HUDRoot";
+    private const string PopupRootName = "PopupRoot";
+
+    private static readonly string[] HudCanvasObjectNames =
+    {
+        "TopLeftPanel",
+        "TopLeftAccent",
+        "PhaseBadge",
+        "PromptBackdrop",
+        "GuideBackdrop",
+        "ResultBackdrop",
+        "InventoryCard",
+        "InventoryAccent",
+        "InventoryCaption",
+        "GoldText",
+        "InteractionPromptText",
+        "GuideText",
+        "RestaurantResultText",
+        "DayPhaseText",
+        "CenterBottomPanel",
+        "ActionDock",
+        "ActionAccent",
+        "ActionCaption",
+        "SkipExplorationButton",
+        "SkipServiceButton",
+        "NextDayButton",
+        "RecipePanelButton",
+        "UpgradePanelButton",
+        "MaterialPanelButton",
+        "StorageCard",
+        "RecipeCard",
+        "UpgradeCard",
+        "StorageAccent",
+        "RecipeAccent",
+        "UpgradeAccent",
+        "StorageCaption",
+        "RecipeCaption",
+        "UpgradeCaption"
+    };
+
+    private static readonly HashSet<string> PopupCanvasObjectNames = new()
+    {
+        "PopupOverlay",
+        "PopupFrame",
+        "PopupLeftPanel",
+        "PopupRightPanel",
+        "PopupLeftBody",
+        "PopupRightBody",
+        "PopupTitle",
+        "PopupLeftCaption",
+        "PopupRightCaption",
+        "StorageText",
+        "SelectedRecipeText",
+        "UpgradeText",
+        "PopupCloseButton"
+    };
+
     [SerializeField] private TextMeshProUGUI interactionPromptText;
     [SerializeField] private TextMeshProUGUI inventoryText;
     [SerializeField] private TextMeshProUGUI storageText;
@@ -31,6 +89,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button recipePanelButton;
     [SerializeField] private Button upgradePanelButton;
     [SerializeField] private Button materialPanelButton;
+    [SerializeField] private Button popupCloseButton;
     [SerializeField] private string defaultPromptText = "이동: WASD / 방향키   상호작용: E";
 
     private PlayerController cachedPlayer;
@@ -52,6 +111,7 @@ public class UIManager : MonoBehaviour
     private enum HubPopupPanel
     {
         None,
+        Storage,
         Recipe,
         Upgrade,
         Materials
@@ -76,8 +136,8 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         BindSceneReferences();
-        BindButtons();
         ApplyTextPresentation();
+        BindButtons();
         RefreshAll();
     }
 
@@ -86,6 +146,8 @@ public class UIManager : MonoBehaviour
      */
     private void Update()
     {
+        HandlePopupCloseInput();
+        HandleStoragePopupInput();
         RefreshInteractionPrompt();
         RefreshButtonStates();
     }
@@ -107,15 +169,142 @@ public class UIManager : MonoBehaviour
         UnbindButtons();
     }
 
+#if UNITY_EDITOR
+    public void ApplyEditorDesignPreview(bool showPopupPreview, PrototypeUIPreviewPanel previewPanel)
+    {
+        if (Application.isPlaying || this == null || gameObject == null)
+        {
+            return;
+        }
+
+        PrototypeUISkin.ClearGeneratedCache();
+        EnsureCanvasGroups();
+        ResolveOptionalUiReferences();
+        ApplyTextPresentation();
+        ApplyEditorPreviewState(showPopupPreview, previewPanel);
+    }
+
+    public void ClearEditorDesignPreview()
+    {
+        ApplyEditorDesignPreview(false, PrototypeUIPreviewPanel.None);
+    }
+
+    public void OrganizeCanvasHierarchyInEditor()
+    {
+        if (Application.isPlaying || this == null || gameObject == null)
+        {
+            return;
+        }
+
+        EnsureCanvasGroups();
+        ResolveOptionalUiReferences();
+    }
+
+    private void ApplyEditorPreviewState(bool showPopupPreview, PrototypeUIPreviewPanel previewPanel)
+    {
+        if (Application.isPlaying)
+        {
+            return;
+        }
+
+        if (goldText != null && string.IsNullOrWhiteSpace(goldText.text))
+        {
+            goldText.text = "골드 120 · 평판 4";
+        }
+
+        if (dayPhaseText != null && string.IsNullOrWhiteSpace(dayPhaseText.text))
+        {
+            dayPhaseText.text = "3일차 · 탐험 준비";
+        }
+
+        if (interactionPromptText != null && string.IsNullOrWhiteSpace(interactionPromptText.text))
+        {
+            interactionPromptText.text = defaultPromptText;
+        }
+
+        activeHubPanel = IsHubScene() && showPopupPreview ? ConvertPreviewPanel(previewPanel) : HubPopupPanel.None;
+        ApplyMenuPanelState();
+
+        if (guideText != null)
+        {
+            guideText.text = activeHubPanel == HubPopupPanel.None
+                ? IsHubScene()
+                    ? "하단 버튼과 기본 HUD 배치를 편집 모드에서 확인하는 프리뷰입니다."
+                    : "탐험 HUD 카드 배치를 편집 모드에서 확인하는 프리뷰입니다."
+                : "현재 팝업 스킨과 캡션 배치를 편집 모드에서 확인하는 프리뷰입니다.";
+            guideText.gameObject.SetActive(true);
+            SetNamedObjectActive("GuideBackdrop", true);
+        }
+
+        if (resultText != null)
+        {
+            bool showResultPreview = !IsHubScene() && activeHubPanel == HubPopupPanel.None;
+            resultText.text = showResultPreview ? "탐험 결과와 정산 문구가 이 위치에 표시됩니다." : string.Empty;
+            resultText.gameObject.SetActive(showResultPreview);
+            SetNamedObjectActive("ResultBackdrop", showResultPreview);
+        }
+
+        if (activeHubPanel != HubPopupPanel.None)
+        {
+            ApplyEditorPreviewPopupText(previewPanel);
+        }
+        else if (!IsHubScene() && inventoryText != null)
+        {
+            inventoryText.text = PrototypeUIPopupCatalog.GetExplorationInventoryPreviewText();
+        }
+    }
+
+    private void ApplyEditorPreviewPopupText(PrototypeUIPreviewPanel previewPanel)
+    {
+        PrototypeUIPreviewContent previewContent = PrototypeUIPopupCatalog.GetPreviewContent(previewPanel);
+
+        if (inventoryText != null)
+        {
+            inventoryText.text = previewContent.LeftText;
+        }
+
+        if (selectedRecipeText != null)
+        {
+            selectedRecipeText.text = previewContent.RightText;
+        }
+    }
+
+    private static HubPopupPanel ConvertPreviewPanel(PrototypeUIPreviewPanel previewPanel)
+    {
+        return previewPanel switch
+        {
+            PrototypeUIPreviewPanel.Storage => HubPopupPanel.Storage,
+            PrototypeUIPreviewPanel.Recipe => HubPopupPanel.Recipe,
+            PrototypeUIPreviewPanel.Upgrade => HubPopupPanel.Upgrade,
+            PrototypeUIPreviewPanel.Materials => HubPopupPanel.Materials,
+            _ => HubPopupPanel.None
+        };
+    }
+
+#endif
+
+    private static PrototypeUIPreviewPanel ConvertRuntimePopupPanel(HubPopupPanel popupPanel)
+    {
+        return popupPanel switch
+        {
+            HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
+            HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
+            HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,
+            HubPopupPanel.Materials => PrototypeUIPreviewPanel.Materials,
+            _ => PrototypeUIPreviewPanel.Materials
+        };
+    }
+
     /*
      * 씬 전환 직후 새 씬의 플레이어와 매니저 참조를 다시 묶습니다.
      */
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         EnsureEventSystemExists();
+        activeHubPanel = HubPopupPanel.None;
         BindSceneReferences();
-        BindButtons();
         ApplyTextPresentation();
+        BindButtons();
         RefreshAll();
     }
 
@@ -421,7 +610,7 @@ public class UIManager : MonoBehaviour
     {
         if (recipePanelButton == null)
         {
-            Transform recipeTransform = transform.Find("RecipePanelButton");
+            Transform recipeTransform = FindNamedUiTransform("RecipePanelButton");
             if (recipeTransform != null)
             {
                 recipePanelButton = recipeTransform.GetComponent<Button>();
@@ -430,7 +619,7 @@ public class UIManager : MonoBehaviour
 
         if (upgradePanelButton == null)
         {
-            Transform upgradeTransform = transform.Find("UpgradePanelButton");
+            Transform upgradeTransform = FindNamedUiTransform("UpgradePanelButton");
             if (upgradeTransform != null)
             {
                 upgradePanelButton = upgradeTransform.GetComponent<Button>();
@@ -439,16 +628,25 @@ public class UIManager : MonoBehaviour
 
         if (materialPanelButton == null)
         {
-            Transform materialTransform = transform.Find("MaterialPanelButton");
+            Transform materialTransform = FindNamedUiTransform("MaterialPanelButton");
             if (materialTransform != null)
             {
                 materialPanelButton = materialTransform.GetComponent<Button>();
             }
         }
 
+        if (popupCloseButton == null)
+        {
+            Transform closeTransform = FindNamedUiTransform("PopupCloseButton");
+            if (closeTransform != null)
+            {
+                popupCloseButton = closeTransform.GetComponent<Button>();
+            }
+        }
+
         if (guideText == null)
         {
-            Transform guideTransform = transform.Find("GuideText");
+            Transform guideTransform = FindNamedUiTransform("GuideText");
             if (guideTransform != null)
             {
                 guideText = guideTransform.GetComponent<TextMeshProUGUI>();
@@ -457,7 +655,7 @@ public class UIManager : MonoBehaviour
 
         if (resultText == null)
         {
-            Transform resultTransform = transform.Find("RestaurantResultText");
+            Transform resultTransform = FindNamedUiTransform("RestaurantResultText");
             if (resultTransform != null)
             {
                 resultText = resultTransform.GetComponent<TextMeshProUGUI>();
@@ -502,6 +700,11 @@ public class UIManager : MonoBehaviour
         {
             materialPanelButton.onClick.AddListener(HandleMaterialPanelClicked);
         }
+
+        if (popupCloseButton != null)
+        {
+            popupCloseButton.onClick.AddListener(HandlePopupCloseButtonClicked);
+        }
     }
 
     /*
@@ -537,6 +740,11 @@ public class UIManager : MonoBehaviour
         if (materialPanelButton != null)
         {
             materialPanelButton.onClick.RemoveListener(HandleMaterialPanelClicked);
+        }
+
+        if (popupCloseButton != null)
+        {
+            popupCloseButton.onClick.RemoveListener(HandlePopupCloseButtonClicked);
         }
     }
 
@@ -590,6 +798,24 @@ public class UIManager : MonoBehaviour
         ToggleHubPanel(HubPopupPanel.Materials);
     }
 
+    private void HandlePopupCloseButtonClicked()
+    {
+        CloseActiveHubPanel();
+    }
+
+    public void ShowStoragePanel()
+    {
+        if (!IsHubScene() || !IsPlayerNearStorageStation())
+        {
+            return;
+        }
+
+        activeHubPanel = HubPopupPanel.Storage;
+        RefreshStorageText();
+        ApplyMenuPanelState();
+        RefreshStoragePanelVisibility();
+    }
+
     private void ToggleHubPanel(HubPopupPanel targetPanel)
     {
         if (!IsHubScene())
@@ -599,6 +825,116 @@ public class UIManager : MonoBehaviour
 
         activeHubPanel = activeHubPanel == targetPanel ? HubPopupPanel.None : targetPanel;
         ApplyMenuPanelState();
+    }
+
+    private void HandlePopupCloseInput()
+    {
+        if (activeHubPanel == HubPopupPanel.None || !ReadPopupClosePressed())
+        {
+            return;
+        }
+
+        CloseActiveHubPanel();
+    }
+
+    private void CloseActiveHubPanel()
+    {
+        if (activeHubPanel == HubPopupPanel.None)
+        {
+            return;
+        }
+
+        activeHubPanel = HubPopupPanel.None;
+        ApplyMenuPanelState();
+        RefreshStoragePanelVisibility();
+    }
+
+    private static bool ReadPopupClosePressed()
+    {
+        bool pressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+        {
+            pressed = true;
+        }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+        pressed |= Input.GetKeyDown(KeyCode.Escape);
+#endif
+
+        return pressed;
+    }
+
+    private void HandleStoragePopupInput()
+    {
+        if (activeHubPanel != HubPopupPanel.Storage || cachedStorage == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
+        {
+            return;
+        }
+
+        InventoryManager inventory = GameManager.Instance.Inventory;
+        bool changed = false;
+
+        if (ReadPopupActionPressed(KeyCode.Q, keyboard => keyboard.qKey))
+        {
+            changed |= cachedStorage.CycleInventorySelection(inventory);
+            GameManager.Instance?.DayCycle?.ShowHintOnce(
+                "first_storage_select_deposit",
+                "왼쪽 목록에서 맡길 재료를 고르고 맡기기 동작으로 창고에 보관할 수 있습니다.");
+        }
+
+        if (ReadPopupActionPressed(KeyCode.W, keyboard => keyboard.wKey))
+        {
+            changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
+        }
+
+        if (ReadPopupActionPressed(KeyCode.A, keyboard => keyboard.aKey))
+        {
+            changed |= cachedStorage.CycleStoredSelection();
+            GameManager.Instance?.DayCycle?.ShowHintOnce(
+                "first_storage_select_withdraw",
+                "보관 목록에서 꺼낼 재료를 고른 뒤 꺼내기 동작으로 가방으로 되돌릴 수 있습니다.");
+        }
+
+        if (ReadPopupActionPressed(KeyCode.S, keyboard => keyboard.sKey))
+        {
+            changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
+        }
+
+        if (changed)
+        {
+            RefreshAll();
+        }
+        else
+        {
+            RefreshHubPopupContent();
+        }
+    }
+
+    private static bool ReadPopupActionPressed(KeyCode legacyKey, System.Func<Keyboard, KeyControl> keySelector)
+    {
+        bool pressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null)
+        {
+            KeyControl key = keySelector(keyboard);
+            if (key != null && key.wasPressedThisFrame)
+            {
+                pressed = true;
+            }
+        }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+        pressed |= Input.GetKeyDown(legacyKey);
+#endif
+
+        return pressed;
     }
 
     private void HandleInventoryChanged()
@@ -638,6 +974,136 @@ public class UIManager : MonoBehaviour
         scaler.referencePixelsPerUnit = 100f;
     }
 
+    private void EnsureCanvasGroups()
+    {
+        if (transform == null)
+        {
+            return;
+        }
+
+        Transform hudRoot = EnsureCanvasGroupRoot(HudRootName, 0);
+        Transform popupRoot = EnsureCanvasGroupRoot(PopupRootName, 1);
+
+        ReparentCanvasObjects(HudCanvasObjectNames, hudRoot);
+        ReparentCanvasObjects(PopupCanvasObjectNames, popupRoot);
+        ReparentCanvasObject("InventoryText", IsHubScene() ? popupRoot : hudRoot);
+    }
+
+    private Transform EnsureCanvasGroupRoot(string groupName, int siblingIndex)
+    {
+        Transform existing = transform.Find(groupName);
+        GameObject rootObject = existing != null ? existing.gameObject : new GameObject(groupName, typeof(RectTransform));
+        if (existing == null)
+        {
+            rootObject.transform.SetParent(transform, false);
+        }
+
+        RectTransform rect = rootObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = rootObject.AddComponent<RectTransform>();
+        }
+
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = Vector2.zero;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, transform.childCount - 1)));
+        return rect;
+    }
+
+    private void ReparentCanvasObjects(IEnumerable<string> objectNames, Transform targetParent)
+    {
+        foreach (string objectName in objectNames)
+        {
+            ReparentCanvasObject(objectName, targetParent);
+        }
+    }
+
+    private void ReparentCanvasObject(string objectName, Transform targetParent)
+    {
+        if (targetParent == null)
+        {
+            return;
+        }
+
+        Transform target = FindNamedUiTransform(objectName);
+        if (target == null || target == transform || target == targetParent)
+        {
+            return;
+        }
+
+        if (target.parent != targetParent)
+        {
+            target.SetParent(targetParent, false);
+        }
+    }
+
+    private Transform GetCanvasGroupParent(string objectName)
+    {
+        if (transform == null)
+        {
+            return null;
+        }
+
+        bool usePopupRoot = objectName == "InventoryText"
+            ? IsHubScene()
+            : PopupCanvasObjectNames.Contains(objectName);
+        return EnsureCanvasGroupRoot(usePopupRoot ? PopupRootName : HudRootName, usePopupRoot ? 1 : 0);
+    }
+
+    private void AssignCanvasGroupParent(Transform target, string objectName)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        Transform groupParent = GetCanvasGroupParent(objectName);
+        if (groupParent != null && target.parent != groupParent)
+        {
+            target.SetParent(groupParent, false);
+        }
+    }
+
+    private Transform FindNamedUiTransform(string name)
+    {
+        if (transform == null || string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        Transform direct = transform.Find(name);
+        if (direct != null)
+        {
+            return direct;
+        }
+
+        return FindNamedUiTransformRecursive(transform, name);
+    }
+
+    private static Transform FindNamedUiTransformRecursive(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+            {
+                return child;
+            }
+
+            Transform nested = FindNamedUiTransformRecursive(child, name);
+            if (nested != null)
+            {
+                return nested;
+            }
+        }
+
+        return null;
+    }
+
     /*
      * 현재 UI 구조에 맞춰 패널, 강조선, 텍스트, 버튼 스타일을 한 번에 다시 적용합니다.
      */
@@ -654,29 +1120,20 @@ public class UIManager : MonoBehaviour
         TMP_FontAsset headingFont = headingFontAsset != null ? headingFontAsset : preferredFont;
 
         ApplyCanvasScaleSettings();
+        EnsureCanvasGroups();
         ResolveOptionalUiReferences();
         guideText = EnsureOverlayText(guideText, "GuideText");
         resultText = EnsureOverlayText(resultText, "RestaurantResultText");
+        PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
 
-        Color parchment = new(0.10f, 0.10f, 0.10f, 0.88f);
-        Color paper = new(0.12f, 0.12f, 0.12f, 0.92f);
-        Color glass = new(0.16f, 0.16f, 0.16f, 0.84f);
-        Color ink = new(0.94f, 0.94f, 0.94f, 1f);
-        Color oceanAccent = new(0.72f, 0.72f, 0.72f, 0.96f);
-        Color forestAccent = new(0.62f, 0.62f, 0.62f, 0.96f);
-        Color amberAccent = new(0.72f, 0.72f, 0.72f, 0.96f);
-        Color coralAccent = new(0.56f, 0.56f, 0.56f, 0.96f);
-        Color goldAccent = new(0.80f, 0.80f, 0.80f, 0.96f);
-        Color nightDock = new(0.08f, 0.08f, 0.08f, 0.94f);
-
-        EnsureCommonHudChrome(isHubScene, preferredFont, parchment, paper, glass, oceanAccent, amberAccent);
+        EnsureCommonHudChrome(isHubScene, preferredFont, theme.Parchment, theme.Paper, theme.Glass, theme.OceanAccent, theme.AmberAccent);
         if (isHubScene)
         {
-            EnsureHubHudChrome(preferredFont, paper, nightDock, forestAccent, amberAccent, goldAccent);
+            EnsureHubHudChrome(preferredFont, theme.Paper, theme.Dock, theme.AmberAccent, theme.ActionText);
         }
 
         // 실제 HUD 배치와 텍스트 스타일은 아래 공용 레이아웃 메서드에서 한 번만 적용합니다.
-        ApplyCompactHudLayout(preferredFont, headingFont, ink, oceanAccent, forestAccent, amberAccent, coralAccent, goldAccent);
+        ApplyCompactHudLayout(preferredFont, headingFont, theme.Text, theme.OceanAccent, theme.ForestAccent, theme.AmberAccent, theme.CoralAccent, theme.GoldAccent);
         ApplyMenuPanelState();
         RefreshStoragePanelVisibility();
         ApplyWorldTextPresentation(preferredFont, headingFont);
@@ -694,19 +1151,19 @@ public class UIManager : MonoBehaviour
         Color oceanAccent,
         Color amberAccent)
     {
-        EnsureUiBackdrop("TopLeftPanel", PrototypeUiLayout.TopLeftPanel, parchment);
-        EnsureUiBackdrop("PhaseBadge", PrototypeUiLayout.PhaseBadge, glass);
-        EnsureUiBackdrop("PromptBackdrop", PrototypeUiLayout.PromptBackdrop(isHubScene), new Color(0.08f, 0.08f, 0.08f, 0.82f));
-        EnsureUiBackdrop("GuideBackdrop", PrototypeUiLayout.GuideBackdrop(isHubScene), new Color(0.10f, 0.10f, 0.10f, 0.78f));
-        EnsureUiBackdrop("ResultBackdrop", PrototypeUiLayout.ResultBackdrop(isHubScene), new Color(0.14f, 0.14f, 0.14f, 0.80f));
-        EnsureUiBackdrop("InventoryCard", PrototypeUiLayout.InventoryCard(isHubScene), paper);
+        EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
+        EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
+        EnsureUiBackdrop("PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene), glass);
+        EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
+        EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
+        EnsureUiBackdrop("InventoryCard", PrototypeUILayout.InventoryCard(isHubScene), paper);
 
-        EnsureUiAccentBar("TopLeftAccent", PrototypeUiLayout.TopLeftAccent, amberAccent);
-        EnsureUiAccentBar("InventoryAccent", PrototypeUiLayout.InventoryAccent(isHubScene), oceanAccent);
+        EnsureUiAccentBar("TopLeftAccent", PrototypeUILayout.TopLeftAccent, amberAccent);
+        EnsureUiAccentBar("InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene), oceanAccent);
         EnsureUiCaption(
             "InventoryCaption",
             isHubScene ? "재료" : "재료 / 가방",
-            PrototypeUiLayout.InventoryCaption(isHubScene),
+            PrototypeUILayout.InventoryCaption(isHubScene),
             preferredFont,
             oceanAccent,
             TextAlignmentOptions.TopLeft);
@@ -719,25 +1176,29 @@ public class UIManager : MonoBehaviour
         TMP_FontAsset preferredFont,
         Color paper,
         Color nightDock,
-        Color forestAccent,
         Color amberAccent,
-        Color goldAccent)
+        Color actionTextColor)
     {
-        EnsureUiBackdrop("CenterBottomPanel", PrototypeUiLayout.HubCenterBottomPanel, new Color(0.10f, 0.10f, 0.10f, 0.84f));
-        EnsureUiBackdrop("PopupOverlay", PrototypeUiLayout.HubPopupOverlay, new Color(0f, 0f, 0f, 0.52f));
-        EnsureUiBackdrop("StorageCard", PrototypeUiLayout.HubStorageCard, paper);
-        EnsureUiBackdrop("RecipeCard", PrototypeUiLayout.HubRecipeCard, paper);
-        EnsureUiBackdrop("UpgradeCard", PrototypeUiLayout.HubUpgradeCard, paper);
-        EnsureUiBackdrop("ActionDock", PrototypeUiLayout.HubActionDock, nightDock);
+        PrototypeUIPopupDefinition recipePopupDefinition = PrototypeUIPopupCatalog.GetDefinition(PrototypeUIPreviewPanel.Recipe);
+        Color popupShell = new(0.82f, 0.82f, 0.82f, 0.98f);
+        Color popupSection = new(0.92f, 0.95f, 0.99f, 1f);
+        Color popupBody = new(0.98f, 0.89f, 0.60f, 1f);
 
-        EnsureUiAccentBar("StorageAccent", PrototypeUiLayout.HubStorageAccent, forestAccent);
-        EnsureUiAccentBar("RecipeAccent", PrototypeUiLayout.HubRecipeAccent, amberAccent);
-        EnsureUiAccentBar("UpgradeAccent", PrototypeUiLayout.HubUpgradeAccent, goldAccent);
-        EnsureUiAccentBar("ActionAccent", PrototypeUiLayout.HubActionAccent, amberAccent);
-        EnsureUiCaption("StorageCaption", "창고", PrototypeUiLayout.HubStorageCaption, preferredFont, forestAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("RecipeCaption", "요리 메뉴", PrototypeUiLayout.HubRecipeCaption, preferredFont, amberAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("UpgradeCaption", "업그레이드", PrototypeUiLayout.HubUpgradeCaption, preferredFont, goldAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("ActionCaption", "진행", PrototypeUiLayout.HubActionCaption, preferredFont, new Color(0.88f, 0.88f, 0.88f, 1f), TextAlignmentOptions.TopRight);
+        EnsureUiBackdrop("CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel, paper);
+        EnsureUiBackdrop("PopupOverlay", PrototypeUILayout.HubPopupOverlay, new Color(0f, 0f, 0f, 0.52f));
+        EnsureUiBackdrop("ActionDock", PrototypeUILayout.HubActionDock, nightDock);
+        EnsureUiBackdrop("PopupFrame", PrototypeUILayout.HubPopupFrame, popupShell);
+        EnsureUiBackdrop("PopupLeftPanel", PrototypeUILayout.HubPopupLeftPanel, popupSection);
+        EnsureUiBackdrop("PopupRightPanel", PrototypeUILayout.HubPopupRightPanel, popupSection);
+        EnsureUiBackdrop("PopupLeftBody", PrototypeUILayout.HubPopupLeftBody, popupBody);
+        EnsureUiBackdrop("PopupRightBody", PrototypeUILayout.HubPopupRightBody, popupBody);
+
+        EnsureUiAccentBar("ActionAccent", PrototypeUILayout.HubActionAccent, amberAccent);
+        EnsureUiCaption("ActionCaption", "진행", PrototypeUILayout.HubActionCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopRight);
+        EnsureUiCaption("PopupTitle", recipePopupDefinition.Title, PrototypeUILayout.HubPopupTitle, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("PopupLeftCaption", recipePopupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("PopupRightCaption", recipePopupDefinition.RightCaption, PrototypeUILayout.HubPopupRightCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
+        EnsurePopupCloseButton(preferredFont);
     }
 
     /*
@@ -757,11 +1218,15 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Transform existing = transform.Find(name);
+        Transform existing = FindNamedUiTransform(name);
         GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(name);
         if (existing == null)
         {
-            backdropObject.transform.SetParent(transform, false);
+            backdropObject.transform.SetParent(GetCanvasGroupParent(name), false);
+        }
+        else
+        {
+            AssignCanvasGroupParent(backdropObject.transform, name);
         }
 
         RectTransform rect = backdropObject.GetComponent<RectTransform>();
@@ -783,7 +1248,7 @@ public class UIManager : MonoBehaviour
             image = backdropObject.AddComponent<Image>();
         }
 
-        image.color = color;
+        PrototypeUISkin.ApplyPanel(image, name, color);
         image.raycastTarget = false;
 
         Shadow shadow = backdropObject.GetComponent<Shadow>();
@@ -797,7 +1262,7 @@ public class UIManager : MonoBehaviour
         shadow.useGraphicAlpha = true;
     }
 
-    private void EnsureUiBackdrop(string name, PrototypeUiRect layout, Color color)
+    private void EnsureUiBackdrop(string name, PrototypeUIRect layout, Color color)
     {
         EnsureUiBackdrop(
             name,
@@ -821,11 +1286,15 @@ public class UIManager : MonoBehaviour
         Vector2 sizeDelta,
         Color color)
     {
-        Transform existing = transform.Find(name);
+        Transform existing = FindNamedUiTransform(name);
         GameObject accentObject = existing != null ? existing.gameObject : new GameObject(name);
         if (existing == null)
         {
-            accentObject.transform.SetParent(transform, false);
+            accentObject.transform.SetParent(GetCanvasGroupParent(name), false);
+        }
+        else
+        {
+            AssignCanvasGroupParent(accentObject.transform, name);
         }
 
         RectTransform rect = accentObject.GetComponent<RectTransform>();
@@ -847,11 +1316,14 @@ public class UIManager : MonoBehaviour
             image = accentObject.AddComponent<Image>();
         }
 
+        image.sprite = null;
+        image.type = Image.Type.Simple;
+        image.preserveAspect = false;
         image.color = color;
         image.raycastTarget = false;
     }
 
-    private void EnsureUiAccentBar(string name, PrototypeUiRect layout, Color color)
+    private void EnsureUiAccentBar(string name, PrototypeUIRect layout, Color color)
     {
         EnsureUiAccentBar(
             name,
@@ -878,11 +1350,15 @@ public class UIManager : MonoBehaviour
         Color color,
         TextAlignmentOptions alignment)
     {
-        Transform existing = transform.Find(name);
+        Transform existing = FindNamedUiTransform(name);
         GameObject captionObject = existing != null ? existing.gameObject : new GameObject(name);
         if (existing == null)
         {
-            captionObject.transform.SetParent(transform, false);
+            captionObject.transform.SetParent(GetCanvasGroupParent(name), false);
+        }
+        else
+        {
+            AssignCanvasGroupParent(captionObject.transform, name);
         }
 
         RectTransform rect = captionObject.GetComponent<RectTransform>();
@@ -913,7 +1389,7 @@ public class UIManager : MonoBehaviour
     private void EnsureUiCaption(
         string name,
         string content,
-        PrototypeUiRect layout,
+        PrototypeUIRect layout,
         TMP_FontAsset font,
         Color color,
         TextAlignmentOptions alignment)
@@ -935,14 +1411,19 @@ public class UIManager : MonoBehaviour
     {
         if (current != null)
         {
+            AssignCanvasGroupParent(current.transform, name);
             return current;
         }
 
-        Transform existing = transform.Find(name);
+        Transform existing = FindNamedUiTransform(name);
         GameObject textObject = existing != null ? existing.gameObject : new GameObject(name);
         if (existing == null)
         {
-            textObject.transform.SetParent(transform, false);
+            textObject.transform.SetParent(GetCanvasGroupParent(name), false);
+        }
+        else
+        {
+            AssignCanvasGroupParent(textObject.transform, name);
         }
 
         RectTransform rect = textObject.GetComponent<RectTransform>();
@@ -969,6 +1450,72 @@ public class UIManager : MonoBehaviour
     }
 
     /*
+     * 허브 팝업 우측 상단에 닫기 버튼을 생성하거나 다시 스타일링합니다.
+     */
+    private void EnsurePopupCloseButton(TMP_FontAsset font)
+    {
+        if (transform == null)
+        {
+            return;
+        }
+
+        Transform existing = FindNamedUiTransform("PopupCloseButton");
+        GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("PopupCloseButton");
+        if (existing == null)
+        {
+            buttonObject.transform.SetParent(GetCanvasGroupParent("PopupCloseButton"), false);
+        }
+        else
+        {
+            AssignCanvasGroupParent(buttonObject.transform, "PopupCloseButton");
+        }
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = buttonObject.AddComponent<RectTransform>();
+        }
+
+        ApplyRectLayout(rect, PrototypeUILayout.HubPopupCloseButton);
+        rect.SetAsLastSibling();
+
+        Image image = buttonObject.GetComponent<Image>();
+        if (image == null)
+        {
+            image = buttonObject.AddComponent<Image>();
+        }
+
+        Button button = buttonObject.GetComponent<Button>();
+        if (button == null)
+        {
+            button = buttonObject.AddComponent<Button>();
+        }
+
+        button.targetGraphic = image;
+        popupCloseButton = button;
+        ApplyButtonPresentation(button, font, Color.white);
+
+        TextMeshProUGUI label = buttonObject.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (label == null)
+        {
+            GameObject labelObject = new("PopupCloseButton_Label");
+            labelObject.transform.SetParent(buttonObject.transform, false);
+
+            RectTransform labelRect = labelObject.AddComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.anchoredPosition = Vector2.zero;
+            labelRect.sizeDelta = Vector2.zero;
+
+            label = labelObject.AddComponent<TextMeshProUGUI>();
+        }
+
+        label.text = string.Empty;
+        label.gameObject.SetActive(false);
+    }
+
+    /*
      * 텍스트나 버튼의 위치와 크기를 지정된 값으로 다시 맞춥니다.
      */
     private static void ApplyRectLayout(RectTransform rect, Vector2 anchoredPosition, Vector2 sizeDelta)
@@ -982,7 +1529,7 @@ public class UIManager : MonoBehaviour
         rect.sizeDelta = sizeDelta;
     }
 
-    private static void ApplyRectLayout(RectTransform rect, PrototypeUiRect layout)
+    private static void ApplyRectLayout(RectTransform rect, PrototypeUIRect layout)
     {
         ApplyRectLayout(
             rect,
@@ -1043,11 +1590,11 @@ public class UIManager : MonoBehaviour
         text.margin = margin;
         text.lineSpacing = lineSpacing;
         text.isRightToLeftText = false;
-        text.enableAutoSizing = allowWrap;
-        text.fontSizeMin = allowWrap ? Mathf.Max(14f, fontSize - 5f) : fontSize;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = allowWrap ? Mathf.Max(12f, fontSize - 7f) : Mathf.Max(13f, fontSize - 6f);
         text.fontSizeMax = fontSize;
         text.textWrappingMode = allowWrap ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
-        text.overflowMode = allowWrap ? TextOverflowModes.Ellipsis : TextOverflowModes.Overflow;
+        text.overflowMode = allowWrap ? TextOverflowModes.Masking : TextOverflowModes.Truncate;
         text.fontStyle = bold ? FontStyles.Bold : FontStyles.Normal;
         text.characterSpacing = bold ? 0.35f : 0f;
         text.wordSpacing = 0f;
@@ -1082,7 +1629,7 @@ public class UIManager : MonoBehaviour
         rect.sizeDelta = sizeDelta;
     }
 
-    private static void ApplyButtonLayout(Button button, PrototypeUiRect layout)
+    private static void ApplyButtonLayout(Button button, PrototypeUIRect layout)
     {
         if (button == null)
         {
@@ -1104,9 +1651,10 @@ public class UIManager : MonoBehaviour
         }
 
         Image image = button.GetComponent<Image>();
+        bool hasKenneySkin = false;
         if (image != null)
         {
-            image.color = accentColor;
+            hasKenneySkin = PrototypeUISkin.ApplyButton(image, button.name, accentColor);
         }
 
         TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -1123,11 +1671,23 @@ public class UIManager : MonoBehaviour
         shadow.useGraphicAlpha = true;
 
         ColorBlock colors = button.colors;
-        colors.normalColor = accentColor;
-        colors.highlightedColor = Color.Lerp(accentColor, Color.white, 0.14f);
-        colors.pressedColor = Color.Lerp(accentColor, Color.black, 0.18f);
-        colors.selectedColor = Color.Lerp(accentColor, Color.white, 0.10f);
-        colors.disabledColor = new Color(accentColor.r * 0.55f, accentColor.g * 0.55f, accentColor.b * 0.55f, 0.45f);
+        if (hasKenneySkin)
+        {
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1f, 1f, 1f, 0.96f);
+            colors.pressedColor = new Color(0.84f, 0.84f, 0.84f, 1f);
+            colors.selectedColor = new Color(0.92f, 0.92f, 0.92f, 1f);
+            colors.disabledColor = new Color(1f, 1f, 1f, 0.42f);
+        }
+        else
+        {
+            colors.normalColor = accentColor;
+            colors.highlightedColor = Color.Lerp(accentColor, Color.white, 0.14f);
+            colors.pressedColor = Color.Lerp(accentColor, Color.black, 0.18f);
+            colors.selectedColor = Color.Lerp(accentColor, Color.white, 0.10f);
+            colors.disabledColor = new Color(accentColor.r * 0.55f, accentColor.g * 0.55f, accentColor.b * 0.55f, 0.45f);
+        }
+
         colors.fadeDuration = 0.08f;
         button.transition = Selectable.Transition.ColorTint;
         button.colors = colors;
@@ -1138,6 +1698,11 @@ public class UIManager : MonoBehaviour
      */
     private static void ApplyWorldTextPresentation(TMP_FontAsset bodyFont, TMP_FontAsset headingFont)
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
         TextMeshPro[] worldTexts = FindObjectsByType<TextMeshPro>(FindObjectsSortMode.None);
         foreach (TextMeshPro worldText in worldTexts)
         {
@@ -1159,6 +1724,8 @@ public class UIManager : MonoBehaviour
             worldText.wordSpacing = 0f;
             worldText.lineSpacing = 0f;
             worldText.fontStyle = isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal;
+            float labelScale = isLargeLabel ? 0.30f : isPrimaryLabel ? 0.27f : 0.25f;
+            worldText.transform.localScale = Vector3.one * labelScale;
             ApplyCompactWorldLabelOffset(worldText);
 
             float luminance = (worldText.color.r * 0.299f) + (worldText.color.g * 0.587f) + (worldText.color.b * 0.114f);
@@ -1181,19 +1748,19 @@ public class UIManager : MonoBehaviour
 
         if (parent.GetComponent<ScenePortal>() != null)
         {
-            compactY = 0.90f;
+            compactY = 0.82f;
         }
         else if (parent.GetComponent<RecipeSelectorStation>() != null || parent.GetComponent<ServiceCounterStation>() != null)
         {
-            compactY = 0.86f;
+            compactY = 0.80f;
         }
         else if (parent.GetComponent<StorageStation>() != null)
         {
-            compactY = 0.78f;
+            compactY = 0.72f;
         }
         else if (parent.GetComponent<UpgradeStation>() != null)
         {
-            compactY = 0.82f;
+            compactY = 0.68f;
         }
         else if (parent.GetComponent<GatherableResource>() != null)
         {
@@ -1225,17 +1792,17 @@ public class UIManager : MonoBehaviour
     {
         bool isHubScene = IsHubScene();
 
-        ApplyNamedRectLayout("TopLeftPanel", PrototypeUiLayout.TopLeftPanel);
-        ApplyNamedRectLayout("TopLeftAccent", PrototypeUiLayout.TopLeftAccent);
-        ApplyNamedRectLayout("PhaseBadge", PrototypeUiLayout.PhaseBadge);
-        ApplyNamedRectLayout("PromptBackdrop", PrototypeUiLayout.PromptBackdrop(isHubScene));
-        ApplyNamedRectLayout("GuideBackdrop", PrototypeUiLayout.GuideBackdrop(isHubScene));
-        ApplyNamedRectLayout("ResultBackdrop", PrototypeUiLayout.ResultBackdrop(isHubScene));
+        ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+        ApplyNamedRectLayout("TopLeftAccent", PrototypeUILayout.TopLeftAccent);
+        ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
+        ApplyNamedRectLayout("PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
+        ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+        ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
         if (isHubScene)
         {
-            ApplyNamedRectLayout("ActionDock", PrototypeUiLayout.HubActionDock);
-            ApplyNamedRectLayout("ActionAccent", PrototypeUiLayout.HubActionAccent);
-            ApplyNamedRectLayout("CenterBottomPanel", PrototypeUiLayout.HubCenterBottomPanel);
+            ApplyNamedRectLayout("ActionDock", PrototypeUILayout.HubActionDock);
+            ApplyNamedRectLayout("ActionAccent", PrototypeUILayout.HubActionAccent);
+            ApplyNamedRectLayout("CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel);
         }
 
         SetNamedObjectActive("CenterBottomPanel", isHubScene);
@@ -1244,15 +1811,15 @@ public class UIManager : MonoBehaviour
         SetNamedObjectActive("ActionAccent", isHubScene);
         SetNamedObjectActive("ActionCaption", isHubScene);
 
-        ApplyRectLayout(goldText != null ? goldText.rectTransform : null, PrototypeUiLayout.GoldText);
-        ApplyRectLayout(dayPhaseText != null ? dayPhaseText.rectTransform : null, PrototypeUiLayout.DayPhaseText);
-        ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, PrototypeUiLayout.PromptText(isHubScene));
-        ApplyRectLayout(guideText != null ? guideText.rectTransform : null, PrototypeUiLayout.GuideText(isHubScene));
-        ApplyRectLayout(resultText != null ? resultText.rectTransform : null, PrototypeUiLayout.ResultText(isHubScene));
+        ApplyRectLayout(goldText != null ? goldText.rectTransform : null, PrototypeUILayout.GoldText);
+        ApplyRectLayout(dayPhaseText != null ? dayPhaseText.rectTransform : null, PrototypeUILayout.DayPhaseText);
+        ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, PrototypeUILayout.PromptText(isHubScene));
+        ApplyRectLayout(guideText != null ? guideText.rectTransform : null, PrototypeUILayout.GuideText(isHubScene));
+        ApplyRectLayout(resultText != null ? resultText.rectTransform : null, PrototypeUILayout.ResultText(isHubScene));
         ApplyScreenTextStyle(goldText, headingFont, 20f, textColor, TextAlignmentOptions.TopLeft, false, 0f, new Vector4(6f, 2f, 6f, 2f), true);
         ApplyScreenTextStyle(dayPhaseText, headingFont, 20f, textColor, TextAlignmentOptions.Center, false, 0f, new Vector4(8f, 2f, 8f, 2f), true);
         ApplyScreenTextStyle(interactionPromptText, headingFont, 21f, textColor, TextAlignmentOptions.Center, false, 0f, new Vector4(12f, 8f, 12f, 8f), true);
-        ApplyScreenTextStyle(guideText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, true, 4f, new Vector4(14f, 8f, 14f, 10f), false);
+        ApplyScreenTextStyle(guideText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, !isHubScene, 4f, new Vector4(14f, 8f, 14f, 10f), false);
         ApplyScreenTextStyle(resultText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, true, 4f, new Vector4(14f, 10f, 14f, 10f), false);
 
         ApplyHubActionButtonsLayout(isHubScene, headingFont, oceanAccent, coralAccent, goldAccent);
@@ -1281,9 +1848,9 @@ public class UIManager : MonoBehaviour
         Color coralAccent,
         Color goldAccent)
     {
-        ApplyButtonLayout(skipExplorationButton, PrototypeUiLayout.HubSkipExplorationButton);
-        ApplyButtonLayout(skipServiceButton, PrototypeUiLayout.HubSkipServiceButton);
-        ApplyButtonLayout(nextDayButton, PrototypeUiLayout.HubNextDayButton);
+        ApplyButtonLayout(skipExplorationButton, PrototypeUILayout.HubSkipExplorationButton);
+        ApplyButtonLayout(skipServiceButton, PrototypeUILayout.HubSkipServiceButton);
+        ApplyButtonLayout(nextDayButton, PrototypeUILayout.HubNextDayButton);
         ApplyButtonPresentation(skipExplorationButton, headingFont, oceanAccent);
         ApplyButtonPresentation(skipServiceButton, headingFont, coralAccent);
         ApplyButtonPresentation(nextDayButton, headingFont, goldAccent);
@@ -1305,33 +1872,50 @@ public class UIManager : MonoBehaviour
         Color amberAccent,
         Color goldAccent)
     {
-        ApplyNamedRectLayout("InventoryCard", PrototypeUiLayout.HubInventoryCard);
-        ApplyNamedRectLayout("InventoryAccent", PrototypeUiLayout.HubInventoryAccent);
-        ApplyNamedRectLayout("RecipeCard", PrototypeUiLayout.HubRecipeCard);
-        ApplyNamedRectLayout("RecipeAccent", PrototypeUiLayout.HubRecipeAccent);
-        ApplyNamedRectLayout("UpgradeCard", PrototypeUiLayout.HubUpgradeCard);
-        ApplyNamedRectLayout("UpgradeAccent", PrototypeUiLayout.HubUpgradeAccent);
-        ApplyNamedRectLayout("StorageCard", PrototypeUiLayout.HubStorageCard);
-        ApplyNamedRectLayout("StorageAccent", PrototypeUiLayout.HubStorageAccent);
+        ApplyNamedRectLayout("PopupFrame", PrototypeUILayout.HubPopupFrame);
+        ApplyNamedRectLayout("PopupLeftPanel", PrototypeUILayout.HubPopupLeftPanel);
+        ApplyNamedRectLayout("PopupRightPanel", PrototypeUILayout.HubPopupRightPanel);
+        ApplyNamedRectLayout("PopupLeftBody", PrototypeUILayout.HubPopupLeftBody);
+        ApplyNamedRectLayout("PopupRightBody", PrototypeUILayout.HubPopupRightBody);
+        ApplyHubPopupFrameStyle(headingFont, textColor);
+        ApplyPopupCloseButtonLayout(headingFont);
 
-        EnsureUiCaption("InventoryCaption", "재료", PrototypeUiLayout.HubInventoryCaption, headingFont, oceanAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("RecipeCaption", "요리 메뉴", PrototypeUiLayout.HubRecipeCaption, headingFont, amberAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("UpgradeCaption", "업그레이드", PrototypeUiLayout.HubUpgradeCaption, headingFont, goldAccent, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("StorageCaption", "창고", PrototypeUiLayout.HubStorageCaption, headingFont, forestAccent, TextAlignmentOptions.TopLeft);
+        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupLeftText);
+        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUILayout.HubPopupRightText);
 
-        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUiLayout.HubInventoryText);
-        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUiLayout.HubRecipeText);
-        ApplyRectLayout(upgradeText != null ? upgradeText.rectTransform : null, PrototypeUiLayout.HubUpgradeText);
-        ApplyRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUiLayout.HubStorageText);
+        ApplyScreenTextStyle(inventoryText, bodyFont, 20f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 10f, 12f, 10f), false);
+        ApplyScreenTextStyle(selectedRecipeText, bodyFont, 20f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 10f, 12f, 10f), false);
 
-        ApplyScreenTextStyle(inventoryText, bodyFont, 19f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 6f, 12f, 8f), false);
-        ApplyScreenTextStyle(selectedRecipeText, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 3f, new Vector4(12f, 6f, 12f, 8f), false);
-        ApplyScreenTextStyle(upgradeText, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 3f, new Vector4(12f, 6f, 12f, 8f), false);
-        ApplyScreenTextStyle(storageText, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 6f, 12f, 8f), false);
+        ApplyHubMenuButtonLayout(recipePanelButton, headingFont, amberAccent, PrototypeUILayout.HubRecipePanelButton);
+        ApplyHubMenuButtonLayout(upgradePanelButton, headingFont, goldAccent, PrototypeUILayout.HubUpgradePanelButton);
+        ApplyHubMenuButtonLayout(materialPanelButton, headingFont, oceanAccent, PrototypeUILayout.HubMaterialPanelButton);
+        SetNamedObjectActive("InventoryCard", false);
+        SetNamedObjectActive("InventoryAccent", false);
+        SetNamedObjectActive("InventoryCaption", false);
+        SetLegacyHubPopupObjectsActive(false);
+    }
 
-        ApplyHubMenuButtonLayout(recipePanelButton, headingFont, amberAccent, PrototypeUiLayout.HubRecipePanelButton);
-        ApplyHubMenuButtonLayout(upgradePanelButton, headingFont, goldAccent, PrototypeUiLayout.HubUpgradePanelButton);
-        ApplyHubMenuButtonLayout(materialPanelButton, headingFont, oceanAccent, PrototypeUiLayout.HubMaterialPanelButton);
+    /*
+     * 허브 팝업 제목과 좌우 섹션 캡션을 현재 메뉴에 맞춰 갱신합니다.
+     */
+    private void ApplyHubPopupFrameStyle(TMP_FontAsset headingFont, Color textColor)
+    {
+        PrototypeUIPopupDefinition popupDefinition = PrototypeUIPopupCatalog.GetDefinition(ConvertRuntimePopupPanel(activeHubPanel));
+
+        EnsureUiCaption("PopupTitle", popupDefinition.Title, PrototypeUILayout.HubPopupTitle, headingFont, textColor, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("PopupLeftCaption", popupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, headingFont, textColor, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption("PopupRightCaption", popupDefinition.RightCaption, PrototypeUILayout.HubPopupRightCaption, headingFont, textColor, TextAlignmentOptions.TopLeft);
+    }
+
+    private void ApplyPopupCloseButtonLayout(TMP_FontAsset headingFont)
+    {
+        if (popupCloseButton == null)
+        {
+            return;
+        }
+
+        ApplyButtonLayout(popupCloseButton, PrototypeUILayout.HubPopupCloseButton);
+        ApplyButtonPresentation(popupCloseButton, headingFont, Color.white);
     }
 
     /*
@@ -1343,18 +1927,19 @@ public class UIManager : MonoBehaviour
         Color textColor,
         Color oceanAccent)
     {
-        ApplyNamedRectLayout("InventoryCard", PrototypeUiLayout.ExploreInventoryCard);
-        ApplyNamedRectLayout("InventoryAccent", PrototypeUiLayout.ExploreInventoryAccent);
-        EnsureUiCaption("InventoryCaption", "재료 / 가방", PrototypeUiLayout.ExploreInventoryCaption, headingFont, oceanAccent, TextAlignmentOptions.TopLeft);
-        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUiLayout.ExploreInventoryText);
+        SetHubPopupDesignActive(false);
+        ApplyNamedRectLayout("InventoryCard", PrototypeUILayout.ExploreInventoryCard);
+        ApplyNamedRectLayout("InventoryAccent", PrototypeUILayout.ExploreInventoryAccent);
+        EnsureUiCaption("InventoryCaption", "재료 / 가방", PrototypeUILayout.ExploreInventoryCaption, headingFont, oceanAccent, TextAlignmentOptions.TopLeft);
+        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.ExploreInventoryText);
         ApplyScreenTextStyle(inventoryText, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 3f, new Vector4(12f, 6f, 12f, 8f), false);
-        SetStoragePanelUiActive(false);
+        SetLegacyHubPopupObjectsActive(false);
     }
 
     /*
      * 허브 하단 버튼은 같은 형태를 쓰므로 배치와 스타일을 공통 메서드로 묶습니다.
      */
-    private void ApplyHubMenuButtonLayout(Button button, TMP_FontAsset headingFont, Color accentColor, PrototypeUiRect layout)
+    private void ApplyHubMenuButtonLayout(Button button, TMP_FontAsset headingFont, Color accentColor, PrototypeUIRect layout)
     {
         if (button == null)
         {
@@ -1375,28 +1960,384 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void SetStoragePanelUiActive(bool isActive)
+    private void SetLegacyHubPopupObjectsActive(bool isActive)
     {
         SetNamedObjectActive("StorageCard", isActive);
         SetNamedObjectActive("StorageAccent", isActive);
         SetNamedObjectActive("StorageCaption", isActive);
+        SetNamedObjectActive("RecipeCard", isActive);
+        SetNamedObjectActive("RecipeAccent", isActive);
+        SetNamedObjectActive("RecipeCaption", isActive);
+        SetNamedObjectActive("UpgradeCard", isActive);
+        SetNamedObjectActive("UpgradeAccent", isActive);
+        SetNamedObjectActive("UpgradeCaption", isActive);
+    }
 
-        if (storageText != null)
+    private void SetHubPopupDesignActive(bool isActive)
+    {
+        SetNamedObjectActive("PopupFrame", isActive);
+        SetNamedObjectActive("PopupLeftPanel", isActive);
+        SetNamedObjectActive("PopupRightPanel", isActive);
+        SetNamedObjectActive("PopupLeftBody", isActive);
+        SetNamedObjectActive("PopupRightBody", isActive);
+        SetNamedObjectActive("PopupTitle", isActive);
+        SetNamedObjectActive("PopupLeftCaption", isActive);
+        SetNamedObjectActive("PopupRightCaption", isActive);
+        SetButtonGameObjectActive(popupCloseButton, isActive);
+    }
+
+    private void SetHubHudVisible(bool isVisible)
+    {
+        SetNamedObjectActive("TopLeftPanel", isVisible);
+        SetNamedObjectActive("TopLeftAccent", isVisible);
+        SetNamedObjectActive("PhaseBadge", isVisible && dayPhaseText != null && !string.IsNullOrWhiteSpace(dayPhaseText.text));
+        SetNamedObjectActive("CenterBottomPanel", isVisible);
+        SetNamedObjectActive("ActionDock", isVisible);
+        SetNamedObjectActive("ActionAccent", isVisible);
+        SetNamedObjectActive("ActionCaption", isVisible);
+        SetNamedObjectActive("PromptBackdrop", isVisible && interactionPromptText != null && interactionPromptText.gameObject.activeSelf);
+
+        if (goldText != null)
         {
-            storageText.gameObject.SetActive(isActive);
+            goldText.gameObject.SetActive(isVisible);
         }
+
+        if (dayPhaseText != null)
+        {
+            dayPhaseText.gameObject.SetActive(isVisible && !string.IsNullOrWhiteSpace(dayPhaseText.text));
+        }
+
+        if (interactionPromptText != null)
+        {
+            interactionPromptText.gameObject.SetActive(isVisible && !string.IsNullOrWhiteSpace(interactionPromptText.text));
+        }
+
+        SetButtonGameObjectActive(recipePanelButton, isVisible);
+        SetButtonGameObjectActive(upgradePanelButton, isVisible);
+        SetButtonGameObjectActive(materialPanelButton, isVisible);
+    }
+
+    private void RefreshHubPopupContent()
+    {
+        if (!IsHubScene())
+        {
+            return;
+        }
+
+        string leftText = string.Empty;
+        string rightText = string.Empty;
+
+        switch (activeHubPanel)
+        {
+            case HubPopupPanel.Storage:
+                leftText = BuildStoragePopupListText();
+                rightText = BuildStoragePopupInfoText();
+                break;
+
+            case HubPopupPanel.Recipe:
+                leftText = BuildRecipePopupListText();
+                rightText = BuildRecipePopupDetailText();
+                break;
+
+            case HubPopupPanel.Upgrade:
+                leftText = BuildUpgradePopupListText();
+                rightText = BuildUpgradePopupInfoText();
+                break;
+
+            case HubPopupPanel.Materials:
+                leftText = BuildMaterialPopupListText();
+                rightText = BuildMaterialPopupInfoText();
+                break;
+        }
+
+        if (inventoryText != null)
+        {
+            inventoryText.text = leftText;
+        }
+
+        if (selectedRecipeText != null)
+        {
+            selectedRecipeText.text = rightText;
+        }
+    }
+
+    private string BuildRecipePopupListText()
+    {
+        if (cachedRestaurant == null)
+        {
+            return "- 등록된 메뉴가 없습니다.";
+        }
+
+        StringBuilder builder = new();
+        foreach (RecipeData recipe in cachedRestaurant.AvailableRecipes)
+        {
+            if (recipe == null)
+            {
+                continue;
+            }
+
+            string selectedMark = recipe == cachedRestaurant.SelectedRecipe ? "[선택] " : string.Empty;
+            builder.AppendLine($"- {selectedMark}{recipe.DisplayName}");
+        }
+
+        return builder.Length > 0 ? builder.ToString().TrimEnd() : "- 등록된 메뉴가 없습니다.";
+    }
+
+    private string BuildRecipePopupDetailText()
+    {
+        if (cachedRestaurant == null || cachedRestaurant.SelectedRecipe == null)
+        {
+            return "선택된 메뉴가 없습니다.";
+        }
+
+        RecipeData recipe = cachedRestaurant.SelectedRecipe;
+        StringBuilder builder = new();
+        builder.AppendLine(recipe.DisplayName);
+
+        if (!string.IsNullOrWhiteSpace(recipe.Description))
+        {
+            builder.AppendLine(recipe.Description);
+            builder.AppendLine();
+        }
+
+        builder.AppendLine($"- 판매가: {recipe.SellPrice}");
+        builder.AppendLine($"- 평판: +{Mathf.Max(0, recipe.ReputationDelta)}");
+        builder.AppendLine($"- 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
+        builder.AppendLine("- 필요 재료");
+
+        foreach (RecipeIngredient ingredient in recipe.Ingredients)
+        {
+            if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+            {
+                continue;
+            }
+
+            int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
+                ? GameManager.Instance.Inventory.GetAmount(ingredient.Resource)
+                : 0;
+            builder.AppendLine($"  {ingredient.Resource.DisplayName} {ownedAmount}/{ingredient.Amount}");
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildMaterialPopupListText()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
+        {
+            return "- 인벤토리 없음";
+        }
+
+        IReadOnlyList<InventoryEntry> entries = GameManager.Instance.Inventory.RuntimeItems;
+        if (entries.Count == 0)
+        {
+            return "- 비어 있음";
+        }
+
+        StringBuilder builder = new();
+        foreach (InventoryEntry entry in entries)
+        {
+            if (entry == null || entry.Resource == null)
+            {
+                continue;
+            }
+
+            builder.AppendLine($"- {entry.Resource.DisplayName} x{entry.Amount}");
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildMaterialPopupInfoText()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
+        {
+            return "가방 정보를 찾지 못했습니다.";
+        }
+
+        InventoryManager inventory = GameManager.Instance.Inventory;
+        StringBuilder builder = new();
+        builder.AppendLine($"가방 {inventory.UsedSlotCount}/{inventory.MaxSlotCount}칸");
+
+        if (cachedRestaurant == null || cachedRestaurant.SelectedRecipe == null)
+        {
+            builder.AppendLine();
+            builder.Append("선택 메뉴가 없습니다.");
+            return builder.ToString().TrimEnd();
+        }
+
+        RecipeData recipe = cachedRestaurant.SelectedRecipe;
+        builder.AppendLine($"선택 메뉴: {recipe.DisplayName}");
+        builder.AppendLine("- 필요 재료");
+
+        foreach (RecipeIngredient ingredient in recipe.Ingredients)
+        {
+            if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+            {
+                continue;
+            }
+
+            int ownedAmount = inventory.GetAmount(ingredient.Resource);
+            builder.AppendLine($"  {ingredient.Resource.DisplayName} {ownedAmount}/{ingredient.Amount}");
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildUpgradePopupListText()
+    {
+        return cachedUpgradeManager != null
+            ? cachedUpgradeManager.BuildUpgradeSummary()
+            : "업그레이드 정보를 찾지 못했습니다.";
+    }
+
+    private string BuildUpgradePopupInfoText()
+    {
+        if (cachedUpgradeManager == null)
+        {
+            return "업그레이드 정보를 찾지 못했습니다.";
+        }
+
+        StringBuilder builder = new();
+        builder.AppendLine($"다음 행동: {cachedUpgradeManager.GetPreferredActionLabel()}");
+        builder.AppendLine(cachedUpgradeManager.CanAffordPreferredAction() ? "지금 바로 진행 가능" : "재료 또는 코인 준비 필요");
+
+        if (!string.IsNullOrWhiteSpace(cachedUpgradeManager.LastUpgradeMessage))
+        {
+            builder.AppendLine();
+            builder.AppendLine(cachedUpgradeManager.LastUpgradeMessage);
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildStoragePopupListText()
+    {
+        if (cachedStorage == null)
+        {
+            return "- 창고 없음";
+        }
+
+        cachedStorage.InitializeIfNeeded();
+        if (cachedStorage.RuntimeItems.Count == 0)
+        {
+            return "- 보관 중인 재료 없음";
+        }
+
+        StringBuilder builder = new();
+        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
+        {
+            if (entry == null || entry.Resource == null)
+            {
+                continue;
+            }
+
+            builder.AppendLine($"- {entry.Resource.DisplayName} x{entry.Amount}");
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildStoragePopupInfoText()
+    {
+        if (cachedStorage == null)
+        {
+            return "창고 정보를 찾지 못했습니다.";
+        }
+
+        InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+        InventoryEntry depositEntry = cachedStorage.GetSelectedInventoryEntry(inventory);
+        InventoryEntry withdrawEntry = cachedStorage.GetSelectedStoredEntry();
+
+        StringBuilder builder = new();
+        builder.AppendLine(depositEntry != null
+            ? $"맡길 재료: {depositEntry.Resource.DisplayName} x{depositEntry.Amount}"
+            : "맡길 재료: 없음");
+        builder.AppendLine(withdrawEntry != null
+            ? $"꺼낼 재료: {withdrawEntry.Resource.DisplayName} x{withdrawEntry.Amount}"
+            : "꺼낼 재료: 없음");
+        builder.AppendLine();
+        builder.AppendLine("Q 품목 변경");
+        builder.AppendLine("W 맡기기");
+        builder.AppendLine("A 꺼낼 재료 변경");
+        builder.AppendLine("S 꺼내기");
+
+        if (!string.IsNullOrWhiteSpace(cachedStorage.LastOperationMessage))
+        {
+            builder.AppendLine();
+            builder.AppendLine(cachedStorage.LastOperationMessage);
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildHubMessageLine()
+    {
+        if (!IsHubScene() || activeHubPanel != HubPopupPanel.None)
+        {
+            return string.Empty;
+        }
+
+        string message = cachedDayCycle != null ? cachedDayCycle.CurrentGuideText : string.Empty;
+
+        if (cachedDayCycle != null
+            && cachedDayCycle.CurrentPhase == DayPhase.Settlement
+            && !string.IsNullOrWhiteSpace(cachedDayCycle.LastSettlementSummary))
+        {
+            message = cachedDayCycle.LastSettlementSummary;
+        }
+        else if (cachedDayCycle != null
+            && cachedDayCycle.CurrentPhase == DayPhase.AfternoonService
+            && cachedRestaurant != null
+            && !string.IsNullOrWhiteSpace(cachedRestaurant.LastServiceResult))
+        {
+            message = cachedRestaurant.LastServiceResult;
+        }
+
+        return CompactToSingleLine(message);
+    }
+
+    private static string CompactToSingleLine(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        string compact = text.Replace("\r", " ").Replace("\n", " / ");
+        while (compact.Contains("  "))
+        {
+            compact = compact.Replace("  ", " ");
+        }
+
+        return compact.Trim();
     }
 
     private void RefreshStoragePanelVisibility()
     {
         if (!IsHubScene())
         {
-            SetStoragePanelUiActive(false);
+            if (storageText != null)
+            {
+                storageText.gameObject.SetActive(false);
+            }
+
             return;
         }
 
-        bool isVisible = ShouldShowStoragePanel();
-        SetStoragePanelUiActive(isVisible);
+        if (!Application.isPlaying)
+        {
+            RefreshHubPopupOverlay();
+            return;
+        }
+
+        if (activeHubPanel == HubPopupPanel.Storage && !IsPlayerNearStorageStation())
+        {
+            activeHubPanel = HubPopupPanel.None;
+            ApplyMenuPanelState();
+            return;
+        }
+
         RefreshHubPopupOverlay();
     }
 
@@ -1406,43 +2347,49 @@ public class UIManager : MonoBehaviour
 
         if (isHubScene)
         {
-            bool showRecipe = activeHubPanel == HubPopupPanel.Recipe;
-            bool showUpgrade = activeHubPanel == HubPopupPanel.Upgrade;
-            bool showMaterials = activeHubPanel == HubPopupPanel.Materials;
-            SetNamedObjectActive("RecipeCard", showRecipe);
-            SetNamedObjectActive("RecipeAccent", showRecipe);
-            SetNamedObjectActive("RecipeCaption", showRecipe);
-            SetNamedObjectActive("UpgradeCard", showUpgrade);
-            SetNamedObjectActive("UpgradeAccent", showUpgrade);
-            SetNamedObjectActive("UpgradeCaption", showUpgrade);
-            SetNamedObjectActive("InventoryCard", showMaterials);
-            SetNamedObjectActive("InventoryAccent", showMaterials);
-            SetNamedObjectActive("InventoryCaption", showMaterials);
+            PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
+            TMP_FontAsset headingFont = headingFontAsset != null
+                ? headingFontAsset
+                : bodyFontAsset != null
+                    ? bodyFontAsset
+                    : TMP_Settings.defaultFontAsset;
+            bool showPopup = activeHubPanel != HubPopupPanel.None;
+
+            ApplyHubPopupFrameStyle(headingFont, theme.Text);
+            SetHubPopupDesignActive(showPopup);
+            SetHubHudVisible(!showPopup);
+            SetLegacyHubPopupObjectsActive(false);
+            SetNamedObjectActive("InventoryCard", false);
+            SetNamedObjectActive("InventoryAccent", false);
+            SetNamedObjectActive("InventoryCaption", false);
+
+            RefreshHubPopupContent();
+
+            if (inventoryText != null)
+            {
+                inventoryText.gameObject.SetActive(showPopup);
+            }
 
             if (selectedRecipeText != null)
             {
-                selectedRecipeText.gameObject.SetActive(showRecipe);
+                selectedRecipeText.gameObject.SetActive(showPopup);
+            }
+
+            if (storageText != null)
+            {
+                storageText.gameObject.SetActive(false);
             }
 
             if (upgradeText != null)
             {
-                upgradeText.gameObject.SetActive(showUpgrade);
-            }
-
-            if (inventoryText != null)
-            {
-                inventoryText.gameObject.SetActive(showMaterials);
+                upgradeText.gameObject.SetActive(false);
             }
         }
         else
         {
             bool showInventory = true;
-            SetNamedObjectActive("RecipeCard", false);
-            SetNamedObjectActive("RecipeAccent", false);
-            SetNamedObjectActive("RecipeCaption", false);
-            SetNamedObjectActive("UpgradeCard", false);
-            SetNamedObjectActive("UpgradeAccent", false);
-            SetNamedObjectActive("UpgradeCaption", false);
+            SetHubPopupDesignActive(false);
+            SetLegacyHubPopupObjectsActive(false);
             SetNamedObjectActive("InventoryCard", showInventory);
             SetNamedObjectActive("InventoryAccent", showInventory);
             SetNamedObjectActive("InventoryCaption", showInventory);
@@ -1450,6 +2397,11 @@ public class UIManager : MonoBehaviour
             if (inventoryText != null)
             {
                 inventoryText.gameObject.SetActive(showInventory);
+            }
+
+            if (storageText != null)
+            {
+                storageText.gameObject.SetActive(false);
             }
 
             if (selectedRecipeText != null)
@@ -1464,17 +2416,18 @@ public class UIManager : MonoBehaviour
         }
 
         RefreshHubPopupOverlay();
+        RefreshGuideText();
+        RefreshButtonStates();
     }
 
     private void RefreshHubPopupOverlay()
     {
-        bool shouldShowOverlay = IsHubScene() && (activeHubPanel != HubPopupPanel.None || ShouldShowStoragePanel());
+        bool shouldShowOverlay = IsHubScene() && activeHubPanel != HubPopupPanel.None;
         SetNamedObjectActive("PopupOverlay", shouldShowOverlay);
-        // Pause only explicit hub popups so proximity-based storage prompts do not freeze movement.
-        ApplyPopupPauseState(IsHubScene() && activeHubPanel != HubPopupPanel.None);
+        ApplyPopupPauseState(shouldShowOverlay);
     }
 
-    private bool ShouldShowStoragePanel()
+    private bool IsPlayerNearStorageStation()
     {
         if (cachedPlayer == null)
         {
@@ -1490,6 +2443,11 @@ public class UIManager : MonoBehaviour
      */
     private void ApplyPopupPauseState(bool shouldPause)
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
         if (shouldPause)
         {
             if (isPopupPauseApplied)
@@ -1535,12 +2493,12 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Transform target = transform.Find(name);
+        Transform target = FindNamedUiTransform(name);
         RectTransform rect = target != null ? target.GetComponent<RectTransform>() : null;
         ApplyRectLayout(rect, anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta);
     }
 
-    private void ApplyNamedRectLayout(string name, PrototypeUiRect layout)
+    private void ApplyNamedRectLayout(string name, PrototypeUIRect layout)
     {
         ApplyNamedRectLayout(
             name,
@@ -1558,7 +2516,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Transform target = transform.Find(name);
+        Transform target = FindNamedUiTransform(name);
         if (target != null)
         {
             target.gameObject.SetActive(isActive);
@@ -1612,8 +2570,10 @@ public class UIManager : MonoBehaviour
             prompt = defaultPromptText;
         }
 
+        bool shouldShowPrompt = activeHubPanel == HubPopupPanel.None;
+
         interactionPromptText.text = prompt;
-        interactionPromptText.gameObject.SetActive(!string.IsNullOrWhiteSpace(prompt));
+        interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
         SetNamedObjectActive("PromptBackdrop", interactionPromptText.gameObject.activeSelf);
         RefreshStoragePanelVisibility();
     }
@@ -1625,12 +2585,14 @@ public class UIManager : MonoBehaviour
     {
         if (inventoryText == null)
         {
+            RefreshHubPopupContent();
             return;
         }
 
         if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
         {
             inventoryText.text = "인벤토리 없음";
+            RefreshHubPopupContent();
             return;
         }
 
@@ -1641,6 +2603,7 @@ public class UIManager : MonoBehaviour
         if (entries.Count == 0)
         {
             inventoryText.text = $"인벤토리 {usedSlots}/{maxSlots}칸\n- 비어 있음";
+            RefreshHubPopupContent();
             return;
         }
 
@@ -1658,6 +2621,7 @@ public class UIManager : MonoBehaviour
         }
 
         inventoryText.text = builder.ToString().TrimEnd();
+        RefreshHubPopupContent();
     }
 
     /*
@@ -1667,6 +2631,7 @@ public class UIManager : MonoBehaviour
     {
         if (storageText == null)
         {
+            RefreshHubPopupContent();
             return;
         }
 
@@ -1683,6 +2648,7 @@ public class UIManager : MonoBehaviour
         }
 
         storageText.text = summary;
+        RefreshHubPopupContent();
     }
 
     /*
@@ -1692,6 +2658,7 @@ public class UIManager : MonoBehaviour
     {
         if (upgradeText == null)
         {
+            RefreshHubPopupContent();
             return;
         }
 
@@ -1708,6 +2675,7 @@ public class UIManager : MonoBehaviour
         }
 
         upgradeText.text = summary;
+        RefreshHubPopupContent();
     }
 
     /*
@@ -1737,6 +2705,7 @@ public class UIManager : MonoBehaviour
     {
         if (selectedRecipeText == null)
         {
+            RefreshHubPopupContent();
             return;
         }
 
@@ -1754,6 +2723,7 @@ public class UIManager : MonoBehaviour
         }
 
         selectedRecipeText.text = summary;
+        RefreshHubPopupContent();
     }
 
     private void RefreshGuideText()
@@ -1763,10 +2733,27 @@ public class UIManager : MonoBehaviour
             return;
         }
 
+        if (IsHubScene())
+        {
+            string message = BuildHubMessageLine();
+            guideText.text = message;
+            guideText.gameObject.SetActive(!string.IsNullOrWhiteSpace(message));
+            SetNamedObjectActive("GuideBackdrop", false);
+
+            if (resultText != null)
+            {
+                resultText.text = string.Empty;
+                resultText.gameObject.SetActive(false);
+            }
+
+            SetNamedObjectActive("ResultBackdrop", false);
+            return;
+        }
+
         string guide = cachedDayCycle != null ? cachedDayCycle.CurrentGuideText : string.Empty;
         guideText.text = guide;
         guideText.gameObject.SetActive(!string.IsNullOrWhiteSpace(guide));
-        SetNamedObjectActive("GuideBackdrop", guideText.gameObject.activeSelf);
+        SetNamedObjectActive("GuideBackdrop", !IsHubScene() && guideText.gameObject.activeSelf);
     }
 
     private void RefreshRestaurantResultText(string result)
@@ -1776,23 +2763,21 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        string finalText = string.Empty;
-
         if (IsHubScene())
         {
-            if (cachedDayCycle != null && cachedDayCycle.CurrentPhase == DayPhase.Settlement)
-            {
-                finalText = cachedDayCycle.LastSettlementSummary;
-            }
-            else
-            {
-                finalText = result;
-            }
+            resultText.text = string.Empty;
+            resultText.gameObject.SetActive(false);
+            SetNamedObjectActive("ResultBackdrop", false);
+            RefreshGuideText();
+            return;
         }
+
+        string finalText = string.Empty;
+        finalText = result;
 
         resultText.text = finalText;
         resultText.gameObject.SetActive(!string.IsNullOrWhiteSpace(finalText));
-        SetNamedObjectActive("ResultBackdrop", resultText.gameObject.activeSelf);
+        SetNamedObjectActive("ResultBackdrop", !IsHubScene() && resultText.gameObject.activeSelf);
     }
 
     /*
@@ -1831,21 +2816,23 @@ public class UIManager : MonoBehaviour
     {
         bool isHubScene = SceneManager.GetActiveScene().name == "Hub";
         DayPhase currentPhase = cachedDayCycle != null ? cachedDayCycle.CurrentPhase : DayPhase.MorningExplore;
+        bool showButtons = isHubScene && activeHubPanel == HubPopupPanel.None;
 
         if (skipExplorationButton != null)
         {
-            skipExplorationButton.gameObject.SetActive(isHubScene && currentPhase == DayPhase.MorningExplore);
+            skipExplorationButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.MorningExplore);
         }
 
         if (skipServiceButton != null)
         {
-            skipServiceButton.gameObject.SetActive(isHubScene && currentPhase == DayPhase.AfternoonService);
+            skipServiceButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.AfternoonService);
         }
 
         if (nextDayButton != null)
         {
-            nextDayButton.gameObject.SetActive(isHubScene && currentPhase == DayPhase.Settlement);
+            nextDayButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.Settlement);
         }
     }
 }
+
 

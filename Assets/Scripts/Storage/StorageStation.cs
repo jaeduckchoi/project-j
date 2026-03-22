@@ -1,11 +1,13 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-// 허브 창고에서 품목 선택, 맡기기, 꺼내기를 수행하는 상호작용 지점이다.
+// 허브 창고 팝업을 여는 단일 상호작용 지점이다.
 public class StorageStation : MonoBehaviour, IInteractable
 {
     [SerializeField] private StorageManager storageManager;
     [SerializeField] private StorageStationAction stationAction = StorageStationAction.StoreAll;
-    [SerializeField] private string promptLabel = "창고 사용";
+    [SerializeField] private string promptLabel = "창고 열기";
 
     public string InteractionPrompt
     {
@@ -18,23 +20,7 @@ public class StorageStation : MonoBehaviour, IInteractable
                 return string.Empty;
             }
 
-            InventoryEntry selectedInventoryEntry = currentStorageManager.GetSelectedInventoryEntry(inventory);
-            InventoryEntry selectedStorageEntry = currentStorageManager.GetSelectedStoredEntry();
-
-            return stationAction switch
-            {
-                StorageStationAction.StoreAll when inventory.RuntimeItems.Count == 0 => "맡길 재료 없음",
-                StorageStationAction.WithdrawAll when !currentStorageManager.HasAnyStoredItems() => "꺼낼 재료 없음",
-                StorageStationAction.StoreSelected when selectedInventoryEntry == null => "맡길 품목 없음",
-                StorageStationAction.WithdrawSelected when selectedStorageEntry == null => "꺼낼 품목 없음",
-                StorageStationAction.CycleInventorySelection when selectedInventoryEntry == null => "맡길 품목 없음",
-                StorageStationAction.CycleStorageSelection when selectedStorageEntry == null => "꺼낼 품목 없음",
-                StorageStationAction.StoreSelected => $"[E] {promptLabel}: {selectedInventoryEntry.Resource.DisplayName}",
-                StorageStationAction.WithdrawSelected => $"[E] {promptLabel}: {selectedStorageEntry.Resource.DisplayName}",
-                StorageStationAction.CycleInventorySelection => $"[E] {promptLabel}: {selectedInventoryEntry.Resource.DisplayName}",
-                StorageStationAction.CycleStorageSelection => $"[E] {promptLabel}: {selectedStorageEntry.Resource.DisplayName}",
-                _ => $"[E] {promptLabel}"
-            };
+            return $"[E] {promptLabel}";
         }
     }
 
@@ -49,6 +35,8 @@ public class StorageStation : MonoBehaviour, IInteractable
         {
             storageManager = FindFirstObjectByType<StorageManager>();
         }
+
+        ApplyUnifiedHubStoragePresentation();
     }
 
     /*
@@ -87,43 +75,58 @@ public class StorageStation : MonoBehaviour, IInteractable
             return;
         }
 
-        switch (stationAction)
+        FindFirstObjectByType<UIManager>()?.ShowStoragePanel();
+        GameManager.Instance?.DayCycle?.ShowHintOnce(
+            "first_storage_popup_open",
+            "창고 팝업에서 Q/W로 맡기기, A/S로 꺼내기를 진행할 수 있습니다.");
+    }
+
+    private void ApplyUnifiedHubStoragePresentation()
+    {
+        if (SceneManager.GetActiveScene().name != "Hub")
         {
-            case StorageStationAction.StoreAll:
-                currentStorageManager.StoreAllFromInventory(inventory);
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
-                    "first_storage_store",
-                    "창고에 남는 재료를 맡겨 두면 다음 장사나 업그레이드 때 다시 꺼내 쓸 수 있습니다.");
-                break;
+            return;
+        }
 
-            case StorageStationAction.WithdrawAll:
-                currentStorageManager.WithdrawAllToInventory(inventory);
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
-                    "first_storage_withdraw",
-                    "장사에 필요한 재료를 창고에서 꺼내 메뉴를 준비해 보세요.");
-                break;
+        StorageStation[] stations = FindObjectsByType<StorageStation>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+        StorageStation primaryStation = null;
 
-            case StorageStationAction.StoreSelected:
-                currentStorageManager.StoreSelectedFromInventory(inventory);
-                break;
+        foreach (StorageStation station in stations)
+        {
+            if (station == null)
+            {
+                continue;
+            }
 
-            case StorageStationAction.WithdrawSelected:
-                currentStorageManager.WithdrawSelectedToInventory(inventory);
+            if (station.gameObject.name == "StorageStation")
+            {
+                primaryStation = station;
                 break;
+            }
 
-            case StorageStationAction.CycleInventorySelection:
-                currentStorageManager.CycleInventorySelection(inventory);
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
-                    "first_storage_select_deposit",
-                    "품목 변경 칸에서 맡길 재료를 고른 뒤 맡기기 칸에서 옮길 수 있습니다.");
-                break;
+            if (primaryStation == null && station.stationAction == StorageStationAction.CycleInventorySelection)
+            {
+                primaryStation = station;
+            }
+        }
 
-            case StorageStationAction.CycleStorageSelection:
-                currentStorageManager.CycleStoredSelection();
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
-                    "first_storage_select_withdraw",
-                    "품목 변경 칸에서 꺼낼 재료를 고른 뒤 꺼내기 칸에서 인벤토리로 돌릴 수 있습니다.");
-                break;
+        if (primaryStation == null && stations.Length > 0)
+        {
+            primaryStation = stations[0];
+        }
+
+        if (primaryStation != this)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        promptLabel = "창고 열기";
+
+        TextMeshPro worldLabel = GetComponentInChildren<TextMeshPro>(true);
+        if (worldLabel != null)
+        {
+            worldLabel.text = "창고";
         }
     }
 

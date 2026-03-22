@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,47 +134,47 @@ public static class PrototypeSceneAudit
             ValidateExactCount(issues, sceneName, objects, legacyLabel, 0);
         }
 
-        ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUiLayout.TopLeftPanel);
-        ValidateLayout(issues, sceneName, objects, "TopLeftAccent", PrototypeUiLayout.TopLeftAccent);
-        ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUiLayout.PhaseBadge);
-        ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUiLayout.GoldText);
-        ValidateLayout(issues, sceneName, objects, "PromptBackdrop", PrototypeUiLayout.PromptBackdrop(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUiLayout.PromptText(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUiLayout.GuideBackdrop(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "GuideText", PrototypeUiLayout.GuideText(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUiLayout.ResultBackdrop(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "RestaurantResultText", PrototypeUiLayout.ResultText(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "InventoryCard", PrototypeUiLayout.InventoryCard(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "InventoryAccent", PrototypeUiLayout.InventoryAccent(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "InventoryCaption", PrototypeUiLayout.InventoryCaption(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "InventoryText", PrototypeUiLayout.InventoryText(isHubScene));
-        ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUiLayout.DayPhaseText);
+        ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+        ValidateLayout(issues, sceneName, objects, "TopLeftAccent", PrototypeUILayout.TopLeftAccent);
+        ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
+        ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
+        ValidateLayout(issues, sceneName, objects, "PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "GuideText", PrototypeUILayout.GuideText(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "RestaurantResultText", PrototypeUILayout.ResultText(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "InventoryCard", PrototypeUILayout.InventoryCard(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "InventoryCaption", PrototypeUILayout.InventoryCaption(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "InventoryText", PrototypeUILayout.InventoryText(isHubScene));
+        ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUILayout.DayPhaseText);
 
         if (isHubScene)
         {
-            ValidateLayout(issues, sceneName, objects, "CenterBottomPanel", PrototypeUiLayout.HubCenterBottomPanel);
-            ValidateLayout(issues, sceneName, objects, "PopupOverlay", PrototypeUiLayout.HubPopupOverlay);
-            ValidateLayout(issues, sceneName, objects, "StorageCard", PrototypeUiLayout.HubStorageCard);
-            ValidateLayout(issues, sceneName, objects, "StorageAccent", PrototypeUiLayout.HubStorageAccent);
-            ValidateLayout(issues, sceneName, objects, "StorageCaption", PrototypeUiLayout.HubStorageCaption);
-            ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUiLayout.HubStorageText);
-            ValidateLayout(issues, sceneName, objects, "RecipeCard", PrototypeUiLayout.HubRecipeCard);
-            ValidateLayout(issues, sceneName, objects, "RecipeAccent", PrototypeUiLayout.HubRecipeAccent);
-            ValidateLayout(issues, sceneName, objects, "RecipeCaption", PrototypeUiLayout.HubRecipeCaption);
-            ValidateLayout(issues, sceneName, objects, "SelectedRecipeText", PrototypeUiLayout.HubRecipeText);
-            ValidateLayout(issues, sceneName, objects, "UpgradeCard", PrototypeUiLayout.HubUpgradeCard);
-            ValidateLayout(issues, sceneName, objects, "UpgradeAccent", PrototypeUiLayout.HubUpgradeAccent);
-            ValidateLayout(issues, sceneName, objects, "UpgradeCaption", PrototypeUiLayout.HubUpgradeCaption);
-            ValidateLayout(issues, sceneName, objects, "UpgradeText", PrototypeUiLayout.HubUpgradeText);
-            ValidateLayout(issues, sceneName, objects, "ActionDock", PrototypeUiLayout.HubActionDock);
-            ValidateLayout(issues, sceneName, objects, "ActionAccent", PrototypeUiLayout.HubActionAccent);
-            ValidateLayout(issues, sceneName, objects, "ActionCaption", PrototypeUiLayout.HubActionCaption);
-            ValidateLayout(issues, sceneName, objects, "SkipExplorationButton", PrototypeUiLayout.HubSkipExplorationButton);
-            ValidateLayout(issues, sceneName, objects, "SkipServiceButton", PrototypeUiLayout.HubSkipServiceButton);
-            ValidateLayout(issues, sceneName, objects, "NextDayButton", PrototypeUiLayout.HubNextDayButton);
-            ValidateLayout(issues, sceneName, objects, "RecipePanelButton", PrototypeUiLayout.HubRecipePanelButton);
-            ValidateLayout(issues, sceneName, objects, "UpgradePanelButton", PrototypeUiLayout.HubUpgradePanelButton);
-            ValidateLayout(issues, sceneName, objects, "MaterialPanelButton", PrototypeUiLayout.HubMaterialPanelButton);
+            ValidateLayout(issues, sceneName, objects, "CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel);
+            ValidateLayout(issues, sceneName, objects, "PopupOverlay", PrototypeUILayout.HubPopupOverlay);
+            ValidateLayout(issues, sceneName, objects, "StorageCard", PrototypeUILayout.HubStorageCard);
+            ValidateLayout(issues, sceneName, objects, "StorageAccent", PrototypeUILayout.HubStorageAccent);
+            ValidateLayout(issues, sceneName, objects, "StorageCaption", PrototypeUILayout.HubStorageCaption);
+            ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUILayout.HubStorageText);
+            ValidateLayout(issues, sceneName, objects, "RecipeCard", PrototypeUILayout.HubRecipeCard);
+            ValidateLayout(issues, sceneName, objects, "RecipeAccent", PrototypeUILayout.HubRecipeAccent);
+            ValidateLayout(issues, sceneName, objects, "RecipeCaption", PrototypeUILayout.HubRecipeCaption);
+            ValidateLayout(issues, sceneName, objects, "SelectedRecipeText", PrototypeUILayout.HubRecipeText);
+            ValidateLayout(issues, sceneName, objects, "UpgradeCard", PrototypeUILayout.HubUpgradeCard);
+            ValidateLayout(issues, sceneName, objects, "UpgradeAccent", PrototypeUILayout.HubUpgradeAccent);
+            ValidateLayout(issues, sceneName, objects, "UpgradeCaption", PrototypeUILayout.HubUpgradeCaption);
+            ValidateLayout(issues, sceneName, objects, "UpgradeText", PrototypeUILayout.HubUpgradeText);
+            ValidateLayout(issues, sceneName, objects, "ActionDock", PrototypeUILayout.HubActionDock);
+            ValidateLayout(issues, sceneName, objects, "ActionAccent", PrototypeUILayout.HubActionAccent);
+            ValidateLayout(issues, sceneName, objects, "ActionCaption", PrototypeUILayout.HubActionCaption);
+            ValidateLayout(issues, sceneName, objects, "SkipExplorationButton", PrototypeUILayout.HubSkipExplorationButton);
+            ValidateLayout(issues, sceneName, objects, "SkipServiceButton", PrototypeUILayout.HubSkipServiceButton);
+            ValidateLayout(issues, sceneName, objects, "NextDayButton", PrototypeUILayout.HubNextDayButton);
+            ValidateLayout(issues, sceneName, objects, "RecipePanelButton", PrototypeUILayout.HubRecipePanelButton);
+            ValidateLayout(issues, sceneName, objects, "UpgradePanelButton", PrototypeUILayout.HubUpgradePanelButton);
+            ValidateLayout(issues, sceneName, objects, "MaterialPanelButton", PrototypeUILayout.HubMaterialPanelButton);
         }
 
         return issues;
@@ -286,7 +286,7 @@ public static class PrototypeSceneAudit
         string sceneName,
         IEnumerable<GameObject> objects,
         string objectName,
-        PrototypeUiRect expectedLayout)
+        PrototypeUIRect expectedLayout)
     {
         GameObject target = objects.FirstOrDefault(gameObject => gameObject != null && gameObject.name == objectName);
         if (target == null)
@@ -321,3 +321,4 @@ public static class PrototypeSceneAudit
     }
 }
 #endif
+
