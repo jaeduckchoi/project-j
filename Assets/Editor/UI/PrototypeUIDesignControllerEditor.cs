@@ -65,9 +65,11 @@ namespace ProjectEditor.UI
 
             EditorGUILayout.HelpBox(
                 "[Canvas Layout Sync]\n"
-                + "- Sync Canvas UI Layouts saves the current RectTransform values under Canvas.\n"
+                + "- Sync Canvas UI Layouts saves the current RectTransform and Image values under Canvas.\n"
+                + "- Image sync stores sprite, type, color, and preserveAspect when an Image exists.\n"
                 + "- The first sync automatically creates Assets/Resources/Generated/UI/uiLayoutOverrides.asset.\n"
-                + "- Builder, UIManager, and the scene audit will all use those saved layouts after syncing.",
+                + "- Builder, UIManager, and the scene audit will all use those saved values after syncing.\n"
+                + "- Build Minimal Prototype also reuses WindHill's HUDRoot for the exploration scenes automatically.",
                 MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())
@@ -102,7 +104,6 @@ namespace ProjectEditor.UI
                 {
                     if (PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(controller.gameObject.scene, out string message))
                     {
-                        controller.ApplyEditorPreviewInEditor();
                         MarkSceneDirty(controller);
                         Debug.Log(message);
                     }
@@ -117,7 +118,7 @@ namespace ProjectEditor.UI
                     PrototypeUISceneLayoutCatalog.ResetCanvasLayouts();
                     controller.ApplyEditorPreviewInEditor();
                     MarkSceneDirty(controller);
-                    Debug.Log("Canvas UI layout overrides were reset.");
+                    Debug.Log("Canvas UI layout and image overrides were reset.");
                 }
             }
 

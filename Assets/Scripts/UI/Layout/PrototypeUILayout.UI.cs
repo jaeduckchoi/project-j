@@ -9,9 +9,9 @@ namespace UI.Layout
     public static partial class PrototypeUILayout
     {
         // 상단 상태 카드와 단계 표시 배치다.
-        public static readonly PrototypeUIRect TopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 68f));
+        public static readonly PrototypeUIRect TopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(320f, 72f));
         public static readonly PrototypeUIRect TopLeftAccent = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 6f));
-        public static readonly PrototypeUIRect PhaseBadge = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(236f, 40f));
+        public static readonly PrototypeUIRect PhaseBadge = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(320f, 72f));
         public static readonly PrototypeUIRect GoldText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(26f, -28f), new Vector2(286f, 30f));
         public static readonly PrototypeUIRect DayPhaseText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(210f, 24f));
 

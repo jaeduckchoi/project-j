@@ -92,7 +92,7 @@
 - `Apply Preview` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.
 - `Canvas Grouping` 버튼으로 기존 씬의 평면 Canvas 자식도 같은 그룹 구조로 맞출 수 있다.
 - `Refresh SVG Cache` 버튼으로 `PrototypeUISkin` 임시 스프라이트를 다시 렌더링할 수 있다.
-- `Sync Canvas UI Layouts` 버튼으로 현재 씬 Canvas 아래 UI 배치를 공용 자산에 저장하면 빌더와 런타임이 같은 값을 사용한다.
+- `Sync Canvas UI Layouts` 버튼으로 현재 씬 Canvas 아래 UI 배치와 `Image.sprite/type/color/preserveAspect` 값을 공용 자산에 저장하면 빌더와 런타임이 같은 값을 사용한다.
 - 공용 자산 경로는 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 이고, 첫 동기화 시 자동 생성된다.
 
 ## 3. 허브 체크 포인트

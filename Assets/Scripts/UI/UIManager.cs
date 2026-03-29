@@ -65,7 +65,6 @@ namespace UI
         private static readonly string[] HudCanvasObjectNames =
         {
             "TopLeftPanel",
-            "TopLeftAccent",
             "PhaseBadge",
             "PromptBackdrop",
             "GuideBackdrop",
@@ -1299,7 +1298,7 @@ namespace UI
         {
             return objectName switch
             {
-                "TopLeftPanel" or "TopLeftAccent" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
+                "TopLeftPanel" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
                 "InventoryCard" or "InventoryAccent" or "InventoryCaption" or "InventoryText" => HudInventoryGroupName,
                 "CenterBottomPanel" or "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
                 "SkipExplorationButton" or "SkipServiceButton" or "NextDayButton"
@@ -1551,7 +1550,6 @@ namespace UI
             EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
             EnsureUiBackdrop("InventoryCard", PrototypeUILayout.InventoryCard(isHubScene), paper);
 
-            EnsureUiAccentBar("TopLeftAccent", PrototypeUILayout.TopLeftAccent, amberAccent);
             EnsureUiAccentBar("InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene), oceanAccent);
             EnsureUiCaption(
                 "InventoryCaption",
@@ -1653,6 +1651,8 @@ namespace UI
                 PrototypeUISkin.ApplyPanel(image, objectName, color);
             }
 
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
+
             image.raycastTarget = false;
 
             Shadow shadow = backdropObject.GetComponent<Shadow>();
@@ -1728,6 +1728,7 @@ namespace UI
             image.type = Image.Type.Simple;
             image.preserveAspect = false;
             image.color = color;
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
             image.raycastTarget = false;
         }
 
@@ -2064,9 +2065,15 @@ namespace UI
 
             Image image = button.GetComponent<Image>();
             bool hasKenneySkin = false;
+            bool hasImageOverride = false;
             if (image != null)
             {
                 hasKenneySkin = PrototypeUISkin.ApplyButton(image, button.name, accentColor);
+                hasImageOverride = PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, button.name);
+                if (hasImageOverride)
+                {
+                    hasKenneySkin = true;
+                }
             }
 
             TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -2204,7 +2211,6 @@ namespace UI
             bool isHubScene = IsHubScene();
 
             ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-            ApplyNamedRectLayout("TopLeftAccent", PrototypeUILayout.TopLeftAccent);
             ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
             ApplyNamedRectLayout("PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
             ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
@@ -2521,7 +2527,11 @@ namespace UI
             }
 
             bool hasSkin = PrototypeUISkin.ApplyPanel(image, objectName, PopupItemBoxFallbackColor);
-            image.color = hasSkin ? Color.white : PopupItemBoxFallbackColor;
+            bool hasImageOverride = PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
+            if (!hasImageOverride)
+            {
+                image.color = hasSkin ? Color.white : PopupItemBoxFallbackColor;
+            }
             image.raycastTarget = isInteractive;
 
             Shadow shadow = boxObject.GetComponent<Shadow>();
@@ -2589,6 +2599,7 @@ namespace UI
             image.preserveAspect = true;
             image.color = Color.white;
             image.enabled = true;
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
         private void EnsurePopupBodyItemText(Transform parent, string objectName, TMP_FontAsset bodyFont, Color textColor)
@@ -2807,7 +2818,6 @@ namespace UI
         private void SetHubHudVisible(bool isVisible)
         {
             SetNamedObjectActive("TopLeftPanel", isVisible);
-            SetNamedObjectActive("TopLeftAccent", isVisible);
             SetNamedObjectActive("PhaseBadge", isVisible && dayPhaseText != null && !string.IsNullOrWhiteSpace(dayPhaseText.text));
             SetNamedObjectActive("CenterBottomPanel", isVisible);
             SetNamedObjectActive("ActionDock", isVisible);

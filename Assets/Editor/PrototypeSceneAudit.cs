@@ -31,7 +31,6 @@ namespace ProjectEditor
         private static readonly string[] CommonHudNames =
         {
             "TopLeftPanel",
-            "TopLeftAccent",
             "PhaseBadge",
             "GoldText",
             "PromptBackdrop",
@@ -159,7 +158,6 @@ namespace ProjectEditor
             }
 
             ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-            ValidateLayout(issues, sceneName, objects, "TopLeftAccent", PrototypeUILayout.TopLeftAccent);
             ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
             ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
             ValidateLayout(issues, sceneName, objects, "PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));

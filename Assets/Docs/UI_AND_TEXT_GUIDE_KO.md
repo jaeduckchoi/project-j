@@ -113,8 +113,8 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - 허브 팝업 본문은 좌우 각각 여러 개의 아이템 박스로 나뉘며, 편집 모드 프리뷰도 같은 박스 구조를 기준으로 보인다.
 - `Canvas Grouping` 버튼을 누르면 기존 평면 구조 Canvas도 관리용 그룹 구조로 재배치된다.
 - `Refresh SVG Cache` 버튼은 `PrototypeUISkin`이 만든 임시 스프라이트 캐시를 비우고 다시 렌더링한다.
-- `Sync Canvas UI Layouts` 버튼은 현재 씬 Canvas 아래 UI RectTransform 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 자산에 저장한다.
-- 이 자산은 빌더, 런타임 `UIManager`, 자동 감사 코드가 함께 읽으므로, 씬에서 맞춘 Canvas UI 배치를 다음 빌드와 런타임에도 유지할 때 사용한다.
+- `Sync Canvas UI Layouts` 버튼은 현재 씬 Canvas 아래 UI `RectTransform` 값과 `Image.sprite/type/color/preserveAspect` 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 자산에 저장한다.
+- 이 자산은 빌더, 런타임 `UIManager`, 자동 감사 코드가 함께 읽으므로, 씬에서 맞춘 Canvas UI 배치와 Image 표시값을 다음 빌드와 런타임에도 유지할 때 사용한다.
 - 팝업 외곽은 `PanelGreyBolts`, 내부 본문은 `PanelGrey`, 일반 HUD/하단 버튼은 `PanelBrown`과 `ButtonBrown`, 닫기 버튼은 `ButtonGreyClose`를 쓴다.
 
 ## 8. 해상도 대응

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Core;
 using Data;
@@ -45,6 +46,7 @@ namespace ProjectEditor
         private const string DataRoot = GeneratedRoot + "/GameData";
         private const string SpriteRoot = GeneratedRoot + "/Sprites";
         private const string SceneRoot = "Assets/Scenes";
+        private const string SharedExplorationHudSourceScene = SceneRoot + "/WindHill.unity";
         private const string FontRoot = GeneratedRoot + "/Fonts";
         private const string ResourceSpriteRoot = "Assets/Resources/Generated/Sprites";
         private const float PlayerSpritePixelsPerUnit = 1000f;
@@ -62,6 +64,13 @@ namespace ProjectEditor
             "PopupLeftBody",
             "PopupRightBody",
             "PopupCloseButton"
+        };
+
+        private static readonly string[] SharedExplorationHudTargetScenes =
+        {
+            SceneRoot + "/Beach.unity",
+            SceneRoot + "/DeepForest.unity",
+            SceneRoot + "/AbandonedMine.unity"
         };
 
         private static readonly Dictionary<string, SceneImageSnapshot> CachedHubPopupSceneImages = new(StringComparer.Ordinal);
@@ -185,6 +194,10 @@ namespace ProjectEditor
             ResourceLibrary resources = CreateResources();
             RecipeLibrary recipes = CreateRecipes(resources);
 
+            // WindHill의 HUDRoot를 탐험 씬 공용 기준으로 사용하므로,
+            // 빌드 전에 최신 WindHill 씬 저장본을 먼저 확보합니다.
+            SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -193,6 +206,7 @@ namespace ProjectEditor
             BuildDeepForestScene(resources, sprites);
             BuildAbandonedMineScene(resources, sprites);
             BuildWindHillScene(resources, sprites);
+            SyncSharedExplorationHudRoots();
             UpdateBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -204,8 +218,19 @@ namespace ProjectEditor
                 "OK");
         }
 
+        private static void SyncSharedExplorationHudRoots()
+        {
+            SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
+
+            foreach (string targetScenePath in SharedExplorationHudTargetScenes)
+            {
+                SyncHudRootBetweenScenes(SharedExplorationHudSourceScene, targetScenePath);
+            }
+        }
+
         private static void BuildHubScene(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
         {
+            SaveSceneIfLoadedAndDirty(SceneRoot + "/Hub.unity");
             CacheHubPopupSceneImages(SceneRoot + "/Hub.unity");
             try
             {
@@ -271,7 +296,12 @@ namespace ProjectEditor
                 CreateStorageStation("StorageStation", new Vector3(6.1f, 1.2f, 0f), new Vector3(3.6f, 2.0f, 1f), sprites.Floor, new Color(0.86f, 0.70f, 0.36f), "창고", storageManager, StorageStationAction.StoreAll, storageArea.transform);
                 CreateUpgradeStation(new Vector3(5.25f, -2.35f, 0f), new Vector3(1.95f, 1.2f, 1f), sprites.Floor, new Color(0.54f, 0.72f, 0.78f), upgradeManager);
 
-                CreateUiCanvas(true);
+                if (!TryReuseExistingSceneCanvas(SceneRoot + "/Hub.unity"))
+                {
+                    CreateUiCanvas(true);
+                }
+
+                EnsureUiEventSystem();
                 EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Hub.unity");
             }
             finally
@@ -282,6 +312,7 @@ namespace ProjectEditor
 
         private static void BuildBeachScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            SaveSceneIfLoadedAndDirty(SceneRoot + "/Beach.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             const float mapWidth = 30f;
@@ -314,7 +345,13 @@ namespace ProjectEditor
             CreateGatherable("ShellSpot02", new Vector3(4.5f, -1.8f, 0f), sprites.Shell, resources.Shell, ToolType.Rake, 1, 1, "조개");
             CreateGatherable("SeaweedSpot01", new Vector3(7f, 3.8f, 0f), sprites.Seaweed, resources.Seaweed, ToolType.Sickle, 1, 2, "해초");
 
-            CreateUiCanvas(false);
+            if (!TryReuseExistingSceneCanvas(SceneRoot + "/Beach.unity"))
+            {
+                CreateUiCanvas(false);
+            }
+
+            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            EnsureUiEventSystem();
             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Beach.unity");
         }
 
@@ -370,8 +407,276 @@ namespace ProjectEditor
             }
         }
 
+        /// <summary>
+        /// 기존 씬에 저장된 Canvas 루트를 통째로 복제해 현재 빌드 씬으로 가져옵니다.
+        /// 이렇게 하면 수동으로 맞춘 Canvas 하위 구조와 컴포넌트 값이 빌드 후에도 그대로 유지됩니다.
+        /// </summary>
+        private static bool TryReuseExistingSceneCanvas(string scenePath)
+        {
+            if (!File.Exists(scenePath))
+            {
+                return false;
+            }
+
+            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
+            bool openedTemporarily = false;
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                sourceScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
+            }
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                return false;
+            }
+
+            try
+            {
+                GameObject sourceCanvas = sourceScene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(root => root != null
+                                            && string.Equals(root.name, "Canvas", StringComparison.Ordinal)
+                                            && root.GetComponent<Canvas>() != null);
+                if (sourceCanvas == null)
+                {
+                    return false;
+                }
+
+                GameObject clonedCanvas = UnityEngine.Object.Instantiate(sourceCanvas);
+                clonedCanvas.name = sourceCanvas.name;
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
+                    clonedCanvas,
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+                return true;
+            }
+            finally
+            {
+                if (openedTemporarily)
+                {
+                    EditorSceneManager.CloseScene(sourceScene, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 열려 있는 대상 씬에 아직 저장되지 않은 변경이 있으면 먼저 저장해,
+        /// 빌더가 방금 수정한 Canvas 기준을 그대로 다시 사용할 수 있게 맞춥니다.
+        /// </summary>
+        private static void SaveSceneIfLoadedAndDirty(string scenePath)
+        {
+            UnityEngine.SceneManagement.Scene loadedScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
+            if (!loadedScene.IsValid() || !loadedScene.isLoaded || !loadedScene.isDirty)
+            {
+                return;
+            }
+
+            EditorSceneManager.SaveScene(loadedScene);
+        }
+
+        /// <summary>
+        /// WindHill 씬의 HUDRoot를 현재 활성 씬 Canvas에 복제해 탐험 HUD 기준을 통일합니다.
+        /// PopupRoot는 대상 씬 값을 유지하고, HUDRoot만 교체합니다.
+        /// </summary>
+        private static bool TryApplySharedHudRootFromScene(string sourceScenePath)
+        {
+            if (!File.Exists(sourceScenePath))
+            {
+                return false;
+            }
+
+            UnityEngine.SceneManagement.Scene targetScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            GameObject targetCanvas = FindSceneCanvasRoot(targetScene);
+            if (targetCanvas == null)
+            {
+                return false;
+            }
+
+            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(sourceScenePath);
+            bool openedTemporarily = false;
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                sourceScene = EditorSceneManager.OpenScene(sourceScenePath, OpenSceneMode.Additive);
+                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
+            }
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                return false;
+            }
+
+            try
+            {
+                GameObject sourceCanvas = FindSceneCanvasRoot(sourceScene);
+                Transform sourceHudRoot = sourceCanvas != null ? sourceCanvas.transform.Find("HUDRoot") : null;
+                if (sourceHudRoot == null)
+                {
+                    return false;
+                }
+
+                return ReplaceHudRoot(targetScene, targetCanvas, sourceHudRoot);
+            }
+            finally
+            {
+                if (openedTemporarily)
+                {
+                    EditorSceneManager.CloseScene(sourceScene, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// WindHill 씬의 HUDRoot를 대상 탐험 씬 자산에 직접 반영해,
+        /// 빌드를 다시 돌리지 않아도 같은 HUD 구조를 유지하도록 맞춥니다.
+        /// </summary>
+        private static bool SyncHudRootBetweenScenes(string sourceScenePath, string targetScenePath)
+        {
+            if (!File.Exists(sourceScenePath) || !File.Exists(targetScenePath))
+            {
+                return false;
+            }
+
+            if (string.Equals(sourceScenePath, targetScenePath, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(sourceScenePath);
+            UnityEngine.SceneManagement.Scene targetScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(targetScenePath);
+            bool openedSourceTemporarily = false;
+            bool openedTargetTemporarily = false;
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                sourceScene = EditorSceneManager.OpenScene(sourceScenePath, OpenSceneMode.Additive);
+                openedSourceTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
+            }
+
+            if (!targetScene.IsValid() || !targetScene.isLoaded)
+            {
+                targetScene = EditorSceneManager.OpenScene(targetScenePath, OpenSceneMode.Additive);
+                openedTargetTemporarily = targetScene.IsValid() && targetScene.isLoaded;
+            }
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded || !targetScene.IsValid() || !targetScene.isLoaded)
+            {
+                return false;
+            }
+
+            try
+            {
+                GameObject sourceCanvas = FindSceneCanvasRoot(sourceScene);
+                GameObject targetCanvas = FindSceneCanvasRoot(targetScene);
+                Transform sourceHudRoot = sourceCanvas != null ? sourceCanvas.transform.Find("HUDRoot") : null;
+                if (targetCanvas == null || sourceHudRoot == null)
+                {
+                    return false;
+                }
+
+                bool replaced = ReplaceHudRoot(targetScene, targetCanvas, sourceHudRoot);
+                if (!replaced)
+                {
+                    return false;
+                }
+
+                EditorSceneManager.MarkSceneDirty(targetScene);
+                EditorSceneManager.SaveScene(targetScene);
+                return true;
+            }
+            finally
+            {
+                if (openedTargetTemporarily)
+                {
+                    EditorSceneManager.CloseScene(targetScene, true);
+                }
+
+                if (openedSourceTemporarily)
+                {
+                    EditorSceneManager.CloseScene(sourceScene, true);
+                }
+            }
+        }
+
+        private static GameObject FindSceneCanvasRoot(UnityEngine.SceneManagement.Scene scene)
+        {
+            return scene
+                .GetRootGameObjects()
+                .FirstOrDefault(root => root != null
+                                        && string.Equals(root.name, "Canvas", StringComparison.Ordinal)
+                                        && root.GetComponent<Canvas>() != null);
+        }
+
+        /// <summary>
+        /// 대상 Canvas 아래 HUDRoot만 교체하고 나머지 PopupRoot 및 개별 팝업 값은 유지합니다.
+        /// </summary>
+        private static bool ReplaceHudRoot(
+            UnityEngine.SceneManagement.Scene targetScene,
+            GameObject targetCanvas,
+            Transform sourceHudRoot)
+        {
+            if (targetCanvas == null || sourceHudRoot == null)
+            {
+                return false;
+            }
+
+            Transform existingHudRoot = targetCanvas.transform.Find("HUDRoot");
+            int siblingIndex = existingHudRoot != null ? existingHudRoot.GetSiblingIndex() : 0;
+            if (existingHudRoot != null)
+            {
+                UnityEngine.Object.DestroyImmediate(existingHudRoot.gameObject);
+            }
+
+            GameObject clonedHudRoot = UnityEngine.Object.Instantiate(sourceHudRoot.gameObject, targetCanvas.transform);
+            clonedHudRoot.name = "HUDRoot";
+            clonedHudRoot.transform.SetSiblingIndex(siblingIndex);
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(clonedHudRoot, targetScene);
+
+            RebindCanvasUiManagerReferences(targetCanvas);
+            return true;
+        }
+
+        /// <summary>
+        /// HUDRoot를 다른 씬 기준으로 교체하면 UIManager가 들고 있던 텍스트/버튼 참조를 새 오브젝트로 다시 맞춥니다.
+        /// </summary>
+        private static void RebindCanvasUiManagerReferences(GameObject canvasObject)
+        {
+            if (canvasObject == null || !canvasObject.TryGetComponent(out UIManager uiManager))
+            {
+                return;
+            }
+
+            SerializedObject so = new(uiManager);
+            so.FindProperty("interactionPromptText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "InteractionPromptText");
+            so.FindProperty("inventoryText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "InventoryText");
+            so.FindProperty("storageText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "StorageText");
+            so.FindProperty("upgradeText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "UpgradeText");
+            so.FindProperty("goldText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "GoldText");
+            so.FindProperty("selectedRecipeText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "SelectedRecipeText");
+            so.FindProperty("dayPhaseText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "DayPhaseText");
+            so.FindProperty("guideText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "GuideText");
+            so.FindProperty("resultText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "RestaurantResultText");
+            so.FindProperty("skipExplorationButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "SkipExplorationButton");
+            so.FindProperty("skipServiceButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "SkipServiceButton");
+            so.FindProperty("nextDayButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "NextDayButton");
+            so.FindProperty("recipePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "RecipePanelButton");
+            so.FindProperty("upgradePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "UpgradePanelButton");
+            so.FindProperty("materialPanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "MaterialPanelButton");
+            so.FindProperty("popupCloseButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "PopupCloseButton");
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static T FindNamedComponent<T>(Transform root, string objectName)
+            where T : Component
+        {
+            Transform target = FindChildRecursive(root, objectName);
+            return target != null ? target.GetComponent<T>() : null;
+        }
+
         private static void BuildDeepForestScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            SaveSceneIfLoadedAndDirty(SceneRoot + "/DeepForest.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             const float mapWidth = 32f;
@@ -405,12 +710,19 @@ namespace ProjectEditor
             CreateGatherable("MushroomPatch01", new Vector3(2.6f, 4.1f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
             CreateGatherable("MushroomPatch02", new Vector3(8.5f, 5.2f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
 
-            CreateUiCanvas(false);
+            if (!TryReuseExistingSceneCanvas(SceneRoot + "/DeepForest.unity"))
+            {
+                CreateUiCanvas(false);
+            }
+
+            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            EnsureUiEventSystem();
             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/DeepForest.unity");
         }
 
         private static void BuildAbandonedMineScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            SaveSceneIfLoadedAndDirty(SceneRoot + "/AbandonedMine.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             const float mapWidth = 32f;
@@ -443,12 +755,19 @@ namespace ProjectEditor
             CreateGatherable("GlowMoss02", new Vector3(8.2f, 1.0f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
             CreateGatherable("GlowMoss03", new Vector3(11.6f, 4.4f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
 
-            CreateUiCanvas(false);
+            if (!TryReuseExistingSceneCanvas(SceneRoot + "/AbandonedMine.unity"))
+            {
+                CreateUiCanvas(false);
+            }
+
+            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            EnsureUiEventSystem();
             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/AbandonedMine.unity");
         }
 
         private static void BuildWindHillScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            SaveSceneIfLoadedAndDirty(SceneRoot + "/WindHill.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             const float mapWidth = 30f;
@@ -493,7 +812,12 @@ namespace ProjectEditor
             CreateGatherable("WindHerb02", new Vector3(8.6f, 4.6f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
             CreateGatherable("WindHerb03", new Vector3(10.8f, -0.2f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
 
-            CreateUiCanvas(false);
+            if (!TryReuseExistingSceneCanvas(SceneRoot + "/WindHill.unity"))
+            {
+                CreateUiCanvas(false);
+            }
+
+            EnsureUiEventSystem();
             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/WindHill.unity");
         }
 
@@ -950,7 +1274,6 @@ namespace ProjectEditor
             RectTransform popupFrameRightGroup = null;
 
             CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
-            CreatePanel("TopLeftAccent", hudStatusGroup, PrototypeUILayout.TopLeftAccent, chromeAmber);
             CreatePanel("PhaseBadge", hudStatusGroup, PrototypeUILayout.PhaseBadge, chromeGlass);
             CreatePanel("PromptBackdrop", hudPromptGroup, PrototypeUILayout.PromptBackdrop(isHubScene), chromeGlass);
             CreatePanel("GuideBackdrop", hudOverlayGroup, PrototypeUILayout.GuideBackdrop(isHubScene), chromeSurface);
@@ -1490,10 +1813,7 @@ namespace ProjectEditor
             rect.sizeDelta = resolvedLayout.SizeDelta;
 
             Image image = panelObject.AddComponent<Image>();
-            if (!TryApplyHubPopupSceneImage(image, objectName))
-            {
-                PrototypeUISkin.ApplyPanel(image, objectName, color);
-            }
+            ApplyScenePanelImagePresentation(image, objectName, color);
 
             image.raycastTarget = false;
 
@@ -1630,6 +1950,7 @@ namespace ProjectEditor
             image.preserveAspect = true;
             image.raycastTarget = false;
             image.enabled = false;
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
         private static RectTransform CreateCanvasGroupRoot(string objectName, Transform _parent, int siblingIndex)
@@ -1750,10 +2071,7 @@ namespace ProjectEditor
             rect.sizeDelta = resolvedLayout.SizeDelta;
 
             Image image = buttonObject.AddComponent<Image>();
-            if (!TryApplyHubPopupSceneImage(image, objectName))
-            {
-                PrototypeUISkin.ApplyButton(image, objectName, new Color(0.18f, 0.18f, 0.18f, 0.82f));
-            }
+            ApplySceneButtonImagePresentation(image, objectName, new Color(0.18f, 0.18f, 0.18f, 0.82f));
 
             Shadow shadow = buttonObject.AddComponent<Shadow>();
             shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
@@ -1838,6 +2156,42 @@ namespace ProjectEditor
             image.color = snapshot.Color;
             image.preserveAspect = snapshot.PreserveAspect;
             return true;
+        }
+
+        /// <summary>
+        /// 패널 기본 스킨을 적용한 뒤, 씬에서 동기화한 Image 오버라이드가 있으면 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplyScenePanelImagePresentation(Image image, string objectName, Color fallbackColor)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            if (!TryApplyHubPopupSceneImage(image, objectName))
+            {
+                PrototypeUISkin.ApplyPanel(image, objectName, fallbackColor);
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
+        }
+
+        /// <summary>
+        /// 버튼 기본 스킨을 적용한 뒤, 씬에서 동기화한 Image 오버라이드가 있으면 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplySceneButtonImagePresentation(Image image, string objectName, Color fallbackColor)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            if (!TryApplyHubPopupSceneImage(image, objectName))
+            {
+                PrototypeUISkin.ApplyButton(image, objectName, fallbackColor);
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
         private static bool IsHubPopupDisplayObject(string objectName)
