@@ -17,6 +17,8 @@
 
 - `GAME_FEATURE_REFERENCE_KO.md`
   게임 특징, 지역별 특징, 시스템별 기능을 기능 단위로 정리한 문서다.
+- `GAME_PROJECT_STRUCTURE_KO.md`
+  실제 폴더 구조, 런타임/에디터 코드 배치 기준, 생성 에셋 경로 규칙을 정리한 문서다.
 - `GAMEPLAY_CORE_LOOP_KO.md`
   하루 단위 핵심 루프와 플레이 감각을 정리한 문서다.
 - `GAMEPLAY_EXPLORATION_KO.md`
@@ -33,13 +35,14 @@
 ## 4. 권장 읽기 순서
 
 1. `GAME_DOCS_INDEX_KO.md`
-2. `GAME_FEATURE_REFERENCE_KO.md`
-3. `GAMEPLAY_CORE_LOOP_KO.md`
-4. `GAMEPLAY_EXPLORATION_KO.md`
-5. `GAMEPLAY_RESTAURANT_AND_GROWTH_KO.md`
-6. `UI_AND_TEXT_GUIDE_KO.md`
-7. `GAME_SCENE_AND_SETUP_KO.md`
-8. `GAME_BUILD_GUIDE_KO.md`
+2. `GAME_PROJECT_STRUCTURE_KO.md`
+3. `GAME_FEATURE_REFERENCE_KO.md`
+4. `GAMEPLAY_CORE_LOOP_KO.md`
+5. `GAMEPLAY_EXPLORATION_KO.md`
+6. `GAMEPLAY_RESTAURANT_AND_GROWTH_KO.md`
+7. `UI_AND_TEXT_GUIDE_KO.md`
+8. `GAME_SCENE_AND_SETUP_KO.md`
+9. `GAME_BUILD_GUIDE_KO.md`
 
 ## 5. 빠른 확인 순서
 

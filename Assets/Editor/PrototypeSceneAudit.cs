@@ -50,17 +50,17 @@ namespace ProjectEditor
         {
             "CenterBottomPanel",
             "PopupOverlay",
-            "StorageAccent",
-            "StorageCard",
-            "StorageCaption",
+            "PopupFrame",
+            "PopupFrameLeft",
+            "PopupFrameRight",
+            "PopupLeftBody",
+            "PopupRightBody",
+            "PopupTitle",
+            "PopupLeftCaption",
+            "PopupRightCaption",
+            "PopupCloseButton",
             "StorageText",
-            "RecipeAccent",
-            "RecipeCard",
-            "RecipeCaption",
             "SelectedRecipeText",
-            "UpgradeAccent",
-            "UpgradeCard",
-            "UpgradeCaption",
             "UpgradeText",
             "ActionAccent",
             "ActionDock",
@@ -71,6 +71,19 @@ namespace ProjectEditor
             "RecipePanelButton",
             "UpgradePanelButton",
             "MaterialPanelButton",
+        };
+
+        private static readonly string[] RemovedHubCardNames =
+        {
+            "StorageAccent",
+            "StorageCard",
+            "StorageCaption",
+            "RecipeAccent",
+            "RecipeCard",
+            "RecipeCaption",
+            "UpgradeAccent",
+            "UpgradeCard",
+            "UpgradeCaption",
         };
 
         private static readonly string[] LegacyLabelNames =
@@ -135,6 +148,11 @@ namespace ProjectEditor
                 ValidateExactCount(issues, sceneName, objects, hudName, isHubScene ? 1 : 0);
             }
 
+            foreach (string removedName in RemovedHubCardNames)
+            {
+                ValidateExactCount(issues, sceneName, objects, removedName, 0);
+            }
+
             foreach (string legacyLabel in LegacyLabelNames)
             {
                 ValidateExactCount(issues, sceneName, objects, legacyLabel, 0);
@@ -153,25 +171,25 @@ namespace ProjectEditor
             ValidateLayout(issues, sceneName, objects, "InventoryCard", PrototypeUILayout.InventoryCard(isHubScene));
             ValidateLayout(issues, sceneName, objects, "InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene));
             ValidateLayout(issues, sceneName, objects, "InventoryCaption", PrototypeUILayout.InventoryCaption(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InventoryText", PrototypeUILayout.InventoryText(isHubScene));
+            ValidateLayout(issues, sceneName, objects, "InventoryText", isHubScene ? PrototypeUILayout.HubPopupFrameText : PrototypeUILayout.InventoryText(false));
             ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUILayout.DayPhaseText);
 
             if (isHubScene)
             {
                 ValidateLayout(issues, sceneName, objects, "CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel);
                 ValidateLayout(issues, sceneName, objects, "PopupOverlay", PrototypeUILayout.HubPopupOverlay);
-                ValidateLayout(issues, sceneName, objects, "StorageCard", PrototypeUILayout.HubStorageCard);
-                ValidateLayout(issues, sceneName, objects, "StorageAccent", PrototypeUILayout.HubStorageAccent);
-                ValidateLayout(issues, sceneName, objects, "StorageCaption", PrototypeUILayout.HubStorageCaption);
-                ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUILayout.HubStorageText);
-                ValidateLayout(issues, sceneName, objects, "RecipeCard", PrototypeUILayout.HubRecipeCard);
-                ValidateLayout(issues, sceneName, objects, "RecipeAccent", PrototypeUILayout.HubRecipeAccent);
-                ValidateLayout(issues, sceneName, objects, "RecipeCaption", PrototypeUILayout.HubRecipeCaption);
-                ValidateLayout(issues, sceneName, objects, "SelectedRecipeText", PrototypeUILayout.HubRecipeText);
-                ValidateLayout(issues, sceneName, objects, "UpgradeCard", PrototypeUILayout.HubUpgradeCard);
-                ValidateLayout(issues, sceneName, objects, "UpgradeAccent", PrototypeUILayout.HubUpgradeAccent);
-                ValidateLayout(issues, sceneName, objects, "UpgradeCaption", PrototypeUILayout.HubUpgradeCaption);
-                ValidateLayout(issues, sceneName, objects, "UpgradeText", PrototypeUILayout.HubUpgradeText);
+                ValidateLayout(issues, sceneName, objects, "PopupFrame", PrototypeUILayout.HubPopupFrame);
+                ValidateLayout(issues, sceneName, objects, "PopupFrameLeft", PrototypeUILayout.HubPopupFrameLeft);
+                ValidateLayout(issues, sceneName, objects, "PopupFrameRight", PrototypeUILayout.HubPopupFrameRight);
+                ValidateLayout(issues, sceneName, objects, "PopupLeftBody", PrototypeUILayout.HubPopupFrameBody);
+                ValidateLayout(issues, sceneName, objects, "PopupRightBody", PrototypeUILayout.HubPopupFrameBody);
+                ValidateLayout(issues, sceneName, objects, "PopupTitle", PrototypeUILayout.HubPopupTitle);
+                ValidateLayout(issues, sceneName, objects, "PopupLeftCaption", PrototypeUILayout.HubPopupLeftCaption);
+                ValidateLayout(issues, sceneName, objects, "PopupRightCaption", PrototypeUILayout.HubPopupFrameCaption);
+                ValidateLayout(issues, sceneName, objects, "PopupCloseButton", PrototypeUILayout.HubPopupCloseButton);
+                ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUILayout.HubPopupRightDetailText);
+                ValidateLayout(issues, sceneName, objects, "SelectedRecipeText", PrototypeUILayout.HubPopupRightDetailText);
+                ValidateLayout(issues, sceneName, objects, "UpgradeText", PrototypeUILayout.HubPopupRightDetailText);
                 ValidateLayout(issues, sceneName, objects, "ActionDock", PrototypeUILayout.HubActionDock);
                 ValidateLayout(issues, sceneName, objects, "ActionAccent", PrototypeUILayout.HubActionAccent);
                 ValidateLayout(issues, sceneName, objects, "ActionCaption", PrototypeUILayout.HubActionCaption);
