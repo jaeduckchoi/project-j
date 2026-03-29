@@ -3,7 +3,7 @@
 ## 1. 에디터에서 다시 생성하는 방법
 
 1. Unity에서 프로젝트를 연다.
-2. 상단 메뉴에서 `Tools > Jonggu Restaurant > Build Minimal Prototype` 를 실행한다.
+2. 상단 메뉴에서 `Tools > Jonggu Restaurant > 프로토타입 빌드 및 감사`를 실행한다.
 3. 생성이 끝나면 `Assets/Scenes/Hub.unity` 를 연다.
 4. Play를 눌러 현재 루프를 확인한다.
 

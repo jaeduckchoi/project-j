@@ -130,25 +130,25 @@ namespace ProjectEditor
             public Sprite Floor;
         }
 
-        [MenuItem("Tools/Jonggu Restaurant/Clean Missing Scripts In Open Scene", true)]
+        [MenuItem("Tools/Jonggu Restaurant/열린 씬 누락 스크립트 정리", true, 2110)]
         private static bool ValidateCleanMissingScriptsInOpenScene()
         {
             return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
         }
 
-        [MenuItem("Tools/Jonggu Restaurant/Clean Missing Scripts In Open Scene")]
+        [MenuItem("Tools/Jonggu Restaurant/열린 씬 누락 스크립트 정리", false, 2110)]
         public static void CleanMissingScriptsInOpenScene()
         {
             if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                Debug.LogWarning("Stop Play Mode before cleaning missing scripts.");
+                Debug.LogWarning("누락 스크립트 정리는 플레이 모드를 종료한 뒤 실행하세요.");
                 return;
             }
 
             UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             if (!activeScene.IsValid() || !activeScene.isLoaded)
             {
-                Debug.LogWarning("No open scene to clean.");
+                Debug.LogWarning("정리할 열린 씬이 없습니다.");
                 return;
             }
 
@@ -163,21 +163,21 @@ namespace ProjectEditor
                 EditorSceneManager.MarkSceneDirty(activeScene);
             }
 
-            Debug.Log($"Removed {removedCount} missing script component(s) from the open scene.");
+            Debug.Log($"열린 씬에서 누락 스크립트 컴포넌트 {removedCount}개를 정리했습니다.");
         }
 
-        [MenuItem("Tools/Jonggu Restaurant/Build Minimal Prototype", true)]
+        [MenuItem("Tools/Jonggu Restaurant/프로토타입 빌드 및 감사", true, 2100)]
         private static bool ValidateBuildMinimalPrototype()
         {
             return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
         }
 
-        [MenuItem("Tools/Jonggu Restaurant/Build Minimal Prototype")]
+        [MenuItem("Tools/Jonggu Restaurant/프로토타입 빌드 및 감사", false, 2100)]
         public static void BuildMinimalPrototype()
         {
             if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                Debug.LogWarning("Stop Play Mode before running the minimal prototype builder.");
+                Debug.LogWarning("프로토타입 빌드 및 감사는 플레이 모드를 종료한 뒤 실행하세요.");
                 return;
             }
 
@@ -211,6 +211,7 @@ namespace ProjectEditor
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            PrototypeSceneAudit.AuditGeneratedScenes();
 
             EditorUtility.DisplayDialog(
                 "종구의 식당",

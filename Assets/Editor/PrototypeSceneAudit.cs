@@ -98,8 +98,7 @@ namespace ProjectEditor
             "WindShortcutLabel",
         };
 
-        [MenuItem("Tools/Jonggu Restaurant/Audit Generated Scenes")]
-        public static void AuditGeneratedScenes()
+        internal static void AuditGeneratedScenes()
         {
             List<string> issues = new();
 
