@@ -1,48 +1,53 @@
-# Agent Entry
+﻿# Agent Entry
 
-Common working rules for this repository:
+이 저장소의 공통 작업 기준 문서:
 
 - `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
 
-Documents to review first:
+작업 전에 우선 확인할 문서:
 
 1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
 2. `Assets/Docs/GAME_PROJECT_STRUCTURE_KO.md`
 3. `Assets/Docs/GAME_FEATURE_REFERENCE_KO.md`
 4. `Assets/Docs/UI_AND_TEXT_GUIDE_KO.md`
 5. `Assets/Docs/GAME_SCENE_AND_SETUP_KO.md`
+6. `Assets/Docs/GAME_BUILD_GUIDE_KO.md`
 
-Response and working principles:
+응답 및 작업 원칙:
 
-- Prefer Korean for user-facing responses.
-- Unity serialized files and asset references have wide impact, so always verify the reference path together with the change.
-- When changing UI, also check `Assets/Scripts/UI/UIManager.cs` and `Assets/Editor/JongguMinimalPrototypeBuilder.cs`.
-- If Unity execution or compilation was not directly verified, state that clearly and mention the remaining verification steps.
+- 기본 응답 언어는 한국어를 우선한다.
+- Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 참조 경로까지 함께 확인한다.
+- UI를 바꾸면 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 확인한다.
+- 빌더가 생성하는 씬, 프리팹, 생성 에셋을 바꿀 때는 결과물만 직접 고치지 말고 생성 경로를 먼저 고친다.
+- Unity 실행 또는 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 명시한다.
 
-Additional project rules:
+프로젝트 추가 규칙:
 
-- Keep player visuals aligned with map scale, and split physics and visual roots when needed.
-- `Assets/Docs/GAME_PROJECT_STRUCTURE_KO.md` 기준으로 폴더 역할을 유지한다. `Assets/Scripts` 는 런타임, `Assets/Editor` 는 에디터 전용, `Assets/Generated` 는 빌더가 관리하는 생성 자산, `Assets/Resources/Generated` 는 `Resources.Load` 대상 런타임 자산, `Assets/Scenes` 는 플레이 가능한 씬, `Assets/Docs` 는 기준 문서다.
-- 새 기능은 역할에 맞는 기존 폴더에 배치하고, 포탈/스폰/위험 구역/런타임 씬 보강처럼 여러 기능이 공유하는 씬 로직은 `Assets/Scripts/World` 에 둔다. 기능 전용 상호작용 스테이션은 `Storage`, `Restaurant`, `Upgrade` 처럼 해당 기능 폴더에 둔다.
-- UI 코드는 `UIManager` 진입점, `UI/Controllers` 편집 프리뷰, `UI/Content` 정적 문구, `UI/Layout` 배치 상수, `UI/Style` 스킨 매핑으로 분리한다.
-- When hub popup UI (`요리 메뉴`, `업그레이드`, `재료`, `창고`) opens, pause gameplay; when it closes, restore the previous time flow.
-- Remove duplicate UI paths such as legacy buttons, outdated docks, or unused cards instead of leaving them behind.
-- New runtime and editor scripts must follow folder-based namespaces. When a folder name such as `Camera` or `Editor` conflicts with a major Unity/.NET type, use a conflict-free exception namespace such as `GameCamera` or `ProjectEditor`.
-- Keep partial helper files in the parent folder when they must share the same namespace as their partial type. Do not split one partial type across different folder namespaces.
-- When moving an existing `MonoBehaviour`, `ScriptableObject`, or other serializable type into a namespace, preserve the serialized path with `UnityEngine.Scripting.APIUpdating.MovedFrom`.
-- When changing namespaces or generated structure, also verify related `using` directives, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, automated audit code, and batch compilation results.
-- 빌더가 생성하는 씬/에셋 구조를 바꿀 때는 결과물만 직접 고치지 말고 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서와 리소스 경로를 함께 맞춘다.
-- Private field naming defaults are: lower camelCase for `[SerializeField] private`, `_camelCase` for regular `private` and `private static`, and PascalCase for `private static readonly` and `private const`.
-- Keep the Rider/Unity naming rules in `.editorconfig` so that `Unity serialized field` is applied before the general `Instance fields (private)` rule.
-- When changing gameplay or UI, keep method and block comments that explain the current behavior, and add missing comments if a touched file has important unannotated blocks or methods.
-- New or updated code comments and documents must use UTF-8 Korean by default, and when touching existing English comments, rewrite them in Korean while preserving the meaning.
-- Git commit messages must be written in Korean and follow the `type : subject` format.
-- Detailed Git commit message rules must stay aligned with the Git section of `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`, and if the rule changes, update both `AGENTS.md` and the project rules document.
-- The Git commit template path is `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE_KO.md`. If the rule changes, update the template and the related documents together.
-- Keep commit titles within 50 characters and do not end the title with a period. Omit the body if the title is already sufficient.
-- Even if an English diff summary, PR title, or auto-generated commit draft is provided, rewrite the final commit message in natural Korean.
-- Do not leave English sentences as-is in the title or body unless they are untranslatable identifiers such as file paths, code identifiers, or branch names.
-- Use only the predefined lowercase `type` values, and keep the body concise and specific about why and what changed. Use a footer only for issue numbers, follow-up work, or breaking changes.
-- Squash merge commit messages must use the format `[squash] branch-name`.
-- Generated font assets and source font filenames under `Assets/Generated/Fonts` must stay in lower camelCase.
-- Do not reset or overwrite scene-assigned `Image.sprite`, `PopupTitle`, or `PopupLeftCaption` font/layout values in hub popups unless explicitly requested.
+- 플레이어 비주얼은 맵 스케일에 맞게 유지하고, 필요하면 물리 루트와 비주얼 루트를 분리한다.
+- 런타임 스크립트와 에디터 스크립트는 폴더 기준 네임스페이스를 따른다.
+- `Camera`, `Editor`처럼 Unity 또는 .NET 주요 타입과 충돌하는 폴더명은 `GameCamera`, `ProjectEditor` 같은 예외 네임스페이스를 사용한다.
+- partial 타입 보조 파일은 부모 타입과 같은 네임스페이스를 유지하는 폴더에 둔다.
+- 기존 `MonoBehaviour`, `ScriptableObject`, 직렬화 타입을 네임스페이스로 옮길 때는 `UnityEngine.Scripting.APIUpdating.MovedFrom`으로 직렬화 경로를 보존한다.
+- private 필드 네이밍은 `[SerializeField] private`는 lower camelCase, 일반 `private`와 `private static`은 `_camelCase`, `private static readonly`와 `private const`는 PascalCase를 기본으로 한다.
+- `.editorconfig`의 Rider/Unity 네이밍 규칙은 `Unity serialized field`가 일반 `Instance fields (private)`보다 먼저 적용되게 유지한다.
+- 허브 팝업 UI(`요리 메뉴`, `업그레이드`, `재료`, `창고`)가 열리면 게임 진행을 일시 정지하고, 닫히면 원래 시간 흐름을 복구한다.
+- 레거시 버튼, 오래된 도크, 사용하지 않는 카드처럼 중복 UI 경로가 남지 않게 정리한다.
+- 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 명시적 요청 없이는 초기화하거나 덮어쓰지 않는다.
+- Canvas 내부 공용 루트 이름은 `HUDRoot`, `PopupRoot`를 기준으로 유지한다.
+- 탐험 씬 공용 HUD 기준은 `WindHill` 씬의 `HUDRoot`다. `프로토타입 빌드 및 감사`를 실행하면 `Beach`, `DeepForest`, `AbandonedMine`의 `HUDRoot`가 이 기준으로 자동 동기화된다.
+- `Sync Canvas UI Layouts`는 현재 씬 Canvas 아래 UI의 `RectTransform`과 `Image.sprite/type/color/preserveAspect` 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset`에 저장한다.
+- 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
+- 생성 구조, UI 기준, 네임스페이스를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 배치 컴파일 결과를 함께 맞춘다.
+- `Tools > Jonggu Restaurant` 아래 새 메뉴를 추가하거나 바꿀 때는 한국어 표시를 기본으로 하고, 반복 실행이 잦은 빌드 기능보다 유지보수 도구가 아래에 오도록 `MenuItem` priority를 함께 조정한다.
+- 생성 씬 감사는 별도 수동 흐름보다 `프로토타입 빌드 및 감사` 안에서 자동으로 수행하는 기본 흐름을 우선한다.
+- 게임플레이나 UI를 바꿀 때는 현재 동작 기준이 드러나도록 메서드와 블록 주석을 유지하고, 관련 파일에 무주석 핵심 메서드나 블록이 있으면 함께 보강한다.
+- 새로 추가하거나 수정하는 코드 주석과 문서는 UTF-8 한글 기준으로 작성하고, 기존 영어 주석을 손볼 때도 한글로 통일한다.
+- Git 커밋 메시지는 한글로 작성하고 `type : subject` 형식을 따른다.
+- Git 커밋 메시지 상세 규칙은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`의 Git 섹션을 기준으로 유지하고, 규칙을 바꾸면 `AGENTS.md`와 project rules 문서를 함께 갱신한다.
+- Git 커밋 템플릿 경로는 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE_KO.md`를 기준으로 사용하고, 규칙을 바꾸면 템플릿과 문서를 함께 갱신한다.
+- 커밋 제목은 50자 이내로 작성하고, 제목 끝에 마침표를 붙이지 않는다. 제목만으로 충분하면 본문은 생략한다.
+- 영어 diff 요약, PR 제목, 자동 생성 커밋 초안이 들어와도 최종 커밋 메시지는 자연스러운 한글로 다시 작성한다.
+- 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영문 문장을 제목이나 본문에 그대로 쓰지 않는다.
+- `type`은 정의된 소문자 목록만 사용하고, 본문은 왜 바꿨는지와 무엇을 바꿨는지를 짧고 구체적으로 적는다. footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 적는다.
+- squash merge 커밋 메시지는 `[squash] 브랜치명` 형식을 따른다.
+- `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 lower camelCase를 유지한다.

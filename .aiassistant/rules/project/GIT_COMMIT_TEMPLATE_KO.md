@@ -1,31 +1,31 @@
----
+﻿---
 적용: 항상
 ---
 
-# Commit Message Template Rules
-# - All commit messages must be written in Korean.
-# - Even if an English diff summary or auto-generated draft exists, rewrite the final commit message in Korean.
-# - The first line must follow the format: type : subject
-# - Keep the title within 50 characters and do not end it with a period.
-# - If the title is already sufficient, body and footer may be omitted.
-# - Write the body after one blank line below the title.
-# - Do not leave English sentences unchanged unless they are untranslatable identifiers such as file paths, code identifiers, or branch names.
+# 커밋 메시지 템플릿 규칙
+# - 모든 커밋 메시지는 한글로 작성한다.
+# - 영어 diff 요약이나 자동 생성 초안이 있어도 최종 커밋 메시지는 자연스러운 한글로 다시 쓴다.
+# - 첫 줄은 반드시 `type : subject` 형식을 따른다.
+# - 제목은 50자 이내로 작성하고 마침표로 끝내지 않는다.
+# - 제목만으로 충분하면 본문과 footer는 생략할 수 있다.
+# - 본문은 한 줄 공백 뒤에 짧고 구체적으로 작성한다.
+# - 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영문 문장을 그대로 두지 않는다.
 #
-# Allowed type values
-# feat    : add a new feature
-# update  : modify an existing feature
-# fix     : fix a bug
-# docs    : update documents or comments
-# design  : change CSS or UI design
-# style   : no behavior change such as typos, formatting, semicolons, or spacing
-# rename  : rename files
-# delete  : remove unnecessary files
-# refactor: refactor code
-# test    : add tests
-# chore   : build settings, project settings, import changes, function renames, and similar maintenance work
+# 허용되는 type
+# feat    : 새 기능 추가
+# update  : 기존 기능 수정
+# fix     : 버그 수정
+# docs    : 문서 또는 주석 수정
+# design  : UI 디자인 변경
+# style   : 동작 변화 없는 오탈자, 포맷, 공백, 세미콜론 정리
+# rename  : 파일 또는 식별자 이름 변경
+# delete  : 불필요한 파일 제거
+# refactor: 리팩터링
+# test    : 테스트 추가 또는 보강
+# chore   : 빌드 설정, 프로젝트 설정, import 변경, 함수명 정리 같은 유지보수
 #
 # squash merge
-# [squash] hotfix/blabla
+# [squash] 브랜치명
 
 type : subject
 
