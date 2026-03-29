@@ -1,4 +1,6 @@
 // 탐험에서 사용하는 상시 해금형 도구 종류다.
+namespace Tools
+{
 public enum ToolType
 {
     None,
@@ -25,4 +27,5 @@ public static class ToolTypeExtensions
             _ => "도구 없음"
         };
     }
+}
 }

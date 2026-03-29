@@ -1,10 +1,18 @@
 using TMPro;
+using Core;
+using Interaction;
+using Inventory;
+using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브 창고 팝업을 여는 단일 상호작용 지점이다.
-public class StorageStation : MonoBehaviour, IInteractable
+namespace Storage
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageStation")]
+    public class StorageStation : MonoBehaviour, IInteractable
+    {
     [SerializeField] private StorageManager storageManager;
     [SerializeField] private StorageStationAction stationAction = StorageStationAction.StoreAll;
     [SerializeField] private string promptLabel = "창고 열기";
@@ -149,7 +157,7 @@ public class StorageStation : MonoBehaviour, IInteractable
     }
 }
 
-public enum StorageStationAction
+    public enum StorageStationAction
 {
     StoreAll,
     WithdrawAll,
@@ -157,4 +165,5 @@ public enum StorageStationAction
     WithdrawSelected,
     CycleInventorySelection,
     CycleStorageSelection
+}
 }

@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 인벤토리와 별개로 상시 해금된 도구 목록을 관리한다.
-public class ToolManager : MonoBehaviour
+namespace Tools
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ToolManager")]
+    public class ToolManager : MonoBehaviour
+    {
     // 시작 시점에 열려 있는 도구 목록과 런타임 표시용 목록이다.
-    [SerializeField] private List<ToolType> startingUnlockedTools = new()
+    [SerializeField]
+    private List<ToolType> startingUnlockedTools = new()
     {
         ToolType.FishingRod,
         ToolType.Rake,
@@ -92,5 +97,6 @@ public class ToolManager : MonoBehaviour
         }
 
         runtimeUnlockedTools.Sort((left, right) => left.CompareTo(right));
+    }
     }
 }

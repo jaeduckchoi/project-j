@@ -1,9 +1,15 @@
+using Core;
+using Player;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 플레이어가 특정 구역에 들어왔을 때 짧은 안내 문구를 띄우는 트리거다.
-[RequireComponent(typeof(Collider2D))]
-public class GuideTriggerZone : MonoBehaviour
+namespace World
 {
+    [RequireComponent(typeof(Collider2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GuideTriggerZone")]
+    public class GuideTriggerZone : MonoBehaviour
+    {
     // 한 번만 보여줄 힌트인지, 얼마 동안 유지할지 설정한다.
     [SerializeField] private string hintId = "guide_trigger";
     [SerializeField, TextArea] private string guideText = "안내 문구";
@@ -57,5 +63,6 @@ public class GuideTriggerZone : MonoBehaviour
         }
 
         GameManager.Instance?.DayCycle?.ShowTemporaryGuide(guideText, duration);
+    }
     }
 }

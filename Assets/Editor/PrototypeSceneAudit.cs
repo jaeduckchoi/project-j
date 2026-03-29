@@ -2,10 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Player;
+using UI;
+using UI.Layout;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+namespace ProjectEditor
+{
 
 /*
  * 생성된 프로토타입 씬의 기본 구조를 점검하는 간단한 감사 도구입니다.
@@ -319,6 +325,8 @@ public static class PrototypeSceneAudit
     {
         return Mathf.Abs(left.x - right.x) < 0.01f && Mathf.Abs(left.y - right.y) < 0.01f;
     }
+}
+
 }
 #endif
 

@@ -7,6 +7,8 @@ using UnityEditor;
 
 // Generated 게임 데이터 에셋을 이름으로 다시 찾는 폴백 로더다.
 // 씬 참조가 비어 있어도 에디터 플레이와 빌드에서 기본 레시피, 자원 데이터를 복구한다.
+namespace Data
+{
 public static class GeneratedGameDataLocator
 {
     private const string GeneratedDataRoot = "Assets/Generated/GameData";
@@ -247,4 +249,5 @@ public static class GeneratedGameDataLocator
         return null;
     }
 #endif
+}
 }

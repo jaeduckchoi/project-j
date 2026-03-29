@@ -1,12 +1,17 @@
 using System.Collections.Generic;
+using Interaction;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+namespace Player
 {
+    [RequireComponent(typeof(Rigidbody2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerController")]
+    public class PlayerController : MonoBehaviour
+    {
     [SerializeField, Min(0.1f)] private float moveSpeed = 4f;
     [SerializeField] private InteractionDetector interactionDetector;
 
@@ -366,4 +371,5 @@ public class PlayerController : MonoBehaviour
         interactAction.AddBinding("<Keyboard>/enter");
     }
 #endif
+    }
 }

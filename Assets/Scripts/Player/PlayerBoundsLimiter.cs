@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 플레이어가 맵 경계를 벗어나지 않도록 위치와 속도를 보정한다.
-[DisallowMultipleComponent]
-public class PlayerBoundsLimiter : MonoBehaviour
+namespace Player
 {
+    [DisallowMultipleComponent]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerBoundsLimiter")]
+    public class PlayerBoundsLimiter : MonoBehaviour
+    {
     // 이동 허용 영역과 여유 패딩이다.
     [SerializeField] private Collider2D movementBounds;
     [SerializeField] private Collider2D playerCollider;
@@ -92,5 +96,6 @@ public class PlayerBoundsLimiter : MonoBehaviour
         }
 
         transform.position = new Vector3(clampedPosition.x, clampedPosition.y, transform.position.z);
+    }
     }
 }

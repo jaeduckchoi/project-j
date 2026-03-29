@@ -1,9 +1,16 @@
+using Core;
+using Flow;
+using Interaction;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브에서 상호작용 시 다음 메뉴로 전환하는 최소 메뉴 선택 오브젝트다.
 // 막힌 시간대에서도 상호작용 이유를 안내한다.
-public class RecipeSelectorStation : MonoBehaviour, IInteractable
+namespace Restaurant
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeSelectorStation")]
+    public class RecipeSelectorStation : MonoBehaviour, IInteractable
+    {
     [SerializeField] private RestaurantManager restaurantManager;
     [SerializeField] private string promptLabel = "메뉴 바꾸기";
 
@@ -93,5 +100,6 @@ public class RecipeSelectorStation : MonoBehaviour, IInteractable
         }
 
         return -1;
+    }
     }
 }

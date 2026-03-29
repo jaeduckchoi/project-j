@@ -1,10 +1,18 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UI;
+using UI.Controllers;
+using UI.Style;
 using UnityEngine;
 
+namespace ProjectEditor.UI
+{
+
+// 편집 모드에서 UI 프리뷰 적용, SVG 경로 확인, 캔버스 정리를 묶어 제공한다.
 [CustomEditor(typeof(PrototypeUIDesignController))]
 public class PrototypeUIDesignControllerEditor : Editor
 {
+    // 기본 인스펙터 아래에 프리뷰 관련 보조 버튼과 안내 박스를 그린다.
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -24,10 +32,31 @@ public class PrototypeUIDesignControllerEditor : Editor
             + "일반 패널: " + PrototypeUISkin.GetPanelResourcePath("TopLeftPanel") + "\n"
             + "일반 버튼: " + PrototypeUISkin.GetButtonResourcePath("RecipePanelButton") + "\n\n"
             + "[Popup]\n"
-            + "팝업 외곽: " + PrototypeUISkin.GetPanelResourcePath("PopupFrame") + "\n"
-            + "팝업 내부: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftBody") + "\n"
+            + "팝업 프레임: " + PrototypeUISkin.GetPanelResourcePath("PopupFrame") + "\n"
+            + "팝업 좌우 반프레임: " + PrototypeUISkin.GetPanelResourcePath("PopupFrameLeft") + "\n"
+            + "팝업 본문: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftBody") + "\n"
+            + "팝업 아이템 박스: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftItemBox01") + "\n"
             + "팝업 닫기: " + PrototypeUISkin.GetButtonResourcePath("PopupCloseButton"),
             MessageType.Info);
+
+        EditorGUILayout.HelpBox(
+            "[Grouping Rules]\n"
+            + "Canvas\n"
+            + "- HUDRoot: HUD 계열 오브젝트\n"
+            + "- PopupRoot: 허브 팝업 계열 오브젝트\n\n"
+            + "HUDRoot\n"
+            + "- HUDStatusGroup / HUDInventoryGroup / HUDActionGroup\n"
+            + "- HUDButtonGroup / HUDPromptGroup / HUDOverlayGroup\n\n"
+            + "PopupRoot\n"
+            + "- PopupShellGroup / PopupFrame / PopupFrameHeader\n"
+            + "- PopupOverlay는 PopupShellGroup 아래에 유지\n"
+            + "- PopupFrame 안에 PopupTitle / PopupCloseButton / PopupFrameLeft / PopupFrameRight 배치\n"
+            + "- 좌우 내용은 PopupFrameLeft / PopupFrameRight 기준으로 정리\n\n"
+            + "PopupLeftBody / PopupRightBody\n"
+            + "- ItemBox는 2자리 번호를 사용\n"
+            + "- 각 ItemBox 아래에는 같은 번호의 ItemText 1개만 배치\n"
+            + "- 프리뷰 적용은 계층 유지, 재배치는 'Canvas 그룹 정리'에서만 수행",
+            MessageType.None);
 
         using (new EditorGUILayout.HorizontalScope())
         {
@@ -62,6 +91,7 @@ public class PrototypeUIDesignControllerEditor : Editor
         }
     }
 
+    // 프리뷰 적용으로 씬 상태가 바뀌면 저장 대상으로 표시한다.
     private static void MarkSceneDirty(PrototypeUIDesignController controller)
     {
         if (controller == null)
@@ -75,4 +105,6 @@ public class PrototypeUIDesignControllerEditor : Editor
             EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
         }
     }
+}
+
 }

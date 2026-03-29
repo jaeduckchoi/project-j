@@ -1,9 +1,17 @@
+using Core;
+using Flow;
+using Interaction;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브와 탐험 지역 사이의 이동을 처리하고, 잠금 조건을 검사한다.
 // 막힌 상태에서도 상호작용을 받아 안내 문구를 띄울 수 있다.
-public class ScenePortal : MonoBehaviour, IInteractable
+namespace World
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ScenePortal")]
+    public class ScenePortal : MonoBehaviour, IInteractable
+    {
     [SerializeField] private string targetSceneName;
     [SerializeField] private string targetSpawnPointId;
     [SerializeField] private string promptLabel = "이동하기";
@@ -114,5 +122,6 @@ public class ScenePortal : MonoBehaviour, IInteractable
         }
 
         return string.Empty;
+    }
     }
 }

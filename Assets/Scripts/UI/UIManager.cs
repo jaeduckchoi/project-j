@@ -1,8 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Core;
+using Data;
+using Economy;
+using Flow;
+using Gathering;
+using Inventory;
+using Interaction;
+using Player;
+using Restaurant;
+using Storage;
 using TMPro;
+using Tools;
+using UI.Content;
+using UI.Controllers;
+using UI.Layout;
+using UI.Style;
+using Upgrade;
+using World;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
@@ -11,12 +30,36 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.UI;
 #endif
 
-// 현재 HUD, 허브 팝업, 창고 패널을 한곳에서 갱신하는 최소 UI 관리자입니다.
-// 코인/평판, 재료, 업그레이드, 상호작용 문구, 단계 표시를 모두 여기서 동기화합니다.
-public class UIManager : MonoBehaviour
+/*
+ * 현재 HUD, 허브 팝업, 창고 패널을 한곳에서 갱신하는 최소 UI 관리자입니다.
+ * 코인/평판, 재료, 업그레이드, 상호작용 문구, 단계 표시를 모두 여기서 동기화합니다.
+ */
+namespace UI
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UIManager")]
+    public class UIManager : MonoBehaviour
+    {
+    private const string PopupTitleObjectName = "PopupTitle";
+    private const string PopupLeftCaptionObjectName = "PopupLeftCaption";
+    private const string PopupRightCaptionObjectName = "PopupRightCaption";
     private const string HudRootName = "HUDRoot";
     private const string PopupRootName = "PopupRoot";
+    private const string HudStatusGroupName = "HUDStatusGroup";
+    private const string HudInventoryGroupName = "HUDInventoryGroup";
+    private const string HudActionGroupName = "HUDActionGroup";
+    private const string HudButtonGroupName = "HUDButtonGroup";
+    private const string HudPromptGroupName = "HUDPromptGroup";
+    private const string HudOverlayGroupName = "HUDOverlayGroup";
+    private const string PopupShellGroupName = "PopupShellGroup";
+    private const string PopupFrameGroupName = "PopupFrame";
+    private const string PopupFrameHeaderGroupName = "PopupFrameHeader";
+    private const string PopupFrameLeftGroupName = "PopupFrameLeft";
+    private const string PopupFrameRightGroupName = "PopupFrameRight";
+    private static readonly Color PopupItemBoxFallbackColor = new(0.96f, 0.92f, 0.78f, 1f);
+    private static readonly Color PopupItemBoxSelectedColor = new(1f, 0.97f, 0.84f, 1f);
+    private static readonly CaptionPresentationPreset DefaultCaptionPresentation = new(15f, true, Vector4.zero, 0.5f, 12f, 15f);
+    private static readonly CaptionPresentationPreset FixedPopupTitlePresentation = new(40f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 24f);
+    private static readonly CaptionPresentationPreset FixedPopupCaptionPresentation = new(32f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 20f);
 
     private static readonly string[] HudCanvasObjectNames =
     {
@@ -59,17 +102,17 @@ public class UIManager : MonoBehaviour
     {
         "PopupOverlay",
         "PopupFrame",
-        "PopupLeftPanel",
-        "PopupRightPanel",
+        "PopupFrameLeft",
+        "PopupFrameRight",
+        PopupTitleObjectName,
+        "PopupCloseButton",
         "PopupLeftBody",
         "PopupRightBody",
-        "PopupTitle",
-        "PopupLeftCaption",
-        "PopupRightCaption",
+        PopupLeftCaptionObjectName,
+        PopupRightCaptionObjectName,
         "StorageText",
         "SelectedRecipeText",
-        "UpgradeText",
-        "PopupCloseButton"
+        "UpgradeText"
     };
 
     [SerializeField] private TextMeshProUGUI interactionPromptText;
@@ -101,8 +144,12 @@ public class UIManager : MonoBehaviour
     private DayCycleManager cachedDayCycle;
     private UpgradeManager cachedUpgradeManager;
     private HubPopupPanel activeHubPanel = HubPopupPanel.None;
+    private ResourceData selectedMaterialPopupResource;
+    private ResourceData selectedStoragePopupResource;
+    private string selectedUpgradePopupKey;
     private bool isPopupPauseApplied;
     private float popupPausePreviousTimeScale = 1f;
+    private bool suppressCanvasGroupingInEditorPreview;
 
 #if ENABLE_INPUT_SYSTEM
     private static InputActionAsset runtimeUiActionsAsset;
@@ -115,6 +162,60 @@ public class UIManager : MonoBehaviour
         Recipe,
         Upgrade,
         Materials
+    }
+
+    private readonly struct CaptionPresentationPreset
+    {
+        public CaptionPresentationPreset(float fontSize, bool enableAutoSizing, Vector4 margin, float characterSpacing, float fontSizeMin, float fontSizeMax)
+        {
+            FontSize = fontSize;
+            EnableAutoSizing = enableAutoSizing;
+            Margin = margin;
+            CharacterSpacing = characterSpacing;
+            FontSizeMin = fontSizeMin;
+            FontSizeMax = fontSizeMax;
+        }
+
+        public float FontSize { get; }
+        public bool EnableAutoSizing { get; }
+        public Vector4 Margin { get; }
+        public float CharacterSpacing { get; }
+        public float FontSizeMin { get; }
+        public float FontSizeMax { get; }
+    }
+
+    private sealed class PopupListEntry
+    {
+        public PopupListEntry(string key, string title, string summary, string detail, Sprite icon, bool isSelected, Action onSelected)
+        {
+            Key = key;
+            Title = title;
+            Summary = summary;
+            Detail = detail;
+            Icon = icon;
+            IsSelected = isSelected;
+            OnSelected = onSelected;
+        }
+
+        public string Key { get; }
+        public string Title { get; }
+        public string Summary { get; }
+        public string Detail { get; }
+        public Sprite Icon { get; }
+        public bool IsSelected { get; }
+        public Action OnSelected { get; }
+    }
+
+    private sealed class PopupPanelContent
+    {
+        public PopupPanelContent(List<PopupListEntry> entries, string detailText)
+        {
+            Entries = entries ?? new List<PopupListEntry>();
+            DetailText = detailText ?? string.Empty;
+        }
+
+        public List<PopupListEntry> Entries { get; }
+        public string DetailText { get; }
     }
 
     private void Awake()
@@ -172,16 +273,25 @@ public class UIManager : MonoBehaviour
 #if UNITY_EDITOR
     public void ApplyEditorDesignPreview(bool showPopupPreview, PrototypeUIPreviewPanel previewPanel)
     {
-        if (Application.isPlaying || this == null || gameObject == null)
+        if (Application.isPlaying)
         {
             return;
         }
 
         PrototypeUISkin.ClearGeneratedCache();
-        EnsureCanvasGroups();
-        ResolveOptionalUiReferences();
-        ApplyTextPresentation();
-        ApplyEditorPreviewState(showPopupPreview, previewPanel);
+        bool previousSuppressState = suppressCanvasGroupingInEditorPreview;
+        suppressCanvasGroupingInEditorPreview = true;
+
+        try
+        {
+            ResolveOptionalUiReferences();
+            ApplyTextPresentation();
+            ApplyEditorPreviewState(showPopupPreview, previewPanel);
+        }
+        finally
+        {
+            suppressCanvasGroupingInEditorPreview = previousSuppressState;
+        }
     }
 
     public void ClearEditorDesignPreview()
@@ -191,7 +301,7 @@ public class UIManager : MonoBehaviour
 
     public void OrganizeCanvasHierarchyInEditor()
     {
-        if (Application.isPlaying || this == null || gameObject == null)
+        if (Application.isPlaying)
         {
             return;
         }
@@ -257,22 +367,59 @@ public class UIManager : MonoBehaviour
     private void ApplyEditorPreviewPopupText(PrototypeUIPreviewPanel previewPanel)
     {
         PrototypeUIPreviewContent previewContent = PrototypeUIPopupCatalog.GetPreviewContent(previewPanel);
+        PopupPanelContent popupContent = BuildPreviewPopupContent(previewContent);
 
         if (inventoryText != null)
         {
-            inventoryText.text = previewContent.LeftText;
+            inventoryText.text = string.Empty;
         }
 
         if (selectedRecipeText != null)
         {
-            selectedRecipeText.text = previewContent.RightText;
+            selectedRecipeText.text = popupContent.DetailText;
         }
+
+        RefreshPopupBodyItemBoxes(popupContent.Entries);
+    }
+
+    private static PopupPanelContent BuildPreviewPopupContent(PrototypeUIPreviewContent previewContent)
+    {
+        List<PopupListEntry> entries = new();
+        if (!string.IsNullOrWhiteSpace(previewContent.LeftText))
+        {
+            string normalized = previewContent.LeftText.Replace("\r\n", "\n").Replace('\r', '\n');
+            string[] lines = normalized.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string trimmed = lines[i].Trim();
+                if (string.IsNullOrWhiteSpace(trimmed))
+                {
+                    continue;
+                }
+
+                string title = trimmed.StartsWith("- ")
+                    ? trimmed.Substring(2).Trim()
+                    : trimmed;
+                title = title.Replace("[선택] ", string.Empty);
+                entries.Add(new PopupListEntry(
+                    $"preview:{i}",
+                    title,
+                    "편집 모드 프리뷰 항목",
+                    previewContent.RightText,
+                    null,
+                    entries.Count == 0,
+                    null));
+            }
+        }
+
+        return new PopupPanelContent(entries, previewContent.RightText);
     }
 
     private static HubPopupPanel ConvertPreviewPanel(PrototypeUIPreviewPanel previewPanel)
     {
         return previewPanel switch
         {
+            PrototypeUIPreviewPanel.None => HubPopupPanel.None,
             PrototypeUIPreviewPanel.Storage => HubPopupPanel.Storage,
             PrototypeUIPreviewPanel.Recipe => HubPopupPanel.Recipe,
             PrototypeUIPreviewPanel.Upgrade => HubPopupPanel.Upgrade,
@@ -287,6 +434,7 @@ public class UIManager : MonoBehaviour
     {
         return popupPanel switch
         {
+            HubPopupPanel.None => PrototypeUIPreviewPanel.Materials,
             HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
             HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
             HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,
@@ -930,6 +1078,10 @@ public class UIManager : MonoBehaviour
         }
 #endif
 
+#if !ENABLE_LEGACY_INPUT_MANAGER
+        _ = legacyKey;
+#endif
+
 #if ENABLE_LEGACY_INPUT_MANAGER
         pressed |= Input.GetKeyDown(legacyKey);
 #endif
@@ -976,6 +1128,11 @@ public class UIManager : MonoBehaviour
 
     private void EnsureCanvasGroups()
     {
+        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        {
+            return;
+        }
+
         if (transform == null)
         {
             return;
@@ -984,18 +1141,31 @@ public class UIManager : MonoBehaviour
         Transform hudRoot = EnsureCanvasGroupRoot(HudRootName, 0);
         Transform popupRoot = EnsureCanvasGroupRoot(PopupRootName, 1);
 
-        ReparentCanvasObjects(HudCanvasObjectNames, hudRoot);
-        ReparentCanvasObjects(PopupCanvasObjectNames, popupRoot);
-        ReparentCanvasObject("InventoryText", IsHubScene() ? popupRoot : hudRoot);
+        EnsureHudSubgroupRoots(hudRoot);
+        EnsurePopupSubgroupRoots(popupRoot);
+        ReparentHudCanvasObjects(hudRoot);
+        ReparentPopupCanvasObjects(popupRoot);
+        ReparentCanvasObject("InventoryText", IsHubScene() ? GetPopupCanvasGroupParent("InventoryText", popupRoot) : GetHudCanvasGroupParent("InventoryText", hudRoot));
     }
 
     private Transform EnsureCanvasGroupRoot(string groupName, int siblingIndex)
     {
-        Transform existing = transform.Find(groupName);
+        return EnsureCanvasGroupRoot(transform, groupName, siblingIndex);
+    }
+
+    private static Transform EnsureCanvasGroupRoot(Transform parent, string groupName, int siblingIndex)
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        Transform existing = parent.Find(groupName);
         GameObject rootObject = existing != null ? existing.gameObject : new GameObject(groupName, typeof(RectTransform));
+        ApplyHubPopupObjectIdentity(rootObject);
         if (existing == null)
         {
-            rootObject.transform.SetParent(transform, false);
+            rootObject.transform.SetParent(parent, false);
         }
 
         RectTransform rect = rootObject.GetComponent<RectTransform>();
@@ -1011,16 +1181,213 @@ public class UIManager : MonoBehaviour
         rect.sizeDelta = Vector2.zero;
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
-        rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, transform.childCount - 1)));
+        rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1)));
         return rect;
     }
 
-    private void ReparentCanvasObjects(IEnumerable<string> objectNames, Transform targetParent)
+    private void EnsureHudSubgroupRoots(Transform hudRoot)
     {
-        foreach (string objectName in objectNames)
+        if (hudRoot == null)
         {
-            ReparentCanvasObject(objectName, targetParent);
+            return;
         }
+
+        EnsureCanvasGroupRoot(hudRoot, HudStatusGroupName, 0);
+        EnsureCanvasGroupRoot(hudRoot, HudInventoryGroupName, 1);
+        EnsureCanvasGroupRoot(hudRoot, HudActionGroupName, 2);
+        EnsureCanvasGroupRoot(hudRoot, HudButtonGroupName, 3);
+        EnsureCanvasGroupRoot(hudRoot, HudPromptGroupName, 4);
+        EnsureCanvasGroupRoot(hudRoot, HudOverlayGroupName, 5);
+    }
+
+    private void ReparentHudCanvasObjects(Transform hudRoot)
+    {
+        if (hudRoot == null)
+        {
+            return;
+        }
+
+        foreach (string objectName in HudCanvasObjectNames)
+        {
+            ReparentCanvasObject(objectName, GetHudCanvasGroupParent(objectName, hudRoot));
+        }
+    }
+
+    private void EnsurePopupSubgroupRoots(Transform popupRoot)
+    {
+        if (popupRoot == null)
+        {
+            return;
+        }
+
+        Transform popupFrame = EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1);
+        EnsureCanvasGroupRoot(popupRoot, PopupShellGroupName, 0);
+        EnsureCanvasGroupRoot(popupRoot, PopupFrameHeaderGroupName, 2);
+        EnsurePopupLayoutContainer(popupFrame, PopupFrameLeftGroupName, 2);
+        EnsurePopupLayoutContainer(popupFrame, PopupFrameRightGroupName, 3);
+    }
+
+    private void ReparentPopupCanvasObjects(Transform popupRoot)
+    {
+        if (popupRoot == null)
+        {
+            return;
+        }
+
+        foreach (string objectName in PopupCanvasObjectNames)
+        {
+            ReparentCanvasObject(objectName, GetPopupCanvasGroupParent(objectName, popupRoot));
+        }
+    }
+
+    private Transform GetPopupCanvasGroupParent(string objectName, Transform popupRoot)
+    {
+        if (popupRoot == null)
+        {
+            return null;
+        }
+
+        string subgroupName = GetPopupSubgroupName(objectName);
+        if (string.IsNullOrWhiteSpace(subgroupName))
+        {
+            return popupRoot;
+        }
+
+        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        {
+            Transform existingGroup = FindNamedUiTransform(subgroupName);
+            return existingGroup != null ? existingGroup : popupRoot;
+        }
+
+        return subgroupName switch
+        {
+            PopupShellGroupName => EnsureCanvasGroupRoot(popupRoot, PopupShellGroupName, 0),
+            PopupFrameGroupName => EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1),
+            PopupFrameLeftGroupName or PopupFrameRightGroupName => EnsurePopupLayoutContainer(
+                EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1),
+                subgroupName,
+                GetPopupSubgroupSiblingIndex(subgroupName)),
+            _ => popupRoot
+        };
+    }
+
+    private Transform GetHudCanvasGroupParent(string objectName, Transform hudRoot)
+    {
+        if (hudRoot == null)
+        {
+            return null;
+        }
+
+        string subgroupName = GetHudSubgroupName(objectName);
+        if (string.IsNullOrWhiteSpace(subgroupName))
+        {
+            return hudRoot;
+        }
+
+        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        {
+            Transform existingGroup = hudRoot.Find(subgroupName);
+            return existingGroup != null ? existingGroup : hudRoot;
+        }
+
+        Transform currentGroup = hudRoot.Find(subgroupName);
+        return currentGroup != null ? currentGroup : EnsureCanvasGroupRoot(hudRoot, subgroupName, GetHudSubgroupSiblingIndex(subgroupName));
+    }
+
+    private static string GetHudSubgroupName(string objectName)
+    {
+        return objectName switch
+        {
+            "TopLeftPanel" or "TopLeftAccent" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
+            "InventoryCard" or "InventoryAccent" or "InventoryCaption" or "InventoryText" => HudInventoryGroupName,
+            "CenterBottomPanel" or "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
+            "SkipExplorationButton" or "SkipServiceButton" or "NextDayButton"
+                or "RecipePanelButton" or "UpgradePanelButton" or "MaterialPanelButton" => HudButtonGroupName,
+            "PromptBackdrop" or "InteractionPromptText" => HudPromptGroupName,
+            "GuideBackdrop" or "GuideText" or "ResultBackdrop" or "RestaurantResultText" => HudOverlayGroupName,
+            _ => null
+        };
+    }
+
+    private static string GetPopupSubgroupName(string objectName)
+    {
+        return objectName switch
+        {
+            "PopupOverlay" => PopupShellGroupName,
+            "PopupFrameLeft" or "PopupFrameRight" => PopupFrameGroupName,
+            PopupTitleObjectName or PopupLeftCaptionObjectName or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
+            "PopupCloseButton" or PopupRightCaptionObjectName or "PopupRightBody"
+                or "StorageText" or "SelectedRecipeText" or "UpgradeText" => PopupFrameRightGroupName,
+            _ => null
+        };
+    }
+
+    private static int GetHudSubgroupSiblingIndex(string subgroupName)
+    {
+        return subgroupName switch
+        {
+            HudStatusGroupName => 0,
+            HudInventoryGroupName => 1,
+            HudActionGroupName => 2,
+            HudButtonGroupName => 3,
+            HudPromptGroupName => 4,
+            HudOverlayGroupName => 5,
+            _ => 0
+        };
+    }
+
+    private static int GetPopupSubgroupSiblingIndex(string subgroupName)
+    {
+        return subgroupName switch
+        {
+            PopupShellGroupName => 0,
+            PopupFrameGroupName => 1,
+            PopupFrameHeaderGroupName => 2,
+            PopupFrameLeftGroupName => 2,
+            PopupFrameRightGroupName => 3,
+            _ => 0
+        };
+    }
+
+    private Transform EnsurePopupLayoutContainer(Transform parent, string objectName, int siblingIndex)
+    {
+        if (parent == null || string.IsNullOrWhiteSpace(objectName))
+        {
+            return parent;
+        }
+
+        Transform existing = parent.Find(objectName);
+        if (existing == null)
+        {
+            existing = FindNamedUiTransform(objectName);
+        }
+
+        GameObject containerObject = existing != null
+            ? existing.gameObject
+            : new GameObject(objectName, typeof(RectTransform));
+        ApplyHubPopupObjectIdentity(containerObject);
+        if (containerObject.transform.parent != parent)
+        {
+            containerObject.transform.SetParent(parent, false);
+        }
+
+        RectTransform rect = containerObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = containerObject.AddComponent<RectTransform>();
+        }
+
+        if (existing == null)
+        {
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+        }
+
+        rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1)));
+        return rect;
     }
 
     private void ReparentCanvasObject(string objectName, Transform targetParent)
@@ -1049,15 +1416,38 @@ public class UIManager : MonoBehaviour
             return null;
         }
 
-        bool usePopupRoot = objectName == "InventoryText"
-            ? IsHubScene()
-            : PopupCanvasObjectNames.Contains(objectName);
-        return EnsureCanvasGroupRoot(usePopupRoot ? PopupRootName : HudRootName, usePopupRoot ? 1 : 0);
+        bool usePopupRoot = objectName == "InventoryText" ? IsHubScene() : PopupCanvasObjectNames.Contains(objectName);
+
+        if (usePopupRoot)
+        {
+            if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+            {
+                Transform existingGroup = transform.Find(PopupRootName);
+                return GetPopupCanvasGroupParent(objectName, existingGroup != null ? existingGroup : transform);
+            }
+
+            return GetPopupCanvasGroupParent(objectName, EnsureCanvasGroupRoot(PopupRootName, 1));
+        }
+
+        Transform hudRoot = !Application.isPlaying && suppressCanvasGroupingInEditorPreview
+            ? transform.Find(HudRootName)
+            : EnsureCanvasGroupRoot(HudRootName, 0);
+        if (hudRoot == null)
+        {
+            return transform;
+        }
+
+        return GetHudCanvasGroupParent(objectName, hudRoot);
     }
 
     private void AssignCanvasGroupParent(Transform target, string objectName)
     {
         if (target == null)
+        {
+            return;
+        }
+
+        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
         {
             return;
         }
@@ -1069,32 +1459,32 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private Transform FindNamedUiTransform(string name)
+    private Transform FindNamedUiTransform(string objectName)
     {
-        if (transform == null || string.IsNullOrWhiteSpace(name))
+        if (transform == null || string.IsNullOrWhiteSpace(objectName))
         {
             return null;
         }
 
-        Transform direct = transform.Find(name);
+        Transform direct = transform.Find(objectName);
         if (direct != null)
         {
             return direct;
         }
 
-        return FindNamedUiTransformRecursive(transform, name);
+        return FindNamedUiTransformRecursive(transform, objectName);
     }
 
-    private static Transform FindNamedUiTransformRecursive(Transform parent, string name)
+    private static Transform FindNamedUiTransformRecursive(Transform parent, string objectName)
     {
         foreach (Transform child in parent)
         {
-            if (child.name == name)
+            if (child.name == objectName)
             {
                 return child;
             }
 
-            Transform nested = FindNamedUiTransformRecursive(child, name);
+            Transform nested = FindNamedUiTransformRecursive(child, objectName);
             if (nested != null)
             {
                 return nested;
@@ -1133,7 +1523,7 @@ public class UIManager : MonoBehaviour
         }
 
         // 실제 HUD 배치와 텍스트 스타일은 아래 공용 레이아웃 메서드에서 한 번만 적용합니다.
-        ApplyCompactHudLayout(preferredFont, headingFont, theme.Text, theme.OceanAccent, theme.ForestAccent, theme.AmberAccent, theme.CoralAccent, theme.GoldAccent);
+        ApplyCompactHudLayout(preferredFont, headingFont, theme.Text, theme.OceanAccent, theme.AmberAccent, theme.CoralAccent, theme.GoldAccent);
         ApplyMenuPanelState();
         RefreshStoragePanelVisibility();
         ApplyWorldTextPresentation(preferredFont, headingFont);
@@ -1180,24 +1570,23 @@ public class UIManager : MonoBehaviour
         Color actionTextColor)
     {
         PrototypeUIPopupDefinition recipePopupDefinition = PrototypeUIPopupCatalog.GetDefinition(PrototypeUIPreviewPanel.Recipe);
-        Color popupShell = new(0.82f, 0.82f, 0.82f, 0.98f);
-        Color popupSection = new(0.92f, 0.95f, 0.99f, 1f);
-        Color popupBody = new(0.98f, 0.89f, 0.60f, 1f);
+        Color popupShell = new(1f, 1f, 1f, 0f);
+        Color popupFrameLeft = Color.white;
+        Color popupFrameRight = new(0.92f, 0.95f, 0.99f, 1f);
+        Color popupBody = Color.white;
 
         EnsureUiBackdrop("CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel, paper);
         EnsureUiBackdrop("PopupOverlay", PrototypeUILayout.HubPopupOverlay, new Color(0f, 0f, 0f, 0.52f));
         EnsureUiBackdrop("ActionDock", PrototypeUILayout.HubActionDock, nightDock);
         EnsureUiBackdrop("PopupFrame", PrototypeUILayout.HubPopupFrame, popupShell);
-        EnsureUiBackdrop("PopupLeftPanel", PrototypeUILayout.HubPopupLeftPanel, popupSection);
-        EnsureUiBackdrop("PopupRightPanel", PrototypeUILayout.HubPopupRightPanel, popupSection);
-        EnsureUiBackdrop("PopupLeftBody", PrototypeUILayout.HubPopupLeftBody, popupBody);
-        EnsureUiBackdrop("PopupRightBody", PrototypeUILayout.HubPopupRightBody, popupBody);
+        EnsureUiBackdrop("PopupFrameLeft", PrototypeUILayout.HubPopupFrameLeft, popupFrameLeft);
+        EnsureUiBackdrop("PopupFrameRight", PrototypeUILayout.HubPopupFrameRight, popupFrameRight);
+        EnsureUiBackdrop("PopupLeftBody", PrototypeUILayout.HubPopupFrameBody, popupBody);
+        EnsureUiBackdrop("PopupRightBody", PrototypeUILayout.HubPopupFrameBody, popupBody);
 
         EnsureUiAccentBar("ActionAccent", PrototypeUILayout.HubActionAccent, amberAccent);
         EnsureUiCaption("ActionCaption", "진행", PrototypeUILayout.HubActionCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopRight);
-        EnsureUiCaption("PopupTitle", recipePopupDefinition.Title, PrototypeUILayout.HubPopupTitle, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("PopupLeftCaption", recipePopupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("PopupRightCaption", recipePopupDefinition.RightCaption, PrototypeUILayout.HubPopupRightCaption, preferredFont, actionTextColor, TextAlignmentOptions.TopLeft);
+        EnsureHubPopupHeadings(recipePopupDefinition, preferredFont, actionTextColor);
         EnsurePopupCloseButton(preferredFont);
     }
 
@@ -1205,7 +1594,7 @@ public class UIManager : MonoBehaviour
      * 이름으로 찾은 패널 오브젝트에 카드형 배경과 그림자를 적용합니다.
      */
     private void EnsureUiBackdrop(
-        string name,
+        string objectName,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -1218,15 +1607,16 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Transform existing = FindNamedUiTransform(name);
-        GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(name);
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(backdropObject);
         if (existing == null)
         {
-            backdropObject.transform.SetParent(GetCanvasGroupParent(name), false);
+            backdropObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
         }
         else
         {
-            AssignCanvasGroupParent(backdropObject.transform, name);
+            AssignCanvasGroupParent(backdropObject.transform, objectName);
         }
 
         RectTransform rect = backdropObject.GetComponent<RectTransform>();
@@ -1248,7 +1638,13 @@ public class UIManager : MonoBehaviour
             image = backdropObject.AddComponent<Image>();
         }
 
-        PrototypeUISkin.ApplyPanel(image, name, color);
+        bool preserveSceneSprite = existing != null
+            && IsHubPopupDisplayObject(objectName)
+            && image.sprite != null;
+        if (!preserveSceneSprite)
+        {
+            PrototypeUISkin.ApplyPanel(image, objectName, color);
+        }
         image.raycastTarget = false;
 
         Shadow shadow = backdropObject.GetComponent<Shadow>();
@@ -1262,10 +1658,10 @@ public class UIManager : MonoBehaviour
         shadow.useGraphicAlpha = true;
     }
 
-    private void EnsureUiBackdrop(string name, PrototypeUIRect layout, Color color)
+    private void EnsureUiBackdrop(string objectName, PrototypeUIRect layout, Color color)
     {
         EnsureUiBackdrop(
-            name,
+            objectName,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -1278,7 +1674,7 @@ public class UIManager : MonoBehaviour
      * 카드 상단 강조선을 추가해 HUD와 팝업 구획을 더 또렷하게 나눕니다.
      */
     private void EnsureUiAccentBar(
-        string name,
+        string objectName,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -1286,15 +1682,15 @@ public class UIManager : MonoBehaviour
         Vector2 sizeDelta,
         Color color)
     {
-        Transform existing = FindNamedUiTransform(name);
-        GameObject accentObject = existing != null ? existing.gameObject : new GameObject(name);
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject accentObject = existing != null ? existing.gameObject : new GameObject(objectName);
         if (existing == null)
         {
-            accentObject.transform.SetParent(GetCanvasGroupParent(name), false);
+            accentObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
         }
         else
         {
-            AssignCanvasGroupParent(accentObject.transform, name);
+            AssignCanvasGroupParent(accentObject.transform, objectName);
         }
 
         RectTransform rect = accentObject.GetComponent<RectTransform>();
@@ -1323,10 +1719,10 @@ public class UIManager : MonoBehaviour
         image.raycastTarget = false;
     }
 
-    private void EnsureUiAccentBar(string name, PrototypeUIRect layout, Color color)
+    private void EnsureUiAccentBar(string objectName, PrototypeUIRect layout, Color color)
     {
         EnsureUiAccentBar(
-            name,
+            objectName,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -1339,7 +1735,7 @@ public class UIManager : MonoBehaviour
      * 카드 제목 캡션을 생성하거나 갱신해 각 정보 구역 이름을 표시합니다.
      */
     private void EnsureUiCaption(
-        string name,
+        string objectName,
         string content,
         Vector2 anchorMin,
         Vector2 anchorMax,
@@ -1350,15 +1746,18 @@ public class UIManager : MonoBehaviour
         Color color,
         TextAlignmentOptions alignment)
     {
-        Transform existing = FindNamedUiTransform(name);
-        GameObject captionObject = existing != null ? existing.gameObject : new GameObject(name);
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject captionObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(captionObject);
+        TextMeshProUGUI existingText = captionObject.GetComponent<TextMeshProUGUI>();
+        bool preserveExistingPopupHeading = existing != null && existingText != null && IsFixedPopupHeading(objectName);
         if (existing == null)
         {
-            captionObject.transform.SetParent(GetCanvasGroupParent(name), false);
+            captionObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
         }
-        else
+        else if (!preserveExistingPopupHeading)
         {
-            AssignCanvasGroupParent(captionObject.transform, name);
+            AssignCanvasGroupParent(captionObject.transform, objectName);
         }
 
         RectTransform rect = captionObject.GetComponent<RectTransform>();
@@ -1367,27 +1766,47 @@ public class UIManager : MonoBehaviour
             rect = captionObject.AddComponent<RectTransform>();
         }
 
-        rect.anchorMin = anchorMin;
-        rect.anchorMax = anchorMax;
-        rect.pivot = pivot;
-        rect.anchoredPosition = anchoredPosition;
-        rect.sizeDelta = sizeDelta;
-        rect.SetSiblingIndex(2);
+        if (!preserveExistingPopupHeading)
+        {
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = pivot;
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = sizeDelta;
+            rect.SetSiblingIndex(2);
+        }
 
-        TextMeshProUGUI text = captionObject.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI text = existingText;
         if (text == null)
         {
             text = captionObject.AddComponent<TextMeshProUGUI>();
         }
 
+        CaptionPresentationPreset presentation = ResolveCaptionPresentation(objectName);
+        TMP_FontAsset resolvedFont = ResolveCaptionFont(objectName, font);
         text.text = content;
-        ApplyScreenTextStyle(text, font, 15f, color, alignment, false, 0f, new Vector4(0f, 0f, 0f, 0f), true);
-        text.characterSpacing = 0.5f;
+        if (!preserveExistingPopupHeading)
+        {
+            ApplyScreenTextStyle(text, resolvedFont, presentation.FontSize, color, alignment, false, 0f, presentation.Margin, presentation.EnableAutoSizing);
+            text.enableAutoSizing = presentation.EnableAutoSizing;
+            text.fontSizeMin = presentation.FontSizeMin;
+            text.fontSizeMax = presentation.FontSizeMax;
+            text.fontSize = presentation.FontSize;
+            text.characterSpacing = presentation.CharacterSpacing;
+        }
+        else if (resolvedFont != null && text.font != resolvedFont)
+        {
+            text.font = resolvedFont;
+            if (resolvedFont.material != null)
+            {
+                text.fontSharedMaterial = resolvedFont.material;
+            }
+        }
         text.raycastTarget = false;
     }
 
     private void EnsureUiCaption(
-        string name,
+        string objectName,
         string content,
         PrototypeUIRect layout,
         TMP_FontAsset font,
@@ -1395,7 +1814,7 @@ public class UIManager : MonoBehaviour
         TextAlignmentOptions alignment)
     {
         EnsureUiCaption(
-            name,
+            objectName,
             content,
             layout.AnchorMin,
             layout.AnchorMax,
@@ -1407,23 +1826,24 @@ public class UIManager : MonoBehaviour
             alignment);
     }
 
-    private TextMeshProUGUI EnsureOverlayText(TextMeshProUGUI current, string name)
+    private TextMeshProUGUI EnsureOverlayText(TextMeshProUGUI current, string objectName)
     {
         if (current != null)
         {
-            AssignCanvasGroupParent(current.transform, name);
+            AssignCanvasGroupParent(current.transform, objectName);
             return current;
         }
 
-        Transform existing = FindNamedUiTransform(name);
-        GameObject textObject = existing != null ? existing.gameObject : new GameObject(name);
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(textObject);
         if (existing == null)
         {
-            textObject.transform.SetParent(GetCanvasGroupParent(name), false);
+            textObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
         }
         else
         {
-            AssignCanvasGroupParent(textObject.transform, name);
+            AssignCanvasGroupParent(textObject.transform, objectName);
         }
 
         RectTransform rect = textObject.GetComponent<RectTransform>();
@@ -1437,7 +1857,7 @@ public class UIManager : MonoBehaviour
         rect.pivot = new Vector2(0.5f, 0f);
         rect.anchoredPosition = Vector2.zero;
         rect.sizeDelta = new Vector2(920f, 60f);
-        rect.SetSiblingIndex(Mathf.Max(0, transform.childCount - 1));
+        rect.SetAsLastSibling();
 
         TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
         if (text == null)
@@ -1461,6 +1881,7 @@ public class UIManager : MonoBehaviour
 
         Transform existing = FindNamedUiTransform("PopupCloseButton");
         GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("PopupCloseButton");
+        ApplyHubPopupObjectIdentity(buttonObject);
         if (existing == null)
         {
             buttonObject.transform.SetParent(GetCanvasGroupParent("PopupCloseButton"), false);
@@ -1499,6 +1920,7 @@ public class UIManager : MonoBehaviour
         if (label == null)
         {
             GameObject labelObject = new("PopupCloseButton_Label");
+            ApplyHubPopupObjectIdentity(labelObject);
             labelObject.transform.SetParent(buttonObject.transform, false);
 
             RectTransform labelRect = labelObject.AddComponent<RectTransform>();
@@ -1518,17 +1940,6 @@ public class UIManager : MonoBehaviour
     /*
      * 텍스트나 버튼의 위치와 크기를 지정된 값으로 다시 맞춥니다.
      */
-    private static void ApplyRectLayout(RectTransform rect, Vector2 anchoredPosition, Vector2 sizeDelta)
-    {
-        if (rect == null)
-        {
-            return;
-        }
-
-        rect.anchoredPosition = anchoredPosition;
-        rect.sizeDelta = sizeDelta;
-    }
-
     private static void ApplyRectLayout(RectTransform rect, PrototypeUIRect layout)
     {
         ApplyRectLayout(
@@ -1612,23 +2023,6 @@ public class UIManager : MonoBehaviour
     /*
      * 버튼 RectTransform을 조정해 허브 하단과 우측 액션 영역 배치를 맞춥니다.
      */
-    private static void ApplyButtonLayout(Button button, Vector2 anchoredPosition, Vector2 sizeDelta)
-    {
-        if (button == null)
-        {
-            return;
-        }
-
-        RectTransform rect = button.GetComponent<RectTransform>();
-        if (rect == null)
-        {
-            return;
-        }
-
-        rect.anchoredPosition = anchoredPosition;
-        rect.sizeDelta = sizeDelta;
-    }
-
     private static void ApplyButtonLayout(Button button, PrototypeUIRect layout)
     {
         if (button == null)
@@ -1785,7 +2179,6 @@ public class UIManager : MonoBehaviour
         TMP_FontAsset headingFont,
         Color textColor,
         Color oceanAccent,
-        Color forestAccent,
         Color amberAccent,
         Color coralAccent,
         Color goldAccent)
@@ -1826,7 +2219,7 @@ public class UIManager : MonoBehaviour
 
         if (isHubScene)
         {
-            ApplyHubPanelLayout(bodyFont, headingFont, textColor, oceanAccent, forestAccent, amberAccent, goldAccent);
+            ApplyHubPanelLayout(bodyFont, headingFont, textColor, oceanAccent, amberAccent, goldAccent);
         }
         else
         {
@@ -1868,23 +2261,28 @@ public class UIManager : MonoBehaviour
         TMP_FontAsset headingFont,
         Color textColor,
         Color oceanAccent,
-        Color forestAccent,
         Color amberAccent,
         Color goldAccent)
     {
         ApplyNamedRectLayout("PopupFrame", PrototypeUILayout.HubPopupFrame);
-        ApplyNamedRectLayout("PopupLeftPanel", PrototypeUILayout.HubPopupLeftPanel);
-        ApplyNamedRectLayout("PopupRightPanel", PrototypeUILayout.HubPopupRightPanel);
-        ApplyNamedRectLayout("PopupLeftBody", PrototypeUILayout.HubPopupLeftBody);
-        ApplyNamedRectLayout("PopupRightBody", PrototypeUILayout.HubPopupRightBody);
+        ApplyNamedRectLayout("PopupFrameLeft", PrototypeUILayout.HubPopupFrameLeft);
+        ApplyNamedRectLayout("PopupFrameRight", PrototypeUILayout.HubPopupFrameRight);
+        ApplyNamedRectLayout("PopupLeftBody", PrototypeUILayout.HubPopupFrameBody);
+        ApplyNamedRectLayout("PopupRightBody", PrototypeUILayout.HubPopupFrameBody);
         ApplyHubPopupFrameStyle(headingFont, textColor);
         ApplyPopupCloseButtonLayout(headingFont);
+        NormalizeHubPopupHierarchyOrder();
+        EnsurePopupBodyItemBoxes(bodyFont, textColor);
 
-        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupLeftText);
-        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUILayout.HubPopupRightText);
+        ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupFrameText);
+        ApplyRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
+        ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
+        ApplyRectLayout(upgradeText != null ? upgradeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
 
-        ApplyScreenTextStyle(inventoryText, bodyFont, 20f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 10f, 12f, 10f), false);
-        ApplyScreenTextStyle(selectedRecipeText, bodyFont, 20f, textColor, TextAlignmentOptions.TopLeft, true, 4f, new Vector4(12f, 10f, 12f, 10f), false);
+        ApplyPopupInventoryTextStyle(inventoryText, bodyFont, textColor);
+        ApplyPopupDetailTextStyle(storageText, bodyFont, textColor);
+        ApplyPopupDetailTextStyle(selectedRecipeText, bodyFont, textColor);
+        ApplyPopupDetailTextStyle(upgradeText, bodyFont, textColor);
 
         ApplyHubMenuButtonLayout(recipePanelButton, headingFont, amberAccent, PrototypeUILayout.HubRecipePanelButton);
         ApplyHubMenuButtonLayout(upgradePanelButton, headingFont, goldAccent, PrototypeUILayout.HubUpgradePanelButton);
@@ -1901,10 +2299,91 @@ public class UIManager : MonoBehaviour
     private void ApplyHubPopupFrameStyle(TMP_FontAsset headingFont, Color textColor)
     {
         PrototypeUIPopupDefinition popupDefinition = PrototypeUIPopupCatalog.GetDefinition(ConvertRuntimePopupPanel(activeHubPanel));
+        EnsureHubPopupHeadings(popupDefinition, headingFont, textColor);
+    }
 
-        EnsureUiCaption("PopupTitle", popupDefinition.Title, PrototypeUILayout.HubPopupTitle, headingFont, textColor, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("PopupLeftCaption", popupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, headingFont, textColor, TextAlignmentOptions.TopLeft);
-        EnsureUiCaption("PopupRightCaption", popupDefinition.RightCaption, PrototypeUILayout.HubPopupRightCaption, headingFont, textColor, TextAlignmentOptions.TopLeft);
+    /*
+     * 허브 팝업 헤더는 현재 패널 정의를 한 곳에서 묶어 적용해 빌더와 런타임 기준이 갈라지지 않게 유지합니다.
+     */
+    private void EnsureHubPopupHeadings(PrototypeUIPopupDefinition popupDefinition, TMP_FontAsset font, Color color)
+    {
+        EnsureUiCaption(PopupTitleObjectName, popupDefinition.Title, PrototypeUILayout.HubPopupTitle, font, color, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption(PopupLeftCaptionObjectName, popupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, font, color, TextAlignmentOptions.TopLeft);
+        EnsureUiCaption(PopupRightCaptionObjectName, popupDefinition.RightCaption, PrototypeUILayout.HubPopupFrameCaption, font, color, TextAlignmentOptions.TopLeft);
+    }
+
+    private static void ApplyPopupDetailTextStyle(TextMeshProUGUI text, TMP_FontAsset bodyFont, Color textColor)
+    {
+        ApplyScreenTextStyle(text, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
+        if (text != null)
+        {
+            text.paragraphSpacing = 0f;
+        }
+    }
+
+    private static void ApplyPopupInventoryTextStyle(TextMeshProUGUI text, TMP_FontAsset bodyFont, Color textColor)
+    {
+        ApplyScreenTextStyle(text, bodyFont, 19f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
+        if (text != null)
+        {
+            text.fontSizeMin = 13f;
+            text.fontSizeMax = 19f;
+            text.paragraphSpacing = 0f;
+            text.overflowMode = TextOverflowModes.Masking;
+        }
+    }
+
+    private static CaptionPresentationPreset ResolveCaptionPresentation(string objectName)
+    {
+        return objectName switch
+        {
+            PopupTitleObjectName => FixedPopupTitlePresentation,
+            PopupLeftCaptionObjectName or PopupRightCaptionObjectName => FixedPopupCaptionPresentation,
+            _ => DefaultCaptionPresentation
+        };
+    }
+
+    private static void ApplyHubPopupObjectIdentity(GameObject target)
+    {
+        if (target == null || !IsHubPopupDisplayObject(target.name))
+        {
+            return;
+        }
+
+        int uiLayer = LayerMask.NameToLayer("UI");
+        target.layer = uiLayer >= 0 ? uiLayer : 5;
+        target.tag = "Player";
+    }
+
+    private static bool IsHubPopupDisplayObject(string objectName)
+    {
+        if (string.IsNullOrEmpty(objectName))
+        {
+            return false;
+        }
+
+        if (objectName is PopupRootName or PopupShellGroupName or PopupFrameHeaderGroupName or "PopupOverlay")
+        {
+            return false;
+        }
+
+        return objectName.StartsWith("Popup", StringComparison.Ordinal)
+            || objectName is "InventoryText" or "StorageText" or "SelectedRecipeText" or "UpgradeText";
+    }
+
+    private TMP_FontAsset ResolveCaptionFont(string objectName, TMP_FontAsset font)
+    {
+        return objectName switch
+        {
+            PopupTitleObjectName or PopupLeftCaptionObjectName or PopupRightCaptionObjectName
+                => headingFontAsset != null ? headingFontAsset : font,
+            _ => font
+        };
+    }
+
+    private static bool IsFixedPopupHeading(string objectName)
+    {
+        return objectName == PopupTitleObjectName || objectName == PopupLeftCaptionObjectName;
     }
 
     private void ApplyPopupCloseButtonLayout(TMP_FontAsset headingFont)
@@ -1916,6 +2395,325 @@ public class UIManager : MonoBehaviour
 
         ApplyButtonLayout(popupCloseButton, PrototypeUILayout.HubPopupCloseButton);
         ApplyButtonPresentation(popupCloseButton, headingFont, Color.white);
+    }
+
+    private void NormalizeHubPopupHierarchyOrder()
+    {
+        if (transform == null)
+        {
+            return;
+        }
+
+        Transform popupRoot = transform.Find(PopupRootName);
+        if (popupRoot == null)
+        {
+            return;
+        }
+
+        Transform popupShellGroup = popupRoot.Find(PopupShellGroupName);
+        Transform popupFrame = popupRoot.Find(PopupFrameGroupName);
+        Transform popupFrameHeader = popupRoot.Find(PopupFrameHeaderGroupName);
+
+        if (popupShellGroup != null)
+        {
+            popupShellGroup.SetSiblingIndex(0);
+        }
+
+        if (popupFrame != null)
+        {
+            popupFrame.SetSiblingIndex(Mathf.Clamp(1, 0, Mathf.Max(0, popupRoot.childCount - 1)));
+
+            Transform popupFrameLeft = popupFrame.Find(PopupFrameLeftGroupName);
+            Transform popupFrameRight = popupFrame.Find(PopupFrameRightGroupName);
+            if (popupFrameLeft != null)
+            {
+                popupFrameLeft.SetSiblingIndex(0);
+            }
+
+            if (popupFrameRight != null)
+            {
+                popupFrameRight.SetSiblingIndex(1);
+            }
+        }
+
+        if (popupFrameHeader != null)
+        {
+            popupFrameHeader.SetSiblingIndex(Mathf.Clamp(2, 0, Mathf.Max(0, popupRoot.childCount - 1)));
+        }
+    }
+
+    /*
+     * 허브 팝업 왼쪽 본문은 아이콘, 이름, 짧은 설명이 들어가는 선택 목록으로 유지합니다.
+     */
+    private void EnsurePopupBodyItemBoxes(TMP_FontAsset bodyFont, Color textColor)
+    {
+        EnsurePopupBodyItemBoxSet("PopupLeftBody", "PopupLeftItemBox", "PopupLeftItemIcon", "PopupLeftItemText", bodyFont, textColor, true);
+        SetPopupBodyItemBoxSetActive("PopupRightItemBox", "PopupRightItemIcon", "PopupRightItemText", false);
+    }
+
+    private void EnsurePopupBodyItemBoxSet(
+        string bodyName,
+        string boxPrefix,
+        string iconPrefix,
+        string textPrefix,
+        TMP_FontAsset bodyFont,
+        Color textColor,
+        bool isInteractive)
+    {
+        Transform bodyTransform = FindNamedUiTransform(bodyName);
+        if (bodyTransform == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < PrototypeUILayout.HubPopupBodyItemBoxCount; i++)
+        {
+            string boxName = $"{boxPrefix}{i + 1:00}";
+            string iconName = $"{iconPrefix}{i + 1:00}";
+            string textName = $"{textPrefix}{i + 1:00}";
+            Image boxImage = EnsurePopupBodyItemBox(bodyTransform, boxName, PrototypeUILayout.HubPopupBodyItemBox(i), isInteractive);
+            Transform contentParent = boxImage != null ? boxImage.transform : bodyTransform;
+            EnsurePopupBodyItemIcon(contentParent, iconName);
+            EnsurePopupBodyItemText(contentParent, textName, bodyFont, textColor);
+        }
+    }
+
+    private Image EnsurePopupBodyItemBox(Transform parent, string objectName, PrototypeUIRect layout, bool isInteractive)
+    {
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject boxObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(boxObject);
+        if (existing == null || boxObject.transform.parent != parent)
+        {
+            boxObject.transform.SetParent(parent, false);
+        }
+
+        RectTransform rect = boxObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = boxObject.AddComponent<RectTransform>();
+        }
+
+        ApplyRectLayout(rect, layout);
+
+        Image image = boxObject.GetComponent<Image>();
+        if (image == null)
+        {
+            image = boxObject.AddComponent<Image>();
+        }
+
+        bool hasSkin = PrototypeUISkin.ApplyPanel(image, objectName, PopupItemBoxFallbackColor);
+        image.color = hasSkin ? Color.white : PopupItemBoxFallbackColor;
+        image.raycastTarget = isInteractive;
+
+        Shadow shadow = boxObject.GetComponent<Shadow>();
+        if (shadow == null)
+        {
+            shadow = boxObject.AddComponent<Shadow>();
+        }
+
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.18f);
+        shadow.effectDistance = new Vector2(0f, -4f);
+        shadow.useGraphicAlpha = true;
+
+        Button button = boxObject.GetComponent<Button>();
+        if (isInteractive)
+        {
+            if (button == null)
+            {
+                button = boxObject.AddComponent<Button>();
+            }
+
+            button.targetGraphic = image;
+            button.transition = Selectable.Transition.ColorTint;
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.None;
+            button.navigation = navigation;
+        }
+        else if (button != null)
+        {
+            button.interactable = false;
+            button.onClick.RemoveAllListeners();
+        }
+
+        return image;
+    }
+
+    private void EnsurePopupBodyItemIcon(Transform parent, string objectName)
+    {
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject iconObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(iconObject);
+        if (existing == null || iconObject.transform.parent != parent)
+        {
+            iconObject.transform.SetParent(parent, false);
+        }
+
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = iconObject.AddComponent<RectTransform>();
+        }
+
+        rect.anchorMin = new Vector2(0f, 0.5f);
+        rect.anchorMax = new Vector2(0f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(40f, 0f);
+        rect.sizeDelta = new Vector2(44f, 44f);
+
+        Image image = iconObject.GetComponent<Image>();
+        if (image == null)
+        {
+            image = iconObject.AddComponent<Image>();
+        }
+
+        image.raycastTarget = false;
+        image.preserveAspect = true;
+        image.color = Color.white;
+        image.enabled = true;
+    }
+
+    private void EnsurePopupBodyItemText(Transform parent, string objectName, TMP_FontAsset bodyFont, Color textColor)
+    {
+        Transform existing = FindNamedUiTransform(objectName);
+        GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
+        ApplyHubPopupObjectIdentity(textObject);
+        if (existing == null || textObject.transform.parent != parent)
+        {
+            textObject.transform.SetParent(parent, false);
+        }
+
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            rect = textObject.AddComponent<RectTransform>();
+        }
+
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = Vector2.zero;
+        rect.offsetMin = new Vector2(74f, 10f);
+        rect.offsetMax = new Vector2(-14f, -10f);
+
+        TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+        if (text == null)
+        {
+            text = textObject.AddComponent<TextMeshProUGUI>();
+        }
+
+        text.raycastTarget = false;
+        ApplyScreenTextStyle(text, bodyFont, 17f, textColor, TextAlignmentOptions.TopLeft, true, 0f, Vector4.zero, false);
+        text.fontSizeMin = 12f;
+        text.fontSizeMax = 17f;
+        text.enableAutoSizing = true;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+    }
+
+    private void SetPopupBodyItemBoxSetActive(string boxPrefix, string iconPrefix, string textPrefix, bool isActive)
+    {
+        for (int i = 0; i < PrototypeUILayout.HubPopupBodyItemBoxCount; i++)
+        {
+            SetNamedObjectActive($"{boxPrefix}{i + 1:00}", isActive);
+            SetNamedObjectActive($"{iconPrefix}{i + 1:00}", isActive);
+            SetNamedObjectActive($"{textPrefix}{i + 1:00}", isActive);
+        }
+    }
+
+    private void RefreshPopupBodyItemBoxes(List<PopupListEntry> entries)
+    {
+        List<PopupListEntry> safeEntries = entries ?? new List<PopupListEntry>();
+        int selectedIndex = safeEntries.FindIndex(entry => entry != null && entry.IsSelected);
+        int windowStart = GetPopupBodyWindowStartIndex(safeEntries.Count, selectedIndex, PrototypeUILayout.HubPopupBodyItemBoxCount);
+
+        for (int i = 0; i < PrototypeUILayout.HubPopupBodyItemBoxCount; i++)
+        {
+            string boxName = $"PopupLeftItemBox{i + 1:00}";
+            string iconName = $"PopupLeftItemIcon{i + 1:00}";
+            string textName = $"PopupLeftItemText{i + 1:00}";
+            int entryIndex = windowStart + i;
+            bool hasContent = entryIndex >= 0 && entryIndex < safeEntries.Count;
+            PopupListEntry entry = hasContent ? safeEntries[entryIndex] : null;
+
+            Transform boxTransform = FindNamedUiTransform(boxName);
+            if (boxTransform != null)
+            {
+                boxTransform.gameObject.SetActive(hasContent);
+
+                if (boxTransform.TryGetComponent(out Image boxImage))
+                {
+                    boxImage.color = entry != null && entry.IsSelected
+                        ? PopupItemBoxSelectedColor
+                        : PopupItemBoxFallbackColor;
+                }
+
+                if (boxTransform.TryGetComponent(out Button button))
+                {
+                    button.onClick.RemoveAllListeners();
+                    button.interactable = entry != null && entry.OnSelected != null;
+
+                    ColorBlock colors = button.colors;
+                    colors.normalColor = entry != null && entry.IsSelected ? PopupItemBoxSelectedColor : PopupItemBoxFallbackColor;
+                    colors.highlightedColor = entry != null && entry.IsSelected ? PopupItemBoxSelectedColor : new Color(1f, 0.96f, 0.82f, 1f);
+                    colors.pressedColor = new Color(0.92f, 0.86f, 0.68f, 1f);
+                    colors.selectedColor = PopupItemBoxSelectedColor;
+                    colors.disabledColor = PopupItemBoxFallbackColor;
+                    button.colors = colors;
+
+                    if (entry != null && entry.OnSelected != null)
+                    {
+                        Action onSelected = entry.OnSelected;
+                        button.onClick.AddListener(() => onSelected());
+                    }
+                }
+            }
+
+            Transform iconTransform = FindNamedUiTransform(iconName);
+            if (iconTransform != null && iconTransform.TryGetComponent(out Image iconImage))
+            {
+                bool hasIcon = hasContent && entry.Icon != null;
+                iconTransform.gameObject.SetActive(hasIcon);
+                iconImage.sprite = hasIcon ? entry.Icon : null;
+                iconImage.color = Color.white;
+                iconImage.enabled = hasIcon;
+            }
+
+            Transform textTransform = FindNamedUiTransform(textName);
+            if (textTransform != null && textTransform.TryGetComponent(out TextMeshProUGUI text))
+            {
+                text.text = hasContent ? FormatPopupBodyEntryText(entry) : string.Empty;
+            }
+        }
+    }
+
+    private static int GetPopupBodyWindowStartIndex(int entryCount, int selectedIndex, int visibleCount)
+    {
+        if (entryCount <= visibleCount || visibleCount <= 0)
+        {
+            return 0;
+        }
+
+        int clampedSelectedIndex = Mathf.Clamp(selectedIndex, 0, entryCount - 1);
+        int preferredStart = clampedSelectedIndex - (visibleCount / 2);
+        return Mathf.Clamp(preferredStart, 0, entryCount - visibleCount);
+    }
+
+    private static string FormatPopupBodyEntryText(PopupListEntry entry)
+    {
+        if (entry == null)
+        {
+            return string.Empty;
+        }
+
+        string title = entry.IsSelected ? $"<b>{entry.Title}</b>" : entry.Title;
+        if (string.IsNullOrWhiteSpace(entry.Summary))
+        {
+            return title;
+        }
+
+        return $"{title}\n<size=78%>{entry.Summary}</size>";
     }
 
     /*
@@ -1971,18 +2769,20 @@ public class UIManager : MonoBehaviour
         SetNamedObjectActive("UpgradeCard", isActive);
         SetNamedObjectActive("UpgradeAccent", isActive);
         SetNamedObjectActive("UpgradeCaption", isActive);
+        SetNamedObjectActive("PopupLeftPanel", false);
+        SetNamedObjectActive("PopupRightPanel", false);
     }
 
     private void SetHubPopupDesignActive(bool isActive)
     {
         SetNamedObjectActive("PopupFrame", isActive);
-        SetNamedObjectActive("PopupLeftPanel", isActive);
-        SetNamedObjectActive("PopupRightPanel", isActive);
+        SetNamedObjectActive("PopupFrameLeft", isActive);
+        SetNamedObjectActive("PopupFrameRight", isActive);
         SetNamedObjectActive("PopupLeftBody", isActive);
         SetNamedObjectActive("PopupRightBody", isActive);
-        SetNamedObjectActive("PopupTitle", isActive);
-        SetNamedObjectActive("PopupLeftCaption", isActive);
-        SetNamedObjectActive("PopupRightCaption", isActive);
+        SetNamedObjectActive(PopupTitleObjectName, isActive);
+        SetNamedObjectActive(PopupLeftCaptionObjectName, isActive);
+        SetNamedObjectActive(PopupRightCaptionObjectName, isActive);
         SetButtonGameObjectActive(popupCloseButton, isActive);
     }
 
@@ -2024,73 +2824,355 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        string leftText = string.Empty;
-        string rightText = string.Empty;
-
-        switch (activeHubPanel)
-        {
-            case HubPopupPanel.Storage:
-                leftText = BuildStoragePopupListText();
-                rightText = BuildStoragePopupInfoText();
-                break;
-
-            case HubPopupPanel.Recipe:
-                leftText = BuildRecipePopupListText();
-                rightText = BuildRecipePopupDetailText();
-                break;
-
-            case HubPopupPanel.Upgrade:
-                leftText = BuildUpgradePopupListText();
-                rightText = BuildUpgradePopupInfoText();
-                break;
-
-            case HubPopupPanel.Materials:
-                leftText = BuildMaterialPopupListText();
-                rightText = BuildMaterialPopupInfoText();
-                break;
-        }
+        PopupPanelContent popupContent = BuildCurrentHubPopupContent();
 
         if (inventoryText != null)
         {
-            inventoryText.text = leftText;
+            inventoryText.text = string.Empty;
         }
 
         if (selectedRecipeText != null)
         {
-            selectedRecipeText.text = rightText;
+            selectedRecipeText.text = popupContent.DetailText;
         }
+
+        RefreshPopupBodyItemBoxes(popupContent.Entries);
     }
 
-    private string BuildRecipePopupListText()
+    private PopupPanelContent BuildCurrentHubPopupContent()
     {
+        return activeHubPanel switch
+        {
+            HubPopupPanel.Storage => BuildStoragePopupContent(),
+            HubPopupPanel.Recipe => BuildRecipePopupContent(),
+            HubPopupPanel.Upgrade => BuildUpgradePopupContent(),
+            HubPopupPanel.Materials => BuildMaterialPopupContent(),
+            _ => new PopupPanelContent(new List<PopupListEntry>(), string.Empty)
+        };
+    }
+
+    private PopupPanelContent BuildRecipePopupContent()
+    {
+        List<PopupListEntry> entries = new();
         if (cachedRestaurant == null)
         {
-            return "- 등록된 메뉴가 없습니다.";
+            return new PopupPanelContent(entries, "선택된 메뉴가 없습니다.");
         }
 
-        StringBuilder builder = new();
-        foreach (RecipeData recipe in cachedRestaurant.AvailableRecipes)
+        IReadOnlyList<RecipeData> recipes = cachedRestaurant.AvailableRecipes;
+        RecipeData detailRecipe = cachedRestaurant.SelectedRecipe;
+        if (detailRecipe == null)
         {
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                if (recipes[i] != null)
+                {
+                    detailRecipe = recipes[i];
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < recipes.Count; i++)
+        {
+            RecipeData recipe = recipes[i];
             if (recipe == null)
             {
                 continue;
             }
 
-            string selectedMark = recipe == cachedRestaurant.SelectedRecipe ? "[선택] " : string.Empty;
-            builder.AppendLine($"- {selectedMark}{recipe.DisplayName}");
+            int recipeIndex = i;
+            entries.Add(new PopupListEntry(
+                recipe.RecipeId,
+                recipe.DisplayName,
+                BuildPopupItemSummary(recipe.Description, $"판매가 {recipe.SellPrice} · 가능 {cachedRestaurant.GetCookableServings(recipe)}"),
+                BuildRecipePopupDetailText(recipe),
+                ResolveRecipePopupIcon(recipe),
+                recipe == detailRecipe,
+                () =>
+                {
+                    if (cachedRestaurant != null)
+                    {
+                        cachedRestaurant.SelectRecipeByIndex(recipeIndex);
+                    }
+                }));
         }
 
-        return builder.Length > 0 ? builder.ToString().TrimEnd() : "- 등록된 메뉴가 없습니다.";
+        return new PopupPanelContent(entries, BuildRecipePopupDetailText(detailRecipe));
     }
 
-    private string BuildRecipePopupDetailText()
+    private PopupPanelContent BuildMaterialPopupContent()
     {
-        if (cachedRestaurant == null || cachedRestaurant.SelectedRecipe == null)
+        List<PopupListEntry> entries = new();
+        InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+        if (inventory == null)
+        {
+            return new PopupPanelContent(entries, "가방 정보를 찾지 못했습니다.");
+        }
+
+        InventoryEntry detailEntry = null;
+        foreach (InventoryEntry entry in inventory.RuntimeItems)
+        {
+            if (entry == null || entry.Resource == null || entry.Amount <= 0)
+            {
+                continue;
+            }
+
+            if (detailEntry == null || entry.Resource == selectedMaterialPopupResource)
+            {
+                detailEntry = entry;
+            }
+        }
+
+        foreach (InventoryEntry entry in inventory.RuntimeItems)
+        {
+            if (entry == null || entry.Resource == null || entry.Amount <= 0)
+            {
+                continue;
+            }
+
+            ResourceData resource = entry.Resource;
+            int amount = entry.Amount;
+            entries.Add(new PopupListEntry(
+                resource.ResourceId,
+                $"{resource.DisplayName} x{amount}",
+                BuildPopupItemSummary(resource.Description, $"{resource.RegionTag} · {GetRarityLabel(resource.Rarity)}"),
+                BuildMaterialPopupDetailText(resource, amount),
+                resource.Icon,
+                detailEntry != null && resource == detailEntry.Resource,
+                () =>
+                {
+                    selectedMaterialPopupResource = resource;
+                    RefreshHubPopupContent();
+                }));
+        }
+
+        return new PopupPanelContent(entries, BuildMaterialPopupDetailText(detailEntry != null ? detailEntry.Resource : null, detailEntry != null ? detailEntry.Amount : 0));
+    }
+
+    private PopupPanelContent BuildStoragePopupContent()
+    {
+        List<PopupListEntry> entries = new();
+        if (cachedStorage == null)
+        {
+            return new PopupPanelContent(entries, "창고 정보를 찾지 못했습니다.");
+        }
+
+        cachedStorage.InitializeIfNeeded();
+
+        InventoryEntry detailEntry = null;
+        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
+        {
+            if (entry == null || entry.Resource == null || entry.Amount <= 0)
+            {
+                continue;
+            }
+
+            if (detailEntry == null || entry.Resource == selectedStoragePopupResource)
+            {
+                detailEntry = entry;
+            }
+        }
+
+        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
+        {
+            if (entry == null || entry.Resource == null || entry.Amount <= 0)
+            {
+                continue;
+            }
+
+            ResourceData resource = entry.Resource;
+            int amount = entry.Amount;
+            entries.Add(new PopupListEntry(
+                resource.ResourceId,
+                $"{resource.DisplayName} x{amount}",
+                BuildPopupItemSummary(resource.Description, "보관 중인 재료"),
+                BuildStoragePopupDetailText(entry),
+                resource.Icon,
+                detailEntry != null && resource == detailEntry.Resource,
+                () =>
+                {
+                    selectedStoragePopupResource = resource;
+                    RefreshHubPopupContent();
+                }));
+        }
+
+        return new PopupPanelContent(entries, BuildStoragePopupDetailText(detailEntry));
+    }
+
+    private PopupPanelContent BuildUpgradePopupContent()
+    {
+        List<PopupListEntry> rawEntries = new();
+        if (cachedUpgradeManager == null)
+        {
+            return new PopupPanelContent(new List<PopupListEntry>(), "업그레이드 정보를 찾지 못했습니다.");
+        }
+
+        cachedUpgradeManager.InitializeIfNeeded();
+
+        foreach (ToolUnlockCost cost in cachedUpgradeManager.ToolUnlockCosts)
+        {
+            if (cost == null || cost.toolType == ToolType.None)
+            {
+                continue;
+            }
+
+            string key = $"tool:{cost.toolType}";
+            ToolType toolType = cost.toolType;
+            rawEntries.Add(new PopupListEntry(
+                key,
+                $"{toolType.GetDisplayName()} 해금",
+                BuildPopupItemSummary(cost.description, BuildUpgradeAvailabilityLabel(toolType)),
+                BuildToolUnlockPopupDetailText(cost),
+                ResolveUpgradePopupIcon(cost.requiredResource),
+                false,
+                () =>
+                {
+                    selectedUpgradePopupKey = key;
+                    RefreshHubPopupContent();
+                }));
+        }
+
+        IReadOnlyList<InventoryUpgradeCost> inventoryUpgradeCosts = cachedUpgradeManager.InventoryUpgradeCosts;
+        for (int i = 0; i < inventoryUpgradeCosts.Count; i++)
+        {
+            InventoryUpgradeCost cost = inventoryUpgradeCosts[i];
+            if (cost == null)
+            {
+                continue;
+            }
+
+            string key = $"inventory:{i}";
+            int upgradeIndex = i;
+            rawEntries.Add(new PopupListEntry(
+                key,
+                BuildInventoryUpgradeTitle(upgradeIndex),
+                BuildPopupItemSummary(cost.description, BuildInventoryUpgradeAvailabilityLabel(upgradeIndex)),
+                BuildInventoryUpgradePopupDetailText(upgradeIndex, cost),
+                ResolveUpgradePopupIcon(cost.requiredResource),
+                false,
+                () =>
+                {
+                    selectedUpgradePopupKey = key;
+                    RefreshHubPopupContent();
+                }));
+        }
+
+        if (rawEntries.Count == 0)
+        {
+            return new PopupPanelContent(new List<PopupListEntry>(), "남아 있는 업그레이드가 없습니다.");
+        }
+
+        string preferredKey = ResolvePreferredUpgradePopupKey();
+        string selectedKey = ContainsPopupEntryKey(rawEntries, selectedUpgradePopupKey)
+            ? selectedUpgradePopupKey
+            : ContainsPopupEntryKey(rawEntries, preferredKey)
+                ? preferredKey
+                : rawEntries[0].Key;
+
+        List<PopupListEntry> entries = new(rawEntries.Count);
+        string detailText = rawEntries[0].Detail;
+        foreach (PopupListEntry entry in rawEntries)
+        {
+            bool isSelected = entry.Key == selectedKey;
+            entries.Add(new PopupListEntry(entry.Key, entry.Title, entry.Summary, entry.Detail, entry.Icon, isSelected, entry.OnSelected));
+            if (isSelected)
+            {
+                detailText = entry.Detail;
+            }
+        }
+
+        return new PopupPanelContent(entries, detailText);
+    }
+
+    private static bool ContainsPopupEntryKey(List<PopupListEntry> entries, string key)
+    {
+        if (entries == null || string.IsNullOrWhiteSpace(key))
+        {
+            return false;
+        }
+
+        foreach (PopupListEntry entry in entries)
+        {
+            if (entry != null && entry.Key == key)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private string ResolvePreferredUpgradePopupKey()
+    {
+        if (cachedUpgradeManager == null)
+        {
+            return string.Empty;
+        }
+
+        return cachedUpgradeManager.GetPreferredAction() switch
+        {
+            UpgradeWorkbenchAction.UnlockTool when cachedUpgradeManager.GetPreferredToolType() != ToolType.None
+                => $"tool:{cachedUpgradeManager.GetPreferredToolType()}",
+            UpgradeWorkbenchAction.UpgradeInventory when GameManager.Instance != null && GameManager.Instance.Inventory != null
+                => $"inventory:{GameManager.Instance.Inventory.CapacityLevel}",
+            _ => string.Empty
+        };
+    }
+
+    private static string BuildPopupItemSummary(string description, string fallback)
+    {
+        string source = string.IsNullOrWhiteSpace(description) ? fallback : description;
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return string.Empty;
+        }
+
+        string normalized = source.Replace("\r\n", " ").Replace('\n', ' ').Trim();
+        return normalized.Length > 32 ? $"{normalized.Substring(0, 29)}..." : normalized;
+    }
+
+    private Sprite ResolveRecipePopupIcon(RecipeData recipe)
+    {
+        if (recipe == null || recipe.Ingredients == null)
+        {
+            return null;
+        }
+
+        foreach (RecipeIngredient ingredient in recipe.Ingredients)
+        {
+            if (ingredient != null && ingredient.Resource != null && ingredient.Resource.Icon != null)
+            {
+                return ingredient.Resource.Icon;
+            }
+        }
+
+        return null;
+    }
+
+    private static Sprite ResolveUpgradePopupIcon(ResourceData requiredResource)
+    {
+        return requiredResource != null ? requiredResource.Icon : null;
+    }
+
+    private static string GetRarityLabel(ResourceRarity rarity)
+    {
+        return rarity switch
+        {
+            ResourceRarity.Uncommon => "고급",
+            ResourceRarity.Rare => "희귀",
+            ResourceRarity.Epic => "특급",
+            _ => "일반"
+        };
+    }
+
+    private string BuildRecipePopupDetailText(RecipeData recipe)
+    {
+        if (cachedRestaurant == null || recipe == null)
         {
             return "선택된 메뉴가 없습니다.";
         }
 
-        RecipeData recipe = cachedRestaurant.SelectedRecipe;
         StringBuilder builder = new();
         builder.AppendLine(recipe.DisplayName);
 
@@ -2103,6 +3185,7 @@ public class UIManager : MonoBehaviour
         builder.AppendLine($"- 판매가: {recipe.SellPrice}");
         builder.AppendLine($"- 평판: +{Mathf.Max(0, recipe.ReputationDelta)}");
         builder.AppendLine($"- 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
+        builder.AppendLine();
         builder.AppendLine("- 필요 재료");
 
         foreach (RecipeIngredient ingredient in recipe.Ingredients)
@@ -2121,88 +3204,73 @@ public class UIManager : MonoBehaviour
         return builder.ToString().TrimEnd();
     }
 
-    private string BuildMaterialPopupListText()
+    private string BuildMaterialPopupDetailText(ResourceData resource, int amount)
     {
-        if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
+        if (resource == null)
         {
-            return "- 인벤토리 없음";
-        }
-
-        IReadOnlyList<InventoryEntry> entries = GameManager.Instance.Inventory.RuntimeItems;
-        if (entries.Count == 0)
-        {
-            return "- 비어 있음";
+            return "선택된 재료가 없습니다.";
         }
 
         StringBuilder builder = new();
-        foreach (InventoryEntry entry in entries)
+        builder.AppendLine(resource.DisplayName);
+
+        if (!string.IsNullOrWhiteSpace(resource.Description))
         {
-            if (entry == null || entry.Resource == null)
-            {
-                continue;
-            }
-
-            builder.AppendLine($"- {entry.Resource.DisplayName} x{entry.Amount}");
-        }
-
-        return builder.ToString().TrimEnd();
-    }
-
-    private string BuildMaterialPopupInfoText()
-    {
-        if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
-        {
-            return "가방 정보를 찾지 못했습니다.";
-        }
-
-        InventoryManager inventory = GameManager.Instance.Inventory;
-        StringBuilder builder = new();
-        builder.AppendLine($"가방 {inventory.UsedSlotCount}/{inventory.MaxSlotCount}칸");
-
-        if (cachedRestaurant == null || cachedRestaurant.SelectedRecipe == null)
-        {
+            builder.AppendLine(resource.Description);
             builder.AppendLine();
-            builder.Append("선택 메뉴가 없습니다.");
-            return builder.ToString().TrimEnd();
         }
 
-        RecipeData recipe = cachedRestaurant.SelectedRecipe;
-        builder.AppendLine($"선택 메뉴: {recipe.DisplayName}");
-        builder.AppendLine("- 필요 재료");
+        builder.AppendLine($"- 보유 수량: x{amount}");
+        builder.AppendLine($"- 채집 지역: {resource.RegionTag}");
+        builder.AppendLine($"- 희귀도: {GetRarityLabel(resource.Rarity)}");
+        builder.AppendLine($"- 기본 판매가: {resource.BaseSellPrice}");
 
-        foreach (RecipeIngredient ingredient in recipe.Ingredients)
+        if (cachedRestaurant != null && cachedRestaurant.SelectedRecipe != null)
         {
-            if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
-            {
-                continue;
-            }
-
-            int ownedAmount = inventory.GetAmount(ingredient.Resource);
-            builder.AppendLine($"  {ingredient.Resource.DisplayName} {ownedAmount}/{ingredient.Amount}");
+            RecipeData recipe = cachedRestaurant.SelectedRecipe;
+            int requiredAmount = GetRecipeIngredientAmount(recipe, resource);
+            builder.AppendLine();
+            builder.AppendLine($"- 선택 메뉴: {recipe.DisplayName}");
+            builder.AppendLine(requiredAmount > 0
+                ? $"- 메뉴 필요 수량: {requiredAmount}"
+                : "- 메뉴 사용처: 현재 선택 메뉴에는 들어가지 않음");
+            builder.AppendLine($"- 현재 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
         }
 
         return builder.ToString().TrimEnd();
     }
 
-    private string BuildUpgradePopupListText()
+    private string BuildToolUnlockPopupDetailText(ToolUnlockCost cost)
     {
-        return cachedUpgradeManager != null
-            ? cachedUpgradeManager.BuildUpgradeSummary()
-            : "업그레이드 정보를 찾지 못했습니다.";
-    }
-
-    private string BuildUpgradePopupInfoText()
-    {
-        if (cachedUpgradeManager == null)
+        if (cost == null || cost.toolType == ToolType.None || cachedUpgradeManager == null)
         {
             return "업그레이드 정보를 찾지 못했습니다.";
         }
 
-        StringBuilder builder = new();
-        builder.AppendLine($"다음 행동: {cachedUpgradeManager.GetPreferredActionLabel()}");
-        builder.AppendLine(cachedUpgradeManager.CanAffordPreferredAction() ? "지금 바로 진행 가능" : "재료 또는 코인 준비 필요");
+        bool isUnlocked = cachedUpgradeManager.IsToolUnlocked(cost.toolType);
+        bool canUnlock = !isUnlocked && cachedUpgradeManager.CanUnlockTool(cost.toolType);
+        int ownedAmount = cost.requiredResource != null && GameManager.Instance != null && GameManager.Instance.Inventory != null
+            ? GameManager.Instance.Inventory.GetAmount(cost.requiredResource)
+            : 0;
 
-        if (!string.IsNullOrWhiteSpace(cachedUpgradeManager.LastUpgradeMessage))
+        StringBuilder builder = new();
+        builder.AppendLine($"{cost.toolType.GetDisplayName()} 해금");
+
+        if (!string.IsNullOrWhiteSpace(cost.description))
+        {
+            builder.AppendLine(cost.description);
+            builder.AppendLine();
+        }
+
+        builder.AppendLine($"- 상태: {BuildUpgradeAvailabilityLabel(cost.toolType)}");
+        builder.AppendLine($"- 비용: {BuildUpgradeCostText(cost.goldCost, cost.requiredResource, cost.requiredAmount)}");
+        if (cost.requiredResource != null && cost.requiredAmount > 0)
+        {
+            builder.AppendLine($"- 보유 재료: {ownedAmount}/{cost.requiredAmount}");
+        }
+
+        builder.AppendLine($"- 활용: {BuildToolUnlockUseDescription(cost.toolType)}");
+        if ((isUnlocked || canUnlock) && !string.IsNullOrWhiteSpace(cachedUpgradeManager.LastUpgradeMessage))
         {
             builder.AppendLine();
             builder.AppendLine(cachedUpgradeManager.LastUpgradeMessage);
@@ -2211,34 +3279,116 @@ public class UIManager : MonoBehaviour
         return builder.ToString().TrimEnd();
     }
 
-    private string BuildStoragePopupListText()
+    private string BuildInventoryUpgradePopupDetailText(int index, InventoryUpgradeCost cost)
     {
-        if (cachedStorage == null)
+        if (cost == null)
         {
-            return "- 창고 없음";
+            return "업그레이드 정보를 찾지 못했습니다.";
         }
 
-        cachedStorage.InitializeIfNeeded();
-        if (cachedStorage.RuntimeItems.Count == 0)
-        {
-            return "- 보관 중인 재료 없음";
-        }
+        InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+        int currentSlots = inventory != null ? inventory.GetSlotCapacityForLevel(index) : 0;
+        int nextSlots = inventory != null ? inventory.GetSlotCapacityForLevel(index + 1) : 0;
+        int ownedAmount = cost.requiredResource != null && inventory != null
+            ? inventory.GetAmount(cost.requiredResource)
+            : 0;
 
         StringBuilder builder = new();
-        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
-        {
-            if (entry == null || entry.Resource == null)
-            {
-                continue;
-            }
+        builder.AppendLine(BuildInventoryUpgradeTitle(index));
 
-            builder.AppendLine($"- {entry.Resource.DisplayName} x{entry.Amount}");
+        if (!string.IsNullOrWhiteSpace(cost.description))
+        {
+            builder.AppendLine(cost.description);
+            builder.AppendLine();
+        }
+
+        builder.AppendLine($"- 상태: {BuildInventoryUpgradeAvailabilityLabel(index)}");
+        builder.AppendLine($"- 확장: {currentSlots}칸 -> {nextSlots}칸");
+        builder.AppendLine($"- 비용: {BuildUpgradeCostText(cost.goldCost, cost.requiredResource, cost.requiredAmount)}");
+        if (cost.requiredResource != null && cost.requiredAmount > 0)
+        {
+            builder.AppendLine($"- 보유 재료: {ownedAmount}/{cost.requiredAmount}");
         }
 
         return builder.ToString().TrimEnd();
     }
 
-    private string BuildStoragePopupInfoText()
+    private string BuildInventoryUpgradeTitle(int index)
+    {
+        InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+        if (inventory == null)
+        {
+            return $"가방 확장 단계 {index + 1}";
+        }
+
+        return $"가방 확장 {inventory.GetSlotCapacityForLevel(index)}칸 -> {inventory.GetSlotCapacityForLevel(index + 1)}칸";
+    }
+
+    private string BuildInventoryUpgradeAvailabilityLabel(int index)
+    {
+        InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+        if (inventory == null || cachedUpgradeManager == null)
+        {
+            return "정보 없음";
+        }
+
+        if (inventory.CapacityLevel > index)
+        {
+            return "완료";
+        }
+
+        if (inventory.CapacityLevel == index)
+        {
+            return cachedUpgradeManager.CanUpgradeInventory() ? "지금 진행 가능" : "재료 준비 필요";
+        }
+
+        return "이전 단계 필요";
+    }
+
+    private string BuildUpgradeAvailabilityLabel(ToolType toolType)
+    {
+        if (cachedUpgradeManager == null || toolType == ToolType.None)
+        {
+            return "정보 없음";
+        }
+
+        if (cachedUpgradeManager.IsToolUnlocked(toolType))
+        {
+            return "완료";
+        }
+
+        return cachedUpgradeManager.CanUnlockTool(toolType) ? "지금 진행 가능" : "재료 준비 필요";
+    }
+
+    private static string BuildToolUnlockUseDescription(ToolType toolType)
+    {
+        return toolType switch
+        {
+            ToolType.Lantern => "폐광산처럼 어두운 지역 진입에 필요",
+            ToolType.Sickle => "풀숲과 약초 채집 범위를 넓힘",
+            ToolType.FishingRod => "바닷가 채집 효율을 보강",
+            ToolType.Rake => "얕은 채집 지점 정리에 사용",
+            _ => "새 지역이나 상호작용 해금에 사용"
+        };
+    }
+
+    private static string BuildUpgradeCostText(int goldCost, ResourceData requiredResource, int requiredAmount)
+    {
+        List<string> parts = new();
+        if (goldCost > 0)
+        {
+            parts.Add($"골드 {goldCost}");
+        }
+
+        if (requiredResource != null && requiredAmount > 0)
+        {
+            parts.Add($"{requiredResource.DisplayName} x{requiredAmount}");
+        }
+
+        return parts.Count > 0 ? string.Join(", ", parts) : "비용 없음";
+    }
+
+    private string BuildStoragePopupDetailText(InventoryEntry entry)
     {
         if (cachedStorage == null)
         {
@@ -2248,8 +3398,31 @@ public class UIManager : MonoBehaviour
         InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
         InventoryEntry depositEntry = cachedStorage.GetSelectedInventoryEntry(inventory);
         InventoryEntry withdrawEntry = cachedStorage.GetSelectedStoredEntry();
+        depositEntry = depositEntry != null && depositEntry.Resource != null ? depositEntry : null;
+        withdrawEntry = withdrawEntry != null && withdrawEntry.Resource != null ? withdrawEntry : null;
 
         StringBuilder builder = new();
+        if (entry != null && entry.Resource != null)
+        {
+            builder.AppendLine(entry.Resource.DisplayName);
+
+            if (!string.IsNullOrWhiteSpace(entry.Resource.Description))
+            {
+                builder.AppendLine(entry.Resource.Description);
+                builder.AppendLine();
+            }
+
+            builder.AppendLine($"- 보관 수량: x{entry.Amount}");
+            builder.AppendLine($"- 원산지: {entry.Resource.RegionTag}");
+            builder.AppendLine($"- 기본 판매가: {entry.Resource.BaseSellPrice}");
+            builder.AppendLine();
+        }
+        else
+        {
+            builder.AppendLine("선택된 보관 재료가 없습니다.");
+            builder.AppendLine();
+        }
+
         builder.AppendLine(depositEntry != null
             ? $"맡길 재료: {depositEntry.Resource.DisplayName} x{depositEntry.Amount}"
             : "맡길 재료: 없음");
@@ -2269,6 +3442,24 @@ public class UIManager : MonoBehaviour
         }
 
         return builder.ToString().TrimEnd();
+    }
+
+    private static int GetRecipeIngredientAmount(RecipeData recipe, ResourceData resource)
+    {
+        if (recipe == null || resource == null || recipe.Ingredients == null)
+        {
+            return 0;
+        }
+
+        foreach (RecipeIngredient ingredient in recipe.Ingredients)
+        {
+            if (ingredient != null && ingredient.Resource == resource)
+            {
+                return ingredient.Amount;
+            }
+        }
+
+        return 0;
     }
 
     private string BuildHubMessageLine()
@@ -2367,7 +3558,7 @@ public class UIManager : MonoBehaviour
 
             if (inventoryText != null)
             {
-                inventoryText.gameObject.SetActive(showPopup);
+                inventoryText.gameObject.SetActive(false);
             }
 
             if (selectedRecipeText != null)
@@ -2481,7 +3672,7 @@ public class UIManager : MonoBehaviour
     }
 
     private void ApplyNamedRectLayout(
-        string name,
+        string objectName,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -2493,15 +3684,15 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Transform target = FindNamedUiTransform(name);
+        Transform target = FindNamedUiTransform(objectName);
         RectTransform rect = target != null ? target.GetComponent<RectTransform>() : null;
         ApplyRectLayout(rect, anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta);
     }
 
-    private void ApplyNamedRectLayout(string name, PrototypeUIRect layout)
+    private void ApplyNamedRectLayout(string objectName, PrototypeUIRect layout)
     {
         ApplyNamedRectLayout(
-            name,
+            objectName,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -2509,14 +3700,14 @@ public class UIManager : MonoBehaviour
             layout.SizeDelta);
     }
 
-    private void SetNamedObjectActive(string name, bool isActive)
+    private void SetNamedObjectActive(string objectName, bool isActive)
     {
         if (transform == null)
         {
             return;
         }
 
-        Transform target = FindNamedUiTransform(name);
+        Transform target = FindNamedUiTransform(objectName);
         if (target != null)
         {
             target.gameObject.SetActive(isActive);
@@ -2832,6 +4023,7 @@ public class UIManager : MonoBehaviour
         {
             nextDayButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.Settlement);
         }
+    }
     }
 }
 

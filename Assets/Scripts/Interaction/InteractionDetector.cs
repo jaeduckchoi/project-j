@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 플레이어 주변의 상호작용 후보를 관리하고 가장 가까운 대상을 현재 대상으로 선택한다.
-[RequireComponent(typeof(Collider2D))]
-public class InteractionDetector : MonoBehaviour
+namespace Interaction
 {
+    [RequireComponent(typeof(Collider2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "InteractionDetector")]
+    public class InteractionDetector : MonoBehaviour
+    {
     private readonly List<IInteractable> nearbyInteractables = new();
     private Collider2D triggerCollider;
 
@@ -155,5 +159,6 @@ public class InteractionDetector : MonoBehaviour
 
         CurrentInteractable = bestInteractable;
         CurrentInteractableChanged?.Invoke(CurrentInteractable);
+    }
     }
 }

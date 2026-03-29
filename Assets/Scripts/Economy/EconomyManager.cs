@@ -1,9 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 골드와 평판을 관리하는 최소 경제 시스템이다.
-public class EconomyManager : MonoBehaviour
+namespace Economy
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "EconomyManager")]
+    public class EconomyManager : MonoBehaviour
+    {
     // 하루 루프에서 누적할 시작 재화 값이다.
     [SerializeField, Min(0)] private int startingGold = 0;
     [SerializeField] private int startingReputation = 0;
@@ -87,5 +91,6 @@ public class EconomyManager : MonoBehaviour
         InitializeIfNeeded();
         CurrentReputation += amount;
         ReputationChanged?.Invoke(CurrentReputation);
+    }
     }
 }

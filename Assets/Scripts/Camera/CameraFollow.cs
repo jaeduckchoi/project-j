@@ -1,14 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+using Player;
+using CameraComponent = UnityEngine.Camera;
 
 // 플레이어를 부드럽게 따라가고, 필요할 때는 맵 바깥으로 카메라가 벗어나지 않게 제한한다.
-public class CameraFollow : MonoBehaviour
+namespace GameCamera
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "CameraFollow")]
+    public class CameraFollow : MonoBehaviour
+    {
     // 추적 대상과 카메라 감쇠 설정이다.
     [SerializeField] private Transform target;
     [SerializeField, Min(0f)] private float smoothTime = 0.15f;
     [SerializeField] private Collider2D mapBounds;
 
-    private Camera targetCamera;
+    private CameraComponent targetCamera;
     private Vector3 velocity;
 
     /*
@@ -16,7 +22,7 @@ public class CameraFollow : MonoBehaviour
      */
     private void Awake()
     {
-        targetCamera = GetComponent<Camera>();
+        targetCamera = GetComponent<CameraComponent>();
     }
 
     /*
@@ -79,5 +85,6 @@ public class CameraFollow : MonoBehaviour
         cameraPosition.x = minX > maxX ? bounds.center.x : Mathf.Clamp(cameraPosition.x, minX, maxX);
         cameraPosition.y = minY > maxY ? bounds.center.y : Mathf.Clamp(cameraPosition.y, minY, maxY);
         return cameraPosition;
+    }
     }
 }

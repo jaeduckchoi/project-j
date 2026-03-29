@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 자원 전용 슬롯 기반 인벤토리다. 시작 8칸에서 업그레이드로 12칸, 16칸까지 확장한다.
-public class InventoryManager : MonoBehaviour
+namespace Inventory
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "InventoryManager")]
+    public class InventoryManager : MonoBehaviour
+    {
     // 슬롯 단계와 초기 소지품을 인스펙터에서 지정한다.
     [SerializeField] private List<int> slotCapacities = new() { 8, 12, 16 };
     [SerializeField, Min(0)] private int capacityLevel;
@@ -232,7 +237,7 @@ public class InventoryManager : MonoBehaviour
 
 // 자원과 수량 한 쌍을 인벤토리 직렬화용으로 담는 구조다.
 [Serializable]
-public class InventoryEntry
+    public class InventoryEntry
 {
     public ResourceData Resource;
     public int Amount;
@@ -250,4 +255,5 @@ public class InventoryEntry
         Resource = resource;
         Amount = amount;
     }
+}
 }

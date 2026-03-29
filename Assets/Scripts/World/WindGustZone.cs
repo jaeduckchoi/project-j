@@ -1,10 +1,16 @@
 using System.Collections.Generic;
+using Core;
+using Player;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 주기에 따라 켜지고 꺼지는 강풍 구간이다. 활성 상태에서는 플레이어를 한 방향으로 밀어낸다.
-[RequireComponent(typeof(Collider2D))]
-public class WindGustZone : MonoBehaviour
+namespace World
 {
+    [RequireComponent(typeof(Collider2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "WindGustZone")]
+    public class WindGustZone : MonoBehaviour
+    {
     // 바람 방향, 세기, 주기, 안내 문구를 인스펙터에서 조정한다.
     [SerializeField] private Vector2 gustDirection = Vector2.right;
     [SerializeField, Min(0f)] private float gustStrength = 2.5f;
@@ -166,5 +172,6 @@ public class WindGustZone : MonoBehaviour
         }
 
         return cycleTime >= inactiveDuration;
+    }
     }
 }

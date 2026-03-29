@@ -2,11 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Core;
+using Data;
+using Inventory;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브 창고의 보관 목록과 선택형 맡기기, 꺼내기 상태를 관리한다.
-public class StorageManager : MonoBehaviour
+namespace Storage
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageManager")]
+    public class StorageManager : MonoBehaviour
+    {
     [SerializeField] private List<InventoryEntry> runtimeItems = new();
     [SerializeField] private int selectedInventoryIndex;
     [SerializeField] private int selectedStorageIndex;
@@ -407,5 +414,6 @@ public class StorageManager : MonoBehaviour
     private void RaiseChanged()
     {
         StorageChanged?.Invoke();
+    }
     }
 }

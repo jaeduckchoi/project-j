@@ -1,8 +1,18 @@
 using TMPro;
+using Core;
+using Data;
+using Gathering;
+using Player;
+using Restaurant;
+using Storage;
+using Tools;
+using Upgrade;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // 기존 씬 직렬화에 남아 있는 보강 오브젝트를 런타임에서 정리한다.
+namespace World
+{
 public static class PrototypeSceneRuntimeAugmenter
 {
     public static void EnsureSceneReady(Scene scene)
@@ -586,4 +596,5 @@ public static class PrototypeSceneRuntimeAugmenter
         Vector3 localPosition = labelTransform.localPosition;
         labelTransform.localPosition = new Vector3(localPosition.x, compactY.Value, localPosition.z);
     }
+}
 }

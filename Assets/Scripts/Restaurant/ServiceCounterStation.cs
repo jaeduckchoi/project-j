@@ -1,9 +1,16 @@
+using Core;
+using Flow;
+using Interaction;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브에서 현재 선택된 메뉴로 영업을 실행하는 상호작용 지점이다.
 // 막힌 시간대에서도 상호작용 이유를 안내한다.
-public class ServiceCounterStation : MonoBehaviour, IInteractable
+namespace Restaurant
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ServiceCounterStation")]
+    public class ServiceCounterStation : MonoBehaviour, IInteractable
+    {
     [SerializeField] private RestaurantManager restaurantManager;
     [SerializeField] private string promptLabel = "영업 시작";
 
@@ -80,5 +87,6 @@ public class ServiceCounterStation : MonoBehaviour, IInteractable
         GameManager.Instance?.DayCycle?.ShowHintOnce(
             "first_service_start",
             "영업이 끝나면 정산 패널에서 결과를 확인하고 다음 날로 넘어갈 수 있습니다.");
+    }
     }
 }

@@ -1,9 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting.APIUpdating;
+using Economy;
+using Flow;
+using Inventory;
+using Player;
+using Storage;
+using Tools;
+using Upgrade;
+using World;
 
 // 인벤토리, 창고, 업그레이드, 도구, 하루 흐름, 경제, 씬 이동 상태를 유지하는 전역 게임 진입점이다.
-public class GameManager : MonoBehaviour
+namespace Core
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GameManager")]
+    public class GameManager : MonoBehaviour
+    {
     [Header("Scene Names")]
     [SerializeField] private string hubSceneName = "Hub";
     [SerializeField] private string firstExplorationSceneName = "Beach";
@@ -189,5 +201,6 @@ public class GameManager : MonoBehaviour
         }
 
         return manager;
+    }
     }
 }

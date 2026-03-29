@@ -1,0 +1,56 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+
+[*.cs]
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.IDE0051.severity = silent
+dotnet_diagnostic.IDE0060.severity = silent
+dotnet_analyzer_diagnostic.category-Style.severity = silent
+resharper_check_namespace_highlighting = none
+resharper_inconsistent_naming_highlighting = none
+resharper_redundant_default_switch_branch_highlighting = none
+resharper_unused_member_local_highlighting = none
+resharper_unused_parameter_highlighting = none
+resharper_return_value_of_pure_method_is_not_used_highlighting = none
+resharper_possible_null_reference_exception_highlighting = none
+resharper_condition_is_always_true_or_false_highlighting = none
+resharper_merge_into_pattern_highlighting = none
+resharper_convert_to_conditional_expression_highlighting = none
+resharper_for_can_be_converted_to_foreach_highlighting = none
+resharper_merge_conditional_expression_highlighting = none
+resharper_arrange_this_qualifier_highlighting = none
+
+dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_property = false:silent
+dotnet_style_qualification_for_method = false:silent
+dotnet_style_qualification_for_event = false:silent
+
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.applicable_accessibilities = private
+dotnet_naming_symbols.private_constants.required_modifiers = const
+
+dotnet_naming_symbols.private_static_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_readonly_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_readonly_fields.required_modifiers = static, readonly
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+dotnet_naming_rule.private_constants_should_be_pascal_case.symbols = private_constants
+dotnet_naming_rule.private_constants_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.private_constants_should_be_pascal_case.severity = warning
+
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascal_case.symbols = private_static_readonly_fields
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascal_case.severity = warning
+
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_style
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = warning

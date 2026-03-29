@@ -1,12 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Core;
+using Data;
+using Economy;
+using Inventory;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 작업대 업그레이드 비용과 적용 결과를 관리한다.
 // 인벤토리 확장과 도구 해금 모두 골드와 재료 조합으로 처리한다.
-public class UpgradeManager : MonoBehaviour
+namespace Upgrade
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeManager")]
+    public class UpgradeManager : MonoBehaviour
+    {
     [SerializeField] private List<InventoryUpgradeCost> inventoryUpgradeCosts = new();
     [SerializeField] private List<ToolUnlockCost> toolUnlockCosts = new();
 
@@ -15,6 +24,8 @@ public class UpgradeManager : MonoBehaviour
     public event Action UpgradeStateChanged;
 
     public string LastUpgradeMessage { get; private set; } = "작업대에서 다음 준비를 확인하세요.";
+    public IReadOnlyList<InventoryUpgradeCost> InventoryUpgradeCosts => inventoryUpgradeCosts;
+    public IReadOnlyList<ToolUnlockCost> ToolUnlockCosts => toolUnlockCosts;
 
     /*
      * 업그레이드 비용 데이터와 초기 상태를 한 번만 준비합니다.
@@ -688,7 +699,7 @@ public class UpgradeManager : MonoBehaviour
 }
 
 [Serializable]
-public class InventoryUpgradeCost
+    public class InventoryUpgradeCost
 {
     [Min(0)] public int goldCost;
     public ResourceData requiredResource;
@@ -697,7 +708,7 @@ public class InventoryUpgradeCost
 }
 
 [Serializable]
-public class ToolUnlockCost
+    public class ToolUnlockCost
 {
     public ToolType toolType = ToolType.None;
     [Min(0)] public int goldCost;
@@ -706,9 +717,10 @@ public class ToolUnlockCost
     [TextArea] public string description;
 }
 
-public enum UpgradeWorkbenchAction
+    public enum UpgradeWorkbenchAction
 {
     None,
     UnlockTool,
     UpgradeInventory
+}
 }

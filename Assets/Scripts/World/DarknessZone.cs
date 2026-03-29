@@ -1,10 +1,17 @@
 using System.Collections.Generic;
+using Core;
+using Player;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 랜턴 보유 여부에 따라 어두운 지역의 이동 난이도를 조절한다.
-[RequireComponent(typeof(Collider2D))]
-public class DarknessZone : MonoBehaviour
+namespace World
 {
+    [RequireComponent(typeof(Collider2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DarknessZone")]
+    public class DarknessZone : MonoBehaviour
+    {
     [SerializeField, Range(0.1f, 1f)] private float noLanternMovementMultiplier = 0.55f;
     [SerializeField, TextArea] private string noLanternGuideText = "랜턴이 있으면 어두운 지역을 더 안전하게 이동할 수 있습니다.";
     [SerializeField] private string hintId = "darkness_zone";
@@ -120,5 +127,6 @@ public class DarknessZone : MonoBehaviour
         return GameManager.Instance != null
             && GameManager.Instance.Tools != null
             && GameManager.Instance.Tools.HasTool(ToolType.Lantern);
+    }
     }
 }

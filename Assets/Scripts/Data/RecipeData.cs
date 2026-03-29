@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 식당에서 판매 가능한 메뉴의 이름, 설명, 가격, 필요 재료를 묶는 데이터 에셋이다.
-[CreateAssetMenu(
-    fileName = "RecipeData",
-    menuName = "Jonggu Restaurant/Data/Recipe",
-    order = 1)]
-public class RecipeData : ScriptableObject
+namespace Data
 {
+    [CreateAssetMenu(
+        fileName = "RecipeData",
+        menuName = "Jonggu Restaurant/Data/Recipe",
+        order = 1)]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeData")]
+    public class RecipeData : ScriptableObject
+    {
     // 레시피 식별자와 기본 표시 정보다.
     [SerializeField] private string recipeId = "recipe_id";
     [SerializeField] private string displayName = "새 메뉴";
@@ -28,8 +32,9 @@ public class RecipeData : ScriptableObject
 
 // 레시피 한 개에 들어가는 자원과 수량 한 쌍이다.
 [Serializable]
-public class RecipeIngredient
+    public class RecipeIngredient
 {
     public ResourceData Resource;
     [Min(1)] public int Amount = 1;
+}
 }

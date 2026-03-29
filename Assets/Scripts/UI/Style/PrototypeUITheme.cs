@@ -1,8 +1,11 @@
 using UnityEngine;
 
-// 씬 이름만으로 HUD 기본색을 고를 수 있게 공용 테마 팔레트를 둡니다.
+// 씬 이름만으로 HUD 기본색과 강조색을 고를 수 있게 공용 테마 팔레트를 둡니다.
+namespace UI.Style
+{
 public readonly struct PrototypeUITheme
 {
+    // HUD에서 반복해서 쓰는 배경색과 강조색 세트를 한 번에 전달한다.
     public PrototypeUITheme(
         Color parchment,
         Color paper,
@@ -42,8 +45,10 @@ public readonly struct PrototypeUITheme
     public Color ActionText { get; }
 }
 
+// 탐험 지역마다 다른 색 분위기를 주되 HUD 구조는 그대로 유지한다.
 public static class PrototypeUIThemePalette
 {
+    // 씬 이름에 맞는 기본 테마를 반환하고, 모르는 씬은 공통 기본값으로 떨어진다.
     public static PrototypeUITheme GetForScene(string sceneName)
     {
         return sceneName switch
@@ -110,5 +115,6 @@ public static class PrototypeUIThemePalette
                 Color.white)
         };
     }
+}
 }
 

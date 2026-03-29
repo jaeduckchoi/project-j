@@ -85,7 +85,7 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - `Assets/Scripts/UI/Layout/UI/PrototypeUILayout.UI.cs`
   일반 HUD와 허브 기본 UI 배치를 모아 관리한다.
 - `Assets/Scripts/UI/Layout/Popup/PrototypeUILayout.Popup.cs`
-  허브 팝업 프레임, 본문, 닫기 버튼 배치를 모아 관리한다.
+  허브 팝업 프레임, 본문, 닫기 버튼 배치와 본문 내부 반복 아이템 박스 레이아웃을 모아 관리한다.
 - `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`
   UI/HUD와 Popup 스킨 매핑의 공용 진입점을 유지한다.
 - `Assets/Scripts/UI/Style/UI/PrototypeUISkinCatalog.UI.cs`
@@ -110,6 +110,7 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - `PrototypeUIDesignController` 인스펙터의 `Editor Preview` 항목에서 허브 팝업 프리뷰 여부와 대상 패널을 고를 수 있다.
 - 현재 씬의 `Canvas` 아래 오브젝트는 `HUDRoot`, `PopupRoot`로 정리하고, 같은 기준으로 런타임 탐색과 새 씬 생성도 맞춘다.
 - `현재 설정 프리뷰 적용` 버튼을 누르면 Play 모드 없이도 Scene 뷰에서 카드와 팝업 스킨 배치를 바로 확인할 수 있다.
+- 허브 팝업 본문은 좌우 각각 여러 개의 아이템 박스로 나뉘며, 편집 모드 프리뷰도 같은 박스 구조를 기준으로 보인다.
 - `Canvas 그룹 정리` 버튼을 누르면 기존 평면 구조 Canvas도 관리용 그룹 구조로 재배치된다.
 - `SVG 캐시 새로고침` 버튼은 `PrototypeUISkin`이 만든 임시 스프라이트 캐시를 비우고 다시 렌더링한다.
 - 팝업 외곽은 `PanelGreyBolts`, 내부 본문은 `PanelGrey`, 일반 HUD/하단 버튼은 `PanelBrown`과 `ButtonBrown`, 닫기 버튼은 `ButtonGreyClose`를 쓴다.

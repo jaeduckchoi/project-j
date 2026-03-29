@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 오전 탐험, 오후 장사, 결과 정산, 다음 날 전환과 안내 문구를 관리한다.
-public class DayCycleManager : MonoBehaviour
+namespace Flow
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DayCycleManager")]
+    public class DayCycleManager : MonoBehaviour
+    {
     [SerializeField, Min(1)] private int startingDay = 1;
     [SerializeField] private DayPhase startingPhase = DayPhase.MorningExplore;
     [SerializeField, Min(1f)] private float defaultHintDuration = 5f;
@@ -261,9 +265,10 @@ public class DayCycleManager : MonoBehaviour
     }
 }
 
-public enum DayPhase
+    public enum DayPhase
 {
     MorningExplore,
     AfternoonService,
     Settlement
+}
 }

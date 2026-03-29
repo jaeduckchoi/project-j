@@ -1,12 +1,16 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 채집, 요리, 판매에 공통으로 사용하는 자원 정의 데이터다.
-[CreateAssetMenu(
-    fileName = "ResourceData",
-    menuName = "Jonggu Restaurant/Data/Resource",
-    order = 0)]
-public class ResourceData : ScriptableObject
+namespace Data
 {
+    [CreateAssetMenu(
+        fileName = "ResourceData",
+        menuName = "Jonggu Restaurant/Data/Resource",
+        order = 0)]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ResourceData")]
+    public class ResourceData : ScriptableObject
+    {
     // 자원을 식별하고 툴팁에 표시할 기본 정보다.
     [Header("Identity")]
     [SerializeField] private string resourceId = "resource_id";
@@ -33,10 +37,11 @@ public class ResourceData : ScriptableObject
 }
 
 // 자원의 드문 정도를 대략적으로 표현한다.
-public enum ResourceRarity
+    public enum ResourceRarity
 {
     Common,
     Uncommon,
     Rare,
     Epic
+}
 }

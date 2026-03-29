@@ -1,10 +1,18 @@
 using System.Collections;
+using Core;
+using Data;
+using Interaction;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 맵 위의 채집 지점이다. 필요한 도구를 확인하고 상호작용 시 인벤토리에 자원을 추가한다.
 // 막힌 상태에서도 상호작용을 받아 이유를 안내한다.
-public class GatherableResource : MonoBehaviour, IInteractable
+namespace Gathering
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GatherableResource")]
+    public class GatherableResource : MonoBehaviour, IInteractable
+    {
     [SerializeField] private ResourceData resourceData;
     [SerializeField] private ToolType requiredToolType = ToolType.None;
     [SerializeField, Min(1)] private int minAmount = 1;
@@ -201,5 +209,6 @@ public class GatherableResource : MonoBehaviour, IInteractable
             StopCoroutine(respawnRoutine);
             respawnRoutine = null;
         }
+    }
     }
 }

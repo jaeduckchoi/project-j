@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Core;
+using Data;
+using Flow;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 오후 장사의 메뉴 선택, 재료 소모, 골드와 평판 정산을 처리한다.
-public class RestaurantManager : MonoBehaviour
+namespace Restaurant
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RestaurantManager")]
+    public class RestaurantManager : MonoBehaviour
+    {
     [SerializeField] private List<RecipeData> availableRecipes = new();
     [SerializeField, Min(1)] private int serviceCapacity = 3;
     [SerializeField] private int selectedRecipeIndex;
@@ -311,5 +318,6 @@ public class RestaurantManager : MonoBehaviour
         }
 
         return parts.Count > 0 ? string.Join(", ", parts) : "없음";
+    }
     }
 }

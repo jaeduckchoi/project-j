@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-[RequireComponent(typeof(PlayerController))]
-public sealed class PlayerDirectionalSprite : MonoBehaviour
+namespace Player
 {
+    [RequireComponent(typeof(PlayerController))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]
+    public sealed class PlayerDirectionalSprite : MonoBehaviour
+    {
     private const float PlayerSpritePixelsPerUnit = 1000f;
     private const float PlayerVisualScale = 0.76f;
     private static readonly Vector2 SpritePivot = new(0.5f, 0.08f);
@@ -261,5 +265,6 @@ public sealed class PlayerDirectionalSprite : MonoBehaviour
     private static bool Approximately(Vector2 left, Vector2 right)
     {
         return Mathf.Abs(left.x - right.x) < 0.001f && Mathf.Abs(left.y - right.y) < 0.001f;
+    }
     }
 }

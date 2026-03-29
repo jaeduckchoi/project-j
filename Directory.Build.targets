@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <!-- 외부 MSBuild에서 로드 실패하는 Unity 소스 생성기 분석기를 제거한다. -->
+    <Analyzer Remove="D:\Program Files\Unity\Hub\Editor\*\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\*.dll" />
+  </ItemGroup>
+</Project>

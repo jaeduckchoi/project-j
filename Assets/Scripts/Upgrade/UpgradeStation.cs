@@ -1,8 +1,15 @@
+using Core;
+using Interaction;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 허브 작업대에서 현재 우선순위 업그레이드를 실행하는 상호작용 지점입니다.
-public class UpgradeStation : MonoBehaviour, IInteractable
+namespace Upgrade
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeStation")]
+    public class UpgradeStation : MonoBehaviour, IInteractable
+    {
     [SerializeField] private UpgradeManager upgradeManager;
     [SerializeField] private string promptLabel = "작업대 사용";
 
@@ -102,5 +109,6 @@ public class UpgradeStation : MonoBehaviour, IInteractable
         }
 
         return upgradeManager;
+    }
     }
 }

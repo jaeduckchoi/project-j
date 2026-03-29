@@ -1,10 +1,17 @@
 using System.Collections.Generic;
+using Core;
+using Player;
+using Tools;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 플레이어가 영역 안에 있는 동안 이동 속도 배율을 변경한다.
-[RequireComponent(typeof(Collider2D))]
-public class MovementModifierZone : MonoBehaviour
+namespace World
 {
+    [RequireComponent(typeof(Collider2D))]
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "MovementModifierZone")]
+    public class MovementModifierZone : MonoBehaviour
+    {
     [SerializeField, Range(0.1f, 2f)] private float movementMultiplier = 0.6f;
     [SerializeField] private ToolType ignorePenaltyWithTool = ToolType.None;
     [SerializeField, TextArea] private string guideText = string.Empty;
@@ -123,5 +130,6 @@ public class MovementModifierZone : MonoBehaviour
             && GameManager.Instance != null
             && GameManager.Instance.Tools != null
             && GameManager.Instance.Tools.HasTool(ignorePenaltyWithTool);
+    }
     }
 }

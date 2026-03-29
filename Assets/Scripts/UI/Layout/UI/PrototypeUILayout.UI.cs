@@ -3,14 +3,18 @@ using UnityEngine;
 /*
  * 일반 HUD와 허브 기본 UI 배치를 따로 모아 관리합니다.
  */
+namespace UI.Layout
+{
 public static partial class PrototypeUILayout
 {
+    // 상단 상태 카드와 단계 표시 배치다.
     public static readonly PrototypeUIRect TopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 68f));
     public static readonly PrototypeUIRect TopLeftAccent = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 6f));
     public static readonly PrototypeUIRect PhaseBadge = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(236f, 40f));
     public static readonly PrototypeUIRect GoldText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(26f, -28f), new Vector2(286f, 30f));
     public static readonly PrototypeUIRect DayPhaseText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(210f, 24f));
 
+    // 허브와 탐험 씬 공용 프롬프트, 안내, 결과 카드 배치다.
     public static readonly PrototypeUIRect HubPromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(700f, 54f));
     public static readonly PrototypeUIRect ExplorePromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(700f, 54f));
     public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
@@ -24,6 +28,7 @@ public static partial class PrototypeUILayout
     public static readonly PrototypeUIRect HubResultText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 186f), new Vector2(980f, 64f));
     public static readonly PrototypeUIRect ExploreResultText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(900f, 72f));
 
+    // 인벤토리 카드와 허브 상세 카드 공용 배치다.
     public static readonly PrototypeUIRect HubInventoryCard = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 72f), new Vector2(820f, 396f));
     public static readonly PrototypeUIRect ExploreInventoryCard = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -60f), new Vector2(420f, 228f));
     public static readonly PrototypeUIRect HubInventoryAccent = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 264f), new Vector2(820f, 6f));
@@ -51,6 +56,7 @@ public static partial class PrototypeUILayout
     public static readonly PrototypeUIRect HubRecipeText = HubInventoryText;
     public static readonly PrototypeUIRect HubUpgradeText = HubInventoryText;
 
+    // 허브 하단 액션 버튼과 패널 버튼 배치다.
     public static readonly PrototypeUIRect HubSkipExplorationButton = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 18f), new Vector2(156f, 40f));
     public static readonly PrototypeUIRect HubSkipServiceButton = HubSkipExplorationButton;
     public static readonly PrototypeUIRect HubNextDayButton = HubSkipExplorationButton;
@@ -58,6 +64,7 @@ public static partial class PrototypeUILayout
     public static readonly PrototypeUIRect HubUpgradePanelButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(164f, 44f));
     public static readonly PrototypeUIRect HubMaterialPanelButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(184f, 18f), new Vector2(164f, 44f));
 
+    // 허브/탐험 구분에 따라 맞는 좌표 묶음을 고르는 선택자다.
     public static PrototypeUIRect PromptBackdrop(bool isHubScene) => isHubScene ? HubPromptBackdrop : ExplorePromptBackdrop;
     public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
     public static PrototypeUIRect ResultBackdrop(bool isHubScene) => isHubScene ? HubResultBackdrop : ExploreResultBackdrop;
@@ -68,4 +75,5 @@ public static partial class PrototypeUILayout
     public static PrototypeUIRect InventoryAccent(bool isHubScene) => isHubScene ? HubInventoryAccent : ExploreInventoryAccent;
     public static PrototypeUIRect InventoryCaption(bool isHubScene) => isHubScene ? HubInventoryCaption : ExploreInventoryCaption;
     public static PrototypeUIRect InventoryText(bool isHubScene) => isHubScene ? HubInventoryText : ExploreInventoryText;
+}
 }

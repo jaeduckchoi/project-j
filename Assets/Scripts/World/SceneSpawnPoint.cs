@@ -1,8 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // 씬 이동 후 플레이어를 배치할 위치를 식별하는 스폰 포인트다.
-public class SceneSpawnPoint : MonoBehaviour
+namespace World
 {
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "SceneSpawnPoint")]
+    public class SceneSpawnPoint : MonoBehaviour
+    {
     // GameManager가 장면 진입 후 찾을 식별자다.
     [SerializeField] private string spawnId = "SpawnPoint";
 
@@ -36,5 +40,6 @@ public class SceneSpawnPoint : MonoBehaviour
         {
             spawnId = gameObject.name;
         }
+    }
     }
 }
