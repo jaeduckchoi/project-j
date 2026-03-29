@@ -17,7 +17,7 @@ MonoBehaviour:
     layout:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
-      pivot: {x: 1, y: 0}    
+      pivot: {x: 1, y: 0}
       anchoredPosition: {x: -18, y: 98}
       sizeDelta: {x: 198, y: 6}
   - objectName: ActionCaption
@@ -34,13 +34,6 @@ MonoBehaviour:
       pivot: {x: 1, y: 0}
       anchoredPosition: {x: -18, y: 18}
       sizeDelta: {x: 198, y: 86}
-  - objectName: CenterBottomPanel
-    layout:
-      anchorMin: {x: 0.5, y: 0}
-      anchorMax: {x: 0.5, y: 0}
-      pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 18}
-      sizeDelta: {x: 610, y: 70}
   - objectName: DayPhaseText
     layout:
       anchorMin: {x: 1, y: 1}
@@ -76,14 +69,7 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0.5}
       anchoredPosition: {x: 0, y: 0}
       sizeDelta: {x: 0, y: 0}
-  - objectName: HUDButtonGroup
-    layout:
-      anchorMin: {x: 0, y: 0}
-      anchorMax: {x: 1, y: 1}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 0}
-      sizeDelta: {x: 0, y: 0}
-  - objectName: HUDInventoryGroup
+  - objectName: HUDBottomGroup
     layout:
       anchorMin: {x: 0, y: 0}
       anchorMax: {x: 1, y: 1}
@@ -97,13 +83,13 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0.5}
       anchoredPosition: {x: 0, y: 0}
       sizeDelta: {x: 0, y: 0}
-  - objectName: HUDPromptGroup
+  - objectName: HUDPanelButtonGroup
     layout:
-      anchorMin: {x: 0, y: 0}
-      anchorMax: {x: 1, y: 1}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 0}
-      sizeDelta: {x: 0, y: 0}
+      anchorMin: {x: 0.5, y: 0}
+      anchorMax: {x: 0.5, y: 0}
+      pivot: {x: 0.5, y: 0}
+      anchoredPosition: {x: 0, y: 18}
+      sizeDelta: {x: 610, y: 70}
   - objectName: HUDRoot
     layout:
       anchorMin: {x: 0, y: 0}
@@ -125,27 +111,6 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0}
       anchoredPosition: {x: 0, y: 92}
       sizeDelta: {x: 676, y: 40}
-  - objectName: InventoryAccent
-    layout:
-      anchorMin: {x: 0.5, y: 0.5}
-      anchorMax: {x: 0.5, y: 0.5}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 264}
-      sizeDelta: {x: 820, y: 6}
-  - objectName: InventoryCaption
-    layout:
-      anchorMin: {x: 0.5, y: 0.5}
-      anchorMax: {x: 0.5, y: 0.5}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 244}
-      sizeDelta: {x: 744, y: 28}
-  - objectName: InventoryCard
-    layout:
-      anchorMin: {x: 0.5, y: 0.5}
-      anchorMax: {x: 0.5, y: 0.5}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 72}
-      sizeDelta: {x: 820, y: 396}
   - objectName: InventoryText
     layout:
       anchorMin: {x: 0.5, y: 0.5}
@@ -370,13 +335,6 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0.5}
       anchoredPosition: {x: -334, y: 352}
       sizeDelta: {x: 180, y: 64}
-  - objectName: PromptBackdrop
-    layout:
-      anchorMin: {x: 0.5, y: 0}
-      anchorMax: {x: 0.5, y: 0}
-      pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 92}
-      sizeDelta: {x: 700, y: 54}
   - objectName: RecipePanelButton
     layout:
       anchorMin: {x: 0.5, y: 0}
@@ -396,7 +354,7 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 186}
+      anchoredPosition: {x: 0, y: 154}
       sizeDelta: {x: 980, y: 64}
   - objectName: ResultBackdrop
     layout:
@@ -447,6 +405,20 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0.5}
       anchoredPosition: {x: 0, y: -112}
       sizeDelta: {x: 780, y: 488}
+  - objectName: 'TMP SubMeshUI [maplestoryBoldSdfMaterial + maplestoryBoldSdfAtlas1]'
+    layout:
+      anchorMin: {x: 0, y: 0}
+      anchorMax: {x: 1, y: 1}
+      pivot: {x: 0.5, y: 0.5}
+      anchoredPosition: {x: 0, y: 0}
+      sizeDelta: {x: 0, y: 0}
+  - objectName: 'TMP SubMeshUI [maplestoryLightSdfMaterial + maplestoryLightSdfAtlas1]'
+    layout:
+      anchorMin: {x: 0, y: 0}
+      anchorMax: {x: 1, y: 1}
+      pivot: {x: 1, y: 0}
+      anchoredPosition: {x: 0, y: 0}
+      sizeDelta: {x: 0, y: 0}
   - objectName: TopLeftPanel
     layout:
       anchorMin: {x: 0, y: 1}
@@ -488,25 +460,13 @@ MonoBehaviour:
     type: 0
     color: {r: 0.22, g: 0.6, b: 0.87, a: 1}
     preserveAspect: 0
-  - objectName: CenterBottomPanel
-    overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.98, g: 0.98, b: 0.99, a: 1}
-    preserveAspect: 0
   - objectName: GuideBackdrop
     overrideSprite: 1
     sprite: {fileID: 0}
     type: 0
     color: {r: 0.98, g: 0.98, b: 0.99, a: 1}
     preserveAspect: 0
-  - objectName: InventoryAccent
-    overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.66, b: 0.9, a: 1}
-    preserveAspect: 0
-  - objectName: InventoryCard
+  - objectName: HUDPanelButtonGroup
     overrideSprite: 1
     sprite: {fileID: 0}
     type: 0
@@ -544,7 +504,7 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: PopupFrameLeft
     overrideSprite: 1
-    sprite: {fileID: 7773940167874695888, guid: f2e69e3a3ccaa9b40a032e31368ad69a, type: 3}
+    sprite: {fileID: 621554832692225046, guid: f2e69e3a3ccaa9b40a032e31368ad69a, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
@@ -552,7 +512,7 @@ MonoBehaviour:
     overrideSprite: 1
     sprite: {fileID: -2787681398681303527, guid: f2e69e3a3ccaa9b40a032e31368ad69a, type: 3}
     type: 1
-    color: {r: 0.92, g: 0.95, b: 0.99, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
   - objectName: PopupLeftBody
     overrideSprite: 1
@@ -564,25 +524,25 @@ MonoBehaviour:
     overrideSprite: 1
     sprite: {fileID: 8652381965432477753, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
     type: 1
-    color: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
   - objectName: PopupLeftItemBox02
     overrideSprite: 1
     sprite: {fileID: 8652381965432477753, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
     type: 1
-    color: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
   - objectName: PopupLeftItemBox03
     overrideSprite: 1
     sprite: {fileID: 8652381965432477753, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
     type: 1
-    color: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
   - objectName: PopupLeftItemBox04
     overrideSprite: 1
     sprite: {fileID: 8652381965432477753, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
     type: 1
-    color: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
   - objectName: PopupLeftItemIcon01
     overrideSprite: 1
@@ -620,17 +580,11 @@ MonoBehaviour:
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
-  - objectName: PromptBackdrop
-    overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.93, g: 0.95, b: 0.98, a: 1}
-    preserveAspect: 0
   - objectName: RecipePanelButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 8368325438045324623, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: ResultBackdrop
     overrideSprite: 1
@@ -662,3 +616,598 @@ MonoBehaviour:
     type: 0
     color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
     preserveAspect: 0
+  textEntries:
+  - objectName: ActionCaption
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 15
+    color: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    alignment: 260
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 15
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0.5
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 0, y: 0, z: 0, w: 0}
+    isRightToLeftText: 0
+  - objectName: DayPhaseText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 24
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 0
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: GoldText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 24
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 0
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: GuideText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 18
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 18
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: InteractionPromptText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 21
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 15
+    fontSizeMax: 21
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: InventoryText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 19
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 13
+    fontSizeMax: 19
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 2
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: MaterialPanelButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: NextDayButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: PopupCloseButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: PopupLeftCaption
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 32
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 0
+    fontSizeMin: 12
+    fontSizeMax: 20
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: PopupLeftItemText01
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 17
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 17
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 1
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 0, y: 0, z: 0, w: 0}
+    isRightToLeftText: 0
+  - objectName: PopupLeftItemText02
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 17
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 17
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 1
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 0, y: 0, z: 0, w: 0}
+    isRightToLeftText: 0
+  - objectName: PopupLeftItemText03
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 17
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 17
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 1
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 0, y: 0, z: 0, w: 0}
+    isRightToLeftText: 0
+  - objectName: PopupLeftItemText04
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 17
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 17
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 1
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 0, y: 0, z: 0, w: 0}
+    isRightToLeftText: 0
+  - objectName: PopupRightCaption
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 32
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 0
+    fontSizeMin: 12
+    fontSizeMax: 20
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: PopupTitle
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 40
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 0
+    fontSizeMin: 12
+    fontSizeMax: 24
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: RecipePanelButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: RestaurantResultText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 18
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 18
+    fontStyle: 0
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: SelectedRecipeText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 18
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 18
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 2
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: SkipExplorationButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: SkipServiceButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: StorageText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 18
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 18
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 2
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  - objectName: UpgradePanelButton_Label
+    overrideFont: 1
+    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    fontSize: 20
+    color: {r: 1, g: 1, b: 1, a: 1}
+    alignment: 514
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 14
+    fontSizeMax: 20
+    fontStyle: 1
+    textWrappingMode: 0
+    overflowMode: 3
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 8, y: 6, z: 8, w: 6}
+    isRightToLeftText: 0
+  - objectName: UpgradeText
+    overrideFont: 1
+    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    fontSize: 18
+    color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
+    alignment: 257
+    raycastTarget: 0
+    enableAutoSizing: 1
+    fontSizeMin: 12
+    fontSizeMax: 18
+    fontStyle: 0
+    textWrappingMode: 1
+    overflowMode: 2
+    characterSpacing: 0
+    wordSpacing: 0
+    lineSpacing: 0
+    paragraphSpacing: 0
+    margin: {x: 10, y: 8, z: 10, w: 8}
+    isRightToLeftText: 0
+  buttonEntries:
+  - objectName: MaterialPanelButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: NextDayButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: PopupCloseButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: PopupLeftItemBox01
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 0
+  - objectName: PopupLeftItemBox02
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 0
+  - objectName: PopupLeftItemBox03
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 0
+  - objectName: PopupLeftItemBox04
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 0
+  - objectName: RecipePanelButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: SkipExplorationButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: SkipServiceButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  - objectName: UpgradePanelButton
+    interactable: 1
+    transition: 1
+    colors:
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+      m_ColorMultiplier: 1
+      m_FadeDuration: 0.1
+    navigationMode: 3
+  nameEntries:
+  - canonicalName: HUDActionGroup
+    sceneName: HUDActionGroup
+  - canonicalName: HUDPanelButtonGroup
+    sceneName: HUDPanelButtonGroup

@@ -10,7 +10,7 @@
 - `Canvas` 바로 아래에는 `HUDRoot`, `PopupRoot`만 둔다.
 - HUD 계열 오브젝트는 `HUDRoot` 아래에 둔다.
 - 허브 팝업 계열 오브젝트는 `PopupRoot` 아래에 둔다.
-- `InventoryText`는 예외적으로 허브 씬에서는 `PopupRoot`, 탐험 씬에서는 `HUDRoot` 기준으로 배치된다.
+- `InventoryText`는 허브 씬 팝업 본문 전용으로만 유지하고 `PopupRoot` 기준으로 배치한다.
 
 권장 구조:
 
@@ -36,26 +36,19 @@ Canvas
    │  ├─ PhaseBadge
    │  ├─ GoldText
    │  └─ DayPhaseText
-   ├─ HUDInventoryGroup
-   │  ├─ InventoryCard
-   │  ├─ InventoryAccent
-   │  ├─ InventoryCaption
-   │  └─ InventoryText
    ├─ HUDActionGroup
-   │  ├─ CenterBottomPanel
    │  ├─ ActionDock
    │  ├─ ActionAccent
    │  └─ ActionCaption
-   ├─ HUDButtonGroup
+   ├─ HUDBottomGroup
    │  ├─ SkipExplorationButton
    │  ├─ SkipServiceButton
-   │  ├─ NextDayButton
+   │  └─ NextDayButton
+   ├─ HUDPanelButtonGroup
    │  ├─ RecipePanelButton
    │  ├─ UpgradePanelButton
    │  └─ MaterialPanelButton
-   ├─ HUDPromptGroup
-   │  ├─ PromptBackdrop
-   │  └─ InteractionPromptText
+   ├─ InteractionPromptText
    └─ HUDOverlayGroup
       ├─ GuideBackdrop
       ├─ GuideText
@@ -113,7 +106,7 @@ Canvas
 ## 5. 이름 규칙
 
 - 최상위 루트는 `HUDRoot`, `PopupRoot`를 유지한다.
-- HUD 하위 그룹 이름은 `HUDStatusGroup`, `HUDInventoryGroup`, `HUDActionGroup`, `HUDButtonGroup`, `HUDPromptGroup`, `HUDOverlayGroup`를 유지한다.
+- HUD 하위 그룹 이름은 `HUDStatusGroup`, `HUDActionGroup`, `HUDBottomGroup`, `HUDPanelButtonGroup`, `HUDOverlayGroup`를 유지한다.
 - 팝업 그룹 이름은 `PopupShellGroup`, `PopupFrame`, `PopupFrameLeft`, `PopupFrameRight`, `PopupFrameHeader`를 유지한다.
 - 좌우 바디는 `PopupLeftBody`, `PopupRightBody`를 사용한다.
 - 반복 박스는 `PopupLeftItemBox01`, `PopupRightItemBox01`처럼 2자리 번호를 사용한다.

@@ -50,8 +50,9 @@ namespace ProjectEditor.UI
                 + "- HUDRoot: HUD group objects\n"
                 + "- PopupRoot: hub popup group objects\n\n"
                 + "HUDRoot\n"
-                + "- HUDStatusGroup / HUDInventoryGroup / HUDActionGroup\n"
-                + "- HUDButtonGroup / HUDPromptGroup / HUDOverlayGroup\n\n"
+                + "- HUDStatusGroup / HUDActionGroup / HUDBottomGroup\n"
+                + "- HUDPanelButtonGroup / HUDOverlayGroup\n"
+				+ "- InteractionPromptText stays directly under HUDRoot\n\n"
                 + "PopupRoot\n"
                 + "- PopupShellGroup / PopupFrame / PopupFrameHeader\n"
                 + "- PopupOverlay stays under PopupShellGroup\n"
@@ -65,11 +66,11 @@ namespace ProjectEditor.UI
 
             EditorGUILayout.HelpBox(
                 "[Canvas Layout Sync]\n"
-                + "- Sync Canvas UI Layouts saves the current RectTransform and Image values under Canvas.\n"
-                + "- Image sync stores sprite, type, color, and preserveAspect when an Image exists.\n"
-                + "- The first sync automatically creates Assets/Resources/Generated/UI/uiLayoutOverrides.asset.\n"
-                + "- Builder, UIManager, and the scene audit will all use those saved values after syncing.\n"
-                + "- Build Minimal Prototype also reuses WindHill's HUDRoot for the exploration scenes automatically.",
+                + "- Sync Canvas UI Layouts는 현재 씬 Canvas 아래 UI의 RectTransform, Image, TMP, Button 값을 저장합니다.\n"
+                + "- 현재 씬 Canvas 값도 빌드 직전에 자동으로 다시 저장되어 빌드 기준으로 다시 사용됩니다.\n"
+                + "- 같은 이름 UI는 빌더와 UIManager가 저장된 값을 다시 적용합니다.\n"
+                + "- 첫 Sync 시 Assets/Resources/Generated/UI/uiLayoutOverrides.asset이 자동 생성됩니다.\n"
+                + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.",
                 MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())
@@ -118,7 +119,7 @@ namespace ProjectEditor.UI
                     PrototypeUISceneLayoutCatalog.ResetCanvasLayouts();
                     controller.ApplyEditorPreviewInEditor();
                     MarkSceneDirty(controller);
-                    Debug.Log("Canvas UI layout and image overrides were reset.");
+                    Debug.Log("Canvas UI 레이아웃, 표시 값, 이름 오버라이드를 초기화했습니다.");
                 }
             }
 

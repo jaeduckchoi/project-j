@@ -33,21 +33,15 @@ namespace ProjectEditor
             "TopLeftPanel",
             "PhaseBadge",
             "GoldText",
-            "PromptBackdrop",
             "InteractionPromptText",
             "GuideBackdrop",
             "GuideText",
             "ResultBackdrop",
             "RestaurantResultText",
-            "InventoryCard",
-            "InventoryAccent",
-            "InventoryCaption",
-            "InventoryText",
         };
 
         private static readonly string[] HubOnlyHudNames =
         {
-            "CenterBottomPanel",
             "PopupOverlay",
             "PopupFrame",
             "PopupFrameLeft",
@@ -58,6 +52,7 @@ namespace ProjectEditor
             "PopupLeftCaption",
             "PopupRightCaption",
             "PopupCloseButton",
+            "InventoryText",
             "StorageText",
             "SelectedRecipeText",
             "UpgradeText",
@@ -74,6 +69,9 @@ namespace ProjectEditor
 
         private static readonly string[] RemovedHubCardNames =
         {
+            "InventoryCard",
+            "InventoryAccent",
+            "InventoryCaption",
             "StorageAccent",
             "StorageCard",
             "StorageCaption",
@@ -127,14 +125,27 @@ namespace ProjectEditor
             List<string> issues = new();
             string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
             bool isHubScene = string.Equals(sceneName, "Hub", StringComparison.OrdinalIgnoreCase);
+            string hudActionGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDActionGroup");
+            string hudPanelButtonGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDPanelButtonGroup");
 
             List<GameObject> objects = GetAllSceneObjects(scene);
 
             ValidateExactCount(issues, sceneName, objects, "Canvas", 1);
             ValidateComponentCount<UIManager>(issues, sceneName, objects, 1);
             ValidateExactCount(issues, sceneName, objects, "Jonggu", 1);
+            ValidateExactCount(issues, sceneName, objects, "HUDRoot", 1);
+            ValidateExactCount(issues, sceneName, objects, hudActionGroupName, 1);
+            ValidateExactCount(issues, sceneName, objects, "HUDBottomGroup", 1);
+            ValidateExactCount(issues, sceneName, objects, "HUDInventoryGroup", 0);
+            ValidateExactCount(issues, sceneName, objects, "HUDButtonGroup", 0);
             ValidateChildCount(issues, sceneName, objects, "Jonggu", "PlayerVisual", 1);
             ValidateComponentOnNamedObject<PlayerDirectionalSprite>(issues, sceneName, objects, "Jonggu");
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDStatusGroup", 1);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudActionGroupName, 1);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDBottomGroup", 1);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudPanelButtonGroupName, isHubScene ? 1 : 0);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptText", 1);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDOverlayGroup", 1);
 
             foreach (string hudName in CommonHudNames)
             {
@@ -146,6 +157,8 @@ namespace ProjectEditor
                 ValidateExactCount(issues, sceneName, objects, hudName, isHubScene ? 1 : 0);
             }
 
+            ValidateExactCount(issues, sceneName, objects, hudPanelButtonGroupName, isHubScene ? 1 : 0);
+
             foreach (string removedName in RemovedHubCardNames)
             {
                 ValidateExactCount(issues, sceneName, objects, removedName, 0);
@@ -156,24 +169,28 @@ namespace ProjectEditor
                 ValidateExactCount(issues, sceneName, objects, legacyLabel, 0);
             }
 
-            ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-            ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
-            ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
-            ValidateLayout(issues, sceneName, objects, "PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+			ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+			ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
+			ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
+			ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
+			ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "GuideText", PrototypeUILayout.GuideText(isHubScene));
             ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "RestaurantResultText", PrototypeUILayout.ResultText(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InventoryCard", PrototypeUILayout.InventoryCard(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InventoryCaption", PrototypeUILayout.InventoryCaption(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "InventoryText", isHubScene ? PrototypeUILayout.HubPopupFrameText : PrototypeUILayout.InventoryText(false));
             ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUILayout.DayPhaseText);
 
             if (isHubScene)
             {
-                ValidateLayout(issues, sceneName, objects, "CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel);
+                ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionDock", 1);
+                ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionAccent", 1);
+                ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionCaption", 1);
+                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "SkipExplorationButton", 1);
+                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "SkipServiceButton", 1);
+                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "NextDayButton", 1);
+                ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "RecipePanelButton", 1);
+                ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "UpgradePanelButton", 1);
+                ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "MaterialPanelButton", 1);
+                ValidateLayout(issues, sceneName, objects, hudPanelButtonGroupName, PrototypeUILayout.HubPanelButtonGroup);
                 ValidateLayout(issues, sceneName, objects, "PopupOverlay", PrototypeUILayout.HubPopupOverlay);
                 ValidateLayout(issues, sceneName, objects, "PopupFrame", PrototypeUILayout.HubPopupFrame);
                 ValidateLayout(issues, sceneName, objects, "PopupFrameLeft", PrototypeUILayout.HubPopupFrameLeft);
@@ -184,6 +201,7 @@ namespace ProjectEditor
                 ValidateLayout(issues, sceneName, objects, "PopupLeftCaption", PrototypeUILayout.HubPopupLeftCaption);
                 ValidateLayout(issues, sceneName, objects, "PopupRightCaption", PrototypeUILayout.HubPopupFrameCaption);
                 ValidateLayout(issues, sceneName, objects, "PopupCloseButton", PrototypeUILayout.HubPopupCloseButton);
+                ValidateLayout(issues, sceneName, objects, "InventoryText", PrototypeUILayout.HubPopupFrameText);
                 ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUILayout.HubPopupRightDetailText);
                 ValidateLayout(issues, sceneName, objects, "SelectedRecipeText", PrototypeUILayout.HubPopupRightDetailText);
                 ValidateLayout(issues, sceneName, objects, "UpgradeText", PrototypeUILayout.HubPopupRightDetailText);
@@ -196,6 +214,10 @@ namespace ProjectEditor
                 ValidateLayout(issues, sceneName, objects, "RecipePanelButton", PrototypeUILayout.HubRecipePanelButton);
                 ValidateLayout(issues, sceneName, objects, "UpgradePanelButton", PrototypeUILayout.HubUpgradePanelButton);
                 ValidateLayout(issues, sceneName, objects, "MaterialPanelButton", PrototypeUILayout.HubMaterialPanelButton);
+            }
+            else
+            {
+                ValidateExactCount(issues, sceneName, objects, "InventoryText", 0);
             }
 
             return issues;

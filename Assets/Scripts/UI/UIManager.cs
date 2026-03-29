@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Core;
@@ -46,57 +46,22 @@ namespace UI
         private const string HudRootName = "HUDRoot";
         private const string PopupRootName = "PopupRoot";
         private const string HudStatusGroupName = "HUDStatusGroup";
-        private const string HudInventoryGroupName = "HUDInventoryGroup";
-        private const string HudActionGroupName = "HUDActionGroup";
-        private const string HudButtonGroupName = "HUDButtonGroup";
-        private const string HudPromptGroupName = "HUDPromptGroup";
+        private const string HudActionGroupCanonicalName = "HUDActionGroup";
+        private const string HudBottomGroupName = "HUDBottomGroup";
         private const string HudOverlayGroupName = "HUDOverlayGroup";
+        private const string HudPanelButtonGroupCanonicalName = "HUDPanelButtonGroup";
         private const string PopupShellGroupName = "PopupShellGroup";
         private const string PopupFrameGroupName = "PopupFrame";
         private const string PopupFrameHeaderGroupName = "PopupFrameHeader";
         private const string PopupFrameLeftGroupName = "PopupFrameLeft";
         private const string PopupFrameRightGroupName = "PopupFrameRight";
+        private static string HudActionGroupName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudActionGroupCanonicalName);
+        private static string HudPanelButtonGroupObjectName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudPanelButtonGroupCanonicalName);
         private static readonly Color PopupItemBoxFallbackColor = new(0.96f, 0.92f, 0.78f, 1f);
         private static readonly Color PopupItemBoxSelectedColor = new(1f, 0.97f, 0.84f, 1f);
         private static readonly CaptionPresentationPreset DefaultCaptionPresentation = new(15f, true, Vector4.zero, 0.5f, 12f, 15f);
         private static readonly CaptionPresentationPreset FixedPopupTitlePresentation = new(40f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 24f);
         private static readonly CaptionPresentationPreset FixedPopupCaptionPresentation = new(32f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 20f);
-
-        private static readonly string[] HudCanvasObjectNames =
-        {
-            "TopLeftPanel",
-            "PhaseBadge",
-            "PromptBackdrop",
-            "GuideBackdrop",
-            "ResultBackdrop",
-            "InventoryCard",
-            "InventoryAccent",
-            "InventoryCaption",
-            "GoldText",
-            "InteractionPromptText",
-            "GuideText",
-            "RestaurantResultText",
-            "DayPhaseText",
-            "CenterBottomPanel",
-            "ActionDock",
-            "ActionAccent",
-            "ActionCaption",
-            "SkipExplorationButton",
-            "SkipServiceButton",
-            "NextDayButton",
-            "RecipePanelButton",
-            "UpgradePanelButton",
-            "MaterialPanelButton",
-            "StorageCard",
-            "RecipeCard",
-            "UpgradeCard",
-            "StorageAccent",
-            "RecipeAccent",
-            "UpgradeAccent",
-            "StorageCaption",
-            "RecipeCaption",
-            "UpgradeCaption"
-        };
 
         private static readonly HashSet<string> PopupCanvasObjectNames = new()
         {
@@ -114,6 +79,38 @@ namespace UI
             "SelectedRecipeText",
             "UpgradeText"
         };
+
+		private static IEnumerable<string> EnumerateHudCanvasObjectNames()
+		{
+			yield return "TopLeftPanel";
+			yield return "PhaseBadge";
+			yield return "GuideBackdrop";
+			yield return "ResultBackdrop";
+            yield return "GoldText";
+            yield return "InteractionPromptText";
+            yield return "GuideText";
+            yield return "RestaurantResultText";
+            yield return "DayPhaseText";
+            yield return HudPanelButtonGroupObjectName;
+            yield return "ActionDock";
+            yield return "ActionAccent";
+            yield return "ActionCaption";
+            yield return "SkipExplorationButton";
+            yield return "SkipServiceButton";
+            yield return "NextDayButton";
+            yield return "RecipePanelButton";
+            yield return "UpgradePanelButton";
+            yield return "MaterialPanelButton";
+            yield return "StorageCard";
+            yield return "RecipeCard";
+            yield return "UpgradeCard";
+            yield return "StorageAccent";
+            yield return "RecipeAccent";
+            yield return "UpgradeAccent";
+            yield return "StorageCaption";
+            yield return "RecipeCaption";
+            yield return "UpgradeCaption";
+        }
 
         [SerializeField] private TextMeshProUGUI interactionPromptText;
         [SerializeField] private TextMeshProUGUI inventoryText;
@@ -1160,6 +1157,15 @@ namespace UI
                 return null;
             }
 
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                groupName,
+                new PrototypeUIRect(
+                    Vector2.zero,
+                    Vector2.one,
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    Vector2.zero));
+
             Transform existing = parent.Find(groupName);
             GameObject rootObject = existing != null ? existing.gameObject : new GameObject(groupName, typeof(RectTransform));
             ApplyHubPopupObjectIdentity(rootObject);
@@ -1174,13 +1180,11 @@ namespace UI
                 rect = rootObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = Vector2.zero;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
             rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1)));
             return rect;
         }
@@ -1193,11 +1197,15 @@ namespace UI
             }
 
             EnsureCanvasGroupRoot(hudRoot, HudStatusGroupName, 0);
-            EnsureCanvasGroupRoot(hudRoot, HudInventoryGroupName, 1);
-            EnsureCanvasGroupRoot(hudRoot, HudActionGroupName, 2);
-            EnsureCanvasGroupRoot(hudRoot, HudButtonGroupName, 3);
-            EnsureCanvasGroupRoot(hudRoot, HudPromptGroupName, 4);
-            EnsureCanvasGroupRoot(hudRoot, HudOverlayGroupName, 5);
+            EnsureCanvasGroupRoot(hudRoot, HudActionGroupName, 1);
+            EnsureCanvasGroupRoot(hudRoot, HudBottomGroupName, 2);
+
+            if (IsHubScene() || hudRoot.Find(HudPanelButtonGroupObjectName) != null)
+            {
+                EnsureCanvasGroupRoot(hudRoot, HudPanelButtonGroupObjectName, 3);
+            }
+
+            EnsureCanvasGroupRoot(hudRoot, HudOverlayGroupName, 4);
         }
 
         private void ReparentHudCanvasObjects(Transform hudRoot)
@@ -1207,7 +1215,7 @@ namespace UI
                 return;
             }
 
-            foreach (string objectName in HudCanvasObjectNames)
+            foreach (string objectName in EnumerateHudCanvasObjectNames())
             {
                 ReparentCanvasObject(objectName, GetHudCanvasGroupParent(objectName, hudRoot));
             }
@@ -1296,17 +1304,32 @@ namespace UI
 
         private static string GetHudSubgroupName(string objectName)
         {
-            return objectName switch
+            if (objectName == "TopLeftPanel" || objectName == "PhaseBadge" || objectName == "GoldText" || objectName == "DayPhaseText")
             {
-                "TopLeftPanel" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
-                "InventoryCard" or "InventoryAccent" or "InventoryCaption" or "InventoryText" => HudInventoryGroupName,
-                "CenterBottomPanel" or "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
-                "SkipExplorationButton" or "SkipServiceButton" or "NextDayButton"
-                    or "RecipePanelButton" or "UpgradePanelButton" or "MaterialPanelButton" => HudButtonGroupName,
-                "PromptBackdrop" or "InteractionPromptText" => HudPromptGroupName,
-                "GuideBackdrop" or "GuideText" or "ResultBackdrop" or "RestaurantResultText" => HudOverlayGroupName,
-                _ => null
-            };
+                return HudStatusGroupName;
+            }
+
+            if (objectName == "ActionDock" || objectName == "ActionAccent" || objectName == "ActionCaption")
+            {
+                return HudActionGroupName;
+            }
+
+            if (objectName == "SkipExplorationButton" || objectName == "SkipServiceButton" || objectName == "NextDayButton")
+            {
+                return HudBottomGroupName;
+            }
+
+            if (objectName == "RecipePanelButton" || objectName == "UpgradePanelButton" || objectName == "MaterialPanelButton")
+            {
+                return HudPanelButtonGroupObjectName;
+            }
+
+            if (objectName == "GuideBackdrop" || objectName == "GuideText" || objectName == "ResultBackdrop" || objectName == "RestaurantResultText")
+            {
+                return HudOverlayGroupName;
+            }
+
+            return null;
         }
 
         private static string GetPopupSubgroupName(string objectName)
@@ -1324,16 +1347,32 @@ namespace UI
 
         private static int GetHudSubgroupSiblingIndex(string subgroupName)
         {
-            return subgroupName switch
+            if (subgroupName == HudStatusGroupName)
             {
-                HudStatusGroupName => 0,
-                HudInventoryGroupName => 1,
-                HudActionGroupName => 2,
-                HudButtonGroupName => 3,
-                HudPromptGroupName => 4,
-                HudOverlayGroupName => 5,
-                _ => 0
-            };
+                return 0;
+            }
+
+            if (subgroupName == HudActionGroupName)
+            {
+                return 1;
+            }
+
+            if (subgroupName == HudBottomGroupName)
+            {
+                return 2;
+            }
+
+            if (subgroupName == HudPanelButtonGroupObjectName)
+            {
+                return 3;
+            }
+
+            if (subgroupName == HudOverlayGroupName)
+            {
+                return 4;
+            }
+
+            return 0;
         }
 
         private static int GetPopupSubgroupSiblingIndex(string subgroupName)
@@ -1543,21 +1582,10 @@ namespace UI
             Color oceanAccent,
             Color amberAccent)
         {
-            EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
-            EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
-            EnsureUiBackdrop("PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene), glass);
-            EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
-            EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
-            EnsureUiBackdrop("InventoryCard", PrototypeUILayout.InventoryCard(isHubScene), paper);
-
-            EnsureUiAccentBar("InventoryAccent", PrototypeUILayout.InventoryAccent(isHubScene), oceanAccent);
-            EnsureUiCaption(
-                "InventoryCaption",
-                isHubScene ? "재료" : "재료 / 가방",
-                PrototypeUILayout.InventoryCaption(isHubScene),
-                preferredFont,
-                oceanAccent,
-                TextAlignmentOptions.TopLeft);
+			EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
+			EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
+			EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
+			EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
         }
 
         /// <summary>
@@ -1576,7 +1604,7 @@ namespace UI
             Color popupFrameRight = new(0.92f, 0.95f, 0.99f, 1f);
             Color popupBody = Color.white;
 
-            EnsureUiBackdrop("CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel, paper);
+            EnsureUiBackdrop(HudPanelButtonGroupObjectName, PrototypeUILayout.HubPanelButtonGroup, paper);
             EnsureUiBackdrop("PopupOverlay", PrototypeUILayout.HubPopupOverlay, new Color(0f, 0f, 0f, 0.52f));
             EnsureUiBackdrop("ActionDock", PrototypeUILayout.HubActionDock, nightDock);
             EnsureUiBackdrop("PopupFrame", PrototypeUILayout.HubPopupFrame, popupShell);
@@ -1821,6 +1849,7 @@ namespace UI
             }
 
             text.raycastTarget = false;
+            ApplySceneTextOverride(text);
         }
 
         private void EnsureUiCaption(
@@ -2039,6 +2068,38 @@ namespace UI
         }
 
         /// <summary>
+        /// 씬에서 저장한 TMP 표시 값이 있으면 기본 HUD 스타일 적용 뒤 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplySceneTextOverride(TextMeshProUGUI text)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyTextOverride(text, text.name);
+        }
+
+        /// <summary>
+        /// 씬에서 저장한 버튼과 라벨 표시 값이 있으면 기본 스타일 적용 뒤 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplySceneButtonOverride(Button button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyButtonOverride(button, button.name);
+
+            TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null)
+            {
+                PrototypeUISceneLayoutCatalog.TryApplyTextOverride(label, label.name);
+            }
+        }
+
+        /// <summary>
         /// 버튼 RectTransform을 조정해 허브 하단과 우측 액션 영역 배치를 맞춥니다.
         /// </summary>
         private static void ApplyButtonLayout(Button button, PrototypeUIRect layout)
@@ -2110,6 +2171,7 @@ namespace UI
             colors.fadeDuration = 0.08f;
             button.transition = Selectable.Transition.ColorTint;
             button.colors = colors;
+            ApplySceneButtonOverride(button);
         }
 
         /// <summary>
@@ -2210,19 +2272,18 @@ namespace UI
         {
             bool isHubScene = IsHubScene();
 
-            ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-            ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
-            ApplyNamedRectLayout("PromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
-            ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
-            ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
+			ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+			ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
+			ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+			ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
             if (isHubScene)
             {
                 ApplyNamedRectLayout("ActionDock", PrototypeUILayout.HubActionDock);
                 ApplyNamedRectLayout("ActionAccent", PrototypeUILayout.HubActionAccent);
-                ApplyNamedRectLayout("CenterBottomPanel", PrototypeUILayout.HubCenterBottomPanel);
+                ApplyNamedRectLayout(HudPanelButtonGroupObjectName, PrototypeUILayout.HubPanelButtonGroup);
             }
 
-            SetNamedObjectActive("CenterBottomPanel", isHubScene);
+            SetNamedObjectActive(HudPanelButtonGroupObjectName, isHubScene);
             SetNamedObjectActive("PopupOverlay", false);
             SetNamedObjectActive("ActionDock", isHubScene);
             SetNamedObjectActive("ActionAccent", isHubScene);
@@ -2238,6 +2299,11 @@ namespace UI
             ApplyScreenTextStyle(interactionPromptText, headingFont, 21f, textColor, TextAlignmentOptions.Center, false, 0f, new Vector4(12f, 8f, 12f, 8f), true);
             ApplyScreenTextStyle(guideText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, !isHubScene, 4f, new Vector4(14f, 8f, 14f, 10f), false);
             ApplyScreenTextStyle(resultText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, true, 4f, new Vector4(14f, 10f, 14f, 10f), false);
+            ApplySceneTextOverride(goldText);
+            ApplySceneTextOverride(dayPhaseText);
+            ApplySceneTextOverride(interactionPromptText);
+            ApplySceneTextOverride(guideText);
+            ApplySceneTextOverride(resultText);
 
             ApplyHubActionButtonsLayout(isHubScene, headingFont, oceanAccent, coralAccent, goldAccent);
 
@@ -2311,9 +2377,6 @@ namespace UI
             ApplyHubMenuButtonLayout(recipePanelButton, headingFont, amberAccent, PrototypeUILayout.HubRecipePanelButton);
             ApplyHubMenuButtonLayout(upgradePanelButton, headingFont, goldAccent, PrototypeUILayout.HubUpgradePanelButton);
             ApplyHubMenuButtonLayout(materialPanelButton, headingFont, oceanAccent, PrototypeUILayout.HubMaterialPanelButton);
-            SetNamedObjectActive("InventoryCard", false);
-            SetNamedObjectActive("InventoryAccent", false);
-            SetNamedObjectActive("InventoryCaption", false);
             SetLegacyHubPopupObjectsActive(false);
         }
 
@@ -2342,6 +2405,7 @@ namespace UI
             if (text != null)
             {
                 text.paragraphSpacing = 0f;
+                ApplySceneTextOverride(text);
             }
         }
 
@@ -2354,6 +2418,7 @@ namespace UI
                 text.fontSizeMax = 19f;
                 text.paragraphSpacing = 0f;
                 text.overflowMode = TextOverflowModes.Masking;
+                ApplySceneTextOverride(text);
             }
         }
 
@@ -2639,6 +2704,7 @@ namespace UI
             text.enableAutoSizing = true;
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Ellipsis;
+            ApplySceneTextOverride(text);
         }
 
         private void SetPopupBodyItemBoxSetActive(string boxPrefix, string iconPrefix, string textPrefix, bool isActive)
@@ -2755,11 +2821,6 @@ namespace UI
             Color oceanAccent)
         {
             SetHubPopupDesignActive(false);
-            ApplyNamedRectLayout("InventoryCard", PrototypeUILayout.ExploreInventoryCard);
-            ApplyNamedRectLayout("InventoryAccent", PrototypeUILayout.ExploreInventoryAccent);
-            EnsureUiCaption("InventoryCaption", "재료 / 가방", PrototypeUILayout.ExploreInventoryCaption, headingFont, oceanAccent, TextAlignmentOptions.TopLeft);
-            ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.ExploreInventoryText);
-            ApplyScreenTextStyle(inventoryText, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 3f, new Vector4(12f, 6f, 12f, 8f), false);
             SetLegacyHubPopupObjectsActive(false);
         }
 
@@ -2819,13 +2880,12 @@ namespace UI
         {
             SetNamedObjectActive("TopLeftPanel", isVisible);
             SetNamedObjectActive("PhaseBadge", isVisible && dayPhaseText != null && !string.IsNullOrWhiteSpace(dayPhaseText.text));
-            SetNamedObjectActive("CenterBottomPanel", isVisible);
-            SetNamedObjectActive("ActionDock", isVisible);
-            SetNamedObjectActive("ActionAccent", isVisible);
-            SetNamedObjectActive("ActionCaption", isVisible);
-            SetNamedObjectActive("PromptBackdrop", isVisible && interactionPromptText != null && interactionPromptText.gameObject.activeSelf);
+			SetNamedObjectActive(HudPanelButtonGroupObjectName, isVisible);
+			SetNamedObjectActive("ActionDock", isVisible);
+			SetNamedObjectActive("ActionAccent", isVisible);
+			SetNamedObjectActive("ActionCaption", isVisible);
 
-            if (goldText != null)
+			if (goldText != null)
             {
                 goldText.gameObject.SetActive(isVisible);
             }
@@ -3578,9 +3638,6 @@ namespace UI
                 SetHubPopupDesignActive(showPopup);
                 SetHubHudVisible(!showPopup);
                 SetLegacyHubPopupObjectsActive(false);
-                SetNamedObjectActive("InventoryCard", false);
-                SetNamedObjectActive("InventoryAccent", false);
-                SetNamedObjectActive("InventoryCaption", false);
 
                 RefreshHubPopupContent();
 
@@ -3606,16 +3663,12 @@ namespace UI
             }
             else
             {
-                bool showInventory = true;
                 SetHubPopupDesignActive(false);
                 SetLegacyHubPopupObjectsActive(false);
-                SetNamedObjectActive("InventoryCard", showInventory);
-                SetNamedObjectActive("InventoryAccent", showInventory);
-                SetNamedObjectActive("InventoryCaption", showInventory);
 
                 if (inventoryText != null)
                 {
-                    inventoryText.gameObject.SetActive(showInventory);
+                    inventoryText.gameObject.SetActive(false);
                 }
 
                 if (storageText != null)
@@ -3800,13 +3853,12 @@ namespace UI
                 prompt = defaultPromptText;
             }
 
-            bool shouldShowPrompt = _activeHubPanel == HubPopupPanel.None;
+			bool shouldShowPrompt = _activeHubPanel == HubPopupPanel.None;
 
-            interactionPromptText.text = prompt;
-            interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
-            SetNamedObjectActive("PromptBackdrop", interactionPromptText.gameObject.activeSelf);
-            RefreshStoragePanelVisibility();
-        }
+			interactionPromptText.text = prompt;
+			interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
+			RefreshStoragePanelVisibility();
+		}
 
         /// <summary>
         /// 현재 보유 재료와 가방 사용량을 카드 본문용 문자열로 정리합니다.
@@ -4065,3 +4117,4 @@ namespace UI
         }
     }
 }
+

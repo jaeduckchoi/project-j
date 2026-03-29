@@ -34,8 +34,9 @@
 - 레거시 버튼, 오래된 도크, 사용하지 않는 카드처럼 중복 UI 경로가 남지 않게 정리한다.
 - 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 명시적 요청 없이는 초기화하거나 덮어쓰지 않는다.
 - Canvas 내부 공용 루트 이름은 `HUDRoot`, `PopupRoot`를 기준으로 유지한다.
-- 탐험 씬 공용 HUD 기준은 `WindHill` 씬의 `HUDRoot`다. `프로토타입 빌드 및 감사`를 실행하면 `Beach`, `DeepForest`, `AbandonedMine`의 `HUDRoot`가 이 기준으로 자동 동기화된다.
-- `Sync Canvas UI Layouts`는 현재 씬 Canvas 아래 UI의 `RectTransform`과 `Image.sprite/type/color/preserveAspect` 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset`에 저장한다.
+- 탐험 씬 공용 HUD 기준은 `Hub` 씬 Canvas에서 같은 이름으로 저장한 UI 오버라이드 값이다. `프로토타입 빌드 및 감사`를 실행하면 `Hub` 씬 값을 먼저 동기화한 뒤 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` UI를 다시 생성한다.
+- `Sync Canvas UI Layouts`는 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset`에 저장한다.
+- `프로토타입 빌드 및 감사`는 레이아웃과 표시 값은 `Hub` 기준을 우선 사용하고, `HUDActionGroup`, `HUDPanelButtonGroup` 이름과 해당 그룹 하위 UI 값은 현재 열려 있는 씬 기준으로 마지막에 다시 동기화한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
 - 생성 구조, UI 기준, 네임스페이스를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 배치 컴파일 결과를 함께 맞춘다.
 - `Tools > Jonggu Restaurant` 아래 새 메뉴를 추가하거나 바꿀 때는 한국어 표시를 기본으로 하고, 반복 실행이 잦은 빌드 기능보다 유지보수 도구가 아래에 오도록 `MenuItem` priority를 함께 조정한다.

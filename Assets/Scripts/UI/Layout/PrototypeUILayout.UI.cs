@@ -16,10 +16,8 @@ namespace UI.Layout
         public static readonly PrototypeUIRect DayPhaseText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(210f, 24f));
 
         // 허브와 탐험 씬 공용 프롬프트, 안내, 결과 카드 배치다.
-        public static readonly PrototypeUIRect HubPromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(700f, 54f));
-        public static readonly PrototypeUIRect ExplorePromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(700f, 54f));
-        public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
-        public static readonly PrototypeUIRect ExploreGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 84f), new Vector2(860f, 58f));
+		public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
+		public static readonly PrototypeUIRect ExploreGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 84f), new Vector2(860f, 58f));
         public static readonly PrototypeUIRect HubResultBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 232f), new Vector2(936f, 84f));
         public static readonly PrototypeUIRect ExploreResultBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(936f, 84f));
         public static readonly PrototypeUIRect HubPromptText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(676f, 40f));
@@ -39,7 +37,7 @@ namespace UI.Layout
         public static readonly PrototypeUIRect HubInventoryText = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 46f), new Vector2(736f, 292f));
         public static readonly PrototypeUIRect ExploreInventoryText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -94f), new Vector2(382f, 174f));
 
-        public static readonly PrototypeUIRect HubCenterBottomPanel = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(610f, 70f));
+        public static readonly PrototypeUIRect HubPanelButtonGroup = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(610f, 70f));
         public static readonly PrototypeUIRect HubActionDock = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 18f), new Vector2(198f, 86f));
         public static readonly PrototypeUIRect HubActionAccent = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 98f), new Vector2(198f, 6f));
         public static readonly PrototypeUIRect HubActionCaption = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 74f), new Vector2(120f, 22f));
@@ -68,9 +66,7 @@ namespace UI.Layout
         /// <summary>
         /// 허브/탐험 구분에 따라 맞는 좌표 묶음을 고르는 선택자다.
         /// </summary>
-        public static PrototypeUIRect PromptBackdrop(bool isHubScene) => isHubScene ? HubPromptBackdrop : ExplorePromptBackdrop;
-
-        public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
+		public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
         public static PrototypeUIRect ResultBackdrop(bool isHubScene) => isHubScene ? HubResultBackdrop : ExploreResultBackdrop;
         public static PrototypeUIRect PromptText(bool isHubScene) => isHubScene ? HubPromptText : ExplorePromptText;
         public static PrototypeUIRect GuideText(bool isHubScene) => isHubScene ? HubGuideText : ExploreGuideText;

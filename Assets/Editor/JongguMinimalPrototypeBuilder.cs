@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,7 +46,7 @@ namespace ProjectEditor
         private const string DataRoot = GeneratedRoot + "/GameData";
         private const string SpriteRoot = GeneratedRoot + "/Sprites";
         private const string SceneRoot = "Assets/Scenes";
-        private const string SharedExplorationHudSourceScene = SceneRoot + "/WindHill.unity";
+        private const string SharedExplorationHudSourceScene = SceneRoot + "/Hub.unity";
         private const string FontRoot = GeneratedRoot + "/Fonts";
         private const string ResourceSpriteRoot = "Assets/Resources/Generated/Sprites";
         private const float PlayerSpritePixelsPerUnit = 1000f;
@@ -194,9 +194,11 @@ namespace ProjectEditor
             ResourceLibrary resources = CreateResources();
             RecipeLibrary recipes = CreateRecipes(resources);
 
-            // WindHill의 HUDRoot를 탐험 씬 공용 기준으로 사용하므로,
-            // 빌드 전에 최신 WindHill 씬 저장본을 먼저 확보합니다.
+            // Hub 씬 Canvas 값을 공용 UI 오버라이드 기준으로 사용하되,
+            // 현재 열려 있는 씬 Canvas 값은 마지막에 다시 덮어써 빌드 기준으로 유지합니다.
             SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
+            SyncCanvasOverridesFromScenePath(SharedExplorationHudSourceScene);
+            SyncCanvasOverridesFromActiveScene();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -206,7 +208,6 @@ namespace ProjectEditor
             BuildDeepForestScene(resources, sprites);
             BuildAbandonedMineScene(resources, sprites);
             BuildWindHillScene(resources, sprites);
-            SyncSharedExplorationHudRoots();
             UpdateBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -227,6 +228,68 @@ namespace ProjectEditor
             {
                 SyncHudRootBetweenScenes(SharedExplorationHudSourceScene, targetScenePath);
             }
+        }
+
+        /// <summary>
+        /// 기준 씬 Canvas를 공용 오버라이드 자산으로 먼저 동기화해,
+        /// 같은 이름 UI 요소가 다른 씬에도 같은 표시 값으로 다시 생성되도록 맞춥니다.
+        /// </summary>
+        private static void SyncCanvasOverridesFromScenePath(string scenePath)
+        {
+            if (!File.Exists(scenePath))
+            {
+                return;
+            }
+
+            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
+            bool openedTemporarily = false;
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                sourceScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
+            }
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                return;
+            }
+
+            try
+            {
+                PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(sourceScene, out _);
+            }
+            finally
+            {
+                if (openedTemporarily)
+                {
+                    EditorSceneManager.CloseScene(sourceScene, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 현재 열려 있는 씬의 Canvas 값을 빌드 직전에 다시 저장해,
+        /// Hub 기준 Canvas 오버라이드 위에 현재 씬 값을 마지막으로 덮어씁니다.
+        /// </summary>
+        private static void SyncCanvasOverridesFromActiveScene()
+        {
+            UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (!activeScene.IsValid() || !activeScene.isLoaded || string.IsNullOrWhiteSpace(activeScene.path))
+            {
+                return;
+            }
+
+            string normalizedSceneRoot = Path.GetFullPath(SceneRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string normalizedActiveDirectory = Path.GetDirectoryName(Path.GetFullPath(activeScene.path))?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (string.IsNullOrWhiteSpace(normalizedActiveDirectory)
+                || !string.Equals(normalizedActiveDirectory, normalizedSceneRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            SaveSceneIfLoadedAndDirty(activeScene.path);
+            PrototypeUISceneLayoutCatalog.TryOverlayCanvasLayoutsFromScene(activeScene, out _);
         }
 
         private static void BuildHubScene(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
@@ -297,13 +360,10 @@ namespace ProjectEditor
                 CreateStorageStation("StorageStation", new Vector3(6.1f, 1.2f, 0f), new Vector3(3.6f, 2.0f, 1f), sprites.Floor, new Color(0.86f, 0.70f, 0.36f), "창고", storageManager, StorageStationAction.StoreAll, storageArea.transform);
                 CreateUpgradeStation(new Vector3(5.25f, -2.35f, 0f), new Vector3(1.95f, 1.2f, 1f), sprites.Floor, new Color(0.54f, 0.72f, 0.78f), upgradeManager);
 
-                if (!TryReuseExistingSceneCanvas(SceneRoot + "/Hub.unity"))
-                {
-                    CreateUiCanvas(true);
-                }
+                CreateUiCanvas(true);
 
                 EnsureUiEventSystem();
-                EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Hub.unity");
+                SaveGeneratedScene(SceneRoot + "/Hub.unity");
             }
             finally
             {
@@ -346,14 +406,9 @@ namespace ProjectEditor
             CreateGatherable("ShellSpot02", new Vector3(4.5f, -1.8f, 0f), sprites.Shell, resources.Shell, ToolType.Rake, 1, 1, "조개");
             CreateGatherable("SeaweedSpot01", new Vector3(7f, 3.8f, 0f), sprites.Seaweed, resources.Seaweed, ToolType.Sickle, 1, 2, "해초");
 
-            if (!TryReuseExistingSceneCanvas(SceneRoot + "/Beach.unity"))
-            {
-                CreateUiCanvas(false);
-            }
-
-            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            CreateUiCanvas(false);
             EnsureUiEventSystem();
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/Beach.unity");
+            SaveGeneratedScene(SceneRoot + "/Beach.unity");
         }
 
         /// <summary>
@@ -450,6 +505,7 @@ namespace ProjectEditor
                 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
                     clonedCanvas,
                     UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+                ApplySceneOverridesToHierarchy(clonedCanvas.transform);
                 return true;
             }
             finally
@@ -477,7 +533,7 @@ namespace ProjectEditor
         }
 
         /// <summary>
-        /// WindHill 씬의 HUDRoot를 현재 활성 씬 Canvas에 복제해 탐험 HUD 기준을 통일합니다.
+        /// Hub 씬의 HUDRoot를 현재 활성 씬 Canvas에 복제해 탐험 HUD 기준을 통일합니다.
         /// PopupRoot는 대상 씬 값을 유지하고, HUDRoot만 교체합니다.
         /// </summary>
         private static bool TryApplySharedHudRootFromScene(string sourceScenePath)
@@ -529,7 +585,7 @@ namespace ProjectEditor
         }
 
         /// <summary>
-        /// WindHill 씬의 HUDRoot를 대상 탐험 씬 자산에 직접 반영해,
+        /// Hub 씬의 HUDRoot를 대상 탐험 씬 자산에 직접 반영해,
         /// 빌드를 다시 돌리지 않아도 같은 HUD 구조를 유지하도록 맞춥니다.
         /// </summary>
         private static bool SyncHudRootBetweenScenes(string sourceScenePath, string targetScenePath)
@@ -632,7 +688,9 @@ namespace ProjectEditor
             GameObject clonedHudRoot = UnityEngine.Object.Instantiate(sourceHudRoot.gameObject, targetCanvas.transform);
             clonedHudRoot.name = "HUDRoot";
             clonedHudRoot.transform.SetSiblingIndex(siblingIndex);
-            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(clonedHudRoot, targetScene);
+            // 부모를 targetCanvas로 지정해 복제하면 이미 대상 씬 자식으로 생성되므로
+            // 비루트 HUDRoot를 다시 MoveGameObjectToScene 할 필요가 없습니다.
+            ApplySceneOverridesToHierarchy(clonedHudRoot.transform);
 
             RebindCanvasUiManagerReferences(targetCanvas);
             return true;
@@ -675,6 +733,64 @@ namespace ProjectEditor
             return target != null ? target.GetComponent<T>() : null;
         }
 
+        /// <summary>
+        /// 씬에서 저장한 Canvas 오버라이드를 복제된 계층 전체에 다시 적용합니다.
+        /// HUDRoot를 다른 씬에서 복제한 뒤에도 같은 이름 기준 표시 값이 유지되도록 맞춥니다.
+        /// </summary>
+        private static void ApplySceneOverridesToHierarchy(Transform root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            ApplySceneOverridesToTransform(root);
+            for (int index = 0; index < root.childCount; index++)
+            {
+                ApplySceneOverridesToHierarchy(root.GetChild(index));
+            }
+        }
+
+        private static void ApplySceneOverridesToTransform(Transform target)
+        {
+            if (target == null || string.IsNullOrEmpty(target.name))
+            {
+                return;
+            }
+
+            if (target.TryGetComponent(out RectTransform rect))
+            {
+                PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                    target.name,
+                    new PrototypeUIRect(
+                        rect.anchorMin,
+                        rect.anchorMax,
+                        rect.pivot,
+                        rect.anchoredPosition,
+                        rect.sizeDelta));
+                rect.anchorMin = resolvedLayout.AnchorMin;
+                rect.anchorMax = resolvedLayout.AnchorMax;
+                rect.pivot = resolvedLayout.Pivot;
+                rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+                rect.sizeDelta = resolvedLayout.SizeDelta;
+            }
+
+            if (target.TryGetComponent(out Image image))
+            {
+                PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, target.name);
+            }
+
+            if (target.TryGetComponent(out TextMeshProUGUI text))
+            {
+                PrototypeUISceneLayoutCatalog.TryApplyTextOverride(text, target.name);
+            }
+
+            if (target.TryGetComponent(out Button button))
+            {
+                ApplySceneButtonOverride(button);
+            }
+        }
+
         private static void BuildDeepForestScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
             SaveSceneIfLoadedAndDirty(SceneRoot + "/DeepForest.unity");
@@ -711,14 +827,9 @@ namespace ProjectEditor
             CreateGatherable("MushroomPatch01", new Vector3(2.6f, 4.1f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
             CreateGatherable("MushroomPatch02", new Vector3(8.5f, 5.2f, 0f), sprites.Mushroom, resources.Mushroom, ToolType.Sickle, 1, 2, "버섯");
 
-            if (!TryReuseExistingSceneCanvas(SceneRoot + "/DeepForest.unity"))
-            {
-                CreateUiCanvas(false);
-            }
-
-            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            CreateUiCanvas(false);
             EnsureUiEventSystem();
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/DeepForest.unity");
+            SaveGeneratedScene(SceneRoot + "/DeepForest.unity");
         }
 
         private static void BuildAbandonedMineScene(ResourceLibrary resources, SpriteLibrary sprites)
@@ -756,14 +867,9 @@ namespace ProjectEditor
             CreateGatherable("GlowMoss02", new Vector3(8.2f, 1.0f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
             CreateGatherable("GlowMoss03", new Vector3(11.6f, 4.4f, 0f), sprites.GlowMoss, resources.GlowMoss, ToolType.Lantern, 1, 2, "발광 이끼");
 
-            if (!TryReuseExistingSceneCanvas(SceneRoot + "/AbandonedMine.unity"))
-            {
-                CreateUiCanvas(false);
-            }
-
-            TryApplySharedHudRootFromScene(SharedExplorationHudSourceScene);
+            CreateUiCanvas(false);
             EnsureUiEventSystem();
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/AbandonedMine.unity");
+            SaveGeneratedScene(SceneRoot + "/AbandonedMine.unity");
         }
 
         private static void BuildWindHillScene(ResourceLibrary resources, SpriteLibrary sprites)
@@ -813,13 +919,10 @@ namespace ProjectEditor
             CreateGatherable("WindHerb02", new Vector3(8.6f, 4.6f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
             CreateGatherable("WindHerb03", new Vector3(10.8f, -0.2f, 0f), sprites.WindHerb, resources.WindHerb, ToolType.Sickle, 1, 2, "향초");
 
-            if (!TryReuseExistingSceneCanvas(SceneRoot + "/WindHill.unity"))
-            {
-                CreateUiCanvas(false);
-            }
+            CreateUiCanvas(false);
 
             EnsureUiEventSystem();
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SceneRoot + "/WindHill.unity");
+            SaveGeneratedScene(SceneRoot + "/WindHill.unity");
         }
 
         private static GameObject CreateGameManager(string hubSceneName, string explorationSceneName, ResourceLibrary resources)
@@ -1259,32 +1362,30 @@ namespace ProjectEditor
             Color chromeAmber = new(0.94f, 0.74f, 0.10f, 1f);
             Color chromeText = new(0.23f, 0.27f, 0.34f, 1f);
             Color chromeDock = new(0.22f, 0.60f, 0.87f, 1f);
+            string hudActionGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDActionGroup");
+            string hudPanelButtonGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDPanelButtonGroup");
 
             RectTransform hudRoot = CreateCanvasGroupRoot("HUDRoot", canvasObject.transform, 0);
             RectTransform popupRoot = CreateCanvasGroupRoot("PopupRoot", canvasObject.transform, 1);
             RectTransform hudStatusGroup = CreateCanvasGroupRoot("HUDStatusGroup", hudRoot, 0);
-            RectTransform hudInventoryGroup = CreateCanvasGroupRoot("HUDInventoryGroup", hudRoot, 1);
-            RectTransform hudActionGroup = CreateCanvasGroupRoot("HUDActionGroup", hudRoot, 2);
-            RectTransform hudButtonGroup = CreateCanvasGroupRoot("HUDButtonGroup", hudRoot, 3);
-            RectTransform hudPromptGroup = CreateCanvasGroupRoot("HUDPromptGroup", hudRoot, 4);
-            RectTransform hudOverlayGroup = CreateCanvasGroupRoot("HUDOverlayGroup", hudRoot, 5);
+            RectTransform hudActionGroup = CreateCanvasGroupRoot(hudActionGroupName, hudRoot, 1);
+            RectTransform hudBottomGroup = CreateCanvasGroupRoot("HUDBottomGroup", hudRoot, 2);
+            RectTransform hudOverlayGroup = CreateCanvasGroupRoot("HUDOverlayGroup", hudRoot, 4);
             RectTransform popupShellGroup = CreateCanvasGroupRoot("PopupShellGroup", popupRoot, 0);
             RectTransform popupFrameHeaderGroup = CreateCanvasGroupRoot("PopupFrameHeader", popupRoot, 2);
             RectTransform popupFrameGroup = null;
             RectTransform popupFrameLeftGroup = null;
             RectTransform popupFrameRightGroup = null;
+            RectTransform hudPanelButtonGroup = null;
 
-            CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
-            CreatePanel("PhaseBadge", hudStatusGroup, PrototypeUILayout.PhaseBadge, chromeGlass);
-            CreatePanel("PromptBackdrop", hudPromptGroup, PrototypeUILayout.PromptBackdrop(isHubScene), chromeGlass);
-            CreatePanel("GuideBackdrop", hudOverlayGroup, PrototypeUILayout.GuideBackdrop(isHubScene), chromeSurface);
-            CreatePanel("ResultBackdrop", hudOverlayGroup, PrototypeUILayout.ResultBackdrop(isHubScene), chromeSurface);
-            CreatePanel("InventoryCard", hudInventoryGroup, PrototypeUILayout.InventoryCard(isHubScene), chromeSurface);
-            CreatePanel("InventoryAccent", hudInventoryGroup, PrototypeUILayout.InventoryAccent(isHubScene), chromeOcean);
-
+			CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
+			CreatePanel("PhaseBadge", hudStatusGroup, PrototypeUILayout.PhaseBadge, chromeGlass);
+			CreatePanel("GuideBackdrop", hudOverlayGroup, PrototypeUILayout.GuideBackdrop(isHubScene), chromeSurface);
+			CreatePanel("ResultBackdrop", hudOverlayGroup, PrototypeUILayout.ResultBackdrop(isHubScene), chromeSurface);
             if (isHubScene)
             {
-                CreatePanel("CenterBottomPanel", hudActionGroup, PrototypeUILayout.HubCenterBottomPanel, chromeSurface);
+                CreatePanel(hudPanelButtonGroupName, hudRoot, PrototypeUILayout.HubPanelButtonGroup, chromeSurface);
+                hudPanelButtonGroup = FindChildRecursive(hudRoot, hudPanelButtonGroupName) as RectTransform;
                 CreatePanel("PopupOverlay", popupShellGroup, PrototypeUILayout.HubPopupOverlay, chromeOverlay);
                 CreatePanel("ActionDock", hudActionGroup, PrototypeUILayout.HubActionDock, chromeDock);
                 CreatePanel("ActionAccent", hudActionGroup, PrototypeUILayout.HubActionAccent, chromeAmber);
@@ -1316,13 +1417,6 @@ namespace ProjectEditor
             PrototypeUIDesignController designController = canvasObject.AddComponent<PrototypeUIDesignController>();
             designController.Configure(uiManager);
 
-            TextMeshProUGUI inventoryCaption = CreateScreenText(
-                "InventoryCaption",
-                hudInventoryGroup,
-                PrototypeUILayout.InventoryCaption(isHubScene),
-                16,
-                TextAlignmentOptions.TopLeft,
-                chromeOcean);
             TextMeshProUGUI storageCaption = null;
             TextMeshProUGUI recipeCaption = null;
             TextMeshProUGUI upgradeCaption = null;
@@ -1347,11 +1441,13 @@ namespace ProjectEditor
             }
 
             TextMeshProUGUI goldText = CreateScreenText("GoldText", hudStatusGroup, PrototypeUILayout.GoldText, 20, TextAlignmentOptions.TopLeft, chromeText);
-            TextMeshProUGUI inventoryText = CreateScreenText("InventoryText", isHubScene ? (popupFrameLeftGroup != null ? popupFrameLeftGroup : popupRoot) : hudInventoryGroup, isHubScene ? PrototypeUILayout.HubPopupFrameText : PrototypeUILayout.InventoryText(false), 19, TextAlignmentOptions.TopLeft, chromeText);
+            TextMeshProUGUI inventoryText = isHubScene
+                ? CreateScreenText("InventoryText", popupFrameLeftGroup != null ? popupFrameLeftGroup : popupRoot, PrototypeUILayout.HubPopupFrameText, 19, TextAlignmentOptions.TopLeft, chromeText)
+                : null;
             TextMeshProUGUI storageText = isHubScene
                 ? CreateScreenText("StorageText", popupFrameRightGroup != null ? popupFrameRightGroup : popupRoot, PrototypeUILayout.HubPopupRightDetailText, 18, TextAlignmentOptions.TopLeft, chromeText)
                 : null;
-            TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", hudPromptGroup, PrototypeUILayout.PromptText(isHubScene), 21, TextAlignmentOptions.Center, chromeText);
+            TextMeshProUGUI promptText = CreateScreenText("InteractionPromptText", hudRoot, PrototypeUILayout.PromptText(isHubScene), 21, TextAlignmentOptions.Center, chromeText);
             TextMeshProUGUI guideText = CreateScreenText("GuideText", hudOverlayGroup, PrototypeUILayout.GuideText(isHubScene), 18, TextAlignmentOptions.Center, chromeText);
             TextMeshProUGUI resultText = CreateScreenText("RestaurantResultText", hudOverlayGroup, PrototypeUILayout.ResultText(isHubScene), 18, TextAlignmentOptions.Center, chromeText);
             TextMeshProUGUI selectedRecipeText = isHubScene
@@ -1367,39 +1463,35 @@ namespace ProjectEditor
             ApplyPopupDetailTextPresentation(selectedRecipeText);
             ApplyPopupDetailTextPresentation(upgradeText);
 
-            Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", hudButtonGroup, PrototypeUILayout.HubSkipExplorationButton, "\uD0D0\uD5D8 \uC2A4\uD0B5") : null;
-            Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", hudButtonGroup, PrototypeUILayout.HubSkipServiceButton, "\uC601\uC5C5 \uC2A4\uD0B5") : null;
-            Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", hudButtonGroup, PrototypeUILayout.HubNextDayButton, "\uB2E4\uC74C \uB0A0") : null;
-            Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", hudButtonGroup, PrototypeUILayout.HubRecipePanelButton, "\uC694\uB9AC \uBA54\uB274") : null;
-            Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", hudButtonGroup, PrototypeUILayout.HubUpgradePanelButton, "\uC5C5\uADF8\uB808\uC774\uB4DC") : null;
-            Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", hudButtonGroup, PrototypeUILayout.HubMaterialPanelButton, "\uC7AC\uB8CC") : null;
+            Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", hudBottomGroup, PrototypeUILayout.HubSkipExplorationButton, "\uD0D0\uD5D8 \uC2A4\uD0B5") : null;
+            Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", hudBottomGroup, PrototypeUILayout.HubSkipServiceButton, "\uC601\uC5C5 \uC2A4\uD0B5") : null;
+            Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", hudBottomGroup, PrototypeUILayout.HubNextDayButton, "\uB2E4\uC74C \uB0A0") : null;
+            Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubRecipePanelButton, "\uC694\uB9AC \uBA54\uB274") : null;
+            Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubUpgradePanelButton, "\uC5C5\uADF8\uB808\uC774\uB4DC") : null;
+            Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubMaterialPanelButton, "\uC7AC\uB8CC") : null;
             Button popupCloseButton = isHubScene ? CreateUiButton("PopupCloseButton", popupFrameRightGroup != null ? popupFrameRightGroup : (popupFrameGroup != null ? popupFrameGroup : popupRoot), PrototypeUILayout.HubPopupCloseButton, string.Empty) : null;
 
-            inventoryCaption.text = isHubScene ? "\uC7AC\uB8CC" : "\uC7AC\uB8CC / \uAC00\uBC29";
             if (storageCaption != null) storageCaption.text = "\uCC3D\uACE0";
             if (recipeCaption != null) recipeCaption.text = "\uC694\uB9AC \uBA54\uB274";
             if (upgradeCaption != null) upgradeCaption.text = "\uC5C5\uADF8\uB808\uC774\uB4DC";
             if (actionCaption != null) actionCaption.text = "\uC9C4\uD589";
 
-            inventoryCaption.fontStyle = FontStyles.Bold;
             if (storageCaption != null) storageCaption.fontStyle = FontStyles.Bold;
             if (recipeCaption != null) recipeCaption.fontStyle = FontStyles.Bold;
             if (upgradeCaption != null) upgradeCaption.fontStyle = FontStyles.Bold;
             if (actionCaption != null) actionCaption.fontStyle = FontStyles.Bold;
-            inventoryCaption.characterSpacing = 0.5f;
             if (storageCaption != null) storageCaption.characterSpacing = 0.5f;
             if (recipeCaption != null) recipeCaption.characterSpacing = 0.5f;
             if (upgradeCaption != null) upgradeCaption.characterSpacing = 0.5f;
             if (actionCaption != null) actionCaption.characterSpacing = 0.5f;
-            inventoryCaption.margin = Vector4.zero;
             if (storageCaption != null) storageCaption.margin = Vector4.zero;
             if (recipeCaption != null) recipeCaption.margin = Vector4.zero;
             if (upgradeCaption != null) upgradeCaption.margin = Vector4.zero;
             if (actionCaption != null) actionCaption.margin = Vector4.zero;
 
             dayPhaseText.fontStyle = FontStyles.Bold;
-            inventoryText.textWrappingMode = TextWrappingModes.Normal;
-            inventoryText.overflowMode = TextOverflowModes.Masking;
+            if (inventoryText != null) inventoryText.textWrappingMode = TextWrappingModes.Normal;
+            if (inventoryText != null) inventoryText.overflowMode = TextOverflowModes.Masking;
             if (storageText != null) storageText.textWrappingMode = TextWrappingModes.Normal;
             if (storageText != null) storageText.overflowMode = TextOverflowModes.Masking;
             if (selectedRecipeText != null) selectedRecipeText.textWrappingMode = TextWrappingModes.Normal;
@@ -1408,7 +1500,7 @@ namespace ProjectEditor
             if (upgradeText != null) upgradeText.overflowMode = TextOverflowModes.Masking;
 
             goldText.text = "\uCF54\uC778: 0   \uD3C9\uD310: 0";
-            inventoryText.text = "\uC778\uBCA4\uD1A0\uB9AC 0/8\uCE78\n- \uBE44\uC5B4 \uC788\uC74C";
+            if (inventoryText != null) inventoryText.text = "\uC778\uBCA4\uD1A0\uB9AC 0/8\uCE78\n- \uBE44\uC5B4 \uC788\uC74C";
             if (storageText != null) storageText.text = "- \uBE44\uC5B4 \uC788\uC74C";
             promptText.text = "\uC774\uB3D9: WASD / \uBC29\uD5A5\uD0A4   \uC0C1\uD638\uC791\uC6A9: E";
             guideText.text = string.Empty;
@@ -1419,7 +1511,7 @@ namespace ProjectEditor
 
             if (isHubScene)
             {
-                SetChildActive(canvasObject.transform, "CenterBottomPanel", false);
+                SetChildActive(canvasObject.transform, hudPanelButtonGroupName, false);
                 SetChildActive(canvasObject.transform, "PopupOverlay", false);
                 SetChildActive(canvasObject.transform, "PopupFrame", false);
                 SetChildActive(canvasObject.transform, "PopupFrameLeft", false);
@@ -1436,12 +1528,8 @@ namespace ProjectEditor
                 SetChildActive(canvasObject.transform, "ActionAccent", false);
             }
 
-            SetChildActive(canvasObject.transform, "PromptBackdrop", false);
-            SetChildActive(canvasObject.transform, "GuideBackdrop", false);
-            SetChildActive(canvasObject.transform, "ResultBackdrop", false);
-            SetChildActive(canvasObject.transform, "InventoryCard", false);
-            SetChildActive(canvasObject.transform, "InventoryAccent", false);
-            inventoryCaption.gameObject.SetActive(false);
+			SetChildActive(canvasObject.transform, "GuideBackdrop", false);
+			SetChildActive(canvasObject.transform, "ResultBackdrop", false);
             if (storageCaption != null) storageCaption.gameObject.SetActive(false);
             if (recipeCaption != null) recipeCaption.gameObject.SetActive(false);
             if (upgradeCaption != null) upgradeCaption.gameObject.SetActive(false);
@@ -1449,7 +1537,7 @@ namespace ProjectEditor
             SetChildActive(canvasObject.transform, PopupTitleObjectName, false);
             SetChildActive(canvasObject.transform, PopupLeftCaptionObjectName, false);
             SetChildActive(canvasObject.transform, PopupRightCaptionObjectName, false);
-            inventoryText.gameObject.SetActive(false);
+            if (inventoryText != null) inventoryText.gameObject.SetActive(false);
             if (storageText != null) storageText.gameObject.SetActive(false);
             guideText.gameObject.SetActive(false);
             resultText.gameObject.SetActive(false);
@@ -1671,6 +1759,7 @@ namespace ProjectEditor
                 text.font = TMP_Settings.defaultFontAsset;
             }
 
+            ApplySceneTextOverride(text);
             return text;
         }
 
@@ -1698,6 +1787,38 @@ namespace ProjectEditor
                 color);
         }
 
+        /// <summary>
+        /// 씬에서 저장한 TMP 표시 오버라이드가 있으면 기본 스타일 적용 뒤 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplySceneTextOverride(TextMeshProUGUI text)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyTextOverride(text, text.name);
+        }
+
+        /// <summary>
+        /// 씬에서 저장한 버튼과 라벨 오버라이드가 있으면 기본 스타일 적용 뒤 마지막에 다시 덮어씁니다.
+        /// </summary>
+        private static void ApplySceneButtonOverride(Button button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            PrototypeUISceneLayoutCatalog.TryApplyButtonOverride(button, button.name);
+
+            TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null)
+            {
+                PrototypeUISceneLayoutCatalog.TryApplyTextOverride(label, label.name);
+            }
+        }
+
         private static TextMeshProUGUI CreatePopupHeadingText(
             string objectName,
             Transform _parent,
@@ -1721,6 +1842,7 @@ namespace ProjectEditor
             }
 
             ApplyPopupHeadingPresentation(text, fontSize, sceneFontSizeMax, enableAutoSizing);
+            ApplySceneTextOverride(text);
             return text;
         }
 
@@ -1763,6 +1885,7 @@ namespace ProjectEditor
             text.margin = new Vector4(10f, 8f, 10f, 8f);
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Masking;
+            ApplySceneTextOverride(text);
         }
 
         private static void ApplyPopupDetailTextPresentation(TextMeshProUGUI text)
@@ -1783,6 +1906,7 @@ namespace ProjectEditor
             text.margin = new Vector4(10f, 8f, 10f, 8f);
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Masking;
+            ApplySceneTextOverride(text);
         }
 
         /// <summary>
@@ -1898,6 +2022,7 @@ namespace ProjectEditor
                     Navigation navigation = button.navigation;
                     navigation.mode = Navigation.Mode.None;
                     button.navigation = navigation;
+                    ApplySceneButtonOverride(button);
                 }
 
                 CreatePopupBodyItemIcon(iconName, boxTransform);
@@ -1922,6 +2047,7 @@ namespace ProjectEditor
                 text.rectTransform.offsetMin = new Vector2(74f, 10f);
                 text.rectTransform.offsetMax = new Vector2(-14f, -10f);
                 text.text = string.Empty;
+                ApplySceneTextOverride(text);
             }
         }
 
@@ -2101,6 +2227,8 @@ namespace ProjectEditor
             labelText.fontStyle = FontStyles.Bold;
             labelText.margin = new Vector4(8f, 6f, 8f, 6f);
 
+            ApplySceneTextOverride(labelText);
+            ApplySceneButtonOverride(button);
             return button;
         }
 
@@ -2781,6 +2909,27 @@ namespace ProjectEditor
             File.Copy(sourcePath, targetPath, true);
         }
 
+        /// <summary>
+        /// generated 씬은 빌더가 항상 전체를 다시 쓰므로,
+        /// 기존 손상 본문이 남아 저장을 막지 않게 `.unity` 파일만 지운 뒤 같은 경로에 다시 저장합니다.
+        /// `.meta`는 유지해서 씬 GUID와 Build Settings 참조는 바꾸지 않습니다.
+        /// </summary>
+        private static void SaveGeneratedScene(string scenePath)
+        {
+            string directoryPath = Path.GetDirectoryName(scenePath);
+            if (!string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            if (File.Exists(scenePath))
+            {
+                File.Delete(scenePath);
+            }
+
+            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), scenePath);
+        }
+
         private static void UpdateBuildSettings()
         {
             EditorBuildSettings.scenes = new[]
@@ -2828,3 +2977,4 @@ namespace ProjectEditor
     }
 }
 #endif
+
