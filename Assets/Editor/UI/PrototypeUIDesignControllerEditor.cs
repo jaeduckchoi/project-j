@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UI;
 using UI.Controllers;
+using UI.Layout;
 using UI.Style;
 using UnityEngine;
 
@@ -9,13 +10,13 @@ using UnityEngine;
 namespace ProjectEditor.UI
 {
     /// <summary>
-    /// 편집 모드에서 UI 프리뷰 적용, SVG 경로 확인, 캔버스 정리를 묶어 제공한다.
+    /// 편집 모드에서 UI 프리뷰 적용, SVG 경로 확인, Canvas 레이아웃 동기화를 묶어 제공합니다.
     /// </summary>
     [CustomEditor(typeof(PrototypeUIDesignController))]
     public class PrototypeUIDesignControllerEditor : Editor
     {
         /// <summary>
-        /// 기본 인스펙터 아래에 프리뷰 관련 보조 버튼과 안내 박스를 그린다.
+        /// 기본 인스펙터 아래에 프리뷰와 동기화 보조 버튼을 그립니다.
         /// </summary>
         public override void OnInspectorGUI()
         {
@@ -33,38 +34,45 @@ namespace ProjectEditor.UI
             EditorGUILayout.LabelField("UI / Popup SVG Preview", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
                 "[UI]\n"
-                + "일반 패널: " + PrototypeUISkin.GetPanelResourcePath("TopLeftPanel") + "\n"
-                + "일반 버튼: " + PrototypeUISkin.GetButtonResourcePath("RecipePanelButton") + "\n\n"
+                + "General Panel: " + PrototypeUISkin.GetPanelResourcePath("TopLeftPanel") + "\n"
+                + "General Button: " + PrototypeUISkin.GetButtonResourcePath("RecipePanelButton") + "\n\n"
                 + "[Popup]\n"
-                + "팝업 프레임: " + PrototypeUISkin.GetPanelResourcePath("PopupFrame") + "\n"
-                + "팝업 좌우 반프레임: " + PrototypeUISkin.GetPanelResourcePath("PopupFrameLeft") + "\n"
-                + "팝업 본문: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftBody") + "\n"
-                + "팝업 아이템 박스: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftItemBox01") + "\n"
-                + "팝업 닫기: " + PrototypeUISkin.GetButtonResourcePath("PopupCloseButton"),
+                + "Popup Frame: " + PrototypeUISkin.GetPanelResourcePath("PopupFrame") + "\n"
+                + "Popup Half Frame: " + PrototypeUISkin.GetPanelResourcePath("PopupFrameLeft") + "\n"
+                + "Popup Body: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftBody") + "\n"
+                + "Popup Item Box: " + PrototypeUISkin.GetPanelResourcePath("PopupLeftItemBox01") + "\n"
+                + "Popup Close: " + PrototypeUISkin.GetButtonResourcePath("PopupCloseButton"),
                 MessageType.Info);
 
             EditorGUILayout.HelpBox(
                 "[Grouping Rules]\n"
                 + "Canvas\n"
-                + "- HUDRoot: HUD 계열 오브젝트\n"
-                + "- PopupRoot: 허브 팝업 계열 오브젝트\n\n"
+                + "- HUDRoot: HUD group objects\n"
+                + "- PopupRoot: hub popup group objects\n\n"
                 + "HUDRoot\n"
                 + "- HUDStatusGroup / HUDInventoryGroup / HUDActionGroup\n"
                 + "- HUDButtonGroup / HUDPromptGroup / HUDOverlayGroup\n\n"
                 + "PopupRoot\n"
                 + "- PopupShellGroup / PopupFrame / PopupFrameHeader\n"
-                + "- PopupOverlay는 PopupShellGroup 아래에 유지\n"
-                + "- PopupFrame 안에 PopupTitle / PopupCloseButton / PopupFrameLeft / PopupFrameRight 배치\n"
-                + "- 좌우 내용은 PopupFrameLeft / PopupFrameRight 기준으로 정리\n\n"
+                + "- PopupOverlay stays under PopupShellGroup\n"
+                + "- PopupFrame contains PopupTitle / PopupCloseButton / PopupFrameLeft / PopupFrameRight\n"
+                + "- Left and right contents are grouped under PopupFrameLeft / PopupFrameRight\n\n"
                 + "PopupLeftBody / PopupRightBody\n"
-                + "- ItemBox는 2자리 번호를 사용\n"
-                + "- 각 ItemBox 아래에는 같은 번호의 ItemText 1개만 배치\n"
-                + "- 프리뷰 적용은 계층 유지, 재배치는 'Canvas 그룹 정리'에서만 수행",
+                + "- ItemBox names use a two-digit suffix\n"
+                + "- Each ItemBox contains one matching ItemText\n"
+                + "- Preview keeps hierarchy, while regrouping only happens through Canvas Grouping",
                 MessageType.None);
+
+            EditorGUILayout.HelpBox(
+                "[Canvas Layout Sync]\n"
+                + "- Sync Canvas UI Layouts saves the current RectTransform values under Canvas.\n"
+                + "- The first sync automatically creates Assets/Resources/Generated/UI/uiLayoutOverrides.asset.\n"
+                + "- Builder, UIManager, and the scene audit will all use those saved layouts after syncing.",
+                MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Canvas 그룹 정리"))
+                if (GUILayout.Button("Canvas Grouping"))
                 {
                     UIManager uiManager = controller.UiManager != null ? controller.UiManager : controller.GetComponent<UIManager>();
                     if (uiManager != null)
@@ -74,13 +82,13 @@ namespace ProjectEditor.UI
                     }
                 }
 
-                if (GUILayout.Button("현재 설정 프리뷰 적용"))
+                if (GUILayout.Button("Apply Preview"))
                 {
                     controller.ApplyEditorPreviewInEditor();
                     MarkSceneDirty(controller);
                 }
 
-                if (GUILayout.Button("SVG 캐시 새로고침"))
+                if (GUILayout.Button("Refresh SVG Cache"))
                 {
                     PrototypeUISkin.ClearGeneratedCache();
                     controller.ApplyEditorPreviewInEditor();
@@ -88,7 +96,32 @@ namespace ProjectEditor.UI
                 }
             }
 
-            if (GUILayout.Button("팝업 프리뷰 끄기"))
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Sync Canvas UI Layouts"))
+                {
+                    if (PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(controller.gameObject.scene, out string message))
+                    {
+                        controller.ApplyEditorPreviewInEditor();
+                        MarkSceneDirty(controller);
+                        Debug.Log(message);
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("Canvas Layout Sync", message, "OK");
+                    }
+                }
+
+                if (GUILayout.Button("Reset Canvas UI Layouts"))
+                {
+                    PrototypeUISceneLayoutCatalog.ResetCanvasLayouts();
+                    controller.ApplyEditorPreviewInEditor();
+                    MarkSceneDirty(controller);
+                    Debug.Log("Canvas UI layout overrides were reset.");
+                }
+            }
+
+            if (GUILayout.Button("Clear Preview"))
             {
                 controller.ClearEditorPreviewInEditor();
                 MarkSceneDirty(controller);
@@ -96,7 +129,7 @@ namespace ProjectEditor.UI
         }
 
         /// <summary>
-        /// 프리뷰 적용으로 씬 상태가 바뀌면 저장 대상으로 표시한다.
+        /// 에디터 버튼으로 값이 바뀌면 씬 dirty 상태를 함께 표시합니다.
         /// </summary>
         private static void MarkSceneDirty(PrototypeUIDesignController controller)
         {

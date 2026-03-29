@@ -89,9 +89,11 @@
 - 팝업 레이아웃/스킨은 `Assets/Scripts/UI/Layout/PrototypeUILayout.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.Popup.cs`에서 관리한다.
 - `Canvas` 내부 오브젝트는 `HUDRoot`, `PopupRoot` 기준으로 묶고, 런타임과 빌더도 같은 구조를 기준으로 찾는다.
 
-- `현재 설정 프리뷰 적용` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.
-- `Canvas 그룹 정리` 버튼으로 기존 씬의 평면 Canvas 자식도 같은 그룹 구조로 맞출 수 있다.
-- `SVG 캐시 새로고침` 버튼으로 `PrototypeUISkin` 임시 스프라이트를 다시 렌더링할 수 있다.
+- `Apply Preview` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.
+- `Canvas Grouping` 버튼으로 기존 씬의 평면 Canvas 자식도 같은 그룹 구조로 맞출 수 있다.
+- `Refresh SVG Cache` 버튼으로 `PrototypeUISkin` 임시 스프라이트를 다시 렌더링할 수 있다.
+- `Sync Canvas UI Layouts` 버튼으로 현재 씬 Canvas 아래 UI 배치를 공용 자산에 저장하면 빌더와 런타임이 같은 값을 사용한다.
+- 공용 자산 경로는 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 이고, 첫 동기화 시 자동 생성된다.
 
 ## 3. 허브 체크 포인트
 

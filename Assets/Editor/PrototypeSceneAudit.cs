@@ -319,6 +319,8 @@ namespace ProjectEditor
                 return;
             }
 
+            expectedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(objectName, expectedLayout);
+
             RectTransform rect = target.GetComponent<RectTransform>();
             if (rect == null)
             {

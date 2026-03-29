@@ -1610,6 +1610,10 @@ namespace UI
                 return;
             }
 
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(backdropObject);
@@ -1628,11 +1632,11 @@ namespace UI
                 rect = backdropObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = sizeDelta;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
             rect.SetSiblingIndex(0);
 
             Image image = backdropObject.GetComponent<Image>();
@@ -1686,6 +1690,10 @@ namespace UI
             Vector2 sizeDelta,
             Color color)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject accentObject = existing != null ? existing.gameObject : new GameObject(objectName);
             if (existing == null)
@@ -1703,11 +1711,11 @@ namespace UI
                 rect = accentObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = sizeDelta;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
             rect.SetSiblingIndex(1);
 
             Image image = accentObject.GetComponent<Image>();
@@ -1750,6 +1758,10 @@ namespace UI
             Color color,
             TextAlignmentOptions alignment)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject captionObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(captionObject);
@@ -1772,11 +1784,11 @@ namespace UI
 
             if (!preserveExistingPopupHeading)
             {
-                rect.anchorMin = anchorMin;
-                rect.anchorMax = anchorMax;
-                rect.pivot = pivot;
-                rect.anchoredPosition = anchoredPosition;
-                rect.sizeDelta = sizeDelta;
+                rect.anchorMin = resolvedLayout.AnchorMin;
+                rect.anchorMax = resolvedLayout.AnchorMax;
+                rect.pivot = resolvedLayout.Pivot;
+                rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+                rect.sizeDelta = resolvedLayout.SizeDelta;
                 rect.SetSiblingIndex(2);
             }
 
@@ -2036,7 +2048,8 @@ namespace UI
             }
 
             RectTransform rect = button.GetComponent<RectTransform>();
-            ApplyRectLayout(rect, layout);
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(button.name, layout);
+            ApplyRectLayout(rect, resolvedLayout);
         }
 
         /// <summary>
@@ -3691,7 +3704,16 @@ namespace UI
 
             Transform target = FindNamedUiTransform(objectName);
             RectTransform rect = target != null ? target.GetComponent<RectTransform>() : null;
-            ApplyRectLayout(rect, anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta);
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+            ApplyRectLayout(
+                rect,
+                resolvedLayout.AnchorMin,
+                resolvedLayout.AnchorMax,
+                resolvedLayout.Pivot,
+                resolvedLayout.AnchoredPosition,
+                resolvedLayout.SizeDelta);
         }
 
         private void ApplyNamedRectLayout(string objectName, PrototypeUIRect layout)

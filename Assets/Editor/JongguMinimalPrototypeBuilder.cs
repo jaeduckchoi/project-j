@@ -1309,16 +1309,20 @@ namespace ProjectEditor
             TextAlignmentOptions alignment,
             Color color)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             GameObject go = new(objectName);
             ApplyHubPopupObjectIdentity(go);
             go.transform.SetParent(_parent, false);
 
             RectTransform rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = sizeDelta;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
 
             TMP_FontAsset preferredFont = EnsurePreferredTmpFontAsset();
             TextMeshProUGUI text = go.AddComponent<TextMeshProUGUI>();
@@ -1470,16 +1474,20 @@ namespace ProjectEditor
             Vector2 sizeDelta,
             Color color)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             GameObject panelObject = new(objectName);
             ApplyHubPopupObjectIdentity(panelObject);
             panelObject.transform.SetParent(_parent, false);
 
             RectTransform rect = panelObject.AddComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = sizeDelta;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
 
             Image image = panelObject.AddComponent<Image>();
             if (!TryApplyHubPopupSceneImage(image, objectName))
@@ -1598,16 +1606,25 @@ namespace ProjectEditor
 
         private static void CreatePopupBodyItemIcon(string objectName, Transform _parent)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(
+                    new Vector2(0f, 0.5f),
+                    new Vector2(0f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(40f, 0f),
+                    new Vector2(44f, 44f)));
+
             GameObject iconObject = new(objectName);
             ApplyHubPopupObjectIdentity(iconObject);
             iconObject.transform.SetParent(_parent, false);
 
             RectTransform rect = iconObject.AddComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 0.5f);
-            rect.anchorMax = new Vector2(0f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(40f, 0f);
-            rect.sizeDelta = new Vector2(44f, 44f);
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
 
             Image image = iconObject.AddComponent<Image>();
             image.preserveAspect = true;
@@ -1617,16 +1634,25 @@ namespace ProjectEditor
 
         private static RectTransform CreateCanvasGroupRoot(string objectName, Transform _parent, int siblingIndex)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(
+                    Vector2.zero,
+                    Vector2.one,
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    Vector2.zero));
+
             GameObject groupObject = new(objectName);
             ApplyHubPopupObjectIdentity(groupObject);
             groupObject.transform.SetParent(_parent, false);
 
             RectTransform rect = groupObject.AddComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = Vector2.zero;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             rect.SetSiblingIndex(siblingIndex);
@@ -1708,16 +1734,20 @@ namespace ProjectEditor
             Vector2 sizeDelta,
             string label)
         {
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
+
             GameObject buttonObject = new(objectName);
             ApplyHubPopupObjectIdentity(buttonObject);
             buttonObject.transform.SetParent(_parent, false);
 
             RectTransform rect = buttonObject.AddComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = sizeDelta;
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
 
             Image image = buttonObject.AddComponent<Image>();
             if (!TryApplyHubPopupSceneImage(image, objectName))
