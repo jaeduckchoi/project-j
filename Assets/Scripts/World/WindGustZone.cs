@@ -4,174 +4,177 @@ using Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-// 주기에 따라 켜지고 꺼지는 강풍 구간이다. 활성 상태에서는 플레이어를 한 방향으로 밀어낸다.
+// World 네임스페이스
 namespace World
 {
+    /// <summary>
+    /// 주기에 따라 켜지고 꺼지는 강풍 구간이다. 활성 상태에서는 플레이어를 한 방향으로 밀어낸다.
+    /// </summary>
     [RequireComponent(typeof(Collider2D))]
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "WindGustZone")]
     public class WindGustZone : MonoBehaviour
     {
-    // 바람 방향, 세기, 주기, 안내 문구를 인스펙터에서 조정한다.
-    [SerializeField] private Vector2 gustDirection = Vector2.right;
-    [SerializeField, Min(0f)] private float gustStrength = 2.5f;
-    [SerializeField, Min(0.25f)] private float activeDuration = 2f;
-    [SerializeField, Min(0.25f)] private float inactiveDuration = 1.5f;
-    [SerializeField] private bool startActive = true;
-    [SerializeField, TextArea] private string activeGuideText = "강풍이 불 때는 버티기보다 안전한 위치를 잡고 멈추는 편이 좋습니다.";
-    [SerializeField, TextArea] private string calmGuideText = "바람이 멈춘 짧은 틈에 이동하면 안전합니다.";
-    [SerializeField] private string hintIdPrefix = "wind_zone";
+        // 바람 방향, 세기, 주기, 안내 문구를 인스펙터에서 조정한다.
+        [SerializeField] private Vector2 gustDirection = Vector2.right;
+        [SerializeField, Min(0f)] private float gustStrength = 2.5f;
+        [SerializeField, Min(0.25f)] private float activeDuration = 2f;
+        [SerializeField, Min(0.25f)] private float inactiveDuration = 1.5f;
+        [SerializeField] private bool startActive = true;
+        [SerializeField, TextArea] private string activeGuideText = "강풍이 불 때는 버티기보다 안전한 위치를 잡고 멈추는 편이 좋습니다.";
+        [SerializeField, TextArea] private string calmGuideText = "바람이 멈춘 짧은 틈에 이동하면 안전합니다.";
+        [SerializeField] private string hintIdPrefix = "wind_zone";
 
-    private readonly HashSet<PlayerController> _playersInZone = new();
-    private Collider2D _triggerCollider;
-    private bool _wasActiveLastFrame;
+        private readonly HashSet<PlayerController> _playersInZone = new();
+        private Collider2D _triggerCollider;
+        private bool _wasActiveLastFrame;
 
-    /*
-     * 트리거를 준비하고 초기 활성 상태를 기억한다.
-     */
-    private void Awake()
-    {
-        _triggerCollider = GetComponent<Collider2D>();
-        _triggerCollider.isTrigger = true;
-        _wasActiveLastFrame = IsActiveNow();
-    }
-
-    /*
-     * 바람 주기 변화를 감지하고 영역 안 플레이어에게 힘을 적용한다.
-     */
-    private void Update()
-    {
-        bool isActive = IsActiveNow();
-        if (isActive != _wasActiveLastFrame)
+        /// <summary>
+        /// 트리거를 준비하고 초기 활성 상태를 기억한다.
+        /// </summary>
+        private void Awake()
         {
-            _wasActiveLastFrame = isActive;
+            _triggerCollider = GetComponent<Collider2D>();
+            _triggerCollider.isTrigger = true;
+            _wasActiveLastFrame = IsActiveNow();
+        }
 
-            if (_playersInZone.Count > 0)
+        /// <summary>
+        /// 바람 주기 변화를 감지하고 영역 안 플레이어에게 힘을 적용한다.
+        /// </summary>
+        private void Update()
+        {
+            bool isActive = IsActiveNow();
+            if (isActive != _wasActiveLastFrame)
             {
-                string hintText = isActive ? activeGuideText : calmGuideText;
-                string hintId = isActive ? $"{hintIdPrefix}_active" : $"{hintIdPrefix}_calm";
+                _wasActiveLastFrame = isActive;
 
-                if (!string.IsNullOrWhiteSpace(hintText))
+                if (_playersInZone.Count > 0)
                 {
-                    GameManager.Instance?.DayCycle?.ShowHintOnce(hintId, hintText, 4f);
+                    string hintText = isActive ? activeGuideText : calmGuideText;
+                    string hintId = isActive ? $"{hintIdPrefix}_active" : $"{hintIdPrefix}_calm";
+
+                    if (!string.IsNullOrWhiteSpace(hintText))
+                    {
+                        GameManager.Instance?.DayCycle?.ShowHintOnce(hintId, hintText, 4f);
+                    }
                 }
             }
+
+            ApplyWindToPlayers(isActive);
         }
 
-        ApplyWindToPlayers(isActive);
-    }
-
-    /*
-     * 새로 들어온 플레이어를 추적 목록에 추가한다.
-     */
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        PlayerController player = other.GetComponentInParent<PlayerController>();
-        if (player == null)
+        /// <summary>
+        /// 새로 들어온 플레이어를 추적 목록에 추가한다.
+        /// </summary>
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            return;
-        }
-
-        _playersInZone.Add(player);
-        ApplyWind(player, IsActiveNow());
-    }
-
-    /*
-     * 영역 안에 머무는 플레이어가 누락되지 않도록 계속 보정한다.
-     */
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        PlayerController player = other.GetComponentInParent<PlayerController>();
-        if (player == null)
-        {
-            return;
-        }
-
-        _playersInZone.Add(player);
-        ApplyWind(player, IsActiveNow());
-    }
-
-    /*
-     * 영역을 벗어난 플레이어에게 적용한 외부 속도를 제거한다.
-     */
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        PlayerController player = other.GetComponentInParent<PlayerController>();
-        if (player == null)
-        {
-            return;
-        }
-
-        player.ClearExternalVelocitySource(this);
-        _playersInZone.Remove(player);
-    }
-
-    /*
-     * 오브젝트 비활성화 시 남아 있는 플레이어 상태를 정리한다.
-     */
-    private void OnDisable()
-    {
-        foreach (PlayerController player in _playersInZone)
-        {
+            PlayerController player = other.GetComponentInParent<PlayerController>();
             if (player == null)
             {
-                continue;
+                return;
+            }
+
+            _playersInZone.Add(player);
+            ApplyWind(player, IsActiveNow());
+        }
+
+        /// <summary>
+        /// 영역 안에 머무는 플레이어가 누락되지 않도록 계속 보정한다.
+        /// </summary>
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            PlayerController player = other.GetComponentInParent<PlayerController>();
+            if (player == null)
+            {
+                return;
+            }
+
+            _playersInZone.Add(player);
+            ApplyWind(player, IsActiveNow());
+        }
+
+        /// <summary>
+        /// 영역을 벗어난 플레이어에게 적용한 외부 속도를 제거한다.
+        /// </summary>
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            PlayerController player = other.GetComponentInParent<PlayerController>();
+            if (player == null)
+            {
+                return;
             }
 
             player.ClearExternalVelocitySource(this);
+            _playersInZone.Remove(player);
         }
 
-        _playersInZone.Clear();
-    }
+        /// <summary>
+        /// 오브젝트 비활성화 시 남아 있는 플레이어 상태를 정리한다.
+        /// </summary>
+        private void OnDisable()
+        {
+            foreach (PlayerController player in _playersInZone)
+            {
+                if (player == null)
+                {
+                    continue;
+                }
 
-    /*
-     * 현재 영역 안의 모든 플레이어에게 같은 바람 상태를 적용한다.
-     */
-    private void ApplyWindToPlayers(bool isActive)
-    {
-        foreach (PlayerController player in _playersInZone)
+                player.ClearExternalVelocitySource(this);
+            }
+
+            _playersInZone.Clear();
+        }
+
+        /// <summary>
+        /// 현재 영역 안의 모든 플레이어에게 같은 바람 상태를 적용한다.
+        /// </summary>
+        private void ApplyWindToPlayers(bool isActive)
+        {
+            foreach (PlayerController player in _playersInZone)
+            {
+                if (player == null)
+                {
+                    continue;
+                }
+
+                ApplyWind(player, isActive);
+            }
+        }
+
+        /// <summary>
+        /// 활성 시 외부 속도를 주고, 비활성 시 외부 속도를 제거한다.
+        /// </summary>
+        private void ApplyWind(PlayerController player, bool isActive)
         {
             if (player == null)
             {
-                continue;
+                return;
             }
 
-            ApplyWind(player, isActive);
-        }
-    }
+            if (!isActive || gustDirection.sqrMagnitude <= 0.0001f || gustStrength <= 0f)
+            {
+                player.ClearExternalVelocitySource(this);
+                return;
+            }
 
-    /*
-     * 활성 시 외부 속도를 주고, 비활성 시 외부 속도를 제거한다.
-     */
-    private void ApplyWind(PlayerController player, bool isActive)
-    {
-        if (player == null)
+            player.SetExternalVelocitySource(this, gustDirection.normalized * gustStrength);
+        }
+
+        /// <summary>
+        /// 현재 시간이 바람 활성 구간인지 계산한다.
+        /// </summary>
+        private bool IsActiveNow()
         {
-            return;
+            float cycleLength = Mathf.Max(0.25f, activeDuration + inactiveDuration);
+            float cycleTime = Mathf.Repeat(Time.time, cycleLength);
+
+            if (startActive)
+            {
+                return cycleTime < activeDuration;
+            }
+
+            return cycleTime >= inactiveDuration;
         }
-
-        if (!isActive || gustDirection.sqrMagnitude <= 0.0001f || gustStrength <= 0f)
-        {
-            player.ClearExternalVelocitySource(this);
-            return;
-        }
-
-        player.SetExternalVelocitySource(this, gustDirection.normalized * gustStrength);
-    }
-
-    /*
-     * 현재 시간이 바람 활성 구간인지 계산한다.
-     */
-    private bool IsActiveNow()
-    {
-        float cycleLength = Mathf.Max(0.25f, activeDuration + inactiveDuration);
-        float cycleTime = Mathf.Repeat(Time.time, cycleLength);
-
-        if (startActive)
-        {
-            return cycleTime < activeDuration;
-        }
-
-        return cycleTime >= inactiveDuration;
-    }
     }
 }

@@ -1,270 +1,271 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
+// Player 네임스페이스
 namespace Player
 {
     [RequireComponent(typeof(PlayerController))]
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]
     public sealed class PlayerDirectionalSprite : MonoBehaviour
     {
-    private const float PlayerSpritePixelsPerUnit = 1000f;
-    private const float PlayerVisualScale = 0.76f;
-    private static readonly Vector2 SpritePivot = new(0.5f, 0.08f);
+        private const float PlayerSpritePixelsPerUnit = 1000f;
+        private const float PlayerVisualScale = 0.76f;
+        private static readonly Vector2 SpritePivot = new(0.5f, 0.08f);
 
-    [SerializeField] private SpriteRenderer targetRenderer;
-    [SerializeField] private Sprite frontSprite;
-    [SerializeField] private Sprite backSprite;
-    [SerializeField] private Sprite sideSprite;
-    [SerializeField] private bool sideSpriteFacesLeft = true;
-    [SerializeField, Min(0.0001f)] private float movementThreshold = 0.0001f;
+        [SerializeField] private SpriteRenderer targetRenderer;
+        [SerializeField] private Sprite frontSprite;
+        [SerializeField] private Sprite backSprite;
+        [SerializeField] private Sprite sideSprite;
+        [SerializeField] private bool sideSpriteFacesLeft = true;
+        [SerializeField, Min(0.0001f)] private float movementThreshold = 0.0001f;
 
-    private PlayerController _playerController;
+        private PlayerController _playerController;
 
-    /*
-     * 외부에서 방향 스프라이트를 주입할 때는 null이 아닌 값만 갱신합니다.
-     * 이미 씬에 저장된 참조는 지우지 않고, 필요한 경우만 보정합니다.
-     */
-    public void Configure(SpriteRenderer renderer, Sprite front, Sprite back, Sprite side)
-    {
-        if (renderer != null)
+        /// <summary>
+        /// 외부에서 방향 스프라이트를 주입할 때는 null이 아닌 값만 갱신합니다.
+        /// 이미 씬에 저장된 참조는 지우지 않고, 필요한 경우만 보정합니다.
+        /// </summary>
+        public void Configure(SpriteRenderer renderer, Sprite front, Sprite back, Sprite side)
         {
-            targetRenderer = renderer;
+            if (renderer != null)
+            {
+                targetRenderer = renderer;
+            }
+
+            if (front != null)
+            {
+                frontSprite = NormalizeSprite(front);
+            }
+
+            if (back != null)
+            {
+                backSprite = NormalizeSprite(back);
+            }
+
+            if (side != null)
+            {
+                sideSprite = NormalizeSprite(side);
+            }
+
+            InitializeVisuals();
         }
 
-        if (front != null)
+        private void Awake()
         {
-            frontSprite = NormalizeSprite(front);
+            _playerController = GetComponent<PlayerController>();
+            InitializeVisuals();
         }
 
-        if (back != null)
+        private void LateUpdate()
         {
-            backSprite = NormalizeSprite(back);
+            RefreshSprite();
         }
 
-        if (side != null)
+        /// <summary>
+        /// 물리 루트와 비주얼 루트를 정리하고, 직렬화된 방향 스프라이트를 우선 사용합니다.
+        /// </summary>
+        private void InitializeVisuals()
         {
-            sideSprite = NormalizeSprite(side);
+            targetRenderer = EnsureVisualRenderer();
+            EnsureSpritesLoaded();
+            RefreshSprite();
         }
 
-        InitializeVisuals();
-    }
-
-    private void Awake()
-    {
-        _playerController = GetComponent<PlayerController>();
-        InitializeVisuals();
-    }
-
-    private void LateUpdate()
-    {
-        RefreshSprite();
-    }
-
-    /*
-     * 물리 루트와 비주얼 루트를 정리하고, 직렬화된 방향 스프라이트를 우선 사용합니다.
-     */
-    private void InitializeVisuals()
-    {
-        targetRenderer = EnsureVisualRenderer();
-        EnsureSpritesLoaded();
-        RefreshSprite();
-    }
-
-    /*
-     * 현재 이동 방향에 따라 정면, 후면, 측면 스프라이트를 선택합니다.
-     */
-    private void RefreshSprite()
-    {
-        if (_playerController == null || targetRenderer == null)
+        /// <summary>
+        /// 현재 이동 방향에 따라 정면, 후면, 측면 스프라이트를 선택합니다.
+        /// </summary>
+        private void RefreshSprite()
         {
-            return;
+            if (_playerController == null || targetRenderer == null)
+            {
+                return;
+            }
+
+            Vector2 facing = ResolveFacingDirection();
+            if (Mathf.Abs(facing.x) > Mathf.Abs(facing.y))
+            {
+                targetRenderer.sprite = sideSprite != null ? sideSprite : frontSprite;
+                targetRenderer.flipX = sideSpriteFacesLeft ? facing.x > 0f : facing.x < 0f;
+            }
+            else if (facing.y > 0f)
+            {
+                targetRenderer.sprite = backSprite != null ? backSprite : frontSprite;
+                targetRenderer.flipX = false;
+            }
+            else
+            {
+                targetRenderer.sprite = frontSprite != null ? frontSprite : sideSprite;
+                targetRenderer.flipX = false;
+            }
+
+            targetRenderer.color = Color.white;
         }
 
-        Vector2 facing = ResolveFacingDirection();
-        if (Mathf.Abs(facing.x) > Mathf.Abs(facing.y))
+        /// <summary>
+        /// 멈춰 있을 때는 마지막 이동 방향을 유지해 캐릭터가 갑자기 정면으로 돌아오지 않게 합니다.
+        /// </summary>
+        private Vector2 ResolveFacingDirection()
         {
-            targetRenderer.sprite = sideSprite != null ? sideSprite : frontSprite;
-            targetRenderer.flipX = sideSpriteFacesLeft ? facing.x > 0f : facing.x < 0f;
-        }
-        else if (facing.y > 0f)
-        {
-            targetRenderer.sprite = backSprite != null ? backSprite : frontSprite;
-            targetRenderer.flipX = false;
-        }
-        else
-        {
-            targetRenderer.sprite = frontSprite != null ? frontSprite : sideSprite;
-            targetRenderer.flipX = false;
-        }
+            Vector2 direction = _playerController.CurrentVelocity.sqrMagnitude > movementThreshold
+                ? _playerController.CurrentVelocity
+                : _playerController.LastMoveDirection;
 
-        targetRenderer.color = Color.white;
-    }
+            if (direction.sqrMagnitude <= movementThreshold)
+            {
+                direction = Vector2.down;
+            }
 
-    /*
-     * 멈춰 있을 때는 마지막 이동 방향을 유지해 캐릭터가 갑자기 정면으로 돌아오지 않게 합니다.
-     */
-    private Vector2 ResolveFacingDirection()
-    {
-        Vector2 direction = _playerController.CurrentVelocity.sqrMagnitude > movementThreshold
-            ? _playerController.CurrentVelocity
-            : _playerController.LastMoveDirection;
-
-        if (direction.sqrMagnitude <= movementThreshold)
-        {
-            direction = Vector2.down;
+            return direction;
         }
 
-        return direction;
-    }
-
-    /*
-     * 씬에 저장된 스프라이트가 없을 때만 Resources 폴백을 사용합니다.
-     */
-    private void EnsureSpritesLoaded()
-    {
-        frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite("Generated/Sprites/PlayerFront");
-        backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite("Generated/Sprites/PlayerBack");
-        sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite("Generated/Sprites/PlayerSide");
-
-        if (targetRenderer != null && targetRenderer.sprite == null)
+        /// <summary>
+        /// 씬에 저장된 스프라이트가 없을 때만 Resources 폴백을 사용합니다.
+        /// </summary>
+        private void EnsureSpritesLoaded()
         {
-            targetRenderer.sprite = frontSprite != null ? frontSprite : sideSprite;
-        }
-    }
+            frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite("Generated/Sprites/PlayerFront");
+            backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite("Generated/Sprites/PlayerBack");
+            sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite("Generated/Sprites/PlayerSide");
 
-    /*
-     * 비주얼은 PlayerVisual 자식에만 두고, 루트에 남아 있던 예전 SpriteRenderer는 비활성화합니다.
-     */
-    private SpriteRenderer EnsureVisualRenderer()
-    {
-        Transform visualRoot = transform.Find("PlayerVisual");
-        SpriteRenderer visualRenderer = visualRoot != null ? visualRoot.GetComponent<SpriteRenderer>() : null;
-        SpriteRenderer rootRenderer = GetComponent<SpriteRenderer>();
-
-        if (visualRoot == null)
-        {
-            GameObject visualObject = new("PlayerVisual");
-            visualRoot = visualObject.transform;
-            visualRoot.SetParent(transform, false);
+            if (targetRenderer != null && targetRenderer.sprite == null)
+            {
+                targetRenderer.sprite = frontSprite != null ? frontSprite : sideSprite;
+            }
         }
 
-        visualRoot.localPosition = Vector3.zero;
-        visualRoot.localScale = Vector3.one * PlayerVisualScale;
-
-        if (visualRenderer == null)
+        /// <summary>
+        /// 비주얼은 PlayerVisual 자식에만 두고, 루트에 남아 있던 예전 SpriteRenderer는 비활성화합니다.
+        /// </summary>
+        private SpriteRenderer EnsureVisualRenderer()
         {
-            visualRenderer = visualRoot.gameObject.AddComponent<SpriteRenderer>();
+            Transform visualRoot = transform.Find("PlayerVisual");
+            SpriteRenderer visualRenderer = visualRoot != null ? visualRoot.GetComponent<SpriteRenderer>() : null;
+            SpriteRenderer rootRenderer = GetComponent<SpriteRenderer>();
+
+            if (visualRoot == null)
+            {
+                GameObject visualObject = new("PlayerVisual");
+                visualRoot = visualObject.transform;
+                visualRoot.SetParent(transform, false);
+            }
+
+            visualRoot.localPosition = Vector3.zero;
+            visualRoot.localScale = Vector3.one * PlayerVisualScale;
+
+            if (visualRenderer == null)
+            {
+                visualRenderer = visualRoot.gameObject.AddComponent<SpriteRenderer>();
+            }
+
+            if (rootRenderer != null && rootRenderer != visualRenderer)
+            {
+                CopyRendererState(rootRenderer, visualRenderer);
+                rootRenderer.enabled = false;
+                rootRenderer.sprite = null;
+            }
+
+            visualRenderer.color = Color.white;
+            if (visualRenderer.sortingOrder == 0)
+            {
+                visualRenderer.sortingOrder = 12;
+            }
+
+            return visualRenderer;
         }
 
-        if (rootRenderer != null && rootRenderer != visualRenderer)
+        /// <summary>
+        /// 예전 루트 렌더러의 시각 상태를 비주얼 전용 렌더러로 옮깁니다.
+        /// </summary>
+        private static void CopyRendererState(SpriteRenderer source, SpriteRenderer target)
         {
-            CopyRendererState(rootRenderer, visualRenderer);
-            rootRenderer.enabled = false;
-            rootRenderer.sprite = null;
+            if (source == null || target == null)
+            {
+                return;
+            }
+
+            target.sprite = NormalizeSprite(source.sprite);
+            target.color = Color.white;
+            target.flipX = source.flipX;
+            target.flipY = source.flipY;
+            target.sortingLayerID = source.sortingLayerID;
+            target.sortingOrder = source.sortingOrder;
+            target.sharedMaterial = source.sharedMaterial;
         }
 
-        visualRenderer.color = Color.white;
-        if (visualRenderer.sortingOrder == 0)
+        /// <summary>
+        /// PPU와 pivot이 이미 올바르면 그대로 쓰고, 아니라면 원본 rect를 유지한 채 다시 만듭니다.
+        /// </summary>
+        private static Sprite NormalizeSprite(Sprite sprite)
         {
-            visualRenderer.sortingOrder = 12;
-        }
+            if (sprite == null || sprite.texture == null)
+            {
+                return sprite;
+            }
 
-        return visualRenderer;
-    }
+            ApplyTexturePresentation(sprite.texture);
 
-    /*
-     * 예전 루트 렌더러의 시각 상태를 비주얼 전용 렌더러로 옮깁니다.
-     */
-    private static void CopyRendererState(SpriteRenderer source, SpriteRenderer target)
-    {
-        if (source == null || target == null)
-        {
-            return;
-        }
+            Vector2 normalizedPivot = new Vector2(
+                sprite.pivot.x / sprite.rect.width,
+                sprite.pivot.y / sprite.rect.height);
+            if (Mathf.Abs(sprite.pixelsPerUnit - PlayerSpritePixelsPerUnit) < 0.01f
+                && Approximately(normalizedPivot, SpritePivot))
+            {
+                return sprite;
+            }
 
-        target.sprite = NormalizeSprite(source.sprite);
-        target.color = Color.white;
-        target.flipX = source.flipX;
-        target.flipY = source.flipY;
-        target.sortingLayerID = source.sortingLayerID;
-        target.sortingOrder = source.sortingOrder;
-        target.sharedMaterial = source.sharedMaterial;
-    }
-
-    /*
-     * PPU와 pivot이 이미 올바르면 그대로 쓰고, 아니라면 원본 rect를 유지한 채 다시 만듭니다.
-     */
-    private static Sprite NormalizeSprite(Sprite sprite)
-    {
-        if (sprite == null || sprite.texture == null)
-        {
-            return sprite;
-        }
-
-        ApplyTexturePresentation(sprite.texture);
-
-        Vector2 normalizedPivot = new Vector2(
-            sprite.pivot.x / sprite.rect.width,
-            sprite.pivot.y / sprite.rect.height);
-        if (Mathf.Abs(sprite.pixelsPerUnit - PlayerSpritePixelsPerUnit) < 0.01f
-            && Approximately(normalizedPivot, SpritePivot))
-        {
-            return sprite;
-        }
-
-        return Sprite.Create(
-            sprite.texture,
-            sprite.rect,
-            SpritePivot,
-            PlayerSpritePixelsPerUnit,
-            0,
-            SpriteMeshType.FullRect);
-    }
-
-    /*
-     * Resources에서는 Sprite를 우선으로 읽고, 실패할 때만 Texture2D 폴백을 사용합니다.
-     */
-    private static Sprite LoadSprite(string resourcePath)
-    {
-        Sprite importedSprite = Resources.Load<Sprite>(resourcePath);
-        if (importedSprite != null)
-        {
-            return NormalizeSprite(importedSprite);
-        }
-
-        Texture2D texture = Resources.Load<Texture2D>(resourcePath);
-        if (texture != null)
-        {
-            ApplyTexturePresentation(texture);
             return Sprite.Create(
-                texture,
-                new Rect(0f, 0f, texture.width, texture.height),
+                sprite.texture,
+                sprite.rect,
                 SpritePivot,
                 PlayerSpritePixelsPerUnit,
                 0,
                 SpriteMeshType.FullRect);
         }
 
-        return null;
-    }
-
-    /*
-     * 비픽셀 아트 원본이라 작은 크기로 줄여도 거칠지 않도록 필터와 랩 모드를 고정합니다.
-     */
-    private static void ApplyTexturePresentation(Texture2D texture)
-    {
-        if (texture == null)
+        /// <summary>
+        /// Resources에서는 Sprite를 우선으로 읽고, 실패할 때만 Texture2D 폴백을 사용합니다.
+        /// </summary>
+        private static Sprite LoadSprite(string resourcePath)
         {
-            return;
+            Sprite importedSprite = Resources.Load<Sprite>(resourcePath);
+            if (importedSprite != null)
+            {
+                return NormalizeSprite(importedSprite);
+            }
+
+            Texture2D texture = Resources.Load<Texture2D>(resourcePath);
+            if (texture != null)
+            {
+                ApplyTexturePresentation(texture);
+                return Sprite.Create(
+                    texture,
+                    new Rect(0f, 0f, texture.width, texture.height),
+                    SpritePivot,
+                    PlayerSpritePixelsPerUnit,
+                    0,
+                    SpriteMeshType.FullRect);
+            }
+
+            return null;
         }
 
-        texture.filterMode = FilterMode.Bilinear;
-        texture.wrapMode = TextureWrapMode.Clamp;
-    }
+        /// <summary>
+        /// 비픽셀 아트 원본이라 작은 크기로 줄여도 거칠지 않도록 필터와 랩 모드를 고정합니다.
+        /// </summary>
+        private static void ApplyTexturePresentation(Texture2D texture)
+        {
+            if (texture == null)
+            {
+                return;
+            }
 
-    private static bool Approximately(Vector2 left, Vector2 right)
-    {
-        return Mathf.Abs(left.x - right.x) < 0.001f && Mathf.Abs(left.y - right.y) < 0.001f;
-    }
+            texture.filterMode = FilterMode.Bilinear;
+            texture.wrapMode = TextureWrapMode.Clamp;
+        }
+
+        private static bool Approximately(Vector2 left, Vector2 right)
+        {
+            return Mathf.Abs(left.x - right.x) < 0.001f && Mathf.Abs(left.y - right.y) < 0.001f;
+        }
     }
 }

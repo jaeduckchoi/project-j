@@ -4,11 +4,16 @@ using System.Collections;
 
 namespace TMPro.Examples
 {
-
     public class ObjectSpin : MonoBehaviour
     {
-        #pragma warning disable 0414
-        public enum MotionType { Rotation, SearchLight, Translation };
+#pragma warning disable 0414
+        public enum MotionType
+        {
+            Rotation,
+            SearchLight,
+            Translation
+        };
+
         public MotionType Motion;
 
         public Vector3 TranslationDistance = new Vector3(5, 0, 0);

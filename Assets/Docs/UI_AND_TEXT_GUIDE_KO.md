@@ -82,15 +82,15 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
   허브 팝업 제목, 좌우 캡션, 편집 모드 샘플 문구를 한곳에서 관리한다.
 - `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`
   `PrototypeUIRect` 공용 타입과 레이아웃 진입점을 유지한다.
-- `Assets/Scripts/UI/Layout/UI/PrototypeUILayout.UI.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUILayout.UI.cs`
   일반 HUD와 허브 기본 UI 배치를 모아 관리한다.
-- `Assets/Scripts/UI/Layout/Popup/PrototypeUILayout.Popup.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUILayout.Popup.cs`
   허브 팝업 프레임, 본문, 닫기 버튼 배치와 본문 내부 반복 아이템 박스 레이아웃을 모아 관리한다.
 - `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`
   UI/HUD와 Popup 스킨 매핑의 공용 진입점을 유지한다.
-- `Assets/Scripts/UI/Style/UI/PrototypeUISkinCatalog.UI.cs`
+- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.UI.cs`
   일반 HUD 패널과 버튼의 SVG 매핑을 관리한다.
-- `Assets/Scripts/UI/Style/Popup/PrototypeUISkinCatalog.Popup.cs`
+- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.Popup.cs`
   팝업 외곽, 내부 본문, 닫기 버튼의 SVG 매핑을 관리한다.
 - `Assets/Scripts/UI/Style/PrototypeUISkin.cs`
   `Assets/Resources/Generated/UI/Vector` 아래 SVG 스프라이트를 직접 불러와 9-slice 스프라이트로 다시 만들어 런타임/빌더 공용으로 적용한다. 실제 렌더링과 캐시만 담당한다.

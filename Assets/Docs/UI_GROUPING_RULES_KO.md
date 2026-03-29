@@ -124,7 +124,7 @@ Canvas
 - `현재 설정 프리뷰 적용`은 스타일과 레이아웃 프리뷰만 갱신한다.
 - 실제 계층 재배치는 `Canvas 그룹 정리`에서만 수행한다.
 - 허브 팝업을 수정하면 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 맞춘다.
-- 팝업 프레임 구조를 바꾸면 `Assets/Scripts/UI/Layout/Popup/PrototypeUILayout.Popup.cs`와 `Assets/Scripts/UI/Style/Popup/PrototypeUISkinCatalog.Popup.cs`도 같이 갱신한다.
+- 팝업 프레임 구조를 바꾸면 `Assets/Scripts/UI/Layout/PrototypeUILayout.Popup.cs`와 `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.Popup.cs`도 같이 갱신한다.
 
 ## 7. 체크리스트
 

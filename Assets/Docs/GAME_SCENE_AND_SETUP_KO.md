@@ -85,8 +85,8 @@
 
 편집 모드 프리뷰와 SVG 경로 확인은 이 컴포넌트에서 따로 다룬다.
 
-- 일반 HUD 레이아웃/스킨은 `Assets/Scripts/UI/Layout/UI`, `Assets/Scripts/UI/Style/UI` 아래에서 관리한다.
-- 팝업 레이아웃/스킨은 `Assets/Scripts/UI/Layout/Popup`, `Assets/Scripts/UI/Style/Popup` 아래에서 관리한다.
+- 일반 HUD 레이아웃/스킨은 `Assets/Scripts/UI/Layout/PrototypeUILayout.UI.cs`, `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.UI.cs`에서 관리한다.
+- 팝업 레이아웃/스킨은 `Assets/Scripts/UI/Layout/PrototypeUILayout.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.Popup.cs`에서 관리한다.
 - `Canvas` 내부 오브젝트는 `HUDRoot`, `PopupRoot` 기준으로 묶고, 런타임과 빌더도 같은 구조를 기준으로 찾는다.
 
 - `현재 설정 프리뷰 적용` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.

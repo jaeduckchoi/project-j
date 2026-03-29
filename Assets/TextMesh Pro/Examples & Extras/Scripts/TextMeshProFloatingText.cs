@@ -4,7 +4,6 @@ using System.Collections;
 
 namespace TMPro.Examples
 {
-
     public class TextMeshProFloatingText : MonoBehaviour
     {
         public Font TheFont;
@@ -26,6 +25,7 @@ namespace TMPro.Examples
         //private int m_frame = 0;
 
         static WaitForEndOfFrame k_WaitForEndOfFrame = new WaitForEndOfFrame();
+
         static WaitForSeconds[] k_WaitForSecondsRandom = new WaitForSeconds[]
         {
             new WaitForSeconds(0.05f), new WaitForSeconds(0.1f), new WaitForSeconds(0.15f), new WaitForSeconds(0.2f), new WaitForSeconds(0.25f),
@@ -89,9 +89,7 @@ namespace TMPro.Examples
             }
             else if (SpawnType == 2)
             {
-
             }
-
         }
 
 

@@ -1,15 +1,16 @@
 using UI.Controllers;
 
+// UI.Content 네임스페이스
 namespace UI.Content
 {
-    /*
-     * 팝업 제목과 좌우 캡션 묶음을 에디터 프리뷰용으로 전달한다.
-     */
+    /// <summary>
+    /// 팝업 제목과 좌우 캡션 묶음을 에디터 프리뷰용으로 전달한다.
+    /// </summary>
     public readonly struct PrototypeUIPopupDefinition
     {
-        /*
-         * 각 패널에서 재사용할 헤더 문구를 구조체로 고정한다.
-         */
+        /// <summary>
+        /// 각 패널에서 재사용할 헤더 문구를 구조체로 고정한다.
+        /// </summary>
         public PrototypeUIPopupDefinition(string title, string leftCaption, string rightCaption)
         {
             Title = title;
@@ -22,14 +23,14 @@ namespace UI.Content
         public string RightCaption { get; }
     }
 
-    /*
-     * 좌우 본문 샘플 텍스트를 프리뷰 패널 단위로 전달한다.
-     */
+    /// <summary>
+    /// 좌우 본문 샘플 텍스트를 프리뷰 패널 단위로 전달한다.
+    /// </summary>
     public readonly struct PrototypeUIPreviewContent
     {
-        /*
-         * 실제 게임 데이터가 없어도 확인할 수 있는 예시 문구를 보관한다.
-         */
+        /// <summary>
+        /// 실제 게임 데이터가 없어도 확인할 수 있는 예시 문구를 보관한다.
+        /// </summary>
         public PrototypeUIPreviewContent(string leftText, string rightText)
         {
             LeftText = leftText;
@@ -40,14 +41,14 @@ namespace UI.Content
         public string RightText { get; }
     }
 
-    /*
-     * 허브 팝업 제목, 캡션, 프리뷰 샘플 문구를 한 곳에서 관리한다.
-     */
+    /// <summary>
+    /// 허브 팝업 제목, 캡션, 프리뷰 샘플 문구를 한 곳에서 관리한다.
+    /// </summary>
     public static class PrototypeUIPopupCatalog
     {
-        /*
-         * 패널 종류에 따라 팝업 제목과 좌우 캡션을 반환한다.
-         */
+        /// <summary>
+        /// 패널 종류에 따라 팝업 제목과 좌우 캡션을 반환한다.
+        /// </summary>
         public static PrototypeUIPopupDefinition GetDefinition(PrototypeUIPreviewPanel panel)
         {
             return panel switch
@@ -59,9 +60,9 @@ namespace UI.Content
             };
         }
 
-        /*
-         * 에디터 프리뷰에서 보이는 좌우 예시 본문을 구성한다.
-         */
+        /// <summary>
+        /// 에디터 프리뷰에서 보이는 좌우 예시 본문을 구성한다.
+        /// </summary>
         public static PrototypeUIPreviewContent GetPreviewContent(PrototypeUIPreviewPanel panel)
         {
             return panel switch
@@ -81,9 +82,9 @@ namespace UI.Content
             };
         }
 
-        /*
-         * 탐험 HUD 재료 카드 프리뷰에 쓸 짧은 예시 문구다.
-         */
+        /// <summary>
+        /// 탐험 HUD 재료 카드 프리뷰에 쓸 짧은 예시 문구다.
+        /// </summary>
         public static string GetExplorationInventoryPreviewText()
         {
             return "조개 x4\n- 허브 x2\n- 버섯 x1";
