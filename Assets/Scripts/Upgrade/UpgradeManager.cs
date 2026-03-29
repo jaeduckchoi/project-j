@@ -19,7 +19,7 @@ namespace Upgrade
     [SerializeField] private List<InventoryUpgradeCost> inventoryUpgradeCosts = new();
     [SerializeField] private List<ToolUnlockCost> toolUnlockCosts = new();
 
-    private bool initialized;
+    private bool _initialized;
 
     public event Action UpgradeStateChanged;
 
@@ -34,7 +34,7 @@ namespace Upgrade
     {
         bool changed = EnsureUpgradeCostsConfigured();
 
-        if (initialized)
+        if (_initialized)
         {
             if (changed)
             {
@@ -44,7 +44,7 @@ namespace Upgrade
             return;
         }
 
-        initialized = true;
+        _initialized = true;
         RaiseChanged();
     }
 

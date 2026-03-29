@@ -14,14 +14,14 @@ namespace Player
     [SerializeField, Min(0f)] private float horizontalPadding = 0.55f;
     [SerializeField, Min(0f)] private float verticalPadding = 0.65f;
 
-    private Rigidbody2D body;
+    private Rigidbody2D _body;
 
     /*
      * 플레이어 물리 참조를 캐시하고 콜라이더 기본값을 맞춘다.
      */
     private void Awake()
     {
-        body = GetComponent<Rigidbody2D>();
+        _body = GetComponent<Rigidbody2D>();
 
         if (playerCollider == null)
         {
@@ -61,7 +61,7 @@ namespace Player
             return;
         }
 
-        Vector2 currentPosition = body != null ? body.position : (Vector2)transform.position;
+        Vector2 currentPosition = _body != null ? _body.position : (Vector2)transform.position;
         float minX = areaBounds.min.x + horizontalPadding;
         float maxX = areaBounds.max.x - horizontalPadding;
         float minY = areaBounds.min.y + verticalPadding;
@@ -76,9 +76,9 @@ namespace Player
             return;
         }
 
-        if (body != null)
+        if (_body != null)
         {
-            Vector2 velocity = body.linearVelocity;
+            Vector2 velocity = _body.linearVelocity;
 
             // 경계에 막힌 축은 속도를 0으로 만들어 벽에 떨리는 현상을 줄인다.
             if (!Mathf.Approximately(clampedPosition.x, currentPosition.x))
@@ -91,8 +91,8 @@ namespace Player
                 velocity.y = 0f;
             }
 
-            body.position = clampedPosition;
-            body.linearVelocity = velocity;
+            _body.position = clampedPosition;
+            _body.linearVelocity = velocity;
         }
 
         transform.position = new Vector3(clampedPosition.x, clampedPosition.y, transform.position.z);

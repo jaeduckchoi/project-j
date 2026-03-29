@@ -49,8 +49,8 @@ public static class JongguMinimalPrototypeBuilder
     private const float PlayerSpritePixelsPerUnit = 1000f;
     private const float PlayerVisualScale = 0.76f;
 
-    private static TMP_FontAsset generatedKoreanFont;
-    private static TMP_FontAsset generatedHeadingFont;
+    private static TMP_FontAsset _generatedKoreanFont;
+    private static TMP_FontAsset _generatedHeadingFont;
     private static readonly string[] HubPopupSceneImageNames =
     {
         "PopupOverlay",
@@ -61,7 +61,7 @@ public static class JongguMinimalPrototypeBuilder
         "PopupRightBody",
         "PopupCloseButton"
     };
-    private static readonly Dictionary<string, SceneImageSnapshot> cachedHubPopupSceneImages = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, SceneImageSnapshot> CachedHubPopupSceneImages = new(StringComparer.Ordinal);
 
     private readonly struct SceneImageSnapshot
     {
@@ -175,8 +175,8 @@ public static class JongguMinimalPrototypeBuilder
         EnsureFolder(GeneratedRoot, "Fonts");
         EnsureFolder("Assets", "Scenes");
 
-        generatedHeadingFont = CreateHeadingFontAsset();
-        generatedKoreanFont = CreateKoreanFontAsset();
+        _generatedHeadingFont = CreateHeadingFontAsset();
+        _generatedKoreanFont = CreateKoreanFontAsset();
         EnsurePreferredTmpFontAsset();
         SpriteLibrary sprites = CreateSprites();
         ResourceLibrary resources = CreateResources();
@@ -273,7 +273,7 @@ public static class JongguMinimalPrototypeBuilder
         }
         finally
         {
-            cachedHubPopupSceneImages.Clear();
+            CachedHubPopupSceneImages.Clear();
         }
     }
 
@@ -321,7 +321,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static void CacheHubPopupSceneImages(string scenePath)
     {
-        cachedHubPopupSceneImages.Clear();
+        CachedHubPopupSceneImages.Clear();
         if (!File.Exists(scenePath))
         {
             return;
@@ -351,7 +351,7 @@ public static class JongguMinimalPrototypeBuilder
                     continue;
                 }
 
-                cachedHubPopupSceneImages[objectName] = new SceneImageSnapshot(
+                CachedHubPopupSceneImages[objectName] = new SceneImageSnapshot(
                     image.sprite,
                     image.type,
                     image.color,
@@ -753,9 +753,9 @@ public static class JongguMinimalPrototypeBuilder
         CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.80f, 0f), "영업대", Color.black, 2.6f, 50);
     }
 
-    private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform parent = null)
+    private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform _parent = null)
     {
-        GameObject go = CreateDecorBlock(objectName, position, size, sprite, color, 8, parent);
+        GameObject go = CreateDecorBlock(objectName, position, size, sprite, color, 8, _parent);
         BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
         collider.size = Vector2.one;
@@ -1146,8 +1146,8 @@ public static class JongguMinimalPrototypeBuilder
         so.FindProperty("dayPhaseText").objectReferenceValue = dayPhaseText;
         so.FindProperty("guideText").objectReferenceValue = guideText;
         so.FindProperty("resultText").objectReferenceValue = resultText;
-        so.FindProperty("bodyFontAsset").objectReferenceValue = generatedKoreanFont;
-        so.FindProperty("headingFontAsset").objectReferenceValue = generatedHeadingFont;
+        so.FindProperty("bodyFontAsset").objectReferenceValue = _generatedKoreanFont;
+        so.FindProperty("headingFontAsset").objectReferenceValue = _generatedHeadingFont;
         so.FindProperty("skipExplorationButton").objectReferenceValue = skipExplorationButton;
         so.FindProperty("skipServiceButton").objectReferenceValue = skipServiceButton;
         so.FindProperty("nextDayButton").objectReferenceValue = nextDayButton;
@@ -1296,7 +1296,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static TextMeshProUGUI CreateScreenText(
         string objectName,
-        Transform parent,
+        Transform _parent,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -1308,7 +1308,7 @@ public static class JongguMinimalPrototypeBuilder
     {
         GameObject go = new(objectName);
         ApplyHubPopupObjectIdentity(go);
-        go.transform.SetParent(parent, false);
+        go.transform.SetParent(_parent, false);
 
         RectTransform rect = go.AddComponent<RectTransform>();
         rect.anchorMin = anchorMin;
@@ -1348,7 +1348,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static TextMeshProUGUI CreateScreenText(
         string objectName,
-        Transform parent,
+        Transform _parent,
         PrototypeUIRect layout,
         float fontSize,
         TextAlignmentOptions alignment,
@@ -1356,7 +1356,7 @@ public static class JongguMinimalPrototypeBuilder
     {
         return CreateScreenText(
             objectName,
-            parent,
+            _parent,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -1369,7 +1369,7 @@ public static class JongguMinimalPrototypeBuilder
 
     private static TextMeshProUGUI CreatePopupHeadingText(
         string objectName,
-        Transform parent,
+        Transform _parent,
         PrototypeUIRect layout,
         float fontSize,
         float sceneFontSizeMax,
@@ -1377,7 +1377,7 @@ public static class JongguMinimalPrototypeBuilder
         Color color,
         bool enableAutoSizing)
     {
-        TextMeshProUGUI text = CreateScreenText(objectName, parent, layout, fontSize, TextAlignmentOptions.TopLeft, color);
+        TextMeshProUGUI text = CreateScreenText(objectName, _parent, layout, fontSize, TextAlignmentOptions.TopLeft, color);
         text.text = content;
         TMP_FontAsset headingFont = EnsureHeadingTmpFontAsset();
         if (headingFont != null)
@@ -1459,7 +1459,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static void CreatePanel(
         string objectName,
-        Transform parent,
+        Transform _parent,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -1469,7 +1469,7 @@ public static class JongguMinimalPrototypeBuilder
     {
         GameObject panelObject = new(objectName);
         ApplyHubPopupObjectIdentity(panelObject);
-        panelObject.transform.SetParent(parent, false);
+        panelObject.transform.SetParent(_parent, false);
 
         RectTransform rect = panelObject.AddComponent<RectTransform>();
         rect.anchorMin = anchorMin;
@@ -1499,13 +1499,13 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static void CreatePanel(
         string objectName,
-        Transform parent,
+        Transform _parent,
         PrototypeUIRect layout,
         Color color)
     {
         CreatePanel(
             objectName,
-            parent,
+            _parent,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -1592,11 +1592,11 @@ public static class JongguMinimalPrototypeBuilder
         }
     }
 
-    private static void CreatePopupBodyItemIcon(string objectName, Transform parent)
+    private static void CreatePopupBodyItemIcon(string objectName, Transform _parent)
     {
         GameObject iconObject = new(objectName);
         ApplyHubPopupObjectIdentity(iconObject);
-        iconObject.transform.SetParent(parent, false);
+        iconObject.transform.SetParent(_parent, false);
 
         RectTransform rect = iconObject.AddComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 0.5f);
@@ -1611,11 +1611,11 @@ public static class JongguMinimalPrototypeBuilder
         image.enabled = false;
     }
 
-    private static RectTransform CreateCanvasGroupRoot(string objectName, Transform parent, int siblingIndex)
+    private static RectTransform CreateCanvasGroupRoot(string objectName, Transform _parent, int siblingIndex)
     {
         GameObject groupObject = new(objectName);
         ApplyHubPopupObjectIdentity(groupObject);
-        groupObject.transform.SetParent(parent, false);
+        groupObject.transform.SetParent(_parent, false);
 
         RectTransform rect = groupObject.AddComponent<RectTransform>();
         rect.anchorMin = Vector2.zero;
@@ -1629,23 +1629,23 @@ public static class JongguMinimalPrototypeBuilder
         return rect;
     }
 
-    private static void SetChildActive(Transform parent, string objectName, bool isActive)
+    private static void SetChildActive(Transform _parent, string objectName, bool isActive)
     {
-        if (parent == null)
+        if (_parent == null)
         {
             return;
         }
 
-        Transform child = FindChildRecursive(parent, objectName);
+        Transform child = FindChildRecursive(_parent, objectName);
         if (child != null)
         {
             child.gameObject.SetActive(isActive);
         }
     }
 
-    private static Transform FindChildRecursive(Transform parent, string objectName)
+    private static Transform FindChildRecursive(Transform _parent, string objectName)
     {
-        foreach (Transform child in parent)
+        foreach (Transform child in _parent)
         {
             if (child.name == objectName)
             {
@@ -1696,7 +1696,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static Button CreateUiButton(
         string objectName,
-        Transform parent,
+        Transform _parent,
         Vector2 anchorMin,
         Vector2 anchorMax,
         Vector2 pivot,
@@ -1706,7 +1706,7 @@ public static class JongguMinimalPrototypeBuilder
     {
         GameObject buttonObject = new(objectName);
         ApplyHubPopupObjectIdentity(buttonObject);
-        buttonObject.transform.SetParent(parent, false);
+        buttonObject.transform.SetParent(_parent, false);
 
         RectTransform rect = buttonObject.AddComponent<RectTransform>();
         rect.anchorMin = anchorMin;
@@ -1739,9 +1739,9 @@ public static class JongguMinimalPrototypeBuilder
             TextAlignmentOptions.Center,
             Color.white);
         labelText.text = label;
-        if (generatedHeadingFont != null)
+        if (_generatedHeadingFont != null)
         {
-            labelText.font = generatedHeadingFont;
+            labelText.font = _generatedHeadingFont;
         }
         labelText.fontStyle = FontStyles.Bold;
         labelText.margin = new Vector4(8f, 6f, 8f, 6f);
@@ -1754,13 +1754,13 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static Button CreateUiButton(
         string objectName,
-        Transform parent,
+        Transform _parent,
         PrototypeUIRect layout,
         string label)
     {
         return CreateUiButton(
             objectName,
-            parent,
+            _parent,
             layout.AnchorMin,
             layout.AnchorMax,
             layout.Pivot,
@@ -1792,7 +1792,7 @@ public static class JongguMinimalPrototypeBuilder
             return false;
         }
 
-        if (!cachedHubPopupSceneImages.TryGetValue(objectName, out SceneImageSnapshot snapshot))
+        if (!CachedHubPopupSceneImages.TryGetValue(objectName, out SceneImageSnapshot snapshot))
         {
             return false;
         }
@@ -1820,16 +1820,16 @@ public static class JongguMinimalPrototypeBuilder
             || objectName is "InventoryText" or "StorageText" or "SelectedRecipeText" or "UpgradeText";
     }
 
-    private static void CreateWorldLabel(string objectName, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
+    private static void CreateWorldLabel(string objectName, Transform _parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
     {
         bool isLargeLabel = fontSize >= 3.4f;
         bool isPrimaryLabel = fontSize >= 2.5f;
         TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
 
         GameObject labelObject = new(objectName);
-        if (parent != null)
+        if (_parent != null)
         {
-            labelObject.transform.SetParent(parent, false);
+            labelObject.transform.SetParent(_parent, false);
             labelObject.transform.localPosition = localPosition;
         }
         else
@@ -1875,12 +1875,12 @@ public static class JongguMinimalPrototypeBuilder
         return CreateDecorBlock(objectName, position, scale, sprite, color, 3);
     }
 
-    private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform parent = null)
+    private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform _parent = null)
     {
         GameObject go = new(objectName);
-        if (parent != null)
+        if (_parent != null)
         {
-            go.transform.SetParent(parent, false);
+            go.transform.SetParent(_parent, false);
             go.transform.localPosition = position;
         }
         else
@@ -2200,7 +2200,7 @@ public static class JongguMinimalPrototypeBuilder
      */
     private static TMP_FontAsset EnsurePreferredTmpFontAsset()
     {
-        TMP_FontAsset preferredFont = generatedKoreanFont;
+        TMP_FontAsset preferredFont = _generatedKoreanFont;
 
         if (preferredFont == null)
         {
@@ -2222,7 +2222,7 @@ public static class JongguMinimalPrototypeBuilder
 
     private static TMP_FontAsset EnsureHeadingTmpFontAsset()
     {
-        TMP_FontAsset headingFont = generatedHeadingFont;
+        TMP_FontAsset headingFont = _generatedHeadingFont;
 
         if (headingFont == null)
         {
@@ -2402,12 +2402,12 @@ public static class JongguMinimalPrototypeBuilder
         };
     }
 
-    private static void EnsureFolder(string parent, string child)
+    private static void EnsureFolder(string _parent, string child)
     {
-        string fullPath = parent + "/" + child;
+        string fullPath = _parent + "/" + child;
         if (!AssetDatabase.IsValidFolder(fullPath))
         {
-            AssetDatabase.CreateFolder(parent, child);
+            AssetDatabase.CreateFolder(_parent, child);
         }
     }
 
@@ -2437,6 +2437,5 @@ public static class JongguMinimalPrototypeBuilder
 }
 }
 #endif
-
 
 

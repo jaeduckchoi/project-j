@@ -23,14 +23,14 @@ namespace Gathering
     [SerializeField] private Collider2D blockingCollider;
     [SerializeField] private GameObject visualsRoot;
 
-    private bool isAvailable = true;
-    private Coroutine respawnRoutine;
+    private bool _isAvailable = true;
+    private Coroutine _respawnRoutine;
 
     public string InteractionPrompt
     {
         get
         {
-            if (!isAvailable)
+            if (!_isAvailable)
             {
                 return string.Empty;
             }
@@ -82,7 +82,7 @@ namespace Gathering
      */
     public bool CanInteract(GameObject interactor)
     {
-        return isAvailable && resourceData != null;
+        return _isAvailable && resourceData != null;
     }
 
     /*
@@ -116,7 +116,7 @@ namespace Gathering
 
         if (respawnAfterGathering)
         {
-            respawnRoutine = StartCoroutine(RespawnRoutine());
+            _respawnRoutine = StartCoroutine(RespawnRoutine());
         }
     }
 
@@ -169,7 +169,7 @@ namespace Gathering
     private IEnumerator RespawnRoutine()
     {
         yield return new WaitForSeconds(respawnDelay);
-        respawnRoutine = null;
+        _respawnRoutine = null;
         SetAvailable(true);
     }
 
@@ -178,7 +178,7 @@ namespace Gathering
      */
     private void SetAvailable(bool available)
     {
-        isAvailable = available;
+        _isAvailable = available;
 
         if (blockingCollider != null)
         {
@@ -204,10 +204,10 @@ namespace Gathering
      */
     private void OnDisable()
     {
-        if (respawnRoutine != null)
+        if (_respawnRoutine != null)
         {
-            StopCoroutine(respawnRoutine);
-            respawnRoutine = null;
+            StopCoroutine(_respawnRoutine);
+            _respawnRoutine = null;
         }
     }
     }

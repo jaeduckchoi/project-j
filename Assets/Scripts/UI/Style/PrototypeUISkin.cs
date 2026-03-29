@@ -16,7 +16,7 @@ public static class PrototypeUISkin
     private const string LegacyResourceRoot = "Generated/UI/Kenney";
     private const float SpritePixelsPerUnit = 100f;
     private static readonly Dictionary<string, Sprite> CachedSprites = new();
-    private static MethodInfo renderVectorImageToTextureMethod;
+    private static MethodInfo _renderVectorImageToTextureMethod;
 
     // 패널 오브젝트 이름으로 실제 패널 리소스 경로를 조회한다.
     public static string GetPanelResourcePath(string objectName)
@@ -335,9 +335,9 @@ public static class PrototypeUISkin
     // 버전 차이를 흡수하기 위해 VectorGraphics 렌더 메서드를 한 번만 찾아 캐시한다.
     private static MethodInfo GetRenderVectorImageToTextureMethod()
     {
-        if (renderVectorImageToTextureMethod != null)
+        if (_renderVectorImageToTextureMethod != null)
         {
-            return renderVectorImageToTextureMethod;
+            return _renderVectorImageToTextureMethod;
         }
 
         Type utilityType = Type.GetType("Unity.VectorGraphics.VectorImageUtils, UnityEngine.VectorGraphicsModule");
@@ -359,19 +359,19 @@ public static class PrototypeUISkin
             return null;
         }
 
-        renderVectorImageToTextureMethod = utilityType.GetMethod(
+        _renderVectorImageToTextureMethod = utilityType.GetMethod(
             "RenderVectorImageToTexture2D",
             BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
             null,
             new[] { typeof(UIVectorImage), typeof(int), typeof(int), typeof(int) },
             null);
 
-        if (renderVectorImageToTextureMethod == null)
+        if (_renderVectorImageToTextureMethod == null)
         {
             Debug.LogWarning("VectorImageUtils.RenderVectorImageToTexture2D 메서드를 찾지 못했습니다.");
         }
 
-        return renderVectorImageToTextureMethod;
+        return _renderVectorImageToTextureMethod;
     }
 
     // 캐시 키에는 스프라이트 이름과 슬라이스 설정을 함께 포함한다.
@@ -401,4 +401,3 @@ public static class PrototypeUISkin
     }
 }
 }
-

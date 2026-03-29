@@ -16,15 +16,15 @@ namespace World
     [SerializeField, Min(1f)] private float duration = 5f;
     [SerializeField] private bool triggerOnlyOnce = true;
 
-    private Collider2D triggerCollider;
+    private Collider2D _triggerCollider;
 
     /*
      * 트리거 콜라이더를 강제하고 참조를 캐시한다.
      */
     private void Awake()
     {
-        triggerCollider = GetComponent<Collider2D>();
-        triggerCollider.isTrigger = true;
+        _triggerCollider = GetComponent<Collider2D>();
+        _triggerCollider.isTrigger = true;
     }
 
     /*

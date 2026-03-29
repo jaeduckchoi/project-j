@@ -21,18 +21,18 @@ namespace World
     [SerializeField, TextArea] private string calmGuideText = "바람이 멈춘 짧은 틈에 이동하면 안전합니다.";
     [SerializeField] private string hintIdPrefix = "wind_zone";
 
-    private readonly HashSet<PlayerController> playersInZone = new();
-    private Collider2D triggerCollider;
-    private bool wasActiveLastFrame;
+    private readonly HashSet<PlayerController> _playersInZone = new();
+    private Collider2D _triggerCollider;
+    private bool _wasActiveLastFrame;
 
     /*
      * 트리거를 준비하고 초기 활성 상태를 기억한다.
      */
     private void Awake()
     {
-        triggerCollider = GetComponent<Collider2D>();
-        triggerCollider.isTrigger = true;
-        wasActiveLastFrame = IsActiveNow();
+        _triggerCollider = GetComponent<Collider2D>();
+        _triggerCollider.isTrigger = true;
+        _wasActiveLastFrame = IsActiveNow();
     }
 
     /*
@@ -41,11 +41,11 @@ namespace World
     private void Update()
     {
         bool isActive = IsActiveNow();
-        if (isActive != wasActiveLastFrame)
+        if (isActive != _wasActiveLastFrame)
         {
-            wasActiveLastFrame = isActive;
+            _wasActiveLastFrame = isActive;
 
-            if (playersInZone.Count > 0)
+            if (_playersInZone.Count > 0)
             {
                 string hintText = isActive ? activeGuideText : calmGuideText;
                 string hintId = isActive ? $"{hintIdPrefix}_active" : $"{hintIdPrefix}_calm";
@@ -71,7 +71,7 @@ namespace World
             return;
         }
 
-        playersInZone.Add(player);
+        _playersInZone.Add(player);
         ApplyWind(player, IsActiveNow());
     }
 
@@ -86,7 +86,7 @@ namespace World
             return;
         }
 
-        playersInZone.Add(player);
+        _playersInZone.Add(player);
         ApplyWind(player, IsActiveNow());
     }
 
@@ -102,7 +102,7 @@ namespace World
         }
 
         player.ClearExternalVelocitySource(this);
-        playersInZone.Remove(player);
+        _playersInZone.Remove(player);
     }
 
     /*
@@ -110,7 +110,7 @@ namespace World
      */
     private void OnDisable()
     {
-        foreach (PlayerController player in playersInZone)
+        foreach (PlayerController player in _playersInZone)
         {
             if (player == null)
             {
@@ -120,7 +120,7 @@ namespace World
             player.ClearExternalVelocitySource(this);
         }
 
-        playersInZone.Clear();
+        _playersInZone.Clear();
     }
 
     /*
@@ -128,7 +128,7 @@ namespace World
      */
     private void ApplyWindToPlayers(bool isActive)
     {
-        foreach (PlayerController player in playersInZone)
+        foreach (PlayerController player in _playersInZone)
         {
             if (player == null)
             {

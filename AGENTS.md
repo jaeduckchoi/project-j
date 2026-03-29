@@ -26,6 +26,7 @@
 - 새 런타임/에디터 스크립트는 폴더 경로 기준 네임스페이스를 맞추고, `Camera`나 `Editor`처럼 Unity/.NET 주요 타입과 충돌하는 폴더는 `GameCamera`, `ProjectEditor`처럼 충돌 없는 예외 네임스페이스를 사용한다.
 - 기존 `MonoBehaviour`, `ScriptableObject`, 직렬화 가능한 타입을 네임스페이스로 이동할 때는 `UnityEngine.Scripting.APIUpdating.MovedFrom`으로 직렬화 경로를 보존한다.
 - 네임스페이스나 생성 구조를 바꾸면 관련 `using`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 자동 감사 코드, 배치 컴파일 결과를 함께 확인한다.
+- private 필드 네이밍은 `[SerializeField] private`는 lower camelCase, 일반 `private`/`private static`은 `_camelCase`, `private static readonly`는 PascalCase를 기본으로 유지한다.
 - 게임플레이나 UI를 바꿀 때는 현재 동작 기준이 드러나도록 메서드와 블록 주석을 유지하고, 관련 파일에 무주석 핵심 메서드나 블록이 있으면 함께 보강한다.
 - 새로 추가하거나 수정하는 코드의 주석과 문서는 UTF-8 한글 기준으로 작성하고, 기존 영어 주석을 손볼 때도 한글로 통일한다.
 - Git 커밋 메시지는 한글로 작성하고 `type : subject` 형식을 따른다.

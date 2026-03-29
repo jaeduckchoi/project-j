@@ -17,16 +17,16 @@ namespace World
     [SerializeField, TextArea] private string guideText = string.Empty;
     [SerializeField] private string hintId = "movement_zone";
 
-    private readonly HashSet<PlayerController> playersInZone = new();
-    private Collider2D triggerCollider;
+    private readonly HashSet<PlayerController> _playersInZone = new();
+    private Collider2D _triggerCollider;
 
     /*
      * 이동 보정 지대를 트리거 영역으로 고정합니다.
      */
     private void Awake()
     {
-        triggerCollider = GetComponent<Collider2D>();
-        triggerCollider.isTrigger = true;
+        _triggerCollider = GetComponent<Collider2D>();
+        _triggerCollider.isTrigger = true;
     }
 
     /*
@@ -72,7 +72,7 @@ namespace World
         }
 
         player.ClearMovementMultiplierSource(this);
-        playersInZone.Remove(player);
+        _playersInZone.Remove(player);
     }
 
     /*
@@ -80,7 +80,7 @@ namespace World
      */
     private void OnDisable()
     {
-        foreach (PlayerController player in playersInZone)
+        foreach (PlayerController player in _playersInZone)
         {
             if (player == null)
             {
@@ -90,7 +90,7 @@ namespace World
             player.ClearMovementMultiplierSource(this);
         }
 
-        playersInZone.Clear();
+        _playersInZone.Clear();
     }
 
     /*
@@ -104,7 +104,7 @@ namespace World
             return;
         }
 
-        playersInZone.Add(player);
+        _playersInZone.Add(player);
 
         // 특정 도구가 있으면 감속을 무시하도록 열어둔 확장 포인트입니다.
         if (CanIgnorePenalty())

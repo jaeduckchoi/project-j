@@ -135,24 +135,24 @@ namespace UI
     [SerializeField] private Button popupCloseButton;
     [SerializeField] private string defaultPromptText = "이동: WASD / 방향키   상호작용: E";
 
-    private PlayerController cachedPlayer;
-    private InventoryManager cachedInventory;
-    private StorageManager cachedStorage;
-    private EconomyManager cachedEconomy;
-    private ToolManager cachedToolManager;
-    private RestaurantManager cachedRestaurant;
-    private DayCycleManager cachedDayCycle;
-    private UpgradeManager cachedUpgradeManager;
-    private HubPopupPanel activeHubPanel = HubPopupPanel.None;
-    private ResourceData selectedMaterialPopupResource;
-    private ResourceData selectedStoragePopupResource;
-    private string selectedUpgradePopupKey;
-    private bool isPopupPauseApplied;
-    private float popupPausePreviousTimeScale = 1f;
-    private bool suppressCanvasGroupingInEditorPreview;
+    private PlayerController _cachedPlayer;
+    private InventoryManager _cachedInventory;
+    private StorageManager _cachedStorage;
+    private EconomyManager _cachedEconomy;
+    private ToolManager _cachedToolManager;
+    private RestaurantManager _cachedRestaurant;
+    private DayCycleManager _cachedDayCycle;
+    private UpgradeManager _cachedUpgradeManager;
+    private HubPopupPanel _activeHubPanel = HubPopupPanel.None;
+    private ResourceData _selectedMaterialPopupResource;
+    private ResourceData _selectedStoragePopupResource;
+    private string _selectedUpgradePopupKey;
+    private bool _isPopupPauseApplied;
+    private float _popupPausePreviousTimeScale = 1f;
+    private bool _suppressCanvasGroupingInEditorPreview;
 
 #if ENABLE_INPUT_SYSTEM
-    private static InputActionAsset runtimeUiActionsAsset;
+    private static InputActionAsset _runtimeUiActionsAsset;
 #endif
 
     private enum HubPopupPanel
@@ -279,8 +279,8 @@ namespace UI
         }
 
         PrototypeUISkin.ClearGeneratedCache();
-        bool previousSuppressState = suppressCanvasGroupingInEditorPreview;
-        suppressCanvasGroupingInEditorPreview = true;
+        bool previousSuppressState = _suppressCanvasGroupingInEditorPreview;
+        _suppressCanvasGroupingInEditorPreview = true;
 
         try
         {
@@ -290,7 +290,7 @@ namespace UI
         }
         finally
         {
-            suppressCanvasGroupingInEditorPreview = previousSuppressState;
+            _suppressCanvasGroupingInEditorPreview = previousSuppressState;
         }
     }
 
@@ -332,12 +332,12 @@ namespace UI
             interactionPromptText.text = defaultPromptText;
         }
 
-        activeHubPanel = IsHubScene() && showPopupPreview ? ConvertPreviewPanel(previewPanel) : HubPopupPanel.None;
+        _activeHubPanel = IsHubScene() && showPopupPreview ? ConvertPreviewPanel(previewPanel) : HubPopupPanel.None;
         ApplyMenuPanelState();
 
         if (guideText != null)
         {
-            guideText.text = activeHubPanel == HubPopupPanel.None
+            guideText.text = _activeHubPanel == HubPopupPanel.None
                 ? IsHubScene()
                     ? "하단 버튼과 기본 HUD 배치를 편집 모드에서 확인하는 프리뷰입니다."
                     : "탐험 HUD 카드 배치를 편집 모드에서 확인하는 프리뷰입니다."
@@ -348,13 +348,13 @@ namespace UI
 
         if (resultText != null)
         {
-            bool showResultPreview = !IsHubScene() && activeHubPanel == HubPopupPanel.None;
+            bool showResultPreview = !IsHubScene() && _activeHubPanel == HubPopupPanel.None;
             resultText.text = showResultPreview ? "탐험 결과와 정산 문구가 이 위치에 표시됩니다." : string.Empty;
             resultText.gameObject.SetActive(showResultPreview);
             SetNamedObjectActive("ResultBackdrop", showResultPreview);
         }
 
-        if (activeHubPanel != HubPopupPanel.None)
+        if (_activeHubPanel != HubPopupPanel.None)
         {
             ApplyEditorPreviewPopupText(previewPanel);
         }
@@ -449,7 +449,7 @@ namespace UI
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         EnsureEventSystemExists();
-        activeHubPanel = HubPopupPanel.None;
+        _activeHubPanel = HubPopupPanel.None;
         BindSceneReferences();
         ApplyTextPresentation();
         BindButtons();
@@ -497,9 +497,9 @@ namespace UI
 
     private static InputActionAsset EnsureRuntimeUiInputActionsAsset()
     {
-        if (runtimeUiActionsAsset != null)
+        if (_runtimeUiActionsAsset != null)
         {
-            return runtimeUiActionsAsset;
+            return _runtimeUiActionsAsset;
         }
 
         InputActionAsset asset = ScriptableObject.CreateInstance<InputActionAsset>();
@@ -563,14 +563,14 @@ namespace UI
         trackedOrientationAction.expectedControlType = "Quaternion";
         trackedOrientationAction.AddBinding("<XRController>/deviceRotation");
 
-        runtimeUiActionsAsset = asset;
-        return runtimeUiActionsAsset;
+        _runtimeUiActionsAsset = asset;
+        return _runtimeUiActionsAsset;
     }
 #endif
 
     private void BindSceneReferences()
     {
-        cachedPlayer = FindFirstObjectByType<PlayerController>();
+        _cachedPlayer = FindFirstObjectByType<PlayerController>();
         BindInventory();
         BindStorage();
         BindEconomy();
@@ -589,19 +589,19 @@ namespace UI
             return;
         }
 
-        cachedInventory = GameManager.Instance.Inventory;
-        if (cachedInventory != null)
+        _cachedInventory = GameManager.Instance.Inventory;
+        if (_cachedInventory != null)
         {
-            cachedInventory.InventoryChanged += HandleInventoryChanged;
+            _cachedInventory.InventoryChanged += HandleInventoryChanged;
         }
     }
 
     private void UnbindInventory()
     {
-        if (cachedInventory != null)
+        if (_cachedInventory != null)
         {
-            cachedInventory.InventoryChanged -= HandleInventoryChanged;
-            cachedInventory = null;
+            _cachedInventory.InventoryChanged -= HandleInventoryChanged;
+            _cachedInventory = null;
         }
     }
 
@@ -614,19 +614,19 @@ namespace UI
             return;
         }
 
-        cachedStorage = GameManager.Instance.Storage;
-        if (cachedStorage != null)
+        _cachedStorage = GameManager.Instance.Storage;
+        if (_cachedStorage != null)
         {
-            cachedStorage.StorageChanged += RefreshStorageText;
+            _cachedStorage.StorageChanged += RefreshStorageText;
         }
     }
 
     private void UnbindStorage()
     {
-        if (cachedStorage != null)
+        if (_cachedStorage != null)
         {
-            cachedStorage.StorageChanged -= RefreshStorageText;
-            cachedStorage = null;
+            _cachedStorage.StorageChanged -= RefreshStorageText;
+            _cachedStorage = null;
         }
     }
 
@@ -639,21 +639,21 @@ namespace UI
             return;
         }
 
-        cachedEconomy = GameManager.Instance.Economy;
-        if (cachedEconomy != null)
+        _cachedEconomy = GameManager.Instance.Economy;
+        if (_cachedEconomy != null)
         {
-            cachedEconomy.GoldChanged += HandleEconomyChanged;
-            cachedEconomy.ReputationChanged += HandleEconomyChanged;
+            _cachedEconomy.GoldChanged += HandleEconomyChanged;
+            _cachedEconomy.ReputationChanged += HandleEconomyChanged;
         }
     }
 
     private void UnbindEconomy()
     {
-        if (cachedEconomy != null)
+        if (_cachedEconomy != null)
         {
-            cachedEconomy.GoldChanged -= HandleEconomyChanged;
-            cachedEconomy.ReputationChanged -= HandleEconomyChanged;
-            cachedEconomy = null;
+            _cachedEconomy.GoldChanged -= HandleEconomyChanged;
+            _cachedEconomy.ReputationChanged -= HandleEconomyChanged;
+            _cachedEconomy = null;
         }
     }
 
@@ -666,41 +666,41 @@ namespace UI
             return;
         }
 
-        cachedToolManager = GameManager.Instance.Tools;
-        if (cachedToolManager != null)
+        _cachedToolManager = GameManager.Instance.Tools;
+        if (_cachedToolManager != null)
         {
-            cachedToolManager.ToolsChanged += HandleToolsChanged;
+            _cachedToolManager.ToolsChanged += HandleToolsChanged;
         }
     }
 
     private void UnbindTools()
     {
-        if (cachedToolManager != null)
+        if (_cachedToolManager != null)
         {
-            cachedToolManager.ToolsChanged -= HandleToolsChanged;
-            cachedToolManager = null;
+            _cachedToolManager.ToolsChanged -= HandleToolsChanged;
+            _cachedToolManager = null;
         }
     }
 
     private void BindRestaurant()
     {
         UnbindRestaurant();
-        cachedRestaurant = FindFirstObjectByType<RestaurantManager>();
+        _cachedRestaurant = FindFirstObjectByType<RestaurantManager>();
 
-        if (cachedRestaurant != null)
+        if (_cachedRestaurant != null)
         {
-            cachedRestaurant.SelectedRecipeChanged += RefreshSelectedRecipeText;
-            cachedRestaurant.ServiceResultChanged += RefreshRestaurantResultText;
+            _cachedRestaurant.SelectedRecipeChanged += RefreshSelectedRecipeText;
+            _cachedRestaurant.ServiceResultChanged += RefreshRestaurantResultText;
         }
     }
 
     private void UnbindRestaurant()
     {
-        if (cachedRestaurant != null)
+        if (_cachedRestaurant != null)
         {
-            cachedRestaurant.SelectedRecipeChanged -= RefreshSelectedRecipeText;
-            cachedRestaurant.ServiceResultChanged -= RefreshRestaurantResultText;
-            cachedRestaurant = null;
+            _cachedRestaurant.SelectedRecipeChanged -= RefreshSelectedRecipeText;
+            _cachedRestaurant.ServiceResultChanged -= RefreshRestaurantResultText;
+            _cachedRestaurant = null;
         }
     }
 
@@ -713,19 +713,19 @@ namespace UI
             return;
         }
 
-        cachedDayCycle = GameManager.Instance.DayCycle;
-        if (cachedDayCycle != null)
+        _cachedDayCycle = GameManager.Instance.DayCycle;
+        if (_cachedDayCycle != null)
         {
-            cachedDayCycle.StateChanged += RefreshDayCycleState;
+            _cachedDayCycle.StateChanged += RefreshDayCycleState;
         }
     }
 
     private void UnbindDayCycle()
     {
-        if (cachedDayCycle != null)
+        if (_cachedDayCycle != null)
         {
-            cachedDayCycle.StateChanged -= RefreshDayCycleState;
-            cachedDayCycle = null;
+            _cachedDayCycle.StateChanged -= RefreshDayCycleState;
+            _cachedDayCycle = null;
         }
     }
 
@@ -738,19 +738,19 @@ namespace UI
             return;
         }
 
-        cachedUpgradeManager = GameManager.Instance.Upgrades;
-        if (cachedUpgradeManager != null)
+        _cachedUpgradeManager = GameManager.Instance.Upgrades;
+        if (_cachedUpgradeManager != null)
         {
-            cachedUpgradeManager.UpgradeStateChanged += RefreshUpgradeText;
+            _cachedUpgradeManager.UpgradeStateChanged += RefreshUpgradeText;
         }
     }
 
     private void UnbindUpgradeManager()
     {
-        if (cachedUpgradeManager != null)
+        if (_cachedUpgradeManager != null)
         {
-            cachedUpgradeManager.UpgradeStateChanged -= RefreshUpgradeText;
-            cachedUpgradeManager = null;
+            _cachedUpgradeManager.UpgradeStateChanged -= RefreshUpgradeText;
+            _cachedUpgradeManager = null;
         }
     }
 
@@ -901,7 +901,7 @@ namespace UI
      */
     private void HandleSkipExplorationClicked()
     {
-        cachedDayCycle?.SkipExploration();
+        _cachedDayCycle?.SkipExploration();
         RefreshAll();
     }
 
@@ -910,13 +910,13 @@ namespace UI
      */
     private void HandleSkipServiceClicked()
     {
-        if (cachedRestaurant != null)
+        if (_cachedRestaurant != null)
         {
-            cachedRestaurant.SkipService();
+            _cachedRestaurant.SkipService();
         }
         else
         {
-            cachedDayCycle?.SkipService();
+            _cachedDayCycle?.SkipService();
         }
 
         RefreshAll();
@@ -927,7 +927,7 @@ namespace UI
      */
     private void HandleNextDayClicked()
     {
-        cachedDayCycle?.AdvanceToNextDay();
+        _cachedDayCycle?.AdvanceToNextDay();
         RefreshAll();
     }
 
@@ -958,7 +958,7 @@ namespace UI
             return;
         }
 
-        activeHubPanel = HubPopupPanel.Storage;
+        _activeHubPanel = HubPopupPanel.Storage;
         RefreshStorageText();
         ApplyMenuPanelState();
         RefreshStoragePanelVisibility();
@@ -971,13 +971,13 @@ namespace UI
             return;
         }
 
-        activeHubPanel = activeHubPanel == targetPanel ? HubPopupPanel.None : targetPanel;
+        _activeHubPanel = _activeHubPanel == targetPanel ? HubPopupPanel.None : targetPanel;
         ApplyMenuPanelState();
     }
 
     private void HandlePopupCloseInput()
     {
-        if (activeHubPanel == HubPopupPanel.None || !ReadPopupClosePressed())
+        if (_activeHubPanel == HubPopupPanel.None || !ReadPopupClosePressed())
         {
             return;
         }
@@ -987,12 +987,12 @@ namespace UI
 
     private void CloseActiveHubPanel()
     {
-        if (activeHubPanel == HubPopupPanel.None)
+        if (_activeHubPanel == HubPopupPanel.None)
         {
             return;
         }
 
-        activeHubPanel = HubPopupPanel.None;
+        _activeHubPanel = HubPopupPanel.None;
         ApplyMenuPanelState();
         RefreshStoragePanelVisibility();
     }
@@ -1018,7 +1018,7 @@ namespace UI
 
     private void HandleStoragePopupInput()
     {
-        if (activeHubPanel != HubPopupPanel.Storage || cachedStorage == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
+        if (_activeHubPanel != HubPopupPanel.Storage || _cachedStorage == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
         {
             return;
         }
@@ -1028,7 +1028,7 @@ namespace UI
 
         if (ReadPopupActionPressed(KeyCode.Q, keyboard => keyboard.qKey))
         {
-            changed |= cachedStorage.CycleInventorySelection(inventory);
+            changed |= _cachedStorage.CycleInventorySelection(inventory);
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_storage_select_deposit",
                 "왼쪽 목록에서 맡길 재료를 고르고 맡기기 동작으로 창고에 보관할 수 있습니다.");
@@ -1036,12 +1036,12 @@ namespace UI
 
         if (ReadPopupActionPressed(KeyCode.W, keyboard => keyboard.wKey))
         {
-            changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
+            changed |= _cachedStorage.StoreSelectedFromInventory(inventory) > 0;
         }
 
         if (ReadPopupActionPressed(KeyCode.A, keyboard => keyboard.aKey))
         {
-            changed |= cachedStorage.CycleStoredSelection();
+            changed |= _cachedStorage.CycleStoredSelection();
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_storage_select_withdraw",
                 "보관 목록에서 꺼낼 재료를 고른 뒤 꺼내기 동작으로 가방으로 되돌릴 수 있습니다.");
@@ -1049,7 +1049,7 @@ namespace UI
 
         if (ReadPopupActionPressed(KeyCode.S, keyboard => keyboard.sKey))
         {
-            changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
+            changed |= _cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
         }
 
         if (changed)
@@ -1093,7 +1093,7 @@ namespace UI
     {
         RefreshInventoryText();
         RefreshStorageText();
-        RefreshSelectedRecipeText(cachedRestaurant != null ? cachedRestaurant.SelectedRecipe : null);
+        RefreshSelectedRecipeText(_cachedRestaurant != null ? _cachedRestaurant.SelectedRecipe : null);
         RefreshUpgradeText();
     }
 
@@ -1128,7 +1128,7 @@ namespace UI
 
     private void EnsureCanvasGroups()
     {
-        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
         {
             return;
         }
@@ -1253,7 +1253,7 @@ namespace UI
             return popupRoot;
         }
 
-        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
         {
             Transform existingGroup = FindNamedUiTransform(subgroupName);
             return existingGroup != null ? existingGroup : popupRoot;
@@ -1284,7 +1284,7 @@ namespace UI
             return hudRoot;
         }
 
-        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
         {
             Transform existingGroup = hudRoot.Find(subgroupName);
             return existingGroup != null ? existingGroup : hudRoot;
@@ -1420,7 +1420,7 @@ namespace UI
 
         if (usePopupRoot)
         {
-            if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+            if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
             {
                 Transform existingGroup = transform.Find(PopupRootName);
                 return GetPopupCanvasGroupParent(objectName, existingGroup != null ? existingGroup : transform);
@@ -1429,7 +1429,7 @@ namespace UI
             return GetPopupCanvasGroupParent(objectName, EnsureCanvasGroupRoot(PopupRootName, 1));
         }
 
-        Transform hudRoot = !Application.isPlaying && suppressCanvasGroupingInEditorPreview
+        Transform hudRoot = !Application.isPlaying && _suppressCanvasGroupingInEditorPreview
             ? transform.Find(HudRootName)
             : EnsureCanvasGroupRoot(HudRootName, 0);
         if (hudRoot == null)
@@ -1447,7 +1447,7 @@ namespace UI
             return;
         }
 
-        if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
+        if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
         {
             return;
         }
@@ -2298,7 +2298,7 @@ namespace UI
      */
     private void ApplyHubPopupFrameStyle(TMP_FontAsset headingFont, Color textColor)
     {
-        PrototypeUIPopupDefinition popupDefinition = PrototypeUIPopupCatalog.GetDefinition(ConvertRuntimePopupPanel(activeHubPanel));
+        PrototypeUIPopupDefinition popupDefinition = PrototypeUIPopupCatalog.GetDefinition(ConvertRuntimePopupPanel(_activeHubPanel));
         EnsureHubPopupHeadings(popupDefinition, headingFont, textColor);
     }
 
@@ -2841,7 +2841,7 @@ namespace UI
 
     private PopupPanelContent BuildCurrentHubPopupContent()
     {
-        return activeHubPanel switch
+        return _activeHubPanel switch
         {
             HubPopupPanel.Storage => BuildStoragePopupContent(),
             HubPopupPanel.Recipe => BuildRecipePopupContent(),
@@ -2854,13 +2854,13 @@ namespace UI
     private PopupPanelContent BuildRecipePopupContent()
     {
         List<PopupListEntry> entries = new();
-        if (cachedRestaurant == null)
+        if (_cachedRestaurant == null)
         {
             return new PopupPanelContent(entries, "선택된 메뉴가 없습니다.");
         }
 
-        IReadOnlyList<RecipeData> recipes = cachedRestaurant.AvailableRecipes;
-        RecipeData detailRecipe = cachedRestaurant.SelectedRecipe;
+        IReadOnlyList<RecipeData> recipes = _cachedRestaurant.AvailableRecipes;
+        RecipeData detailRecipe = _cachedRestaurant.SelectedRecipe;
         if (detailRecipe == null)
         {
             for (int i = 0; i < recipes.Count; i++)
@@ -2885,15 +2885,15 @@ namespace UI
             entries.Add(new PopupListEntry(
                 recipe.RecipeId,
                 recipe.DisplayName,
-                BuildPopupItemSummary(recipe.Description, $"판매가 {recipe.SellPrice} · 가능 {cachedRestaurant.GetCookableServings(recipe)}"),
+                BuildPopupItemSummary(recipe.Description, $"판매가 {recipe.SellPrice} · 가능 {_cachedRestaurant.GetCookableServings(recipe)}"),
                 BuildRecipePopupDetailText(recipe),
                 ResolveRecipePopupIcon(recipe),
                 recipe == detailRecipe,
                 () =>
                 {
-                    if (cachedRestaurant != null)
+                    if (_cachedRestaurant != null)
                     {
-                        cachedRestaurant.SelectRecipeByIndex(recipeIndex);
+                        _cachedRestaurant.SelectRecipeByIndex(recipeIndex);
                     }
                 }));
         }
@@ -2918,7 +2918,7 @@ namespace UI
                 continue;
             }
 
-            if (detailEntry == null || entry.Resource == selectedMaterialPopupResource)
+            if (detailEntry == null || entry.Resource == _selectedMaterialPopupResource)
             {
                 detailEntry = entry;
             }
@@ -2942,7 +2942,7 @@ namespace UI
                 detailEntry != null && resource == detailEntry.Resource,
                 () =>
                 {
-                    selectedMaterialPopupResource = resource;
+                    _selectedMaterialPopupResource = resource;
                     RefreshHubPopupContent();
                 }));
         }
@@ -2953,28 +2953,28 @@ namespace UI
     private PopupPanelContent BuildStoragePopupContent()
     {
         List<PopupListEntry> entries = new();
-        if (cachedStorage == null)
+        if (_cachedStorage == null)
         {
             return new PopupPanelContent(entries, "창고 정보를 찾지 못했습니다.");
         }
 
-        cachedStorage.InitializeIfNeeded();
+        _cachedStorage.InitializeIfNeeded();
 
         InventoryEntry detailEntry = null;
-        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
+        foreach (InventoryEntry entry in _cachedStorage.RuntimeItems)
         {
             if (entry == null || entry.Resource == null || entry.Amount <= 0)
             {
                 continue;
             }
 
-            if (detailEntry == null || entry.Resource == selectedStoragePopupResource)
+            if (detailEntry == null || entry.Resource == _selectedStoragePopupResource)
             {
                 detailEntry = entry;
             }
         }
 
-        foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
+        foreach (InventoryEntry entry in _cachedStorage.RuntimeItems)
         {
             if (entry == null || entry.Resource == null || entry.Amount <= 0)
             {
@@ -2992,7 +2992,7 @@ namespace UI
                 detailEntry != null && resource == detailEntry.Resource,
                 () =>
                 {
-                    selectedStoragePopupResource = resource;
+                    _selectedStoragePopupResource = resource;
                     RefreshHubPopupContent();
                 }));
         }
@@ -3003,14 +3003,14 @@ namespace UI
     private PopupPanelContent BuildUpgradePopupContent()
     {
         List<PopupListEntry> rawEntries = new();
-        if (cachedUpgradeManager == null)
+        if (_cachedUpgradeManager == null)
         {
             return new PopupPanelContent(new List<PopupListEntry>(), "업그레이드 정보를 찾지 못했습니다.");
         }
 
-        cachedUpgradeManager.InitializeIfNeeded();
+        _cachedUpgradeManager.InitializeIfNeeded();
 
-        foreach (ToolUnlockCost cost in cachedUpgradeManager.ToolUnlockCosts)
+        foreach (ToolUnlockCost cost in _cachedUpgradeManager.ToolUnlockCosts)
         {
             if (cost == null || cost.toolType == ToolType.None)
             {
@@ -3028,12 +3028,12 @@ namespace UI
                 false,
                 () =>
                 {
-                    selectedUpgradePopupKey = key;
+                    _selectedUpgradePopupKey = key;
                     RefreshHubPopupContent();
                 }));
         }
 
-        IReadOnlyList<InventoryUpgradeCost> inventoryUpgradeCosts = cachedUpgradeManager.InventoryUpgradeCosts;
+        IReadOnlyList<InventoryUpgradeCost> inventoryUpgradeCosts = _cachedUpgradeManager.InventoryUpgradeCosts;
         for (int i = 0; i < inventoryUpgradeCosts.Count; i++)
         {
             InventoryUpgradeCost cost = inventoryUpgradeCosts[i];
@@ -3053,7 +3053,7 @@ namespace UI
                 false,
                 () =>
                 {
-                    selectedUpgradePopupKey = key;
+                    _selectedUpgradePopupKey = key;
                     RefreshHubPopupContent();
                 }));
         }
@@ -3064,8 +3064,8 @@ namespace UI
         }
 
         string preferredKey = ResolvePreferredUpgradePopupKey();
-        string selectedKey = ContainsPopupEntryKey(rawEntries, selectedUpgradePopupKey)
-            ? selectedUpgradePopupKey
+        string selectedKey = ContainsPopupEntryKey(rawEntries, _selectedUpgradePopupKey)
+            ? _selectedUpgradePopupKey
             : ContainsPopupEntryKey(rawEntries, preferredKey)
                 ? preferredKey
                 : rawEntries[0].Key;
@@ -3105,15 +3105,15 @@ namespace UI
 
     private string ResolvePreferredUpgradePopupKey()
     {
-        if (cachedUpgradeManager == null)
+        if (_cachedUpgradeManager == null)
         {
             return string.Empty;
         }
 
-        return cachedUpgradeManager.GetPreferredAction() switch
+        return _cachedUpgradeManager.GetPreferredAction() switch
         {
-            UpgradeWorkbenchAction.UnlockTool when cachedUpgradeManager.GetPreferredToolType() != ToolType.None
-                => $"tool:{cachedUpgradeManager.GetPreferredToolType()}",
+            UpgradeWorkbenchAction.UnlockTool when _cachedUpgradeManager.GetPreferredToolType() != ToolType.None
+                => $"tool:{_cachedUpgradeManager.GetPreferredToolType()}",
             UpgradeWorkbenchAction.UpgradeInventory when GameManager.Instance != null && GameManager.Instance.Inventory != null
                 => $"inventory:{GameManager.Instance.Inventory.CapacityLevel}",
             _ => string.Empty
@@ -3168,7 +3168,7 @@ namespace UI
 
     private string BuildRecipePopupDetailText(RecipeData recipe)
     {
-        if (cachedRestaurant == null || recipe == null)
+        if (_cachedRestaurant == null || recipe == null)
         {
             return "선택된 메뉴가 없습니다.";
         }
@@ -3184,7 +3184,7 @@ namespace UI
 
         builder.AppendLine($"- 판매가: {recipe.SellPrice}");
         builder.AppendLine($"- 평판: +{Mathf.Max(0, recipe.ReputationDelta)}");
-        builder.AppendLine($"- 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
+        builder.AppendLine($"- 가능 수량: {_cachedRestaurant.GetCookableServings(recipe)}");
         builder.AppendLine();
         builder.AppendLine("- 필요 재료");
 
@@ -3225,16 +3225,16 @@ namespace UI
         builder.AppendLine($"- 희귀도: {GetRarityLabel(resource.Rarity)}");
         builder.AppendLine($"- 기본 판매가: {resource.BaseSellPrice}");
 
-        if (cachedRestaurant != null && cachedRestaurant.SelectedRecipe != null)
+        if (_cachedRestaurant != null && _cachedRestaurant.SelectedRecipe != null)
         {
-            RecipeData recipe = cachedRestaurant.SelectedRecipe;
+            RecipeData recipe = _cachedRestaurant.SelectedRecipe;
             int requiredAmount = GetRecipeIngredientAmount(recipe, resource);
             builder.AppendLine();
             builder.AppendLine($"- 선택 메뉴: {recipe.DisplayName}");
             builder.AppendLine(requiredAmount > 0
                 ? $"- 메뉴 필요 수량: {requiredAmount}"
                 : "- 메뉴 사용처: 현재 선택 메뉴에는 들어가지 않음");
-            builder.AppendLine($"- 현재 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
+            builder.AppendLine($"- 현재 가능 수량: {_cachedRestaurant.GetCookableServings(recipe)}");
         }
 
         return builder.ToString().TrimEnd();
@@ -3242,13 +3242,13 @@ namespace UI
 
     private string BuildToolUnlockPopupDetailText(ToolUnlockCost cost)
     {
-        if (cost == null || cost.toolType == ToolType.None || cachedUpgradeManager == null)
+        if (cost == null || cost.toolType == ToolType.None || _cachedUpgradeManager == null)
         {
             return "업그레이드 정보를 찾지 못했습니다.";
         }
 
-        bool isUnlocked = cachedUpgradeManager.IsToolUnlocked(cost.toolType);
-        bool canUnlock = !isUnlocked && cachedUpgradeManager.CanUnlockTool(cost.toolType);
+        bool isUnlocked = _cachedUpgradeManager.IsToolUnlocked(cost.toolType);
+        bool canUnlock = !isUnlocked && _cachedUpgradeManager.CanUnlockTool(cost.toolType);
         int ownedAmount = cost.requiredResource != null && GameManager.Instance != null && GameManager.Instance.Inventory != null
             ? GameManager.Instance.Inventory.GetAmount(cost.requiredResource)
             : 0;
@@ -3270,10 +3270,10 @@ namespace UI
         }
 
         builder.AppendLine($"- 활용: {BuildToolUnlockUseDescription(cost.toolType)}");
-        if ((isUnlocked || canUnlock) && !string.IsNullOrWhiteSpace(cachedUpgradeManager.LastUpgradeMessage))
+        if ((isUnlocked || canUnlock) && !string.IsNullOrWhiteSpace(_cachedUpgradeManager.LastUpgradeMessage))
         {
             builder.AppendLine();
-            builder.AppendLine(cachedUpgradeManager.LastUpgradeMessage);
+            builder.AppendLine(_cachedUpgradeManager.LastUpgradeMessage);
         }
 
         return builder.ToString().TrimEnd();
@@ -3327,7 +3327,7 @@ namespace UI
     private string BuildInventoryUpgradeAvailabilityLabel(int index)
     {
         InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-        if (inventory == null || cachedUpgradeManager == null)
+        if (inventory == null || _cachedUpgradeManager == null)
         {
             return "정보 없음";
         }
@@ -3339,7 +3339,7 @@ namespace UI
 
         if (inventory.CapacityLevel == index)
         {
-            return cachedUpgradeManager.CanUpgradeInventory() ? "지금 진행 가능" : "재료 준비 필요";
+            return _cachedUpgradeManager.CanUpgradeInventory() ? "지금 진행 가능" : "재료 준비 필요";
         }
 
         return "이전 단계 필요";
@@ -3347,17 +3347,17 @@ namespace UI
 
     private string BuildUpgradeAvailabilityLabel(ToolType toolType)
     {
-        if (cachedUpgradeManager == null || toolType == ToolType.None)
+        if (_cachedUpgradeManager == null || toolType == ToolType.None)
         {
             return "정보 없음";
         }
 
-        if (cachedUpgradeManager.IsToolUnlocked(toolType))
+        if (_cachedUpgradeManager.IsToolUnlocked(toolType))
         {
             return "완료";
         }
 
-        return cachedUpgradeManager.CanUnlockTool(toolType) ? "지금 진행 가능" : "재료 준비 필요";
+        return _cachedUpgradeManager.CanUnlockTool(toolType) ? "지금 진행 가능" : "재료 준비 필요";
     }
 
     private static string BuildToolUnlockUseDescription(ToolType toolType)
@@ -3390,14 +3390,14 @@ namespace UI
 
     private string BuildStoragePopupDetailText(InventoryEntry entry)
     {
-        if (cachedStorage == null)
+        if (_cachedStorage == null)
         {
             return "창고 정보를 찾지 못했습니다.";
         }
 
         InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-        InventoryEntry depositEntry = cachedStorage.GetSelectedInventoryEntry(inventory);
-        InventoryEntry withdrawEntry = cachedStorage.GetSelectedStoredEntry();
+        InventoryEntry depositEntry = _cachedStorage.GetSelectedInventoryEntry(inventory);
+        InventoryEntry withdrawEntry = _cachedStorage.GetSelectedStoredEntry();
         depositEntry = depositEntry != null && depositEntry.Resource != null ? depositEntry : null;
         withdrawEntry = withdrawEntry != null && withdrawEntry.Resource != null ? withdrawEntry : null;
 
@@ -3435,10 +3435,10 @@ namespace UI
         builder.AppendLine("A 꺼낼 재료 변경");
         builder.AppendLine("S 꺼내기");
 
-        if (!string.IsNullOrWhiteSpace(cachedStorage.LastOperationMessage))
+        if (!string.IsNullOrWhiteSpace(_cachedStorage.LastOperationMessage))
         {
             builder.AppendLine();
-            builder.AppendLine(cachedStorage.LastOperationMessage);
+            builder.AppendLine(_cachedStorage.LastOperationMessage);
         }
 
         return builder.ToString().TrimEnd();
@@ -3464,25 +3464,25 @@ namespace UI
 
     private string BuildHubMessageLine()
     {
-        if (!IsHubScene() || activeHubPanel != HubPopupPanel.None)
+        if (!IsHubScene() || _activeHubPanel != HubPopupPanel.None)
         {
             return string.Empty;
         }
 
-        string message = cachedDayCycle != null ? cachedDayCycle.CurrentGuideText : string.Empty;
+        string message = _cachedDayCycle != null ? _cachedDayCycle.CurrentGuideText : string.Empty;
 
-        if (cachedDayCycle != null
-            && cachedDayCycle.CurrentPhase == DayPhase.Settlement
-            && !string.IsNullOrWhiteSpace(cachedDayCycle.LastSettlementSummary))
+        if (_cachedDayCycle != null
+            && _cachedDayCycle.CurrentPhase == DayPhase.Settlement
+            && !string.IsNullOrWhiteSpace(_cachedDayCycle.LastSettlementSummary))
         {
-            message = cachedDayCycle.LastSettlementSummary;
+            message = _cachedDayCycle.LastSettlementSummary;
         }
-        else if (cachedDayCycle != null
-            && cachedDayCycle.CurrentPhase == DayPhase.AfternoonService
-            && cachedRestaurant != null
-            && !string.IsNullOrWhiteSpace(cachedRestaurant.LastServiceResult))
+        else if (_cachedDayCycle != null
+            && _cachedDayCycle.CurrentPhase == DayPhase.AfternoonService
+            && _cachedRestaurant != null
+            && !string.IsNullOrWhiteSpace(_cachedRestaurant.LastServiceResult))
         {
-            message = cachedRestaurant.LastServiceResult;
+            message = _cachedRestaurant.LastServiceResult;
         }
 
         return CompactToSingleLine(message);
@@ -3522,9 +3522,9 @@ namespace UI
             return;
         }
 
-        if (activeHubPanel == HubPopupPanel.Storage && !IsPlayerNearStorageStation())
+        if (_activeHubPanel == HubPopupPanel.Storage && !IsPlayerNearStorageStation())
         {
-            activeHubPanel = HubPopupPanel.None;
+            _activeHubPanel = HubPopupPanel.None;
             ApplyMenuPanelState();
             return;
         }
@@ -3544,7 +3544,7 @@ namespace UI
                 : bodyFontAsset != null
                     ? bodyFontAsset
                     : TMP_Settings.defaultFontAsset;
-            bool showPopup = activeHubPanel != HubPopupPanel.None;
+            bool showPopup = _activeHubPanel != HubPopupPanel.None;
 
             ApplyHubPopupFrameStyle(headingFont, theme.Text);
             SetHubPopupDesignActive(showPopup);
@@ -3613,19 +3613,19 @@ namespace UI
 
     private void RefreshHubPopupOverlay()
     {
-        bool shouldShowOverlay = IsHubScene() && activeHubPanel != HubPopupPanel.None;
+        bool shouldShowOverlay = IsHubScene() && _activeHubPanel != HubPopupPanel.None;
         SetNamedObjectActive("PopupOverlay", shouldShowOverlay);
         ApplyPopupPauseState(shouldShowOverlay);
     }
 
     private bool IsPlayerNearStorageStation()
     {
-        if (cachedPlayer == null)
+        if (_cachedPlayer == null)
         {
-            cachedPlayer = FindFirstObjectByType<PlayerController>();
+            _cachedPlayer = FindFirstObjectByType<PlayerController>();
         }
 
-        InteractionDetector detector = cachedPlayer != null ? cachedPlayer.InteractionDetector : null;
+        InteractionDetector detector = _cachedPlayer != null ? _cachedPlayer.InteractionDetector : null;
         return detector != null && detector.CurrentInteractable is StorageStation;
     }
 
@@ -3641,14 +3641,14 @@ namespace UI
 
         if (shouldPause)
         {
-            if (isPopupPauseApplied)
+            if (_isPopupPauseApplied)
             {
                 return;
             }
 
-            popupPausePreviousTimeScale = Time.timeScale;
+            _popupPausePreviousTimeScale = Time.timeScale;
             Time.timeScale = 0f;
-            isPopupPauseApplied = true;
+            _isPopupPauseApplied = true;
             return;
         }
 
@@ -3657,13 +3657,13 @@ namespace UI
 
     private void RestorePopupPauseIfNeeded()
     {
-        if (!isPopupPauseApplied)
+        if (!_isPopupPauseApplied)
         {
             return;
         }
 
-        Time.timeScale = popupPausePreviousTimeScale;
-        isPopupPauseApplied = false;
+        Time.timeScale = _popupPausePreviousTimeScale;
+        _isPopupPauseApplied = false;
     }
 
     private static bool IsHubScene()
@@ -3725,8 +3725,8 @@ namespace UI
         RefreshUpgradeText();
         RefreshEconomyText();
         RefreshInteractionPrompt();
-        RefreshSelectedRecipeText(cachedRestaurant != null ? cachedRestaurant.SelectedRecipe : null);
-        RefreshRestaurantResultText(cachedRestaurant != null ? cachedRestaurant.LastServiceResult : string.Empty);
+        RefreshSelectedRecipeText(_cachedRestaurant != null ? _cachedRestaurant.SelectedRecipe : null);
+        RefreshRestaurantResultText(_cachedRestaurant != null ? _cachedRestaurant.LastServiceResult : string.Empty);
         RefreshDayCycleState();
 
         ApplyMenuPanelState();
@@ -3743,13 +3743,13 @@ namespace UI
             return;
         }
 
-        if (cachedPlayer == null)
+        if (_cachedPlayer == null)
         {
-            cachedPlayer = FindFirstObjectByType<PlayerController>();
+            _cachedPlayer = FindFirstObjectByType<PlayerController>();
         }
 
         string prompt = string.Empty;
-        InteractionDetector detector = cachedPlayer != null ? cachedPlayer.InteractionDetector : null;
+        InteractionDetector detector = _cachedPlayer != null ? _cachedPlayer.InteractionDetector : null;
 
         if (detector != null && detector.CurrentInteractable != null)
         {
@@ -3761,7 +3761,7 @@ namespace UI
             prompt = defaultPromptText;
         }
 
-        bool shouldShowPrompt = activeHubPanel == HubPopupPanel.None;
+        bool shouldShowPrompt = _activeHubPanel == HubPopupPanel.None;
 
         interactionPromptText.text = prompt;
         interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
@@ -3826,16 +3826,16 @@ namespace UI
             return;
         }
 
-        if (cachedStorage == null)
+        if (_cachedStorage == null)
         {
             storageText.text = string.Empty;
             return;
         }
 
-        string summary = cachedStorage.BuildSummaryText();
-        if (!string.IsNullOrWhiteSpace(cachedStorage.LastOperationMessage))
+        string summary = _cachedStorage.BuildSummaryText();
+        if (!string.IsNullOrWhiteSpace(_cachedStorage.LastOperationMessage))
         {
-            summary += $"\n\n{cachedStorage.LastOperationMessage}";
+            summary += $"\n\n{_cachedStorage.LastOperationMessage}";
         }
 
         storageText.text = summary;
@@ -3853,16 +3853,16 @@ namespace UI
             return;
         }
 
-        if (cachedUpgradeManager == null)
+        if (_cachedUpgradeManager == null)
         {
             upgradeText.text = string.Empty;
             return;
         }
 
-        string summary = cachedUpgradeManager.BuildUpgradeSummary();
-        if (!string.IsNullOrWhiteSpace(cachedUpgradeManager.LastUpgradeMessage))
+        string summary = _cachedUpgradeManager.BuildUpgradeSummary();
+        if (!string.IsNullOrWhiteSpace(_cachedUpgradeManager.LastUpgradeMessage))
         {
-            summary += $"\n\n{cachedUpgradeManager.LastUpgradeMessage}";
+            summary += $"\n\n{_cachedUpgradeManager.LastUpgradeMessage}";
         }
 
         upgradeText.text = summary;
@@ -3900,13 +3900,13 @@ namespace UI
             return;
         }
 
-        if (cachedRestaurant == null)
+        if (_cachedRestaurant == null)
         {
             selectedRecipeText.text = "메뉴 선택: 허브에서 확인";
             return;
         }
 
-        string summary = cachedRestaurant.BuildRecipeSelectionSummary();
+        string summary = _cachedRestaurant.BuildRecipeSelectionSummary();
         if (string.IsNullOrWhiteSpace(summary) && recipe == null)
         {
             selectedRecipeText.text = "선택 메뉴: 없음";
@@ -3941,7 +3941,7 @@ namespace UI
             return;
         }
 
-        string guide = cachedDayCycle != null ? cachedDayCycle.CurrentGuideText : string.Empty;
+        string guide = _cachedDayCycle != null ? _cachedDayCycle.CurrentGuideText : string.Empty;
         guideText.text = guide;
         guideText.gameObject.SetActive(!string.IsNullOrWhiteSpace(guide));
         SetNamedObjectActive("GuideBackdrop", !IsHubScene() && guideText.gameObject.activeSelf);
@@ -3978,25 +3978,25 @@ namespace UI
     {
         if (dayPhaseText != null)
         {
-            if (cachedDayCycle == null)
+            if (_cachedDayCycle == null)
             {
                 dayPhaseText.text = string.Empty;
             }
             else
             {
-                dayPhaseText.text = $"{cachedDayCycle.CurrentDay}일차 · {DayCycleManager.GetPhaseDisplayName(cachedDayCycle.CurrentPhase)}";
+                dayPhaseText.text = $"{_cachedDayCycle.CurrentDay}일차 · {DayCycleManager.GetPhaseDisplayName(_cachedDayCycle.CurrentPhase)}";
             }
 
             SetNamedObjectActive("PhaseBadge", !string.IsNullOrWhiteSpace(dayPhaseText.text));
         }
 
         RefreshGuideText();
-        RefreshRestaurantResultText(cachedRestaurant != null ? cachedRestaurant.LastServiceResult : string.Empty);
+        RefreshRestaurantResultText(_cachedRestaurant != null ? _cachedRestaurant.LastServiceResult : string.Empty);
         RefreshButtonStates();
 
-        if (cachedRestaurant != null)
+        if (_cachedRestaurant != null)
         {
-            RefreshSelectedRecipeText(cachedRestaurant.SelectedRecipe);
+            RefreshSelectedRecipeText(_cachedRestaurant.SelectedRecipe);
         }
     }
 
@@ -4006,8 +4006,8 @@ namespace UI
     private void RefreshButtonStates()
     {
         bool isHubScene = SceneManager.GetActiveScene().name == "Hub";
-        DayPhase currentPhase = cachedDayCycle != null ? cachedDayCycle.CurrentPhase : DayPhase.MorningExplore;
-        bool showButtons = isHubScene && activeHubPanel == HubPopupPanel.None;
+        DayPhase currentPhase = _cachedDayCycle != null ? _cachedDayCycle.CurrentPhase : DayPhase.MorningExplore;
+        bool showButtons = isHubScene && _activeHubPanel == HubPopupPanel.None;
 
         if (skipExplorationButton != null)
         {
@@ -4026,5 +4026,4 @@ namespace UI
     }
     }
 }
-
 

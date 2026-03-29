@@ -20,8 +20,8 @@ namespace Tools
 
     [SerializeField] private List<ToolType> runtimeUnlockedTools = new();
 
-    private readonly HashSet<ToolType> unlockedTools = new();
-    private bool initialized;
+    private readonly HashSet<ToolType> _unlockedTools = new();
+    private bool _initialized;
 
     public event Action ToolsChanged;
 
@@ -32,13 +32,13 @@ namespace Tools
      */
     public void InitializeIfNeeded()
     {
-        if (initialized)
+        if (_initialized)
         {
             return;
         }
 
-        initialized = true;
-        unlockedTools.Clear();
+        _initialized = true;
+        _unlockedTools.Clear();
 
         foreach (ToolType toolType in startingUnlockedTools)
         {
@@ -47,7 +47,7 @@ namespace Tools
                 continue;
             }
 
-            unlockedTools.Add(toolType);
+            _unlockedTools.Add(toolType);
         }
 
         RefreshRuntimeTools();
@@ -60,7 +60,7 @@ namespace Tools
     public bool HasTool(ToolType toolType)
     {
         InitializeIfNeeded();
-        return toolType == ToolType.None || unlockedTools.Contains(toolType);
+        return toolType == ToolType.None || _unlockedTools.Contains(toolType);
     }
 
     /*
@@ -74,7 +74,7 @@ namespace Tools
         }
 
         InitializeIfNeeded();
-        if (!unlockedTools.Add(toolType))
+        if (!_unlockedTools.Add(toolType))
         {
             return false;
         }
@@ -91,7 +91,7 @@ namespace Tools
     {
         runtimeUnlockedTools.Clear();
 
-        foreach (ToolType toolType in unlockedTools)
+        foreach (ToolType toolType in _unlockedTools)
         {
             runtimeUnlockedTools.Add(toolType);
         }

@@ -31,7 +31,7 @@ public class PrototypeUIDesignController : MonoBehaviour
     [SerializeField] private PrototypeUIPreviewPanel editorPreviewPanel = PrototypeUIPreviewPanel.Recipe;
 
 #if UNITY_EDITOR
-    private bool isApplyingPreview;
+    private bool _isApplyingPreview;
 #endif
 
     public UIManager UiManager => uiManager;
@@ -60,7 +60,7 @@ public class PrototypeUIDesignController : MonoBehaviour
      */
     private void OnValidate()
     {
-        if (Application.isPlaying || isApplyingPreview)
+        if (Application.isPlaying || _isApplyingPreview)
         {
             return;
         }
@@ -74,7 +74,7 @@ public class PrototypeUIDesignController : MonoBehaviour
      */
     public void ApplyEditorPreviewInEditor()
     {
-        if (Application.isPlaying || isApplyingPreview)
+        if (Application.isPlaying || _isApplyingPreview)
         {
             return;
         }
@@ -85,14 +85,14 @@ public class PrototypeUIDesignController : MonoBehaviour
             return;
         }
 
-        isApplyingPreview = true;
+        _isApplyingPreview = true;
         try
         {
             uiManager.ApplyEditorDesignPreview(showEditorPreview, editorPreviewPanel);
         }
         finally
         {
-            isApplyingPreview = false;
+            _isApplyingPreview = false;
         }
     }
 

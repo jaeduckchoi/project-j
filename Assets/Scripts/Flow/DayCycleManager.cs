@@ -13,30 +13,30 @@ namespace Flow
     [SerializeField] private DayPhase startingPhase = DayPhase.MorningExplore;
     [SerializeField, Min(1f)] private float defaultHintDuration = 5f;
 
-    private readonly HashSet<string> shownHintIds = new();
-    private bool initialized;
-    private string baseGuideText = string.Empty;
-    private string temporaryGuideText = string.Empty;
-    private float temporaryGuideExpireTime;
+    private readonly HashSet<string> _shownHintIds = new();
+    private bool _initialized;
+    private string _baseGuideText = string.Empty;
+    private string _temporaryGuideText = string.Empty;
+    private float _temporaryGuideExpireTime;
 
     public event Action StateChanged;
 
     public int CurrentDay { get; private set; }
     public DayPhase CurrentPhase { get; private set; }
-    public string CurrentGuideText => HasTemporaryGuide ? temporaryGuideText : baseGuideText;
+    public string CurrentGuideText => HasTemporaryGuide ? _temporaryGuideText : _baseGuideText;
     public string LastSettlementSummary { get; private set; } = string.Empty;
 
     private bool HasTemporaryGuide =>
-        !string.IsNullOrWhiteSpace(temporaryGuideText) && Time.unscaledTime < temporaryGuideExpireTime;
+        !string.IsNullOrWhiteSpace(_temporaryGuideText) && Time.unscaledTime < _temporaryGuideExpireTime;
 
     /*
      * 임시 안내 문구의 만료 시간을 감시하고 기본 안내로 되돌립니다.
      */
     private void Update()
     {
-        if (!HasTemporaryGuide && !string.IsNullOrWhiteSpace(temporaryGuideText))
+        if (!HasTemporaryGuide && !string.IsNullOrWhiteSpace(_temporaryGuideText))
         {
-            temporaryGuideText = string.Empty;
+            _temporaryGuideText = string.Empty;
             RaiseStateChanged();
         }
     }
@@ -46,15 +46,15 @@ namespace Flow
      */
     public void InitializeIfNeeded()
     {
-        if (initialized)
+        if (_initialized)
         {
             return;
         }
 
-        initialized = true;
+        _initialized = true;
         CurrentDay = Mathf.Max(1, startingDay);
         CurrentPhase = startingPhase;
-        baseGuideText = GetDefaultGuide(CurrentPhase);
+        _baseGuideText = GetDefaultGuide(CurrentPhase);
         LastSettlementSummary = "오늘 하루를 시작하세요.";
         RaiseStateChanged();
     }
@@ -178,8 +178,8 @@ namespace Flow
             return;
         }
 
-        temporaryGuideText = guideText;
-        temporaryGuideExpireTime = Time.unscaledTime + (duration > 0f ? duration : defaultHintDuration);
+        _temporaryGuideText = guideText;
+        _temporaryGuideExpireTime = Time.unscaledTime + (duration > 0f ? duration : defaultHintDuration);
         RaiseStateChanged();
     }
 
@@ -195,7 +195,7 @@ namespace Flow
         }
 
         InitializeIfNeeded();
-        if (!shownHintIds.Add(hintId))
+        if (!_shownHintIds.Add(hintId))
         {
             return;
         }
@@ -222,7 +222,7 @@ namespace Flow
      */
     private void SetBaseGuide(string guideText)
     {
-        baseGuideText = guideText;
+        _baseGuideText = guideText;
         RaiseStateChanged();
     }
 

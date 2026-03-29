@@ -15,14 +15,14 @@ namespace Player
     [SerializeField, Min(0.1f)] private float moveSpeed = 4f;
     [SerializeField] private InteractionDetector interactionDetector;
 
-    private Rigidbody2D body;
-    private Vector2 moveInput;
-    private readonly Dictionary<object, float> movementMultiplierSources = new();
-    private readonly Dictionary<object, Vector2> externalVelocitySources = new();
+    private Rigidbody2D _body;
+    private Vector2 _moveInput;
+    private readonly Dictionary<object, float> _movementMultiplierSources = new();
+    private readonly Dictionary<object, Vector2> _externalVelocitySources = new();
 
 #if ENABLE_INPUT_SYSTEM
-    private InputAction moveAction;
-    private InputAction interactAction;
+    private InputAction _moveAction;
+    private InputAction _interactAction;
 #endif
 
     public Vector2 CurrentVelocity { get; private set; }
@@ -35,7 +35,7 @@ namespace Player
      */
     private void Awake()
     {
-        body = GetComponent<Rigidbody2D>();
+        _body = GetComponent<Rigidbody2D>();
 
         if (interactionDetector == null)
         {
@@ -55,8 +55,8 @@ namespace Player
     private void OnEnable()
     {
 #if ENABLE_INPUT_SYSTEM
-        moveAction?.Enable();
-        interactAction?.Enable();
+        _moveAction?.Enable();
+        _interactAction?.Enable();
 #endif
     }
 
@@ -65,12 +65,12 @@ namespace Player
      */
     private void OnDisable()
     {
-        movementMultiplierSources.Clear();
-        externalVelocitySources.Clear();
+        _movementMultiplierSources.Clear();
+        _externalVelocitySources.Clear();
 
 #if ENABLE_INPUT_SYSTEM
-        moveAction?.Disable();
-        interactAction?.Disable();
+        _moveAction?.Disable();
+        _interactAction?.Disable();
 #endif
     }
 
@@ -80,8 +80,8 @@ namespace Player
     private void OnDestroy()
     {
 #if ENABLE_INPUT_SYSTEM
-        moveAction?.Dispose();
-        interactAction?.Dispose();
+        _moveAction?.Dispose();
+        _interactAction?.Dispose();
 #endif
     }
 
@@ -90,7 +90,7 @@ namespace Player
      */
     private void Update()
     {
-        moveInput = ReadMoveInput();
+        _moveInput = ReadMoveInput();
 
         if (ReadInteractPressed() && interactionDetector != null)
         {
@@ -103,9 +103,9 @@ namespace Player
      */
     private void FixedUpdate()
     {
-        Vector2 desiredVelocity = moveInput * EffectiveMoveSpeed + GetExternalVelocity();
-        body.linearVelocity = desiredVelocity;
-        CurrentVelocity = body.linearVelocity;
+        Vector2 desiredVelocity = _moveInput * EffectiveMoveSpeed + GetExternalVelocity();
+        _body.linearVelocity = desiredVelocity;
+        CurrentVelocity = _body.linearVelocity;
 
         if (CurrentVelocity.sqrMagnitude > 0.001f)
         {
@@ -120,15 +120,15 @@ namespace Player
     {
         transform.position = position;
 
-        if (body == null)
+        if (_body == null)
         {
-            body = GetComponent<Rigidbody2D>();
+            _body = GetComponent<Rigidbody2D>();
         }
 
-        if (body != null)
+        if (_body != null)
         {
-            body.position = new Vector2(position.x, position.y);
-            body.linearVelocity = Vector2.zero;
+            _body.position = new Vector2(position.x, position.y);
+            _body.linearVelocity = Vector2.zero;
         }
     }
 
@@ -145,11 +145,11 @@ namespace Player
         float clampedMultiplier = Mathf.Max(0f, multiplier);
         if (Mathf.Approximately(clampedMultiplier, 1f))
         {
-            movementMultiplierSources.Remove(source);
+            _movementMultiplierSources.Remove(source);
             return;
         }
 
-        movementMultiplierSources[source] = clampedMultiplier;
+        _movementMultiplierSources[source] = clampedMultiplier;
     }
 
     /*
@@ -162,7 +162,7 @@ namespace Player
             return;
         }
 
-        movementMultiplierSources.Remove(source);
+        _movementMultiplierSources.Remove(source);
     }
 
     /*
@@ -177,11 +177,11 @@ namespace Player
 
         if (velocity.sqrMagnitude <= 0.0001f)
         {
-            externalVelocitySources.Remove(source);
+            _externalVelocitySources.Remove(source);
             return;
         }
 
-        externalVelocitySources[source] = velocity;
+        _externalVelocitySources[source] = velocity;
     }
 
     /*
@@ -194,7 +194,7 @@ namespace Player
             return;
         }
 
-        externalVelocitySources.Remove(source);
+        _externalVelocitySources.Remove(source);
     }
 
     /*
@@ -205,9 +205,9 @@ namespace Player
         Vector2 input = Vector2.zero;
 
 #if ENABLE_INPUT_SYSTEM
-        if (moveAction != null)
+        if (_moveAction != null)
         {
-            input += moveAction.ReadValue<Vector2>();
+            input += _moveAction.ReadValue<Vector2>();
         }
 
         Keyboard keyboard = Keyboard.current;
@@ -274,7 +274,7 @@ namespace Player
         bool pressed = false;
 
 #if ENABLE_INPUT_SYSTEM
-        if (interactAction != null && interactAction.WasPressedThisFrame())
+        if (_interactAction != null && _interactAction.WasPressedThisFrame())
         {
             pressed = true;
         }
@@ -300,7 +300,7 @@ namespace Player
     {
         float multiplier = 1f;
 
-        foreach (float sourceMultiplier in movementMultiplierSources.Values)
+        foreach (float sourceMultiplier in _movementMultiplierSources.Values)
         {
             multiplier *= sourceMultiplier;
         }
@@ -315,7 +315,7 @@ namespace Player
     {
         Vector2 combinedVelocity = Vector2.zero;
 
-        foreach (Vector2 velocity in externalVelocitySources.Values)
+        foreach (Vector2 velocity in _externalVelocitySources.Values)
         {
             combinedVelocity += velocity;
         }
@@ -349,26 +349,26 @@ namespace Player
      */
     private void SetupInputActions()
     {
-        if (moveAction != null && interactAction != null)
+        if (_moveAction != null && _interactAction != null)
         {
             return;
         }
 
-        moveAction = new InputAction("Move", InputActionType.Value);
-        moveAction.AddCompositeBinding("2DVector")
+        _moveAction = new InputAction("Move", InputActionType.Value);
+        _moveAction.AddCompositeBinding("2DVector")
             .With("Up", "<Keyboard>/w")
             .With("Down", "<Keyboard>/s")
             .With("Left", "<Keyboard>/a")
             .With("Right", "<Keyboard>/d");
-        moveAction.AddCompositeBinding("2DVector")
+        _moveAction.AddCompositeBinding("2DVector")
             .With("Up", "<Keyboard>/upArrow")
             .With("Down", "<Keyboard>/downArrow")
             .With("Left", "<Keyboard>/leftArrow")
             .With("Right", "<Keyboard>/rightArrow");
 
-        interactAction = new InputAction("Interact", InputActionType.Button);
-        interactAction.AddBinding("<Keyboard>/e");
-        interactAction.AddBinding("<Keyboard>/enter");
+        _interactAction = new InputAction("Interact", InputActionType.Button);
+        _interactAction.AddBinding("<Keyboard>/e");
+        _interactAction.AddBinding("<Keyboard>/enter");
     }
 #endif
     }

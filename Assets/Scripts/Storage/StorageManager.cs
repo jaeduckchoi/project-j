@@ -18,13 +18,13 @@ namespace Storage
     [SerializeField] private int selectedInventoryIndex;
     [SerializeField] private int selectedStorageIndex;
 
-    private readonly Dictionary<ResourceData, int> itemAmounts = new();
-    private bool initialized;
+    private readonly Dictionary<ResourceData, int> _itemAmounts = new();
+    private bool _initialized;
 
     public event Action StorageChanged;
 
     public IReadOnlyList<InventoryEntry> RuntimeItems => runtimeItems;
-    public int UsedSlotCount => itemAmounts.Count;
+    public int UsedSlotCount => _itemAmounts.Count;
     public string LastOperationMessage { get; private set; } = "창고가 비어 있습니다.";
 
     /*
@@ -32,12 +32,12 @@ namespace Storage
      */
     public void InitializeIfNeeded()
     {
-        if (initialized)
+        if (_initialized)
         {
             return;
         }
 
-        initialized = true;
+        _initialized = true;
         RefreshRuntimeItems();
         RaiseChanged();
     }
@@ -48,7 +48,7 @@ namespace Storage
     public bool HasAnyStoredItems()
     {
         InitializeIfNeeded();
-        return itemAmounts.Count > 0;
+        return _itemAmounts.Count > 0;
     }
 
     /*
@@ -352,13 +352,13 @@ namespace Storage
             return;
         }
 
-        if (itemAmounts.ContainsKey(resource))
+        if (_itemAmounts.ContainsKey(resource))
         {
-            itemAmounts[resource] += amount;
+            _itemAmounts[resource] += amount;
             return;
         }
 
-        itemAmounts.Add(resource, amount);
+        _itemAmounts.Add(resource, amount);
     }
 
     /*
@@ -371,7 +371,7 @@ namespace Storage
             return;
         }
 
-        if (!itemAmounts.TryGetValue(resource, out int currentAmount))
+        if (!_itemAmounts.TryGetValue(resource, out int currentAmount))
         {
             return;
         }
@@ -379,11 +379,11 @@ namespace Storage
         int remainingAmount = currentAmount - amount;
         if (remainingAmount <= 0)
         {
-            itemAmounts.Remove(resource);
+            _itemAmounts.Remove(resource);
             return;
         }
 
-        itemAmounts[resource] = remainingAmount;
+        _itemAmounts[resource] = remainingAmount;
     }
 
     /*
@@ -393,7 +393,7 @@ namespace Storage
     {
         runtimeItems.Clear();
 
-        foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
+        foreach (KeyValuePair<ResourceData, int> pair in _itemAmounts.OrderBy(entry => entry.Key.DisplayName))
         {
             runtimeItems.Add(new InventoryEntry(pair.Key, pair.Value));
         }

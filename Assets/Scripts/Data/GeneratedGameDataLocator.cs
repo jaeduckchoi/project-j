@@ -14,9 +14,9 @@ public static class GeneratedGameDataLocator
     private const string GeneratedDataRoot = "Assets/Generated/GameData";
     private const string GeneratedDataManifestPath = "Generated/GeneratedGameDataManifest";
 
-    private static readonly Dictionary<string, ResourceData> resourceCache = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly Dictionary<string, RecipeData> recipeCache = new(StringComparer.OrdinalIgnoreCase);
-    private static bool manifestLoadAttempted;
+    private static readonly Dictionary<string, ResourceData> ResourceCache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, RecipeData> RecipeCache = new(StringComparer.OrdinalIgnoreCase);
+    private static bool _manifestLoadAttempted;
 
     /*
      * generated 자원 에셋을 이름, id, 표시 이름 기준으로 찾아 반환합니다.
@@ -25,7 +25,7 @@ public static class GeneratedGameDataLocator
     {
         RefreshLoadedAssetCaches();
 
-        ResourceData resource = FindInCache(resourceCache, assetName, alternateKeys);
+        ResourceData resource = FindInCache(ResourceCache, assetName, alternateKeys);
         if (resource != null)
         {
             return resource;
@@ -51,7 +51,7 @@ public static class GeneratedGameDataLocator
     {
         RefreshLoadedAssetCaches();
 
-        RecipeData recipe = FindInCache(recipeCache, assetName, alternateKeys);
+        RecipeData recipe = FindInCache(RecipeCache, assetName, alternateKeys);
         if (recipe != null)
         {
             return recipe;
@@ -94,12 +94,12 @@ public static class GeneratedGameDataLocator
      */
     private static void CacheManifestAssets()
     {
-        if (manifestLoadAttempted)
+        if (_manifestLoadAttempted)
         {
             return;
         }
 
-        manifestLoadAttempted = true;
+        _manifestLoadAttempted = true;
 
         GeneratedGameDataManifest manifest = Resources.Load<GeneratedGameDataManifest>(GeneratedDataManifestPath);
         if (manifest == null)
@@ -172,9 +172,9 @@ public static class GeneratedGameDataLocator
             return;
         }
 
-        CacheValue(resourceCache, resource.name, resource);
-        CacheValue(resourceCache, resource.ResourceId, resource);
-        CacheValue(resourceCache, resource.DisplayName, resource);
+        CacheValue(ResourceCache, resource.name, resource);
+        CacheValue(ResourceCache, resource.ResourceId, resource);
+        CacheValue(ResourceCache, resource.DisplayName, resource);
     }
 
     /*
@@ -187,9 +187,9 @@ public static class GeneratedGameDataLocator
             return;
         }
 
-        CacheValue(recipeCache, recipe.name, recipe);
-        CacheValue(recipeCache, recipe.RecipeId, recipe);
-        CacheValue(recipeCache, recipe.DisplayName, recipe);
+        CacheValue(RecipeCache, recipe.name, recipe);
+        CacheValue(RecipeCache, recipe.RecipeId, recipe);
+        CacheValue(RecipeCache, recipe.DisplayName, recipe);
     }
 
     /*

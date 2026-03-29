@@ -14,15 +14,15 @@ namespace GameCamera
     [SerializeField, Min(0f)] private float smoothTime = 0.15f;
     [SerializeField] private Collider2D mapBounds;
 
-    private CameraComponent targetCamera;
-    private Vector3 velocity;
+    private CameraComponent _targetCamera;
+    private Vector3 _velocity;
 
     /*
      * 카메라 컴포넌트 참조를 캐시한다.
      */
     private void Awake()
     {
-        targetCamera = GetComponent<CameraComponent>();
+        _targetCamera = GetComponent<CameraComponent>();
     }
 
     /*
@@ -60,7 +60,7 @@ namespace GameCamera
         }
 
         Vector3 desiredPosition = new(target.position.x, target.position.y, transform.position.z);
-        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
+        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref _velocity, smoothTime);
         transform.position = ClampToBounds(smoothedPosition);
     }
 
@@ -69,14 +69,14 @@ namespace GameCamera
      */
     private Vector3 ClampToBounds(Vector3 cameraPosition)
     {
-        if (mapBounds == null || targetCamera == null || !targetCamera.orthographic)
+        if (mapBounds == null || _targetCamera == null || !_targetCamera.orthographic)
         {
             return cameraPosition;
         }
 
         Bounds bounds = mapBounds.bounds;
-        float verticalExtent = targetCamera.orthographicSize;
-        float horizontalExtent = verticalExtent * targetCamera.aspect;
+        float verticalExtent = _targetCamera.orthographicSize;
+        float horizontalExtent = verticalExtent * _targetCamera.aspect;
         float minX = bounds.min.x + horizontalExtent;
         float maxX = bounds.max.x - horizontalExtent;
         float minY = bounds.min.y + verticalExtent;

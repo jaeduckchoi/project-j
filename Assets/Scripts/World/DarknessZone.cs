@@ -16,16 +16,16 @@ namespace World
     [SerializeField, TextArea] private string noLanternGuideText = "랜턴이 있으면 어두운 지역을 더 안전하게 이동할 수 있습니다.";
     [SerializeField] private string hintId = "darkness_zone";
 
-    private readonly HashSet<PlayerController> playersInZone = new();
-    private Collider2D triggerCollider;
+    private readonly HashSet<PlayerController> _playersInZone = new();
+    private Collider2D _triggerCollider;
 
     /*
      * 어둠 지대를 트리거 영역으로 고정합니다.
      */
     private void Awake()
     {
-        triggerCollider = GetComponent<Collider2D>();
-        triggerCollider.isTrigger = true;
+        _triggerCollider = GetComponent<Collider2D>();
+        _triggerCollider.isTrigger = true;
     }
 
     /*
@@ -74,7 +74,7 @@ namespace World
         }
 
         player.ClearMovementMultiplierSource(this);
-        playersInZone.Remove(player);
+        _playersInZone.Remove(player);
     }
 
     /*
@@ -82,7 +82,7 @@ namespace World
      */
     private void OnDisable()
     {
-        foreach (PlayerController player in playersInZone)
+        foreach (PlayerController player in _playersInZone)
         {
             if (player == null)
             {
@@ -92,7 +92,7 @@ namespace World
             player.ClearMovementMultiplierSource(this);
         }
 
-        playersInZone.Clear();
+        _playersInZone.Clear();
     }
 
     /*
@@ -106,7 +106,7 @@ namespace World
             return;
         }
 
-        playersInZone.Add(player);
+        _playersInZone.Add(player);
 
         // 랜턴이 있으면 어둠 패널티를 제거하고 통과만 시킵니다.
         if (HasLantern())

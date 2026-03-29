@@ -12,7 +12,7 @@ namespace Economy
     [SerializeField, Min(0)] private int startingGold = 0;
     [SerializeField] private int startingReputation = 0;
 
-    private bool initialized;
+    private bool _initialized;
 
     // UI가 골드와 평판 변화를 바로 반영할 수 있도록 이벤트를 노출한다.
     public event Action<int> GoldChanged;
@@ -34,12 +34,12 @@ namespace Economy
      */
     public void InitializeIfNeeded()
     {
-        if (initialized)
+        if (_initialized)
         {
             return;
         }
 
-        initialized = true;
+        _initialized = true;
         CurrentGold = Mathf.Max(0, startingGold);
         CurrentReputation = startingReputation;
         GoldChanged?.Invoke(CurrentGold);

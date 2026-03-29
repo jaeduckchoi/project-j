@@ -18,7 +18,7 @@ namespace Player
     [SerializeField] private bool sideSpriteFacesLeft = true;
     [SerializeField, Min(0.0001f)] private float movementThreshold = 0.0001f;
 
-    private PlayerController playerController;
+    private PlayerController _playerController;
 
     /*
      * 외부에서 방향 스프라이트를 주입할 때는 null이 아닌 값만 갱신합니다.
@@ -51,7 +51,7 @@ namespace Player
 
     private void Awake()
     {
-        playerController = GetComponent<PlayerController>();
+        _playerController = GetComponent<PlayerController>();
         InitializeVisuals();
     }
 
@@ -75,7 +75,7 @@ namespace Player
      */
     private void RefreshSprite()
     {
-        if (playerController == null || targetRenderer == null)
+        if (_playerController == null || targetRenderer == null)
         {
             return;
         }
@@ -105,9 +105,9 @@ namespace Player
      */
     private Vector2 ResolveFacingDirection()
     {
-        Vector2 direction = playerController.CurrentVelocity.sqrMagnitude > movementThreshold
-            ? playerController.CurrentVelocity
-            : playerController.LastMoveDirection;
+        Vector2 direction = _playerController.CurrentVelocity.sqrMagnitude > movementThreshold
+            ? _playerController.CurrentVelocity
+            : _playerController.LastMoveDirection;
 
         if (direction.sqrMagnitude <= movementThreshold)
         {

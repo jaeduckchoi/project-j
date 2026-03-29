@@ -1,4 +1,4 @@
-﻿---
+---
 적용: 항상
 ---
 
@@ -53,6 +53,7 @@
 - 폴더명이 `Camera`, `Editor`처럼 Unity/.NET 주요 타입과 충돌하면 `GameCamera`, `ProjectEditor`처럼 충돌 없는 예외 네임스페이스를 사용하고, 예외 이유가 반복되면 규칙 문서에도 반영한다.
 - 기존 `MonoBehaviour`, `ScriptableObject`, 직렬화 가능한 타입을 네임스페이스로 이동할 때는 `UnityEngine.Scripting.APIUpdating.MovedFrom`으로 이전 경로를 보존한다.
 - 플레이어 비주얼 크기나 방향 스프라이트를 바꿀 때는 물리 루트와 비주얼 루트의 책임을 구분한다.
+- private 필드 네이밍은 `[SerializeField] private`는 lower camelCase, 일반 `private`/`private static`은 `_camelCase`, `private static readonly`는 PascalCase를 기본으로 유지한다.
 - 사용자가 만든 기존 변경은 명시적 요청 없이 되돌리지 않는다.
 
 ## 6. UI / 텍스트 규칙

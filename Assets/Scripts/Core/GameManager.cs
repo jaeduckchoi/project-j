@@ -28,7 +28,7 @@ namespace Core
     [SerializeField] private DayCycleManager dayCycleManager;
     [SerializeField] private UpgradeManager upgradeManager;
 
-    private string pendingSpawnPointId;
+    private string _pendingSpawnPointId;
 
     public static GameManager Instance { get; private set; }
 
@@ -126,7 +126,7 @@ namespace Core
         // 하루 단계는 이동 직전에 바뀌어야 허브 복귀 / 출발 상태가 꼬이지 않습니다.
         dayCycleManager?.HandleSceneTravel(SceneManager.GetActiveScene().name, sceneName, hubSceneName);
 
-        pendingSpawnPointId = spawnPointId;
+        _pendingSpawnPointId = spawnPointId;
         SceneManager.LoadScene(sceneName);
     }
 
@@ -154,7 +154,7 @@ namespace Core
      */
     private void TryMovePlayerToPendingSpawn(Scene scene)
     {
-        if (string.IsNullOrWhiteSpace(pendingSpawnPointId))
+        if (string.IsNullOrWhiteSpace(_pendingSpawnPointId))
         {
             return;
         }
@@ -170,18 +170,18 @@ namespace Core
         SceneSpawnPoint[] spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsSortMode.None);
         foreach (SceneSpawnPoint spawnPoint in spawnPoints)
         {
-            if (!spawnPoint.Matches(pendingSpawnPointId))
+            if (!spawnPoint.Matches(_pendingSpawnPointId))
             {
                 continue;
             }
 
             player.SetWorldPosition(spawnPoint.transform.position);
-            pendingSpawnPointId = string.Empty;
+            _pendingSpawnPointId = string.Empty;
             return;
         }
 
-        Debug.LogWarning($"Spawn point '{pendingSpawnPointId}' was not found in scene '{scene.name}'.");
-        pendingSpawnPointId = string.Empty;
+        Debug.LogWarning($"Spawn point '{_pendingSpawnPointId}' was not found in scene '{scene.name}'.");
+        _pendingSpawnPointId = string.Empty;
     }
 
     /*
