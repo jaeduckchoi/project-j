@@ -123,9 +123,9 @@ namespace Player
         /// </summary>
         private void EnsureSpritesLoaded()
         {
-            frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite("Generated/Sprites/PlayerFront");
-            backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite("Generated/Sprites/PlayerBack");
-            sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite("Generated/Sprites/PlayerSide");
+            frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite("Generated/Sprites/Player/player-front");
+            backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite("Generated/Sprites/Player/player-back");
+            sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite("Generated/Sprites/Player/player-side");
 
             if (targetRenderer != null && targetRenderer.sprite == null)
             {

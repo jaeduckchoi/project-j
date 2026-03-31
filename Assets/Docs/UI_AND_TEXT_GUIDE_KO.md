@@ -4,8 +4,9 @@
 
 UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 -> 실행` 흐름이 한눈에 보이도록 카드형 구조로 정리한다.
 전체 인상은 `brown/grey 벡터 패널 + 짙은 액션 독 + 기능별 포인트 컬러` 조합을 기준으로 잡는다.
-기본 스킨은 `Assets/Design/UIDesign/Vector` 원본 SVG를 기준으로 하고, 실제 런타임에서 쓰는 최소 SVG만 `Assets/Resources/Generated/UI/Vector` 아래에 따로 둔다.
-즉 `Assets/Design` 은 디자인 원본 보관용, `Assets/Resources/Generated/UI/Vector` 는 현재 게임에서 직접 쓰는 런타임 리소스용으로 구분한다.
+기본 스킨 원본은 `Assets/Design/UIDesign/Vector` 에 정리하고, 화면 시안은 `Assets/Design/UIDesign/Mockups` 에 따로 둔다.
+즉 `Assets/Design` 은 디자인 원본과 검토 자료 보관용이고, 실제 게임에서 직접 쓰는 리소스는 생성 경로 또는 런타임 리소스 경로로 별도 관리한다.
+벡터 원본을 수정했더라도 곧바로 런타임 반영으로 이어지지 않으므로, 실제 적용 시에는 빌더와 리소스 경로를 함께 확인한다.
 
 ## 2. 현재 HUD 배치
 
@@ -93,11 +94,11 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.Popup.cs`
   팝업 외곽, 내부 본문, 닫기 버튼의 SVG 매핑을 관리한다.
 - `Assets/Scripts/UI/Style/PrototypeUISkin.cs`
-  `Assets/Resources/Generated/UI/Vector` 아래 SVG 스프라이트를 직접 불러와 9-slice 스프라이트로 다시 만들어 런타임/빌더 공용으로 적용한다. 실제 렌더링과 캐시만 담당한다.
+  `PrototypeUISkinCatalog`가 정한 UI 리소스 경로를 기준으로 스프라이트를 읽어 9-slice 스프라이트로 다시 만들어 런타임/빌더 공용으로 적용한다. 실제 렌더링과 캐시만 담당한다.
 - `Assets/Scripts/UI/Style/PrototypeUITheme.cs`
   씬별 색상 테마와 공통 UI 색 기준을 관리한다.
 - `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`
-  인스펙터에서 현재 SVG 매핑 경로를 바로 확인하고, `Canvas Grouping`, `Apply Preview`, `Refresh SVG Cache`, `Sync Canvas UI Layouts`를 실행한다.
+  인스펙터에서 현재 SVG 매핑 경로를 바로 확인하고, `Canvas Grouping`, `Apply Preview`, `Refresh SVG Cache`를 실행한다.
 - `Assets/Editor/UI/UIManagerEditor.cs`
   런타임 UI 매니저에서 `Canvas 그룹 정리`와 디자인 컨트롤러 연결/선택 진입점을 제공한다.
 - `Assets/Editor/JongguMinimalPrototypeBuilder.cs`
@@ -110,16 +111,33 @@ UI는 탐험 화면을 가리지 않으면서도 `상태 확인 -> 의사결정 
 - `PrototypeUIDesignController` 인스펙터의 `Editor Preview` 항목에서 허브 팝업 프리뷰 여부와 대상 패널을 고를 수 있다.
 - 현재 씬의 `Canvas` 아래 오브젝트는 `HUDRoot`, `PopupRoot`로 정리하고, 같은 기준으로 런타임 탐색과 새 씬 생성도 맞춘다.
 - `현재 설정 프리뷰 적용` 버튼을 누르면 Play 모드 없이도 Scene 뷰에서 카드와 팝업 스킨 배치를 바로 확인할 수 있다.
+- `씬 빌더 미리보기` 버튼을 누르면 현재 열린 지원 씬에 허브 월드 장식과 지역 보강 오브젝트까지 다시 적용해 UI 프리뷰와 함께 볼 수 있다.
 - 허브 팝업 본문은 좌우 각각 여러 개의 아이템 박스로 나뉘며, 편집 모드 프리뷰도 같은 박스 구조를 기준으로 보인다.
 - `Canvas Grouping` 버튼을 누르면 기존 평면 구조 Canvas도 관리용 그룹 구조로 재배치된다.
 - `Refresh SVG Cache` 버튼은 `PrototypeUISkin`이 만든 임시 스프라이트 캐시를 비우고 다시 렌더링한다.
-- `Sync Canvas UI Layouts` 버튼은 현재 씬 Canvas 아래 UI `RectTransform` 값과 `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 자산에 저장한다.
+- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI `RectTransform` 값과 `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값이 `Assets/Resources/Generated/ui-layout-overrides.asset` 자산에 자동 저장된다.
+- `Hub` 저장 시 공용 UI 오버라이드와 탐험 씬 HUD 기준이 함께 갱신되고, 탐험 씬 저장 시에는 현재 씬 값만 공용 오버라이드 위에 자동으로 덮어쓴다.
 - 이 자산은 빌더, 런타임 `UIManager`, 자동 감사 코드가 함께 읽으므로, 씬에서 맞춘 Canvas UI 배치와 Image 표시값을 다음 빌드와 런타임에도 유지할 때 사용한다.
-- 팝업 외곽은 `PanelGreyBolts`, 내부 본문은 `PanelGrey`, 일반 HUD/하단 버튼은 `PanelBrown`과 `ButtonBrown`, 닫기 버튼은 `ButtonGreyClose`를 쓴다.
+- 기본 HUD와 허브 팝업 일부는 `Assets/Design/GeneratedSources/UI` 원본을 `Assets/Generated/Sprites/UI`, `Assets/Resources/Generated/Sprites/UI` 로 미러링한 generated 스프라이트를 우선 사용한다.
+- `PopupCloseButton`, `GuideHelpButton`, `InteractionPromptBackdrop`, `GuideBackdrop`, `ResultBackdrop`, `PopupFrame`, `PopupFrameLeft`, `PopupFrameRight`, `PopupLeftBody`, `PopupRightBody`, `PopupLeftItemBox*`, `PopupRightItemBox*` 는 위 generated UI 스프라이트 기준으로 맞춘다.
+- 위 오브젝트도 씬 저장으로 자동 동기화된 Image 오버라이드가 있으면 generated 기본값 위에 마지막으로 덮어쓴다.
+
+## 10. 디자인 소스 후보 매핑
+
+- `Assets/Design/GeneratedSources/UI/Buttons/close-button.png`
+  현재 허브 팝업의 `PopupCloseButton` 후보 원본이다.
+- `Assets/Design/GeneratedSources/UI/Buttons/help-button.png`
+  `GuideText` 옆 도움말 버튼이나 허브 팝업 헤더 보조 도움말 버튼 후보 원본이다.
+- `Assets/Design/GeneratedSources/UI/MessageBoxes/system-text-box.png`
+  허브 팝업 본문 `PopupLeftBody`, `PopupRightBody` 또는 시스템 안내 카드 `GuideBackdrop`, `ResultBackdrop` 후보 원본이다.
+- `Assets/Design/GeneratedSources/UI/MessageBoxes/interaction-text-box.png`
+  탐험 씬 `InteractionPromptText` 배경이나 향후 NPC 대화 말풍선 후보 원본이다.
+- 빌더는 위 원본을 `Assets/Generated/Sprites/UI/Buttons|MessageBoxes|Panels` 와 `Assets/Resources/Generated/Sprites/UI/Buttons|MessageBoxes|Panels` 로 복사하고, 씬 생성과 런타임 `UIManager` 는 해당 generated 경로를 직접 읽는다.
 
 ## 8. 해상도 대응
 
 - 캔버스는 `1920 x 1080` 기준 해상도에 맞춰 스케일한다.
+- 허브 월드 카메라도 `16:9` 고정 화면 구도를 기준으로 계산하고, 배경/오브젝트/전경 레이어가 같은 월드 좌표계를 공유한다.
 - 폭과 높이 비중을 반반으로 맞춰 16:9 기준 배치가 과하게 무너지지 않게 한다.
 - 기존 씬도 런타임에서 스케일러 설정을 다시 적용한다.
 

@@ -35,7 +35,7 @@
 - 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 명시적 요청 없이는 초기화하거나 덮어쓰지 않는다.
 - Canvas 내부 공용 루트 이름은 `HUDRoot`, `PopupRoot`를 기준으로 유지한다.
 - 탐험 씬 공용 HUD 기준은 `Hub` 씬 Canvas에서 같은 이름으로 저장한 UI 오버라이드 값이다. `프로토타입 빌드 및 감사`를 실행하면 `Hub` 씬 값을 먼저 동기화한 뒤 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` UI를 다시 생성한다.
-- `Sync Canvas UI Layouts`는 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값을 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset`에 저장한다.
+- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값이 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장된다.
 - `프로토타입 빌드 및 감사`는 레이아웃과 표시 값은 `Hub` 기준을 우선 사용하고, `HUDActionGroup`, `HUDPanelButtonGroup` 이름과 해당 그룹 하위 UI 값은 현재 열려 있는 씬 기준으로 마지막에 다시 동기화한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
 - 생성 구조, UI 기준, 네임스페이스를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 배치 컴파일 결과를 함께 맞춘다.
@@ -51,4 +51,4 @@
 - 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영문 문장을 제목이나 본문에 그대로 쓰지 않는다.
 - `type`은 정의된 소문자 목록만 사용하고, 본문은 왜 바꿨는지와 무엇을 바꿨는지를 짧고 구체적으로 적는다. footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 적는다.
 - squash merge 커밋 메시지는 `[squash] 브랜치명` 형식을 따른다.
-- `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 lower camelCase를 유지한다.
+- `Assets` 아래 자산 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 기존 규칙대로 lower camelCase를 유지한다.

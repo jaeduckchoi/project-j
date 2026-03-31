@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415bc834912f7604696f1429b76f6905, type: 3}
+  m_Name: resource-glow-moss
+  m_EditorClassIdentifier: Assembly-CSharp::ResourceData
+  resourceId: glow_moss
+  displayName: "\uBC1C\uAD11 \uC774\uB07C"
+  description: "\uD3D0\uAD11\uC0B0 \uC548\uCABD\uC758 \uC2B5\uD55C \uBCBD\uBA74\uC5D0\uC11C
+    \uC790\uB77C\uB294 \uD76C\uADC0 \uC2DD\uC7AC\uB8CC\uC785\uB2C8\uB2E4."
+  regionTag: "\uD3D0\uAD11\uC0B0"
+  icon: {fileID: 21300000, guid: 9bba6a44c4b84d0b8b08b051c59d0dfa, type: 3}
+  rarity: 2
+  baseSellPrice: 22

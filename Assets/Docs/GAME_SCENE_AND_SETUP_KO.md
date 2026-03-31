@@ -5,6 +5,7 @@
 ### Hub
 
 - 허브 메인 씬이다.
+- `Hub` 씬은 16:9 고정 카메라와 `배경 레이어 + 오브젝트 레이어 + 전경 레이어` 위에 상호작용 지점을 얹는 구조다.
 - 메뉴 선택대, 영업대, 창고, 작업대, 지역 포탈이 들어간다.
 - 창고 선택 패드와 폐광산 포탈이 직렬화되어 있다.
 
@@ -73,11 +74,13 @@
 - 창고는 근접 자동 노출이 아니라 `StorageStation` 앞에서 `E` 상호작용 시 팝업 형태로 열린다.
 - 허브 씬의 창고 월드 오브젝트는 `StorageArea` 아래에 `StorageWall`, `StorageSign`, `StorageStation` 순으로 묶어 관리한다.
 - 탐험 지역에서는 우측 상단 카드로 `재료 / 가방`을 확인한다.
-- 주요 패널 / 버튼 이미지는 `Assets/Resources/Generated/UI/Vector` 아래 SVG 리소스를 공용으로 사용한다.
+- 주요 패널 / 버튼 이미지는 `PrototypeUISkinCatalog`가 정한 generated UI 리소스 경로를 공용으로 사용한다.
 
 ### PrototypeUIDesignController
 
 - 경로: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+- `Tools > Jonggu Restaurant > 열린 씬 빌더 미리보기 적용`을 실행하면 현재 열려 있는 지원 씬(`Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`)에 빌더 보강 결과를 바로 덮어써 Scene 뷰에서 확인할 수 있다.
+- 같은 기능은 `PrototypeUIDesignController` 또는 `UIManager` 인스펙터의 `씬 빌더 미리보기` 버튼으로도 실행할 수 있다.
 
 - `uiManager`
 - `showEditorPreview`
@@ -92,8 +95,11 @@
 - `Apply Preview` 버튼으로 Play 모드 없이 팝업 스킨 배치를 바로 확인할 수 있다.
 - `Canvas Grouping` 버튼으로 기존 씬의 평면 Canvas 자식도 같은 그룹 구조로 맞출 수 있다.
 - `Refresh SVG Cache` 버튼으로 `PrototypeUISkin` 임시 스프라이트를 다시 렌더링할 수 있다.
-- `Sync Canvas UI Layouts` 버튼으로 현재 씬 Canvas 아래 UI 배치와 `Image.sprite/type/color/preserveAspect` 값을 공용 자산에 저장하면 빌더와 런타임이 같은 값을 사용한다.
-- 공용 자산 경로는 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset` 이고, 첫 동기화 시 자동 생성된다.
+- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI 배치와 `Image.sprite/type/color/preserveAspect` 값이 공용 자산에 자동 저장된다.
+- `Hub` 저장 시 공용 UI 오버라이드와 탐험 씬 HUD 기준이 함께 갱신되고, 탐험 씬 저장 시에는 현재 씬 값만 공용 오버라이드 위에 자동으로 덮어쓴다.
+- 공용 자산 경로는 `Assets/Resources/Generated/ui-layout-overrides.asset` 이고, 첫 동기화 시 자동 생성된다.
+- `Assets/Design/GeneratedSources/UI` 에서 가져오는 `PopupCloseButton`, `GuideHelpButton`, `InteractionPromptBackdrop`, `GuideBackdrop`, `ResultBackdrop`, 팝업 본문 패널 계열 이미지는 generated UI 스프라이트를 기본값으로 사용한다.
+- 씬 저장으로 자동 동기화된 Image 오버라이드가 있으면, 빌더와 런타임이 그 값을 마지막에 다시 적용한다.
 
 ## 3. 허브 체크 포인트
 
@@ -102,6 +108,22 @@
 - `UpgradeStation`
 - `ScenePortal.targetSceneName`
 - `ScenePortal.targetSpawnPointId`
+- `HubArtRoot`
+- `HubBackgroundLayer`
+- `HubObjectLayer`
+- `HubTableGroup`
+- `HubTableTopGroup`
+- `HubTableMiddleGroup`
+- `HubTableBottomGroup`
+- `HubUpgradeSlotLeft`
+- `HubUpgradeSlotCenter`
+- `HubUpgradeSlotRight`
+- `HubTodayMenuBoard`
+- `HubForegroundLayer`
+- `CameraBounds`
+
+- `HubBarLeftCollider`, `HubBarRightCollider`는 `HubBar` 자식으로 유지한다.
+- `HubTable*Collider`는 각 `HubTable*` 자식으로 유지하고, `HubTable*`는 `HubTable*Group` 아래에 둔다.
 
 허브에서는 아래 흐름이 끊기지 않는지 보면 된다.
 

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 // UI.Style 네임스페이스
 namespace UI.Style
@@ -18,6 +19,21 @@ namespace UI.Style
                 return default;
             }
 
+            switch (objectName)
+            {
+                case "TopLeftPanel":
+                    return BuildGeneratedUiPanelSpec("light-outline-panel");
+                case "PhaseBadge":
+                case "ActionDock":
+                case "HUDPanelButtonGroup":
+                    return BuildGeneratedUiPanelSpec("dark-solid-panel");
+                case "GuideBackdrop":
+                case "ResultBackdrop":
+                    return BuildGeneratedUiMessageBoxSpec("system-text-box");
+                case "InteractionPromptBackdrop":
+                    return BuildGeneratedUiMessageBoxSpec("interaction-text-box", new Vector4(8f, 14f, 8f, 14f));
+            }
+
             return new PrototypeUISpriteSpec("PanelBrown", PanelSliceBorder, 6, 4, false);
         }
 
@@ -26,6 +42,11 @@ namespace UI.Style
         /// </summary>
         private static PrototypeUISpriteSpec ResolveUIDesignButton(string objectName)
         {
+            if (string.Equals(objectName, "GuideHelpButton", StringComparison.Ordinal))
+            {
+                return BuildGeneratedUiButtonSpec("help-button");
+            }
+
             return new PrototypeUISpriteSpec("ButtonBrown", ButtonSliceBorder, 4, 4, true);
         }
     }

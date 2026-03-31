@@ -5,6 +5,7 @@ using System.Linq;
 using Player;
 using UI;
 using UI.Layout;
+using World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -32,10 +33,12 @@ namespace ProjectEditor
         {
             "TopLeftPanel",
             "PhaseBadge",
+            "InteractionPromptBackdrop",
             "GoldText",
             "InteractionPromptText",
             "GuideBackdrop",
             "GuideText",
+            "GuideHelpButton",
             "ResultBackdrop",
             "RestaurantResultText",
         };
@@ -138,14 +141,17 @@ namespace ProjectEditor
             ValidateExactCount(issues, sceneName, objects, "HUDBottomGroup", 1);
             ValidateExactCount(issues, sceneName, objects, "HUDInventoryGroup", 0);
             ValidateExactCount(issues, sceneName, objects, "HUDButtonGroup", 0);
+            ValidateComponentCount<RoomViewController>(issues, sceneName, objects, 0);
             ValidateChildCount(issues, sceneName, objects, "Jonggu", "PlayerVisual", 1);
             ValidateComponentOnNamedObject<PlayerDirectionalSprite>(issues, sceneName, objects, "Jonggu");
             ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDStatusGroup", 1);
 			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudActionGroupName, 1);
 			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDBottomGroup", 1);
 			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudPanelButtonGroupName, isHubScene ? 1 : 0);
+			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptBackdrop", 1);
 			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptText", 1);
 			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDOverlayGroup", 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDOverlayGroup", "GuideHelpButton", 1);
 
             foreach (string hudName in CommonHudNames)
             {
@@ -169,12 +175,69 @@ namespace ProjectEditor
                 ValidateExactCount(issues, sceneName, objects, legacyLabel, 0);
             }
 
+            ValidateExactCount(issues, sceneName, objects, "HubArtRoot", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBackgroundLayer", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubObjectLayer", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubForegroundLayer", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, isHubScene ? 1 : 0);
+
+            foreach (HubRoomLayout.HubArtPlacement placement in HubRoomLayout.ArtPlacements)
+            {
+                ValidateExactCount(issues, sceneName, objects, placement.ObjectName, isHubScene ? 1 : 0);
+            }
+
+            foreach (HubRoomLayout.HubTablePlacement placement in HubRoomLayout.TablePlacements)
+            {
+                ValidateExactCount(issues, sceneName, objects, placement.GroupObjectName, isHubScene ? 1 : 0);
+                ValidateExactCount(issues, sceneName, objects, placement.TableObjectName, isHubScene ? 1 : 0);
+                ValidateExactCount(issues, sceneName, objects, placement.ColliderObjectName, isHubScene ? 1 : 0);
+                ValidateChildCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, placement.GroupObjectName, isHubScene ? 1 : 0);
+                ValidateChildCount(issues, sceneName, objects, placement.GroupObjectName, placement.TableObjectName, isHubScene ? 1 : 0);
+                ValidateChildCount(issues, sceneName, objects, placement.TableObjectName, placement.ColliderObjectName, isHubScene ? 1 : 0);
+            }
+
+            foreach (HubRoomLayout.HubUpgradeSlotPlacement placement in HubRoomLayout.UpgradeSlotPlacements)
+            {
+                ValidateExactCount(issues, sceneName, objects, placement.SlotObjectName, isHubScene ? 1 : 0);
+                ValidateExactCount(issues, sceneName, objects, placement.PriceObjectName, isHubScene ? 1 : 0);
+                ValidateChildCount(issues, sceneName, objects, placement.SlotObjectName, placement.PriceObjectName, isHubScene ? 1 : 0);
+            }
+
+            ValidateExactCount(issues, sceneName, objects, "HubExploreSign", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubWarehouseSign", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuBoard", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderShadow", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderLabel", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop1", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop2", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop3", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem1", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem2", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem3", isHubScene ? 1 : 0);
+
+            foreach (HubRoomLayout.HubColliderPlacement placement in HubRoomLayout.ColliderPlacements)
+            {
+                ValidateExactCount(issues, sceneName, objects, placement.ObjectName, isHubScene ? 1 : 0);
+                ValidateChildCount(issues, sceneName, objects, placement.ParentObjectName, placement.ObjectName, isHubScene ? 1 : 0);
+            }
+
+            ValidateExactCount(issues, sceneName, objects, "HubSingleScreenBackground", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBarCollider", 0);
+            ValidateExactCount(issues, sceneName, objects, "WorkshopRoomZone", 0);
+            ValidateExactCount(issues, sceneName, objects, "StorageRoomZone", 0);
+            ValidateExactCount(issues, sceneName, objects, "WorkshopRoomCameraBounds", 0);
+            ValidateExactCount(issues, sceneName, objects, "StorageRoomCameraBounds", 0);
+            ValidateExactCount(issues, sceneName, objects, "WorkshopFrontOccluder", 0);
+            ValidateExactCount(issues, sceneName, objects, "StorageFrontOccluder", 0);
+
 			ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
 			ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
 			ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
+			ValidateLayout(issues, sceneName, objects, "InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
 			ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
 			ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "GuideText", PrototypeUILayout.GuideText(isHubScene));
+            ValidateLayout(issues, sceneName, objects, "GuideHelpButton", PrototypeUILayout.GuideHelpButton(isHubScene));
             ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "RestaurantResultText", PrototypeUILayout.ResultText(isHubScene));
             ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUILayout.DayPhaseText);

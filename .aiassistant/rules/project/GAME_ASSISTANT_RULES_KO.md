@@ -68,7 +68,7 @@
   - `Hub` 씬 Canvas 오버라이드를 먼저 동기화한 뒤 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` UI를 다시 생성
   - 자동 생성 씬 감사 실행
 - 생성 씬 감사는 별도 수동 루틴보다 빌드 흐름 안의 자동 감사 기준을 우선한다.
-- `Sync Canvas UI Layouts`는 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값과 `HUDActionGroup`, `HUDPanelButtonGroup` 이름 오버라이드를 `Assets/Resources/Generated/UI/uiLayoutOverrides.asset`에 저장한다.
+- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값과 `HUDActionGroup`, `HUDPanelButtonGroup` 이름 오버라이드가 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장된다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
 - 메뉴 추가 또는 변경 시 `Tools > Jonggu Restaurant` 아래 표시는 한국어를 기본으로 하고, 유지보수 도구는 빌드 도구보다 아래에 오도록 `MenuItem` priority를 조정한다.
 
@@ -84,7 +84,7 @@
 
 ## 8. 폰트와 에셋 규칙
 
-- `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 lower camelCase를 유지한다.
+- `Assets` 아래 자산 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 기존 규칙대로 lower camelCase를 유지한다.
 - `Assets/Design`는 디자인 원본 보관용이고, 실제 게임이 직접 참조하는 리소스는 `Assets/Resources` 또는 generated 경로로 연결한다.
 - 파일명이 바뀌면 빌더 코드, 문서, TMP 참조 경로를 함께 갱신한다.
 - 파일명 규칙은 가능하면 빌더가 생성하는 에셋 네이밍 규칙과 맞춘다.
@@ -132,6 +132,11 @@ body
 
 footer
 ```
+
+
+
+
+
 
 
 

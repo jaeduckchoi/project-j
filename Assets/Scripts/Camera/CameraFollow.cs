@@ -19,6 +19,8 @@ namespace GameCamera
 
         private CameraComponent _targetCamera;
         private Vector3 _velocity;
+        private Collider2D _boundsOverride;
+        private float _defaultOrthographicSize;
 
         /// <summary>
         /// 카메라 컴포넌트 참조를 캐시한다.
@@ -26,6 +28,10 @@ namespace GameCamera
         private void Awake()
         {
             _targetCamera = GetComponent<CameraComponent>();
+            if (_targetCamera != null)
+            {
+                _defaultOrthographicSize = _targetCamera.orthographicSize;
+            }
         }
 
         /// <summary>
@@ -68,16 +74,115 @@ namespace GameCamera
         }
 
         /// <summary>
+        /// 기본 맵 bounds 위에 방 전용 bounds를 일시적으로 덮어쓴다.
+        /// </summary>
+        public void SetBoundsOverride(Collider2D bounds, bool snapImmediately = false)
+        {
+            _boundsOverride = bounds;
+            _velocity = Vector3.zero;
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
+        /// 방 전용 bounds를 해제하고 기본 맵 bounds로 되돌린다.
+        /// </summary>
+        public void ClearBoundsOverride(bool snapImmediately = false)
+        {
+            _boundsOverride = null;
+            _velocity = Vector3.zero;
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
+        /// 방 화면처럼 더 가까운 구도를 잡을 때 직교 카메라 크기를 일시적으로 바꾼다.
+        /// </summary>
+        public void SetOrthographicSizeOverride(float orthographicSize, bool snapImmediately = false)
+        {
+            if (_targetCamera == null)
+            {
+                return;
+            }
+
+            _targetCamera.orthographicSize = Mathf.Max(0.1f, orthographicSize);
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
+        /// 일시적으로 바꾼 카메라 줌을 기본값으로 되돌린다.
+        /// </summary>
+        public void ClearOrthographicSizeOverride(bool snapImmediately = false)
+        {
+            if (_targetCamera == null)
+            {
+                return;
+            }
+
+            _targetCamera.orthographicSize = _defaultOrthographicSize;
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
+        /// 허브처럼 기본 구도 자체를 다시 잡아야 할 때 직교 카메라 기본값을 갱신한다.
+        /// </summary>
+        public void SetDefaultOrthographicSize(float orthographicSize, bool snapImmediately = false)
+        {
+            _defaultOrthographicSize = Mathf.Max(0.1f, orthographicSize);
+
+            if (_targetCamera == null)
+            {
+                return;
+            }
+
+            _targetCamera.orthographicSize = _defaultOrthographicSize;
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
+        /// 허브 기본 화면처럼 씬의 기준 bounds 자체를 다시 지정한다.
+        /// </summary>
+        public void SetDefaultBounds(Collider2D bounds, bool snapImmediately = false)
+        {
+            mapBounds = bounds;
+            _velocity = Vector3.zero;
+
+            if (snapImmediately)
+            {
+                SnapToTrackedTarget();
+            }
+        }
+
+        /// <summary>
         /// 직교 카메라 크기를 고려해 화면이 맵 경계를 넘지 않도록 위치를 제한한다.
         /// </summary>
         private Vector3 ClampToBounds(Vector3 cameraPosition)
         {
-            if (mapBounds == null || _targetCamera == null || !_targetCamera.orthographic)
+            Collider2D activeBounds = _boundsOverride != null ? _boundsOverride : mapBounds;
+            if (activeBounds == null || _targetCamera == null || !_targetCamera.orthographic)
             {
                 return cameraPosition;
             }
 
-            Bounds bounds = mapBounds.bounds;
+            Bounds bounds = activeBounds.bounds;
             float verticalExtent = _targetCamera.orthographicSize;
             float horizontalExtent = verticalExtent * _targetCamera.aspect;
             float minX = bounds.min.x + horizontalExtent;
@@ -88,6 +193,20 @@ namespace GameCamera
             cameraPosition.x = minX > maxX ? bounds.center.x : Mathf.Clamp(cameraPosition.x, minX, maxX);
             cameraPosition.y = minY > maxY ? bounds.center.y : Mathf.Clamp(cameraPosition.y, minY, maxY);
             return cameraPosition;
+        }
+
+        /// <summary>
+        /// 방 전환 직후 카메라가 화면 중앙으로 바로 붙도록 즉시 한 번 보정한다.
+        /// </summary>
+        private void SnapToTrackedTarget()
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            Vector3 desiredPosition = new(target.position.x, target.position.y, transform.position.z);
+            transform.position = ClampToBounds(desiredPosition);
         }
     }
 }

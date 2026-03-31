@@ -6,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace Data
 {
     [CreateAssetMenu(
-        fileName = "GeneratedGameDataManifest",
+        fileName = "generated-game-data-manifest",
         menuName = "Jonggu Restaurant/Data/Generated Game Data Manifest",
         order = 2)]
     /// <summary>

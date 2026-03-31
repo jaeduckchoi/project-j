@@ -1,7 +1,8 @@
-using TMPro;
+﻿using TMPro;
 using Core;
 using Data;
 using Gathering;
+using GameCamera;
 using Player;
 using Restaurant;
 using Storage;
@@ -18,6 +19,18 @@ namespace World
     /// </summary>
     public static class PrototypeSceneRuntimeAugmenter
     {
+        private const string HubFloorBackgroundResourcePath = "Generated/Sprites/Hub/hub-floor-background";
+        private const string HubWallBackgroundResourcePath = "Generated/Sprites/Hub/hub-wall-background";
+        private const string HubFrontOutlineResourcePath = "Generated/Sprites/Hub/hub-front-outline";
+        private const string HubBarResourcePath = "Generated/Sprites/Hub/hub-bar";
+        private const string HubTableUnlockedResourcePath = "Generated/Sprites/Hub/hub-table-unlocked";
+        private const string HubUpgradeSlotResourcePath = "Generated/Sprites/Hub/hub-upgrade-slot-center";
+        private const string HubTodayMenuBgResourcePath = "Generated/Sprites/Hub/hub-today-menu-bg-1";
+        private const string HubTodayMenuItem1ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-1";
+        private const string HubTodayMenuItem2ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-2";
+        private const string HubTodayMenuItem3ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-3";
+        private const string FloorSpriteResourcePath = "Generated/Sprites/World/world-floor";
+
         public static void EnsureSceneReady(Scene scene)
         {
             if (!scene.IsValid() || !scene.isLoaded)
@@ -25,10 +38,12 @@ namespace World
                 return;
             }
 
+            CleanupLegacyObjects("PlayerLabel");
+
             switch (scene.name)
             {
                 case "Hub":
-                    EnsureHubReady();
+                    EnsureHubReadyLayered();
                     break;
 
                 case "Beach":
@@ -157,6 +172,107 @@ namespace World
             }
 
             EnsureMinePortal();
+        }
+
+        /// <summary>
+        /// 허브를 16:9 고정 화면 아트 기준으로 다시 맞춘다.
+        /// 기존 보강 오브젝트가 남아 있어도 배경/오브젝트/전경 레이어를 다시 복구한다.
+        /// </summary>
+        private static void EnsureHubReadyLayered()
+        {
+            CleanupLegacyObjects("ExitSign", "ForestSign", "MineSign", "WindHillSign");
+            EnsureHubLayeredPresentation();
+
+            UpdatePortalDisplayLabel("GoToBeach", "\uBC14\uB2F7\uAC00");
+            UpdatePortalDisplayLabel("GoToDeepForest", "\uAE4A\uC740 \uC232");
+            UpdatePortalDisplayLabel("GoToAbandonedMine", "\uD3D0\uAD11\uC0B0");
+            UpdatePortalDisplayLabel("GoToWindHill", "\uBC14\uB78C \uC5B8\uB355");
+
+            EnsureObjectPosition("RecipeSelector", HubRoomLayout.RecipeSelectorPosition);
+            EnsureObjectScale("RecipeSelector", new Vector3(1.55f, 1.55f, 1f));
+            EnsureObjectPosition("ServiceCounter", HubRoomLayout.ServiceCounterPosition);
+            EnsureObjectScale("ServiceCounter", new Vector3(1.95f, 1.55f, 1f));
+            EnsureObjectPosition("StorageStation", HubRoomLayout.StorageStationPosition);
+            EnsureObjectScale("StorageStation", HubRoomLayout.StorageStationScale);
+            EnsureObjectPosition("UpgradeStation", HubRoomLayout.UpgradeStationPosition);
+            EnsureObjectScale("UpgradeStation", HubRoomLayout.UpgradeStationScale);
+
+            EnsureObjectPosition("GoToBeach", HubRoomLayout.GoToBeachPosition);
+            EnsureObjectScale("GoToBeach", HubRoomLayout.PortalScale);
+            EnsureObjectPosition("GoToDeepForest", HubRoomLayout.GoToDeepForestPosition);
+            EnsureObjectScale("GoToDeepForest", HubRoomLayout.PortalScale);
+            EnsureObjectPosition("GoToAbandonedMine", HubRoomLayout.GoToAbandonedMinePosition);
+            EnsureObjectScale("GoToAbandonedMine", HubRoomLayout.PortalScale);
+            EnsureObjectPosition("GoToWindHill", HubRoomLayout.GoToWindHillPosition);
+            EnsureObjectScale("GoToWindHill", HubRoomLayout.PortalScale);
+
+            EnsureObjectPosition("BeachPortalPad", HubRoomLayout.BeachPortalPadPosition);
+            EnsureObjectScale("BeachPortalPad", HubRoomLayout.PortalPadScale);
+            EnsureObjectPosition("ForestPortalPad", HubRoomLayout.ForestPortalPadPosition);
+            EnsureObjectScale("ForestPortalPad", HubRoomLayout.PortalPadScale);
+            EnsureObjectPosition("MinePortalPad", HubRoomLayout.MinePortalPadPosition);
+            EnsureObjectScale("MinePortalPad", HubRoomLayout.PortalPadScale);
+            EnsureObjectPosition("WindPortalPad", HubRoomLayout.WindPortalPadPosition);
+            EnsureObjectScale("WindPortalPad", HubRoomLayout.PortalPadScale);
+            EnsureSpawnPoint("HubEntry", "HubEntry", HubRoomLayout.HubEntryPosition);
+
+            HideHubInteractionPresentations();
+
+            EnsureMinePortal();
+        }
+
+        /// <summary>
+        /// 기존 procedural 허브 장식을 정리하고 허브 아트를 레이어별 스프라이트로 다시 맞춘다.
+        /// </summary>
+        private static void EnsureHubLayeredPresentation()
+        {
+            CleanupLegacyObjects(
+                "HubSingleScreenBackground",
+                "HubBase",
+                "KitchenBand",
+                "DiningRug",
+                "DoorPad",
+                "DoorFrame",
+                "KitchenCounter",
+                "MenuBoardBack",
+                "StorageWall",
+                "WorkbenchWall",
+                "TableLeft",
+                "TableRight",
+                "RestaurantTitle",
+                "StorageSign",
+                "WorkbenchSign",
+                "WorkshopRoomFloor",
+                "StorageRoomFloor",
+                "UpperDividerWall",
+                "WorkshopFrontOccluder",
+                "StorageFrontOccluder",
+                "WorkshopFrontColliderLeft",
+                "WorkshopFrontColliderRight",
+                "StorageFrontColliderLeft",
+                "StorageFrontColliderRight",
+                "WorkshopRoomZone",
+                "StorageRoomZone",
+                "WorkshopRoomCameraBounds",
+                "StorageRoomCameraBounds",
+                "HubBarCollider",
+                "HubRoomViewRoot",
+                "PortalPad",
+                "TopWall",
+                "BottomWall",
+                "LeftWall",
+                "RightWall");
+
+            EnsureHubLayeredArt();
+            EnsureHubCollisionLayout();
+
+            CameraFollow cameraFollow = Object.FindFirstObjectByType<CameraFollow>();
+            BoxCollider2D bounds = EnsureBoundsCollider("CameraBounds", HubRoomLayout.CameraPosition, HubRoomLayout.CameraSize);
+            if (cameraFollow != null)
+            {
+                cameraFollow.SetDefaultBounds(bounds, true);
+                cameraFollow.SetDefaultOrthographicSize(HubRoomLayout.ScreenOrthographicSize, true);
+            }
         }
 
         private static void EnsureBeachReady()
@@ -455,7 +571,14 @@ namespace World
                 GameObject go = GameObject.Find(objectName);
                 if (go != null)
                 {
-                    Object.Destroy(go);
+                    if (Application.isPlaying)
+                    {
+                        Object.Destroy(go);
+                    }
+                    else
+                    {
+                        Object.DestroyImmediate(go);
+                    }
                 }
             }
         }
@@ -562,6 +685,535 @@ namespace World
             }
 
             go.transform.localScale = scale;
+        }
+
+        private static void EnsureInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform parent = null)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = position;
+            }
+            else
+            {
+                go.transform.SetParent(null);
+                go.transform.position = position;
+            }
+
+            go.transform.localScale = scale;
+
+            SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
+
+            BoxCollider2D collider = GetOrAddComponent<BoxCollider2D>(go);
+            collider.size = Vector2.one;
+            collider.isTrigger = false;
+        }
+
+        private static BoxCollider2D EnsureBoundsCollider(string objectName, Vector3 position, Vector2 size)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            go.transform.SetParent(null);
+            go.transform.position = position;
+            go.transform.localScale = Vector3.one;
+
+            BoxCollider2D collider = GetOrAddComponent<BoxCollider2D>(go);
+            collider.size = size;
+            collider.isTrigger = true;
+            return collider;
+        }
+
+        private static void EnsureHubLayeredArt()
+        {
+            CleanupLegacyObjects("HubExploreSignGraphic", "HubWarehouseSignGraphic");
+            EnsureHubLayerRoots(out Transform backgroundLayer, out Transform objectLayer, out Transform foregroundLayer, out Transform tableGroup);
+
+            foreach (HubRoomLayout.HubArtPlacement placement in HubRoomLayout.ArtPlacements)
+            {
+                Transform parent = ResolveHubArtParent(placement.Anchor, backgroundLayer, objectLayer, foregroundLayer);
+                string resourcePath = ResolveHubArtResourcePath(placement.SpriteId);
+                EnsureSceneSpriteObject(placement.ObjectName, resourcePath, placement.LocalPosition, placement.SortingOrder, parent);
+            }
+
+            EnsureHubTableLayout(tableGroup);
+            EnsureHubUpgradeSlotLayout(objectLayer);
+            foreach (HubRoomLayout.HubFloorSignPlacement placement in HubRoomLayout.FloorSignPlacements)
+            {
+                EnsureHubFloorSign(placement, objectLayer);
+            }
+            EnsureHubTodayMenuBoard(objectLayer);
+        }
+
+        private static void EnsureHubLayerRoots(out Transform backgroundLayer, out Transform objectLayer, out Transform foregroundLayer, out Transform tableGroup)
+        {
+            GameObject artRoot = EnsureRootObject("HubArtRoot", null);
+            GameObject backgroundObject = EnsureRootObject("HubBackgroundLayer", artRoot.transform);
+            GameObject objectObject = EnsureRootObject("HubObjectLayer", artRoot.transform);
+            GameObject foregroundObject = EnsureRootObject("HubForegroundLayer", artRoot.transform);
+            GameObject tableObject = EnsureRootObject(HubRoomLayout.TableRootObjectName, objectObject.transform);
+            tableObject.transform.localPosition = HubRoomLayout.TableGroupPosition;
+
+            backgroundLayer = backgroundObject.transform;
+            objectLayer = objectObject.transform;
+            foregroundLayer = foregroundObject.transform;
+            tableGroup = tableObject.transform;
+        }
+
+        private static void EnsureHubTableLayout(Transform tableGroup)
+        {
+            foreach (HubRoomLayout.HubTablePlacement placement in HubRoomLayout.TablePlacements)
+            {
+                GameObject groupObject = EnsureRootObject(placement.GroupObjectName, tableGroup);
+                groupObject.transform.localPosition = placement.LocalPosition;
+
+                GameObject tableObject = EnsureSceneSpriteObject(
+                    placement.TableObjectName,
+                    HubTableUnlockedResourcePath,
+                    Vector3.zero,
+                    HubRoomLayout.ObjectSortingOrder,
+                    groupObject.transform);
+
+                Transform colliderParent = tableObject != null ? tableObject.transform : groupObject.transform;
+                EnsureInvisibleWall(placement.ColliderObjectName, placement.ColliderLocalPosition, HubRoomLayout.TableColliderScale, colliderParent);
+            }
+        }
+
+        private static void EnsureHubUpgradeSlotLayout(Transform objectLayer)
+        {
+            foreach (HubRoomLayout.HubUpgradeSlotPlacement placement in HubRoomLayout.UpgradeSlotPlacements)
+            {
+                string resourcePath = ResolveHubArtResourcePath(placement.SpriteId);
+                GameObject slotObject = EnsureSceneSpriteObject(
+                    placement.SlotObjectName,
+                    resourcePath,
+                    placement.Position,
+                    HubRoomLayout.ObjectSortingOrder,
+                    objectLayer);
+
+                Transform priceParent = slotObject != null ? slotObject.transform : objectLayer;
+                EnsureHubUpgradePriceText(
+                    placement.PriceObjectName,
+                    priceParent,
+                    HubRoomLayout.UpgradePriceTextLocalOffset,
+                    placement.GoldCostLabel);
+            }
+        }
+
+        private static void EnsureHubCollisionLayout()
+        {
+            foreach (HubRoomLayout.HubColliderPlacement placement in HubRoomLayout.ColliderPlacements)
+            {
+                Transform parent = GameObject.Find(placement.ParentObjectName)?.transform;
+                EnsureInvisibleWall(placement.ObjectName, placement.LocalPosition, placement.Scale, parent);
+            }
+        }
+
+        private static Transform ResolveHubArtParent(
+            HubRoomLayout.HubArtAnchor anchor,
+            Transform backgroundLayer,
+            Transform objectLayer,
+            Transform foregroundLayer)
+        {
+            return anchor switch
+            {
+                HubRoomLayout.HubArtAnchor.BackgroundLayer => backgroundLayer,
+                HubRoomLayout.HubArtAnchor.ObjectLayer => objectLayer,
+                HubRoomLayout.HubArtAnchor.ForegroundLayer => foregroundLayer,
+                _ => objectLayer
+            };
+        }
+
+        private static string ResolveHubArtResourcePath(HubRoomLayout.HubArtSpriteId spriteId)
+        {
+            return spriteId switch
+            {
+                HubRoomLayout.HubArtSpriteId.FloorBackground => HubFloorBackgroundResourcePath,
+                HubRoomLayout.HubArtSpriteId.WallBackground => HubWallBackgroundResourcePath,
+                HubRoomLayout.HubArtSpriteId.Bar => HubBarResourcePath,
+                HubRoomLayout.HubArtSpriteId.TableUnlocked => HubTableUnlockedResourcePath,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotLeft => HubUpgradeSlotResourcePath,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotCenter => HubUpgradeSlotResourcePath,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotRight => HubUpgradeSlotResourcePath,
+                HubRoomLayout.HubArtSpriteId.FrontOutline => HubFrontOutlineResourcePath,
+                _ => string.Empty
+            };
+        }
+
+        /// <summary>
+        /// 레이어 루트는 원점 기준 자식 정렬이 쉽도록 항상 0,0,0과 기본 스케일을 유지한다.
+        /// </summary>
+        private static GameObject EnsureRootObject(string objectName, Transform parent)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                go.transform.SetParent(null);
+                go.transform.position = Vector3.zero;
+            }
+
+            go.transform.localScale = Vector3.one;
+            return go;
+        }
+
+        /// <summary>
+        /// 허브 아트 조각은 Resources 스프라이트를 그대로 올리고, 정렬 순서만 고정한다.
+        /// </summary>
+        private static GameObject EnsureSceneSpriteObject(string objectName, string resourcePath, Vector3 position, int sortingOrder, Transform parent)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = position;
+            }
+            else
+            {
+                go.transform.SetParent(null);
+                go.transform.position = position;
+            }
+
+            go.transform.localScale = Vector3.one;
+
+            SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(go);
+            renderer.sprite = Resources.Load<Sprite>(resourcePath);
+            renderer.color = Color.white;
+            renderer.sortingOrder = sortingOrder;
+            renderer.enabled = renderer.sprite != null;
+            return go;
+        }
+
+        /// <summary>
+        /// 허브 업그레이드 가격은 슬롯 자식 텍스트로 유지해 슬롯 기준 배치를 함께 따라가게 만든다.
+        /// 기존 스프라이트가 남아 있으면 텍스트만 보이도록 렌더러를 끈다.
+        /// </summary>
+        private static void EnsureHubUpgradePriceText(string objectName, Transform parent, Vector3 localPosition, string content)
+        {
+            TextMeshPro text = EnsureWorldTextObject(
+                objectName,
+                parent,
+                localPosition,
+                content,
+                HubRoomLayout.UpgradePriceTextColor,
+                HubRoomLayout.UpgradePriceFontSize,
+                HubRoomLayout.SignTextSortingOrder,
+                labelScale: HubRoomLayout.UpgradePriceTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.08f);
+
+            if (text == null)
+            {
+                return;
+            }
+
+            SpriteRenderer renderer = text.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.sprite = null;
+                renderer.enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// 허브 바닥 표시는 별도 그림 대신 얇은 바닥 패널과 텍스트로 다시 맞춘다.
+        /// </summary>
+        private static void EnsureHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Transform parent)
+        {
+            GameObject sign = EnsureDecorSpriteObject(
+                placement.ObjectName,
+                FloorSpriteResourcePath,
+                placement.Position,
+                placement.BackdropScale,
+                HubRoomLayout.SignBackdropColor,
+                HubRoomLayout.SignSortingOrder,
+                parent);
+
+            EnsureWorldTextObject(
+                placement.ObjectName + "Label",
+                sign != null ? sign.transform : parent,
+                placement.TextLocalPosition,
+                placement.Content,
+                HubRoomLayout.SignTextColor,
+                placement.FontSize,
+                HubRoomLayout.SignTextSortingOrder,
+                labelScale: placement.TextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: placement.CharacterSpacing);
+        }
+
+        /// <summary>
+        /// 허브 벽면의 오늘의 메뉴 보드를 보강한다.
+        /// 빌더로 다시 만들지 않은 기존 씬에서도 동일한 자리와 슬롯 구성을 채운다.
+        /// </summary>
+        private static void EnsureHubTodayMenuBoard(Transform parent)
+        {
+            CleanupLegacyObjects(
+                "HubTodayMenuHeaderBackdrop",
+                "HubTodayMenuEntryLabel1",
+                "HubTodayMenuEntryLabel2",
+                "HubTodayMenuEntryLabel3");
+
+            GameObject boardRoot = EnsureRootObject("HubTodayMenuBoard", parent);
+            boardRoot.transform.localPosition = HubRoomLayout.TodayMenuBoardPosition;
+
+            EnsureWorldTextObject(
+                "HubTodayMenuHeaderShadow",
+                boardRoot.transform,
+                HubRoomLayout.TodayMenuHeaderLabelLocalPosition + HubRoomLayout.TodayMenuHeaderShadowLocalOffset,
+                "오늘의 메뉴",
+                HubRoomLayout.TodayMenuHeaderShadowColor,
+                HubRoomLayout.TodayMenuHeaderFontSize,
+                HubRoomLayout.TodayMenuItemSortingOrder,
+                labelScale: HubRoomLayout.TodayMenuHeaderTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.04f);
+
+            TextMeshPro headerLabel = EnsureWorldTextObject(
+                "HubTodayMenuHeaderLabel",
+                boardRoot.transform,
+                HubRoomLayout.TodayMenuHeaderLabelLocalPosition,
+                "오늘의 메뉴",
+                HubRoomLayout.TodayMenuHeaderTextColor,
+                HubRoomLayout.TodayMenuHeaderFontSize,
+                HubRoomLayout.TodayMenuTextSortingOrder,
+                labelScale: HubRoomLayout.TodayMenuHeaderTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.04f);
+
+            string[] itemResourcePaths =
+            {
+                HubTodayMenuItem2ResourcePath,
+                HubTodayMenuItem1ResourcePath,
+                HubTodayMenuItem3ResourcePath
+            };
+
+            SpriteRenderer[] entryBackdrops = new SpriteRenderer[HubRoomLayout.TodayMenuEntryLocalPositions.Length];
+            SpriteRenderer[] entryIcons = new SpriteRenderer[HubRoomLayout.TodayMenuEntryLocalPositions.Length];
+
+            for (int i = 0; i < HubRoomLayout.TodayMenuEntryLocalPositions.Length; i++)
+            {
+                GameObject entryBackdrop = EnsureDecorSpriteObject(
+                    $"HubTodayMenuEntryBackdrop{i + 1}",
+                    HubTodayMenuBgResourcePath,
+                    HubRoomLayout.TodayMenuEntryLocalPositions[i],
+                    HubRoomLayout.TodayMenuEntryBackdropScale,
+                    HubRoomLayout.TodayMenuBackdropColor,
+                    HubRoomLayout.TodayMenuBackdropSortingOrder,
+                    boardRoot.transform);
+
+                entryBackdrops[i] = entryBackdrop != null ? entryBackdrop.GetComponent<SpriteRenderer>() : null;
+
+                GameObject entryItem = EnsureDecorSpriteObject(
+                    $"HubTodayMenuEntryItem{i + 1}",
+                    itemResourcePaths[i],
+                    HubRoomLayout.TodayMenuEntryIconLocalOffset,
+                    HubRoomLayout.TodayMenuEntryIconScale,
+                    HubRoomLayout.TodayMenuIconColor,
+                    HubRoomLayout.TodayMenuItemSortingOrder,
+                    entryBackdrop != null ? entryBackdrop.transform : boardRoot.transform);
+
+                entryIcons[i] = entryItem != null ? entryItem.GetComponent<SpriteRenderer>() : null;
+            }
+
+            RestaurantManager restaurantManager = Object.FindFirstObjectByType<RestaurantManager>();
+            HubTodayMenuDisplay display = GetOrAddComponent<HubTodayMenuDisplay>(boardRoot);
+            display.Configure(restaurantManager, headerLabel, entryBackdrops, entryIcons);
+        }
+
+        private static GameObject EnsureDecorSpriteObject(
+            string objectName,
+            string resourcePath,
+            Vector3 position,
+            Vector3 scale,
+            Color color,
+            int sortingOrder,
+            Transform parent)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = position;
+            }
+            else
+            {
+                go.transform.SetParent(null);
+                go.transform.position = position;
+            }
+
+            go.transform.localScale = scale;
+
+            SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(go);
+            renderer.sprite = Resources.Load<Sprite>(resourcePath);
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
+            renderer.enabled = renderer.sprite != null;
+            return go;
+        }
+
+        private static TextMeshPro EnsureWorldTextObject(
+            string objectName,
+            Transform parent,
+            Vector3 localPosition,
+            string content,
+            Color color,
+            float fontSize,
+            int sortingOrder,
+            float? labelScale = null,
+            FontStyles? fontStyle = null,
+            float? characterSpacing = null)
+        {
+            GameObject go = GameObject.Find(objectName);
+            if (go == null)
+            {
+                go = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                go.transform.SetParent(parent, false);
+                go.transform.localPosition = localPosition;
+            }
+            else
+            {
+                go.transform.SetParent(null);
+                go.transform.position = localPosition;
+            }
+
+            bool isLargeLabel = fontSize >= 3.4f;
+            bool isPrimaryLabel = fontSize >= 2.5f;
+            float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
+            go.transform.localScale = Vector3.one * resolvedLabelScale;
+
+            TextMeshPro text = GetOrAddComponent<TextMeshPro>(go);
+            text.text = content;
+            text.fontSize = fontSize;
+            text.alignment = TextAlignmentOptions.Center;
+            text.color = color;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.characterSpacing = characterSpacing ?? (isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f);
+            text.wordSpacing = 0f;
+            text.lineSpacing = 0f;
+            text.fontStyle = fontStyle ?? (isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal);
+
+            if (TMP_Settings.defaultFontAsset != null)
+            {
+                text.font = TMP_Settings.defaultFontAsset;
+            }
+
+            ApplyWorldTextReadability(text, isLargeLabel || isPrimaryLabel);
+
+            MeshRenderer renderer = text.GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                renderer.sortingOrder = sortingOrder;
+            }
+
+            return text;
+        }
+
+        /// <summary>
+        /// 런타임 보강으로 다시 만든 월드 텍스트도 동일한 외곽선과 패딩을 적용해 가독성을 맞춘다.
+        /// </summary>
+        private static void ApplyWorldTextReadability(TextMeshPro text, bool useStrongOutline)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            text.extraPadding = true;
+
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
+            text.outlineColor = HubRoomLayout.WorldTextOutlineColor;
+            text.outlineWidth = useStrongOutline
+                ? HubRoomLayout.WorldTextStrongOutlineWidth
+                : HubRoomLayout.WorldTextNormalOutlineWidth;
+        }
+
+        private static void HideWorldPresentation(string objectName)
+        {
+            if (string.IsNullOrWhiteSpace(objectName))
+            {
+                return;
+            }
+
+            GameObject root = GameObject.Find(objectName);
+            if (root == null)
+            {
+                return;
+            }
+
+            foreach (SpriteRenderer renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                renderer.enabled = false;
+            }
+
+            foreach (TextMeshPro label in root.GetComponentsInChildren<TextMeshPro>(true))
+            {
+                label.gameObject.SetActive(false);
+            }
+        }
+
+        private static void HideHubInteractionPresentations()
+        {
+            foreach (string objectName in HubRoomLayout.HiddenInteractionObjectNames)
+            {
+                HideWorldPresentation(objectName);
+            }
+        }
+
+        private static T GetOrAddComponent<T>(GameObject go) where T : Component
+        {
+            if (go == null)
+            {
+                return null;
+            }
+
+            T component = go.GetComponent<T>();
+            if (component == null)
+            {
+                component = go.AddComponent<T>();
+            }
+
+            return component;
         }
 
         private static void ApplyCompactLabelOffset(GameObject root, TextMeshPro label)

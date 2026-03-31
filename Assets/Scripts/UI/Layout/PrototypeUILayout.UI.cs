@@ -16,16 +16,20 @@ namespace UI.Layout
         public static readonly PrototypeUIRect DayPhaseText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(210f, 24f));
 
         // 허브와 탐험 씬 공용 프롬프트, 안내, 결과 카드 배치다.
-		public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
-		public static readonly PrototypeUIRect ExploreGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 84f), new Vector2(860f, 58f));
+        public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
+        public static readonly PrototypeUIRect ExploreGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 84f), new Vector2(860f, 58f));
         public static readonly PrototypeUIRect HubResultBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 232f), new Vector2(936f, 84f));
         public static readonly PrototypeUIRect ExploreResultBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(936f, 84f));
+        public static readonly PrototypeUIRect HubPromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 86f), new Vector2(744f, 58f));
+        public static readonly PrototypeUIRect ExplorePromptBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(744f, 62f));
         public static readonly PrototypeUIRect HubPromptText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(676f, 40f));
         public static readonly PrototypeUIRect ExplorePromptText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(676f, 40f));
         public static readonly PrototypeUIRect HubGuideText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 128f), new Vector2(900f, 40f));
         public static readonly PrototypeUIRect ExploreGuideText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 84f), new Vector2(836f, 48f));
         public static readonly PrototypeUIRect HubResultText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 186f), new Vector2(980f, 64f));
         public static readonly PrototypeUIRect ExploreResultText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(900f, 72f));
+        public static readonly PrototypeUIRect HubGuideHelpButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0.5f), new Vector2(454f, 154f), new Vector2(34f, 34f));
+        public static readonly PrototypeUIRect ExploreGuideHelpButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0.5f), new Vector2(454f, 84f), new Vector2(34f, 34f));
 
         // 인벤토리 카드와 허브 상세 카드 공용 배치다.
         public static readonly PrototypeUIRect HubInventoryCard = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 72f), new Vector2(820f, 396f));
@@ -68,8 +72,10 @@ namespace UI.Layout
         /// </summary>
 		public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
         public static PrototypeUIRect ResultBackdrop(bool isHubScene) => isHubScene ? HubResultBackdrop : ExploreResultBackdrop;
+        public static PrototypeUIRect PromptBackdrop(bool isHubScene) => isHubScene ? HubPromptBackdrop : ExplorePromptBackdrop;
         public static PrototypeUIRect PromptText(bool isHubScene) => isHubScene ? HubPromptText : ExplorePromptText;
         public static PrototypeUIRect GuideText(bool isHubScene) => isHubScene ? HubGuideText : ExploreGuideText;
+        public static PrototypeUIRect GuideHelpButton(bool isHubScene) => isHubScene ? HubGuideHelpButton : ExploreGuideHelpButton;
         public static PrototypeUIRect ResultText(bool isHubScene) => isHubScene ? HubResultText : ExploreResultText;
         public static PrototypeUIRect InventoryCard(bool isHubScene) => isHubScene ? HubInventoryCard : ExploreInventoryCard;
         public static PrototypeUIRect InventoryAccent(bool isHubScene) => isHubScene ? HubInventoryAccent : ExploreInventoryAccent;

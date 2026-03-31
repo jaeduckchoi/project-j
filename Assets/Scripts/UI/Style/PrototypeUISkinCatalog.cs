@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // UI.Style 네임스페이스
@@ -47,8 +48,12 @@ namespace UI.Style
         private static readonly Vector4 ButtonSliceBorder = new(6f, 6f, 6f, 6f);
         private static readonly Vector4 PanelSliceBorder = new(8f, 8f, 8f, 8f);
         private const string VectorResourceRoot = "Generated/UI/Vector";
-        private const string PopupDefaultSpriteSheetResource = "Generated/Sprites/SpritesheetDefault";
-        private const string PopupDoubleSpriteSheetResource = "Generated/Sprites/SpritesheetDouble";
+        private const string GeneratedUiResourceRoot = "Generated/Sprites/UI";
+        private const string GeneratedUiButtonResourceRoot = "Generated/Sprites/UI/Buttons";
+        private const string GeneratedUiMessageBoxResourceRoot = "Generated/Sprites/UI/MessageBoxes";
+        private const string GeneratedUiPanelResourceRoot = "Generated/Sprites/UI/Panels";
+        private const string PopupDefaultSpriteSheetResource = "Generated/Sprites/UI/ui-spritesheet-default";
+        private const string PopupDoubleSpriteSheetResource = "Generated/Sprites/UI/ui-spritesheet-double";
 
         /// <summary>
         /// 패널 오브젝트 이름을 실제 리소스 경로로 바꾼다.
@@ -64,6 +69,24 @@ namespace UI.Style
         public static string GetButtonResourcePath(string objectName)
         {
             return BuildResourcePath(ResolveButton(objectName));
+        }
+
+        /// <summary>
+        /// 패널이 디자인 원본에서 생성한 UI 스프라이트를 직접 쓰는지 판별합니다.
+        /// 빌더와 런타임이 같은 기준을 공유하도록 카탈로그에 모읍니다.
+        /// </summary>
+        public static bool UsesGeneratedUiDesignPanel(string objectName)
+        {
+            return IsGeneratedUiDesignResource(ResolvePanel(objectName));
+        }
+
+        /// <summary>
+        /// 버튼이 디자인 원본에서 생성한 UI 스프라이트를 직접 쓰는지 판별합니다.
+        /// 빌더와 런타임이 같은 기준을 공유하도록 카탈로그에 모읍니다.
+        /// </summary>
+        public static bool UsesGeneratedUiDesignButton(string objectName)
+        {
+            return IsGeneratedUiDesignResource(ResolveButton(objectName));
         }
 
         /// <summary>
@@ -112,6 +135,41 @@ namespace UI.Style
             return string.IsNullOrWhiteSpace(spriteName)
                 ? string.Empty
                 : $"{VectorResourceRoot}/{spriteName}";
+        }
+
+        private static PrototypeUISpriteSpec BuildGeneratedUiSpriteSpec(
+            string spriteName,
+            Vector4 sliceBorder,
+            string resourceRoot)
+        {
+            return new PrototypeUISpriteSpec(
+                spriteName,
+                sliceBorder,
+                0,
+                1,
+                false,
+                $"{resourceRoot}/{spriteName}");
+        }
+
+        private static PrototypeUISpriteSpec BuildGeneratedUiPanelSpec(string spriteName)
+        {
+            return BuildGeneratedUiSpriteSpec(spriteName, PanelSliceBorder, GeneratedUiPanelResourceRoot);
+        }
+
+        private static PrototypeUISpriteSpec BuildGeneratedUiMessageBoxSpec(string spriteName, Vector4? sliceBorder = null)
+        {
+            return BuildGeneratedUiSpriteSpec(spriteName, sliceBorder ?? PanelSliceBorder, GeneratedUiMessageBoxResourceRoot);
+        }
+
+        private static PrototypeUISpriteSpec BuildGeneratedUiButtonSpec(string spriteName)
+        {
+            return BuildGeneratedUiSpriteSpec(spriteName, Vector4.zero, GeneratedUiButtonResourceRoot);
+        }
+
+        private static bool IsGeneratedUiDesignResource(PrototypeUISpriteSpec spriteSpec)
+        {
+            return !string.IsNullOrWhiteSpace(spriteSpec.ResourcePath)
+                   && spriteSpec.ResourcePath.StartsWith(GeneratedUiResourceRoot + "/", StringComparison.Ordinal);
         }
 
         public static string BuildResourcePath(PrototypeUISpriteSpec spriteSpec)

@@ -7,7 +7,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace Data
 {
     [CreateAssetMenu(
-        fileName = "RecipeData",
+        fileName = "recipe-data",
         menuName = "Jonggu Restaurant/Data/Recipe",
         order = 1)]
     /// <summary>

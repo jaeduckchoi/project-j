@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 // UI.Style 네임스페이스
 namespace UI.Style
@@ -10,43 +11,30 @@ namespace UI.Style
     {
         private static bool TryResolvePopupPanel(string objectName, out PrototypeUISpriteSpec spriteSpec)
         {
-            if (string.Equals(objectName, "PopupFrame", StringComparison.Ordinal))
+            switch (objectName)
             {
-                spriteSpec = default;
-                return true;
-            }
-
-            if (string.Equals(objectName, "PopupFrameLeft", StringComparison.Ordinal)
-                || string.Equals(objectName, "PopupLeftPanel", StringComparison.Ordinal))
-            {
-                spriteSpec = new PrototypeUISpriteSpec("panel_grey_bolts", PanelSliceBorder, 6, 4, false, PopupDoubleSpriteSheetResource, "panel_grey_bolts");
-                return true;
-            }
-
-            if (string.Equals(objectName, "PopupFrameRight", StringComparison.Ordinal)
-                || string.Equals(objectName, "PopupRightPanel", StringComparison.Ordinal))
-            {
-                spriteSpec = new PrototypeUISpriteSpec("panel_grey_bolts_dark", PanelSliceBorder, 6, 4, true, PopupDoubleSpriteSheetResource, "panel_grey_bolts_dark");
-                return true;
-            }
-
-            if (string.Equals(objectName, "PopupLeftBody", StringComparison.Ordinal))
-            {
-                spriteSpec = new PrototypeUISpriteSpec("panel_brown", PanelSliceBorder, 6, 4, false, PopupDefaultSpriteSheetResource, "panel_brown");
-                return true;
-            }
-
-            if (string.Equals(objectName, "PopupRightBody", StringComparison.Ordinal))
-            {
-                spriteSpec = new PrototypeUISpriteSpec("panel_grey_bolts", PanelSliceBorder, 6, 4, false, PopupDefaultSpriteSheetResource, "panel_grey_bolts");
-                return true;
+                case "PopupFrame":
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark-thin-outline-panel");
+                    return true;
+                case "PopupFrameLeft":
+                case "PopupLeftPanel":
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark-outline-panel");
+                    return true;
+                case "PopupFrameRight":
+                case "PopupRightPanel":
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark-outline-panel-alt");
+                    return true;
+                case "PopupLeftBody":
+                case "PopupRightBody":
+                    spriteSpec = BuildGeneratedUiMessageBoxSpec("system-text-box");
+                    return true;
             }
 
             if (!string.IsNullOrWhiteSpace(objectName)
                 && (objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
                     || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)))
             {
-                spriteSpec = new PrototypeUISpriteSpec("panel_brown_dark", PanelSliceBorder, 6, 4, false, PopupDefaultSpriteSheetResource, "panel_brown_dark");
+                spriteSpec = BuildGeneratedUiPanelSpec("light-solid-panel");
                 return true;
             }
 
@@ -59,7 +47,7 @@ namespace UI.Style
             if (!string.IsNullOrWhiteSpace(objectName)
                 && objectName.IndexOf("Close", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                spriteSpec = new PrototypeUISpriteSpec("checkbox_grey_cross", ButtonSliceBorder, 4, 4, false, PopupDoubleSpriteSheetResource, "checkbox_grey_cross");
+                spriteSpec = BuildGeneratedUiButtonSpec("close-button");
                 return true;
             }
 

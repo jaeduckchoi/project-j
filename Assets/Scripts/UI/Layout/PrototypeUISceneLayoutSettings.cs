@@ -286,11 +286,11 @@ namespace UI.Layout
     [CreateAssetMenu(fileName = DefaultAssetFileName, menuName = "Jonggu Restaurant/UI/Scene Layout Settings")]
     public class PrototypeUISceneLayoutSettings : ScriptableObject
     {
-        public const string DefaultAssetFileName = "uiLayoutOverrides";
-        public const string ResourcesLoadPath = "Generated/UI/" + DefaultAssetFileName;
+        public const string DefaultAssetFileName = "ui-layout-overrides";
+        public const string ResourcesLoadPath = "Generated/" + DefaultAssetFileName;
 
 #if UNITY_EDITOR
-        public const string AssetPath = "Assets/Resources/Generated/UI/" + DefaultAssetFileName + ".asset";
+        public const string AssetPath = "Assets/Resources/Generated/" + DefaultAssetFileName + ".asset";
 #endif
 
         [SerializeField] private List<PrototypeUISceneLayoutEntry> layoutEntries = new();
@@ -1304,7 +1304,6 @@ namespace UI.Layout
             }
 
             EnsureFolder("Assets/Resources", "Generated");
-            EnsureFolder("Assets/Resources/Generated", "UI");
 
             settings = ScriptableObject.CreateInstance<PrototypeUISceneLayoutSettings>();
             AssetDatabase.CreateAsset(settings, PrototypeUISceneLayoutSettings.AssetPath);

@@ -84,6 +84,7 @@ namespace UI
 		{
 			yield return "TopLeftPanel";
 			yield return "PhaseBadge";
+            yield return "InteractionPromptBackdrop";
 			yield return "GuideBackdrop";
 			yield return "ResultBackdrop";
             yield return "GoldText";
@@ -91,6 +92,7 @@ namespace UI
             yield return "GuideText";
             yield return "RestaurantResultText";
             yield return "DayPhaseText";
+            yield return "GuideHelpButton";
             yield return HudPanelButtonGroupObjectName;
             yield return "ActionDock";
             yield return "ActionAccent";
@@ -129,6 +131,7 @@ namespace UI
         [SerializeField] private Button recipePanelButton;
         [SerializeField] private Button upgradePanelButton;
         [SerializeField] private Button materialPanelButton;
+        [SerializeField] private Button guideHelpButton;
         [SerializeField] private Button popupCloseButton;
         [SerializeField] private string defaultPromptText = "이동: WASD / 방향키   상호작용: E";
 
@@ -144,6 +147,7 @@ namespace UI
         private ResourceData _selectedMaterialPopupResource;
         private ResourceData _selectedStoragePopupResource;
         private string _selectedUpgradePopupKey;
+        private bool _showGuideHelpOverlay;
         private bool _isPopupPauseApplied;
         private float _popupPausePreviousTimeScale = 1f;
         private bool _suppressCanvasGroupingInEditorPreview;
@@ -789,6 +793,15 @@ namespace UI
                 }
             }
 
+            if (guideHelpButton == null)
+            {
+                Transform helpTransform = FindNamedUiTransform("GuideHelpButton");
+                if (helpTransform != null)
+                {
+                    guideHelpButton = helpTransform.GetComponent<Button>();
+                }
+            }
+
             if (guideText == null)
             {
                 Transform guideTransform = FindNamedUiTransform("GuideText");
@@ -850,6 +863,11 @@ namespace UI
             {
                 popupCloseButton.onClick.AddListener(HandlePopupCloseButtonClicked);
             }
+
+            if (guideHelpButton != null)
+            {
+                guideHelpButton.onClick.AddListener(HandleGuideHelpButtonClicked);
+            }
         }
 
         /// <summary>
@@ -890,6 +908,11 @@ namespace UI
             if (popupCloseButton != null)
             {
                 popupCloseButton.onClick.RemoveListener(HandlePopupCloseButtonClicked);
+            }
+
+            if (guideHelpButton != null)
+            {
+                guideHelpButton.onClick.RemoveListener(HandleGuideHelpButtonClicked);
             }
         }
 
@@ -946,6 +969,12 @@ namespace UI
         private void HandlePopupCloseButtonClicked()
         {
             CloseActiveHubPanel();
+        }
+
+        private void HandleGuideHelpButtonClicked()
+        {
+            _showGuideHelpOverlay = !_showGuideHelpOverlay;
+            RefreshGuideText();
         }
 
         public void ShowStoragePanel()
@@ -1304,32 +1333,15 @@ namespace UI
 
         private static string GetHudSubgroupName(string objectName)
         {
-            if (objectName == "TopLeftPanel" || objectName == "PhaseBadge" || objectName == "GoldText" || objectName == "DayPhaseText")
+            return objectName switch
             {
-                return HudStatusGroupName;
-            }
-
-            if (objectName == "ActionDock" || objectName == "ActionAccent" || objectName == "ActionCaption")
-            {
-                return HudActionGroupName;
-            }
-
-            if (objectName == "SkipExplorationButton" || objectName == "SkipServiceButton" || objectName == "NextDayButton")
-            {
-                return HudBottomGroupName;
-            }
-
-            if (objectName == "RecipePanelButton" || objectName == "UpgradePanelButton" || objectName == "MaterialPanelButton")
-            {
-                return HudPanelButtonGroupObjectName;
-            }
-
-            if (objectName == "GuideBackdrop" || objectName == "GuideText" || objectName == "ResultBackdrop" || objectName == "RestaurantResultText")
-            {
-                return HudOverlayGroupName;
-            }
-
-            return null;
+                "TopLeftPanel" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
+                "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
+                "SkipExplorationButton" or "SkipServiceButton" or "NextDayButton" => HudBottomGroupName,
+                "RecipePanelButton" or "UpgradePanelButton" or "MaterialPanelButton" => HudPanelButtonGroupObjectName,
+                "GuideBackdrop" or "GuideText" or "ResultBackdrop" or "RestaurantResultText" or "GuideHelpButton" => HudOverlayGroupName,
+                _ => null
+            };
         }
 
         private static string GetPopupSubgroupName(string objectName)
@@ -1347,32 +1359,15 @@ namespace UI
 
         private static int GetHudSubgroupSiblingIndex(string subgroupName)
         {
-            if (subgroupName == HudStatusGroupName)
+            return subgroupName switch
             {
-                return 0;
-            }
-
-            if (subgroupName == HudActionGroupName)
-            {
-                return 1;
-            }
-
-            if (subgroupName == HudBottomGroupName)
-            {
-                return 2;
-            }
-
-            if (subgroupName == HudPanelButtonGroupObjectName)
-            {
-                return 3;
-            }
-
-            if (subgroupName == HudOverlayGroupName)
-            {
-                return 4;
-            }
-
-            return 0;
+                HudStatusGroupName => 0,
+                HudActionGroupName => 1,
+                HudBottomGroupName => 2,
+                HudPanelButtonGroupObjectName => 3,
+                HudOverlayGroupName => 4,
+                _ => 0
+            };
         }
 
         private static int GetPopupSubgroupSiblingIndex(string subgroupName)
@@ -1584,8 +1579,10 @@ namespace UI
         {
 			EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
 			EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
+            EnsureUiBackdrop("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene), Color.white);
 			EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
 			EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
+            EnsureGuideHelpButton(preferredFont, isHubScene);
         }
 
         /// <summary>
@@ -1671,14 +1668,17 @@ namespace UI
                 image = backdropObject.AddComponent<Image>();
             }
 
+            bool shouldUseGeneratedUiDesign = PrototypeUISkinCatalog.UsesGeneratedUiDesignPanel(objectName);
             bool preserveSceneSprite = existing != null
                                        && IsHubPopupDisplayObject(objectName)
-                                       && image.sprite != null;
+                                       && image.sprite != null
+                                       && !shouldUseGeneratedUiDesign;
             if (!preserveSceneSprite)
             {
                 PrototypeUISkin.ApplyPanel(image, objectName, color);
             }
 
+            // generated UI 스킨은 기본값으로 적용하고, 씬에서 저장한 이미지 오버라이드가 있으면 마지막에 우선 반영한다.
             PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
 
             image.raycastTarget = false;
@@ -1984,6 +1984,57 @@ namespace UI
             label.gameObject.SetActive(false);
         }
 
+        private void EnsureGuideHelpButton(TMP_FontAsset font, bool isHubScene)
+        {
+            if (transform == null)
+            {
+                return;
+            }
+
+            Transform existing = FindNamedUiTransform("GuideHelpButton");
+            GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("GuideHelpButton");
+            if (existing == null)
+            {
+                buttonObject.transform.SetParent(GetCanvasGroupParent("GuideHelpButton"), false);
+            }
+            else
+            {
+                AssignCanvasGroupParent(buttonObject.transform, "GuideHelpButton");
+            }
+
+            RectTransform rect = buttonObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = buttonObject.AddComponent<RectTransform>();
+            }
+
+            ApplyRectLayout(rect, PrototypeUILayout.GuideHelpButton(isHubScene));
+            rect.SetAsLastSibling();
+
+            Image image = buttonObject.GetComponent<Image>();
+            if (image == null)
+            {
+                image = buttonObject.AddComponent<Image>();
+            }
+
+            Button button = buttonObject.GetComponent<Button>();
+            if (button == null)
+            {
+                button = buttonObject.AddComponent<Button>();
+            }
+
+            button.targetGraphic = image;
+            guideHelpButton = button;
+            ApplyButtonPresentation(button, font, Color.white);
+
+            TextMeshProUGUI label = buttonObject.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null)
+            {
+                label.text = string.Empty;
+                label.gameObject.SetActive(false);
+            }
+        }
+
         /// <summary>
         /// 텍스트나 버튼의 위치와 크기를 지정된 값으로 다시 맞춥니다.
         /// </summary>
@@ -2274,8 +2325,11 @@ namespace UI
 
 			ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
 			ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
+            ApplyNamedRectLayout("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
 			ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
 			ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
+            ApplyButtonLayout(guideHelpButton, PrototypeUILayout.GuideHelpButton(isHubScene));
+            ApplyButtonPresentation(guideHelpButton, headingFont, Color.white);
             if (isHubScene)
             {
                 ApplyNamedRectLayout("ActionDock", PrototypeUILayout.HubActionDock);
@@ -2899,6 +2953,9 @@ namespace UI
             {
                 interactionPromptText.gameObject.SetActive(isVisible && !string.IsNullOrWhiteSpace(interactionPromptText.text));
             }
+
+            SetNamedObjectActive("InteractionPromptBackdrop", isVisible && interactionPromptText != null && !string.IsNullOrWhiteSpace(interactionPromptText.text));
+            SetButtonGameObjectActive(guideHelpButton, isVisible);
 
             SetButtonGameObjectActive(recipePanelButton, isVisible);
             SetButtonGameObjectActive(upgradePanelButton, isVisible);
@@ -3857,6 +3914,7 @@ namespace UI
 
 			interactionPromptText.text = prompt;
 			interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
+            SetNamedObjectActive("InteractionPromptBackdrop", shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
 			RefreshStoragePanelVisibility();
 		}
 
@@ -4015,6 +4073,16 @@ namespace UI
                 return;
             }
 
+            if (_showGuideHelpOverlay)
+            {
+                string helpText = BuildGuideHelpOverlayText();
+                bool shouldShowHelp = _activeHubPanel == HubPopupPanel.None && !string.IsNullOrWhiteSpace(helpText);
+                guideText.text = helpText;
+                guideText.gameObject.SetActive(shouldShowHelp);
+                SetNamedObjectActive("GuideBackdrop", shouldShowHelp);
+                return;
+            }
+
             if (IsHubScene())
             {
                 string message = BuildHubMessageLine();
@@ -4036,6 +4104,16 @@ namespace UI
             guideText.text = guide;
             guideText.gameObject.SetActive(!string.IsNullOrWhiteSpace(guide));
             SetNamedObjectActive("GuideBackdrop", !IsHubScene() && guideText.gameObject.activeSelf);
+        }
+
+        private string BuildGuideHelpOverlayText()
+        {
+            if (IsHubScene())
+            {
+                return "이동: WASD / 방향키   상호작용: E   하단 메뉴 버튼으로 요리, 업그레이드, 재료 패널을 연다";
+            }
+
+            return "이동: WASD / 방향키   상호작용: E   채집물과 포탈 앞에서 E로 수집하거나 이동한다";
         }
 
         private void RefreshRestaurantResultText(string result)

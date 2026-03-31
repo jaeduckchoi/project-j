@@ -66,11 +66,16 @@ namespace ProjectEditor.UI
 
             EditorGUILayout.HelpBox(
                 "[Canvas Layout Sync]\n"
-                + "- Sync Canvas UI Layouts는 현재 씬 Canvas 아래 UI의 RectTransform, Image, TMP, Button 값을 저장합니다.\n"
-                + "- 현재 씬 Canvas 값도 빌드 직전에 자동으로 다시 저장되어 빌드 기준으로 다시 사용됩니다.\n"
+                + "- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 RectTransform, Image, TMP, Button 값이 자동으로 동기화됩니다.\n"
+                + "- Hub 저장 시 공용 UI 오버라이드와 탐험 씬 HUD 기준이 함께 갱신됩니다.\n"
+                + "- 탐험 씬 저장 시 현재 씬 Canvas 값만 공용 오버라이드 위에 자동으로 덮어씁니다.\n"
                 + "- 같은 이름 UI는 빌더와 UIManager가 저장된 값을 다시 적용합니다.\n"
-                + "- 첫 Sync 시 Assets/Resources/Generated/UI/uiLayoutOverrides.asset이 자동 생성됩니다.\n"
-                + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.",
+                + "- 첫 Sync 시 Assets/Resources/Generated/ui-layout-overrides.asset이 자동 생성됩니다.\n"
+                + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.\n\n"
+                + "[Tools > Jonggu Restaurant 메뉴 역할]\n"
+                + "- 프로토타입 빌드 및 감사: 생성 자산, 기본 씬, 자동 감사를 한 번에 실행합니다.\n"
+                + "- 생성 자산 및 씬 다시 만들기: 감사를 제외한 생성 단계만 다시 실행합니다.\n"
+                + "- 생성 씬 감사만 실행: 현재 저장된 생성 씬 구조만 점검합니다.",
                 MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())
@@ -91,6 +96,12 @@ namespace ProjectEditor.UI
                     MarkSceneDirty(controller);
                 }
 
+                if (GUILayout.Button("씬 빌더 미리보기"))
+                {
+                    ProjectEditor.JongguMinimalPrototypeBuilder.ApplyOpenSceneBuilderPreview();
+                    MarkSceneDirty(controller);
+                }
+
                 if (GUILayout.Button("Refresh SVG Cache"))
                 {
                     PrototypeUISkin.ClearGeneratedCache();
@@ -99,28 +110,12 @@ namespace ProjectEditor.UI
                 }
             }
 
-            using (new EditorGUILayout.HorizontalScope())
+            if (GUILayout.Button("Reset Canvas UI Layouts"))
             {
-                if (GUILayout.Button("Sync Canvas UI Layouts"))
-                {
-                    if (PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(controller.gameObject.scene, out string message))
-                    {
-                        MarkSceneDirty(controller);
-                        Debug.Log(message);
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("Canvas Layout Sync", message, "OK");
-                    }
-                }
-
-                if (GUILayout.Button("Reset Canvas UI Layouts"))
-                {
-                    PrototypeUISceneLayoutCatalog.ResetCanvasLayouts();
-                    controller.ApplyEditorPreviewInEditor();
-                    MarkSceneDirty(controller);
-                    Debug.Log("Canvas UI 레이아웃, 표시 값, 이름 오버라이드를 초기화했습니다.");
-                }
+                PrototypeUISceneLayoutCatalog.ResetCanvasLayouts();
+                controller.ApplyEditorPreviewInEditor();
+                MarkSceneDirty(controller);
+                Debug.Log("Canvas UI 레이아웃, 표시 값, 이름 오버라이드를 초기화했습니다.");
             }
 
             if (GUILayout.Button("Clear Preview"))

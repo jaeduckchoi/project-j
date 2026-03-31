@@ -43,17 +43,71 @@ namespace ProjectEditor
         private const string PopupLeftCaptionObjectName = "PopupLeftCaption";
         private const string PopupRightCaptionObjectName = "PopupRightCaption";
         private const string GeneratedRoot = "Assets/Generated";
-        private const string DataRoot = GeneratedRoot + "/GameData";
+        private const string GameDataRoot = GeneratedRoot + "/GameData";
+        private const string ResourceDataRoot = GameDataRoot;
+        private const string RecipeDataRoot = GameDataRoot;
+        private const string InputDataRoot = GameDataRoot;
         private const string SpriteRoot = GeneratedRoot + "/Sprites";
+        private const string PlayerSpriteRoot = SpriteRoot + "/Player";
+        private const string GatherSpriteRoot = SpriteRoot + "/Gather";
+        private const string UiSpriteRoot = SpriteRoot + "/UI";
+        private const string UiButtonSpriteRoot = UiSpriteRoot + "/Buttons";
+        private const string UiMessageBoxSpriteRoot = UiSpriteRoot + "/MessageBoxes";
+        private const string UiPanelSpriteRoot = UiSpriteRoot + "/Panels";
+        private const string WorldSpriteRoot = SpriteRoot + "/World";
         private const string SceneRoot = "Assets/Scenes";
         private const string SharedExplorationHudSourceScene = SceneRoot + "/Hub.unity";
         private const string FontRoot = GeneratedRoot + "/Fonts";
         private const string ResourceSpriteRoot = "Assets/Resources/Generated/Sprites";
+        private const string ResourceUiSpriteRoot = ResourceSpriteRoot + "/UI";
+        private const string ResourceUiButtonSpriteRoot = ResourceUiSpriteRoot + "/Buttons";
+        private const string ResourceUiMessageBoxSpriteRoot = ResourceUiSpriteRoot + "/MessageBoxes";
+        private const string ResourceUiPanelSpriteRoot = ResourceUiSpriteRoot + "/Panels";
+        private const string UiGeneratedSourceRoot = "Assets/Design/GeneratedSources/UI";
+        private const string UiGeneratedSourceButtonRoot = UiGeneratedSourceRoot + "/Buttons";
+        private const string UiGeneratedSourceMessageBoxRoot = UiGeneratedSourceRoot + "/MessageBoxes";
+        private const string UiGeneratedSourcePanelRoot = UiGeneratedSourceRoot + "/PanelVariants";
+        private const string HubSpriteRoot = SpriteRoot + "/Hub";
+        private const string ResourceHubSpriteRoot = ResourceSpriteRoot + "/Hub";
+        private const string HubFloorBackgroundSpritePath = HubSpriteRoot + "/hub-floor-background.png";
+        private const string ResourceHubFloorBackgroundSpritePath = ResourceHubSpriteRoot + "/hub-floor-background.png";
+        private const string HubWallBackgroundSpritePath = HubSpriteRoot + "/hub-wall-background.png";
+        private const string ResourceHubWallBackgroundSpritePath = ResourceHubSpriteRoot + "/hub-wall-background.png";
+        private const string HubFrontOutlineSpritePath = HubSpriteRoot + "/hub-front-outline.png";
+        private const string ResourceHubFrontOutlineSpritePath = ResourceHubSpriteRoot + "/hub-front-outline.png";
+        private const string HubBarSpritePath = HubSpriteRoot + "/hub-bar.png";
+        private const string ResourceHubBarSpritePath = ResourceHubSpriteRoot + "/hub-bar.png";
+        private const string HubTableUnlockedSpritePath = HubSpriteRoot + "/hub-table-unlocked.png";
+        private const string ResourceHubTableUnlockedSpritePath = ResourceHubSpriteRoot + "/hub-table-unlocked.png";
+        private const string HubUpgradeSlotSpritePath = HubSpriteRoot + "/hub-upgrade-slot-center.png";
+        private const string ResourceHubUpgradeSlotSpritePath = ResourceHubSpriteRoot + "/hub-upgrade-slot-center.png";
+        private const string HubTodayMenuBgSpritePath = HubSpriteRoot + "/hub-today-menu-bg-1.png";
+        private const string ResourceHubTodayMenuBgSpritePath = ResourceHubSpriteRoot + "/hub-today-menu-bg-1.png";
+        private const string HubTodayMenuItem1SpritePath = HubSpriteRoot + "/hub-today-menu-item-1.png";
+        private const string ResourceHubTodayMenuItem1SpritePath = ResourceHubSpriteRoot + "/hub-today-menu-item-1.png";
+        private const string HubTodayMenuItem2SpritePath = HubSpriteRoot + "/hub-today-menu-item-2.png";
+        private const string ResourceHubTodayMenuItem2SpritePath = ResourceHubSpriteRoot + "/hub-today-menu-item-2.png";
+        private const string HubTodayMenuItem3SpritePath = HubSpriteRoot + "/hub-today-menu-item-3.png";
+        private const string ResourceHubTodayMenuItem3SpritePath = ResourceHubSpriteRoot + "/hub-today-menu-item-3.png";
+        private const string CloseButtonDesignSourcePath = UiGeneratedSourceButtonRoot + "/close-button.png";
+        private const string HelpButtonDesignSourcePath = UiGeneratedSourceButtonRoot + "/help-button.png";
+        private const string SystemTextBoxDesignSourcePath = UiGeneratedSourceMessageBoxRoot + "/system-text-box.png";
+        private const string InteractionTextBoxDesignSourcePath = UiGeneratedSourceMessageBoxRoot + "/interaction-text-box.png";
+        private const string DarkOutlinePanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/dark-outline-panel.png";
+        private const string DarkOutlinePanelAltDesignSourcePath = UiGeneratedSourcePanelRoot + "/dark-outline-panel-alt.png";
+        private const string DarkSolidPanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/dark-solid-panel.png";
+        private const string DarkThinOutlinePanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/dark-thin-outline-panel.png";
+        private const string LightOutlinePanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/light-outline-panel.png";
+        private const string LightSolidPanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/light-solid-panel.png";
         private const float PlayerSpritePixelsPerUnit = 1000f;
         private const float PlayerVisualScale = 0.76f;
+        private const float WorldTitleFontSize = 5.1f;
+        private const float WorldLabelFontSize = 3.3f;
+        private const float WorldLabelSmallFontSize = 3.0f;
 
         private static TMP_FontAsset _generatedKoreanFont;
         private static TMP_FontAsset _generatedHeadingFont;
+        private static readonly Dictionary<string, Material> CachedWorldTextMaterials = new(StringComparer.Ordinal);
 
         private static readonly string[] HubPopupSceneImageNames =
         {
@@ -70,7 +124,8 @@ namespace ProjectEditor
         {
             SceneRoot + "/Beach.unity",
             SceneRoot + "/DeepForest.unity",
-            SceneRoot + "/AbandonedMine.unity"
+            SceneRoot + "/AbandonedMine.unity",
+            SceneRoot + "/WindHill.unity"
         };
 
         private static readonly Dictionary<string, SceneImageSnapshot> CachedHubPopupSceneImages = new(StringComparer.Ordinal);
@@ -117,6 +172,16 @@ namespace ProjectEditor
             public Sprite PlayerFront;
             public Sprite PlayerBack;
             public Sprite PlayerSide;
+            public Sprite HubFloorBackground;
+            public Sprite HubWallBackground;
+            public Sprite HubFrontOutline;
+            public Sprite HubBar;
+            public Sprite HubTableUnlocked;
+            public Sprite HubUpgradeSlot;
+            public Sprite HubTodayMenuBg;
+            public Sprite HubTodayMenuItem1;
+            public Sprite HubTodayMenuItem2;
+            public Sprite HubTodayMenuItem3;
             public Sprite Portal;
             public Sprite Selector;
             public Sprite Counter;
@@ -167,7 +232,9 @@ namespace ProjectEditor
         }
 
         [MenuItem("Tools/Jonggu Restaurant/프로토타입 빌드 및 감사", true, 2100)]
-        private static bool ValidateBuildMinimalPrototype()
+        [MenuItem("Tools/Jonggu Restaurant/생성 자산 및 씬 다시 만들기", true, 2200)]
+        [MenuItem("Tools/Jonggu Restaurant/생성 씬 감사만 실행", true, 2210)]
+        private static bool ValidatePrototypeBuildToolMenu()
         {
             return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
         }
@@ -175,49 +242,217 @@ namespace ProjectEditor
         [MenuItem("Tools/Jonggu Restaurant/프로토타입 빌드 및 감사", false, 2100)]
         public static void BuildMinimalPrototype()
         {
-            if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
+            if (!EnsurePrototypeBuildToolReady("프로토타입 빌드 및 감사"))
             {
-                Debug.LogWarning("프로토타입 빌드 및 감사는 플레이 모드를 종료한 뒤 실행하세요.");
                 return;
             }
 
+            ExecutePrototypeBuild(runAudit: true);
+            EditorUtility.DisplayDialog(
+                "종구의 식당",
+                "최소 프로토타입 씬 생성과 생성 씬 감사를 완료했습니다. Assets/Scenes/Hub.unity를 열고 실행하세요.",
+                "OK");
+        }
+
+        [MenuItem("Tools/Jonggu Restaurant/생성 자산 및 씬 다시 만들기", false, 2200)]
+        public static void RebuildGeneratedAssetsAndScenes()
+        {
+            if (!EnsurePrototypeBuildToolReady("생성 자산 및 씬 다시 만들기"))
+            {
+                return;
+            }
+
+            ExecutePrototypeBuild(runAudit: false);
+            EditorUtility.DisplayDialog(
+                "종구의 식당",
+                "생성 자산과 기본 씬을 다시 만들었습니다. 필요하면 생성 씬 감사를 이어서 실행하세요.",
+                "OK");
+        }
+
+        [MenuItem("Tools/Jonggu Restaurant/생성 씬 감사만 실행", false, 2210)]
+        public static void AuditGeneratedScenesOnly()
+        {
+            if (!EnsurePrototypeBuildToolReady("생성 씬 감사만 실행"))
+            {
+                return;
+            }
+
+            RunGeneratedSceneAudit();
+            EditorUtility.DisplayDialog("종구의 식당", "생성 씬 감사를 완료했습니다.", "OK");
+        }
+
+        /// <summary>
+        /// 메인 빌드와 유지보수 메뉴가 공통으로 쓰는 실행 가능 조건을 한곳에서 맞춥니다.
+        /// </summary>
+        private static bool EnsurePrototypeBuildToolReady(string menuName)
+        {
+            if (!ValidatePrototypeBuildToolMenu())
+            {
+                Debug.LogWarning($"{menuName}는 플레이 모드를 종료한 뒤 실행하세요.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 기본 메뉴는 유지하되, 내부 단계는 역할별 메서드로 나눠 빌드 흐름을 읽기 쉽게 정리합니다.
+        /// </summary>
+        private static void ExecutePrototypeBuild(bool runAudit)
+        {
+            CachedWorldTextMaterials.Clear();
+            PrepareGeneratedFolders();
+            PrepareGeneratedAssets(out SpriteLibrary sprites, out ResourceLibrary resources, out RecipeLibrary recipes);
+            SyncBuildCanvasOverrides();
+            SaveAndRefreshAssets();
+            BuildAllPrototypeScenes(resources, recipes, sprites);
+            SaveAndRefreshAssets();
+
+            if (runAudit)
+            {
+                RunGeneratedSceneAudit();
+            }
+        }
+
+        /// <summary>
+        /// 생성 자산과 빌드 산출물이 들어갈 기본 폴더를 먼저 맞춥니다.
+        /// </summary>
+        private static void PrepareGeneratedFolders()
+        {
             EnsureFolder("Assets", "Generated");
             EnsureFolder(GeneratedRoot, "GameData");
             EnsureFolder(GeneratedRoot, "Sprites");
+            EnsureFolder(SpriteRoot, "UI");
+            EnsureFolder(UiSpriteRoot, "Buttons");
+            EnsureFolder(UiSpriteRoot, "MessageBoxes");
+            EnsureFolder(UiSpriteRoot, "Panels");
             EnsureFolder(GeneratedRoot, "Fonts");
+            EnsureFolder("Assets/Resources", "Generated");
+            EnsureFolder("Assets/Resources/Generated", "Sprites");
+            EnsureFolder(ResourceSpriteRoot, "UI");
+            EnsureFolder(ResourceUiSpriteRoot, "Buttons");
+            EnsureFolder(ResourceUiSpriteRoot, "MessageBoxes");
+            EnsureFolder(ResourceUiSpriteRoot, "Panels");
             EnsureFolder("Assets", "Scenes");
+        }
 
+        /// <summary>
+        /// 씬 생성 전에 폰트, 스프라이트, 데이터처럼 공통으로 쓰는 generated 자산을 준비합니다.
+        /// </summary>
+        private static void PrepareGeneratedAssets(out SpriteLibrary sprites, out ResourceLibrary resources, out RecipeLibrary recipes)
+        {
             _generatedHeadingFont = CreateHeadingFontAsset();
             _generatedKoreanFont = CreateKoreanFontAsset();
             EnsurePreferredTmpFontAsset();
-            SpriteLibrary sprites = CreateSprites();
-            ResourceLibrary resources = CreateResources();
-            RecipeLibrary recipes = CreateRecipes(resources);
+            CreateUiDesignSprites();
+            sprites = CreateSprites();
+            resources = CreateResources();
+            recipes = CreateRecipes(resources);
+        }
 
-            // Hub 씬 Canvas 값을 공용 UI 오버라이드 기준으로 사용하되,
-            // 현재 열려 있는 씬 Canvas 값은 마지막에 다시 덮어써 빌드 기준으로 유지합니다.
+        /// <summary>
+        /// Hub 씬 기준 UI 값과 현재 열려 있는 씬의 마지막 조정값을 같은 순서로 오버라이드 자산에 반영합니다.
+        /// </summary>
+        private static void SyncBuildCanvasOverrides()
+        {
             SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
-            SyncCanvasOverridesFromScenePath(SharedExplorationHudSourceScene);
-            SyncCanvasOverridesFromActiveScene();
+            TrySyncCanvasOverridesFromScenePath(SharedExplorationHudSourceScene, out _);
+            TrySyncCanvasOverridesFromActiveScene(out _);
+        }
 
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
+        /// <summary>
+        /// 빌더가 관리하는 모든 기본 씬과 Build Settings 목록을 한 번에 다시 맞춥니다.
+        /// </summary>
+        private static void BuildAllPrototypeScenes(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
+        {
             BuildHubScene(resources, recipes, sprites);
             BuildBeachScene(resources, sprites);
             BuildDeepForestScene(resources, sprites);
             BuildAbandonedMineScene(resources, sprites);
             BuildWindHillScene(resources, sprites);
             UpdateBuildSettings();
+        }
 
+        /// <summary>
+        /// 생성 씬 감사 호출을 한곳으로 모아 유지보수 메뉴와 메인 빌드가 같은 경로를 쓰게 합니다.
+        /// </summary>
+        private static void RunGeneratedSceneAudit()
+        {
+            PrototypeSceneAudit.AuditGeneratedScenes();
+        }
+
+        private static void SaveAndRefreshAssets()
+        {
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            PrototypeSceneAudit.AuditGeneratedScenes();
+        }
 
-            EditorUtility.DisplayDialog(
-                "종구의 식당",
-                "최소 프로토타입 씬이 생성되었습니다. Assets/Scenes/Hub.unity를 열고 실행하세요.",
-                "OK");
+        /// <summary>
+        /// 빌더 미리보기는 현재 메뉴로 노출하지 않고 내부 보강 경로에서만 사용한다.
+        /// </summary>
+        public static void ApplyOpenSceneBuilderPreview()
+        {
+            if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogWarning("열린 씬 빌더 미리보기는 플레이 모드를 종료한 뒤 실행하세요.");
+                return;
+            }
+
+            CachedWorldTextMaterials.Clear();
+
+            UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (!activeScene.IsValid() || !activeScene.isLoaded)
+            {
+                Debug.LogWarning("미리보기를 적용할 열린 씬이 없습니다.");
+                return;
+            }
+
+            if (!IsSupportedBuilderPreviewScene(activeScene.name))
+            {
+                Debug.LogWarning($"'{activeScene.name}' 씬은 빌더 미리보기를 지원하지 않습니다.");
+                return;
+            }
+
+            EnsureGeneratedAssetsForBuilderPreview();
+            PrototypeSceneRuntimeAugmenter.EnsureSceneReady(activeScene);
+            ApplySceneUiPreviewIfAvailable();
+            EditorSceneManager.MarkSceneDirty(activeScene);
+            EditorApplication.QueuePlayerLoopUpdate();
+            SceneView.RepaintAll();
+
+            Debug.Log($"열린 씬 '{activeScene.name}'에 빌더 미리보기를 적용했습니다.");
+        }
+
+        private static bool IsSupportedBuilderPreviewScene(string sceneName)
+        {
+            return sceneName is "Hub" or "Beach" or "DeepForest" or "AbandonedMine" or "WindHill";
+        }
+
+        /// <summary>
+        /// 열린 씬 미리보기에서도 빌더와 같은 generated 자산 경로를 먼저 맞춰 둔다.
+        /// 메뉴판 스프라이트나 TMP 자산이 아직 없으면 여기서 바로 생성해 SceneView 프리뷰가 비지 않게 한다.
+        /// </summary>
+        private static void EnsureGeneratedAssetsForBuilderPreview()
+        {
+            CachedWorldTextMaterials.Clear();
+            PrepareGeneratedFolders();
+            PrepareGeneratedAssets(out _, out _, out _);
+            SaveAndRefreshAssets();
+        }
+
+        /// <summary>
+        /// 월드 빌더 프리뷰를 씬에 덮어쓴 뒤 UI 프리뷰도 함께 다시 적용하면
+        /// 팝업과 허브 월드 요소를 SceneView에서 한 번에 맞춰 볼 수 있다.
+        /// </summary>
+        private static void ApplySceneUiPreviewIfAvailable()
+        {
+            PrototypeUIDesignController controller = UnityEngine.Object.FindFirstObjectByType<PrototypeUIDesignController>();
+            if (controller == null || !controller.ShowEditorPreview)
+            {
+                return;
+            }
+
+            controller.ApplyEditorPreviewInEditor();
         }
 
         private static void SyncSharedExplorationHudRoots()
@@ -230,15 +465,72 @@ namespace ProjectEditor
             }
         }
 
+        internal static bool ShouldAutoSyncCanvasOnSceneSave(UnityEngine.SceneManagement.Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded || string.IsNullOrWhiteSpace(scene.path))
+            {
+                return false;
+            }
+
+            return IsAutoSyncCanvasScene(scene.path);
+        }
+
+        internal static bool TryAutoSyncCanvasOnSceneSaved(UnityEngine.SceneManagement.Scene scene, out string message)
+        {
+            if (!ShouldAutoSyncCanvasOnSceneSave(scene))
+            {
+                message = "자동 동기화 대상 Canvas 씬이 아닙니다.";
+                return false;
+            }
+
+            if (string.Equals(scene.path, SharedExplorationHudSourceScene, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(scene, out message))
+                {
+                    return false;
+                }
+
+                SyncSharedExplorationHudRoots();
+                message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드와 모든 탐험 씬 HUD에 자동 반영했습니다.";
+                return true;
+            }
+
+            if (!PrototypeUISceneLayoutCatalog.TryOverlayCanvasLayoutsFromScene(scene, out message))
+            {
+                return false;
+            }
+
+            message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드에 자동 반영했습니다.";
+            return true;
+        }
+
+        private static bool IsAutoSyncCanvasScene(string scenePath)
+        {
+            if (string.IsNullOrWhiteSpace(scenePath))
+            {
+                return false;
+            }
+
+            if (string.Equals(scenePath, SharedExplorationHudSourceScene, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return Array.Exists(
+                SharedExplorationHudTargetScenes,
+                targetScenePath => string.Equals(scenePath, targetScenePath, StringComparison.OrdinalIgnoreCase));
+        }
+
         /// <summary>
         /// 기준 씬 Canvas를 공용 오버라이드 자산으로 먼저 동기화해,
         /// 같은 이름 UI 요소가 다른 씬에도 같은 표시 값으로 다시 생성되도록 맞춥니다.
         /// </summary>
-        private static void SyncCanvasOverridesFromScenePath(string scenePath)
+        private static bool TrySyncCanvasOverridesFromScenePath(string scenePath, out string message)
         {
             if (!File.Exists(scenePath))
             {
-                return;
+                message = $"씬 파일을 찾지 못했습니다: {scenePath}";
+                return false;
             }
 
             UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
@@ -252,12 +544,19 @@ namespace ProjectEditor
 
             if (!sourceScene.IsValid() || !sourceScene.isLoaded)
             {
-                return;
+                message = $"씬을 열지 못했습니다: {scenePath}";
+                return false;
             }
 
             try
             {
-                PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(sourceScene, out _);
+                if (!PrototypeUISceneLayoutCatalog.TrySyncCanvasLayoutsFromScene(sourceScene, out message))
+                {
+                    return false;
+                }
+
+                message = $"{sourceScene.name} Canvas 기준을 공용 오버라이드 자산에 저장했습니다.";
+                return true;
             }
             finally
             {
@@ -272,12 +571,13 @@ namespace ProjectEditor
         /// 현재 열려 있는 씬의 Canvas 값을 빌드 직전에 다시 저장해,
         /// Hub 기준 Canvas 오버라이드 위에 현재 씬 값을 마지막으로 덮어씁니다.
         /// </summary>
-        private static void SyncCanvasOverridesFromActiveScene()
+        private static bool TrySyncCanvasOverridesFromActiveScene(out string message)
         {
             UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             if (!activeScene.IsValid() || !activeScene.isLoaded || string.IsNullOrWhiteSpace(activeScene.path))
             {
-                return;
+                message = "열려 있는 저장 대상 씬이 없어 현재 씬 Canvas 값을 덮어쓸 수 없습니다.";
+                return false;
             }
 
             string normalizedSceneRoot = Path.GetFullPath(SceneRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -285,11 +585,18 @@ namespace ProjectEditor
             if (string.IsNullOrWhiteSpace(normalizedActiveDirectory)
                 || !string.Equals(normalizedActiveDirectory, normalizedSceneRoot, StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                message = $"현재 씬 '{activeScene.name}'은(는) Assets/Scenes 아래에 없어 Canvas 값을 덮어쓸 수 없습니다.";
+                return false;
             }
 
             SaveSceneIfLoadedAndDirty(activeScene.path);
-            PrototypeUISceneLayoutCatalog.TryOverlayCanvasLayoutsFromScene(activeScene, out _);
+            if (!PrototypeUISceneLayoutCatalog.TryOverlayCanvasLayoutsFromScene(activeScene, out message))
+            {
+                return false;
+            }
+
+            message = $"현재 씬 '{activeScene.name}' Canvas 값을 공용 오버라이드 자산에 덮어썼습니다.";
+            return true;
         }
 
         private static void BuildHubScene(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
@@ -300,42 +607,39 @@ namespace ProjectEditor
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-                const float mapWidth = 26f;
-                const float mapHeight = 16f;
+                const float mapWidth = HubRoomLayout.ScreenWidth;
+                const float mapHeight = HubRoomLayout.ScreenHeight;
 
                 GameObject gameManagerObject = CreateGameManager("Hub", "Beach", resources);
-                GameObject player = CreatePlayer(new Vector3(-1f, -3f, 0f), sprites);
-                CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.94f, 0.90f, 0.82f), 6.2f);
-                BoxCollider2D movementBounds = CreateMovementBounds("HubMovementBounds", mapWidth - 2.2f, mapHeight - 2.2f);
+                GameObject player = CreatePlayer(HubRoomLayout.PlayerStartPosition, sprites);
+                BoxCollider2D cameraBounds = CreateCamera(
+                    player.transform,
+                    mapWidth,
+                    mapHeight,
+                    new Color(0.88f, 0.80f, 0.70f),
+                    HubRoomLayout.ScreenOrthographicSize);
+                cameraBounds.transform.position = HubRoomLayout.CameraPosition;
+                cameraBounds.size = HubRoomLayout.CameraSize;
+
+                BoxCollider2D movementBounds = CreateMovementBounds(
+                    "HubMovementBounds",
+                    HubRoomLayout.MovementBoundsSize.x,
+                    HubRoomLayout.MovementBoundsSize.y);
+                movementBounds.transform.position = HubRoomLayout.MovementBoundsPosition;
                 AttachPlayerBoundsLimiter(player, movementBounds);
 
-                CreateFloorZone("HubBase", Vector3.zero, new Vector3(mapWidth, mapHeight, 1f), sprites.Floor, new Color(0.95f, 0.91f, 0.82f), -20);
-                CreateFloorZone("KitchenBand", new Vector3(0f, 3.5f, 0f), new Vector3(mapWidth, 5.5f, 1f), sprites.Floor, new Color(0.70f, 0.55f, 0.40f), -19);
-                CreateFloorZone("DiningRug", new Vector3(-0.8f, -2.4f, 0f), new Vector3(16f, 5.5f, 1f), sprites.Floor, new Color(0.83f, 0.71f, 0.55f), -18);
-                CreateFloorZone("DoorPad", new Vector3(10.45f, -3.0f, 0f), new Vector3(3.9f, 3.8f, 1f), sprites.Floor, new Color(0.78f, 0.60f, 0.32f), -17);
+                CreateHubLayerRoots(out Transform hubBackgroundLayer, out Transform hubObjectLayer, out Transform hubForegroundLayer, out Transform hubTableGroup);
+                BuildHubArtLayout(sprites, mapWidth, mapHeight, hubBackgroundLayer, hubObjectLayer, hubForegroundLayer);
+                BuildHubTableLayout(sprites, hubTableGroup);
+                BuildHubUpgradeSlotLayout(sprites, hubObjectLayer);
+                BuildHubCollisionLayout();
 
-                CreateBoundaryWalls(mapWidth, mapHeight, sprites.Floor, new Color(0.35f, 0.22f, 0.14f));
-                CreateDecorBlock("KitchenCounter", new Vector3(0f, 1.7f, 0f), new Vector3(12f, 1f, 1f), sprites.Floor, new Color(0.48f, 0.28f, 0.17f), 2);
-                CreateDecorBlock("MenuBoardBack", new Vector3(-7.1f, 0.25f, 0f), new Vector3(2.6f, 3.0f, 1f), sprites.Floor, new Color(0.34f, 0.23f, 0.18f), 1);
-                CreateDecorBlock("DoorFrame", new Vector3(10.45f, -2.15f, 0f), new Vector3(1.8f, 3.0f, 1f), sprites.Floor, new Color(0.42f, 0.24f, 0.12f), 1);
-                CreateDecorBlock("TableLeft", new Vector3(-4.5f, -1.8f, 0f), new Vector3(2.2f, 1.4f, 1f), sprites.Floor, new Color(0.62f, 0.44f, 0.24f), 1);
-                CreateDecorBlock("TableRight", new Vector3(2.5f, -1.2f, 0f), new Vector3(2.4f, 1.4f, 1f), sprites.Floor, new Color(0.62f, 0.44f, 0.24f), 1);
-                GameObject storageArea = new("StorageArea");
-                storageArea.transform.position = Vector3.zero;
-
-                CreateDecorBlock("StorageWall", new Vector3(6.15f, 1.18f, 0f), new Vector3(4.2f, 2.45f, 1f), sprites.Floor, new Color(0.55f, 0.38f, 0.20f), 1, storageArea.transform);
-                CreateDecorBlock("WorkbenchWall", new Vector3(6.05f, -1.98f, 0f), new Vector3(4.1f, 1.95f, 1f), sprites.Floor, new Color(0.46f, 0.33f, 0.23f), 1);
-
-                CreateWorldLabel("RestaurantTitle", null, new Vector3(0f, 6f, 0f), "종구의 식당", Color.black, 4.6f, 40);
-                CreateWorldLabel("StorageSign", storageArea.transform, new Vector3(5.4f, 3.45f, 0f), "창고 구역", Color.black, 2.8f, 40);
-                CreateWorldLabel("WorkbenchSign", null, new Vector3(5.4f, -0.55f, 0f), "작업대", Color.black, 2.8f, 40);
-
-                CreateSpawnPoint("HubEntry", new Vector3(0f, -4.6f, 0f), "HubEntry");
-                CreatePortal("GoToBeach", new Vector3(9.55f, -3.05f, 0f), sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로", true, ToolType.None, 0, "", new Vector3(1.35f, 1.9f, 1f));
-                CreatePortal("GoToDeepForest", new Vector3(11.35f, -3.05f, 0f), sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲", true, ToolType.None, 0, "", new Vector3(1.35f, 1.9f, 1f));
+                CreateSpawnPoint("HubEntry", HubRoomLayout.HubEntryPosition, "HubEntry");
+                CreatePortal("GoToBeach", HubRoomLayout.GoToBeachPosition, sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
+                CreatePortal("GoToDeepForest", HubRoomLayout.GoToDeepForestPosition, sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
                 CreatePortal(
                     "GoToAbandonedMine",
-                    new Vector3(9.55f, -0.65f, 0f),
+                    HubRoomLayout.GoToAbandonedMinePosition,
                     sprites.Portal,
                     "AbandonedMine",
                     "MineEntry",
@@ -345,20 +649,23 @@ namespace ProjectEditor
                     ToolType.Lantern,
                     0,
                     "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.",
-                    new Vector3(1.35f, 1.9f, 1f));
-                CreatePortal("GoToWindHill", new Vector3(11.35f, -0.65f, 0f), sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕", true, ToolType.None, 0, "", new Vector3(1.35f, 1.9f, 1f));
-                CreateFeaturePad("PortalPad", new Vector3(9.55f, -3.72f, 0f), new Vector3(2.0f, 0.55f, 1f), sprites.Floor, new Color(0.98f, 0.83f, 0.51f));
-                CreateFeaturePad("ForestPortalPad", new Vector3(11.35f, -3.72f, 0f), new Vector3(2.0f, 0.55f, 1f), sprites.Floor, new Color(0.70f, 0.86f, 0.44f));
-                CreateFeaturePad("MinePortalPad", new Vector3(9.55f, -1.32f, 0f), new Vector3(2.0f, 0.55f, 1f), sprites.Floor, new Color(0.74f, 0.74f, 0.78f));
-                CreateFeaturePad("WindPortalPad", new Vector3(11.35f, -1.32f, 0f), new Vector3(2.0f, 0.55f, 1f), sprites.Floor, new Color(0.82f, 0.92f, 0.98f));
+                    HubRoomLayout.PortalScale);
+                CreatePortal("GoToWindHill", HubRoomLayout.GoToWindHillPosition, sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
+                CreateFeaturePad("BeachPortalPad", HubRoomLayout.BeachPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.98f, 0.83f, 0.51f));
+                CreateFeaturePad("ForestPortalPad", HubRoomLayout.ForestPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.70f, 0.86f, 0.44f));
+                CreateFeaturePad("MinePortalPad", HubRoomLayout.MinePortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.74f, 0.74f, 0.78f));
+                CreateFeaturePad("WindPortalPad", HubRoomLayout.WindPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.82f, 0.92f, 0.98f));
 
                 RestaurantManager restaurantManager = CreateRestaurantManager(recipes);
-                CreateRecipeSelector(new Vector3(-7.1f, 0.35f, 0f), sprites.Selector, restaurantManager);
-                CreateServiceCounter(new Vector3(0f, 1.92f, 0f), sprites.Counter, restaurantManager);
+                CreateRecipeSelector(HubRoomLayout.RecipeSelectorPosition, sprites.Selector, restaurantManager);
+                CreateServiceCounter(HubRoomLayout.ServiceCounterPosition, sprites.Counter, restaurantManager);
+                CreateHubTodayMenuBoard(HubRoomLayout.TodayMenuBoardPosition, sprites, restaurantManager, hubObjectLayer);
                 StorageManager storageManager = gameManagerObject.GetComponent<StorageManager>();
                 UpgradeManager upgradeManager = gameManagerObject.GetComponent<UpgradeManager>();
-                CreateStorageStation("StorageStation", new Vector3(6.1f, 1.2f, 0f), new Vector3(3.6f, 2.0f, 1f), sprites.Floor, new Color(0.86f, 0.70f, 0.36f), "창고", storageManager, StorageStationAction.StoreAll, storageArea.transform);
-                CreateUpgradeStation(new Vector3(5.25f, -2.35f, 0f), new Vector3(1.95f, 1.2f, 1f), sprites.Floor, new Color(0.54f, 0.72f, 0.78f), upgradeManager);
+                CreateStorageStation("StorageStation", HubRoomLayout.StorageStationPosition, HubRoomLayout.StorageStationScale, sprites.Floor, new Color(0.86f, 0.70f, 0.36f), "창고", storageManager, StorageStationAction.StoreAll);
+                CreateUpgradeStation(HubRoomLayout.UpgradeStationPosition, HubRoomLayout.UpgradeStationScale, sprites.Floor, new Color(0.54f, 0.72f, 0.78f), upgradeManager);
+
+                HideHubInteractionPresentations();
 
                 CreateUiCanvas(true);
 
@@ -396,7 +703,7 @@ namespace ProjectEditor
             CreateDecorBlock("GrassPatch", new Vector3(7f, 4.8f, 0f), new Vector3(4f, 2.2f, 1f), sprites.Floor, new Color(0.42f, 0.68f, 0.35f), 1);
             CreateDecorBlock("BoatMark", new Vector3(-13.1f, -2.0f, 0f), new Vector3(1.8f, 2.8f, 1f), sprites.Floor, new Color(0.87f, 0.38f, 0.21f), 2);
 
-            CreateWorldLabel("BeachTitle", null, new Vector3(0f, 7.1f, 0f), "바닷가", Color.black, 4.2f, 40);
+            CreateWorldLabel("BeachTitle", null, new Vector3(0f, 7.1f, 0f), "바닷가", Color.black, WorldTitleFontSize, 40);
             CreateSpawnPoint("BeachEntry", new Vector3(-8.25f, -2.25f, 0f), "BeachEntry");
             CreatePortal("ReturnToHub", new Vector3(-10.7f, -3.35f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
@@ -722,6 +1029,7 @@ namespace ProjectEditor
             so.FindProperty("recipePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "RecipePanelButton");
             so.FindProperty("upgradePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "UpgradePanelButton");
             so.FindProperty("materialPanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "MaterialPanelButton");
+            so.FindProperty("guideHelpButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "GuideHelpButton");
             so.FindProperty("popupCloseButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "PopupCloseButton");
             so.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -815,7 +1123,7 @@ namespace ProjectEditor
             CreateDecorBlock("SwampPoolB", new Vector3(5.8f, 1.4f, 0f), new Vector3(3.6f, 2.2f, 1f), sprites.Floor, new Color(0.29f, 0.41f, 0.23f), 1);
             CreateDecorBlock("NarrowPathRock", new Vector3(8.5f, -2.4f, 0f), new Vector3(2.4f, 1.4f, 1f), sprites.Floor, new Color(0.35f, 0.38f, 0.34f), 2);
 
-            CreateWorldLabel("ForestTitle", null, new Vector3(0f, 8.2f, 0f), "깊은 숲", Color.black, 4.2f, 40);
+            CreateWorldLabel("ForestTitle", null, new Vector3(0f, 8.2f, 0f), "깊은 숲", Color.black, WorldTitleFontSize, 40);
             CreateSpawnPoint("ForestEntry", new Vector3(-10.3f, -6.1f, 0f), "ForestEntry");
             CreatePortal("ReturnFromForest", new Vector3(-13.6f, -6.15f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
@@ -856,7 +1164,7 @@ namespace ProjectEditor
             CreateDecorBlock("MineRockB", new Vector3(8.8f, 5.4f, 0f), new Vector3(2.6f, 1.4f, 1f), sprites.Floor, new Color(0.34f, 0.34f, 0.36f), 2);
             CreateDecorBlock("MineRockC", new Vector3(10.8f, -2.5f, 0f), new Vector3(3.2f, 1.6f, 1f), sprites.Floor, new Color(0.28f, 0.29f, 0.32f), 2);
 
-            CreateWorldLabel("MineTitle", null, new Vector3(0f, 8.1f, 0f), "폐광산", Color.white, 4.2f, 40);
+            CreateWorldLabel("MineTitle", null, new Vector3(0f, 8.1f, 0f), "폐광산", Color.white, WorldTitleFontSize, 40);
             CreateSpawnPoint("MineEntry", new Vector3(-10.7f, -6.0f, 0f), "MineEntry");
             CreatePortal("ReturnFromMine", new Vector3(-13.6f, -6.0f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
 
@@ -895,7 +1203,7 @@ namespace ProjectEditor
             CreateDecorBlock("CliffRockA", new Vector3(10.4f, -4.2f, 0f), new Vector3(3.2f, 1.5f, 1f), sprites.Floor, new Color(0.48f, 0.50f, 0.46f), 2);
             CreateDecorBlock("CliffRockB", new Vector3(4.8f, 4.8f, 0f), new Vector3(2.6f, 1.2f, 1f), sprites.Floor, new Color(0.48f, 0.50f, 0.46f), 2);
 
-            CreateWorldLabel("WindHillTitle", null, new Vector3(0f, 7.1f, 0f), "바람 언덕", Color.black, 4.2f, 40);
+            CreateWorldLabel("WindHillTitle", null, new Vector3(0f, 7.1f, 0f), "바람 언덕", Color.black, WorldTitleFontSize, 40);
             CreateSpawnPoint("WindHillEntry", new Vector3(-10.7f, -5.35f, 0f), "WindHillEntry");
             CreateSpawnPoint("WindHillShortcutEntry", new Vector3(7.8f, 4.4f, 0f), "WindHillShortcutEntry");
             CreatePortal("ReturnFromWindHill", new Vector3(-13.6f, -5.15f, 0f), sprites.Portal, "Hub", "HubEntry", "식당으로 이동", "식당 복귀");
@@ -1050,11 +1358,10 @@ namespace ProjectEditor
             controllerSo.FindProperty("interactionDetector").objectReferenceValue = detector;
             controllerSo.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("PlayerLabel", player.transform, new Vector3(0f, 0.46f, 0f), "Jonggu", new Color(0.05f, 0.08f, 0.16f), 3f, 50);
             return player;
         }
 
-        private static void CreateCamera(Transform target, float mapWidth, float mapHeight, Color backgroundColor, float orthographicSize)
+        private static BoxCollider2D CreateCamera(Transform target, float mapWidth, float mapHeight, Color backgroundColor, float orthographicSize)
         {
             GameObject cameraObject = new("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -1077,6 +1384,7 @@ namespace ProjectEditor
             followSo.FindProperty("target").objectReferenceValue = target;
             followSo.FindProperty("mapBounds").objectReferenceValue = bounds;
             followSo.ApplyModifiedPropertiesWithoutUndo();
+            return bounds;
         }
 
         private static void CreateBoundaryWalls(float mapWidth, float mapHeight, Sprite sprite, Color color)
@@ -1094,6 +1402,93 @@ namespace ProjectEditor
             GameObject wall = CreateDecorBlock(objectName, position, scale, sprite, color, 15);
             BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
+        }
+
+        private static GameObject CreateInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform _parent = null)
+        {
+            GameObject wall = new(objectName);
+            if (_parent != null)
+            {
+                wall.transform.SetParent(_parent, false);
+                wall.transform.localPosition = position;
+            }
+            else
+            {
+                wall.transform.position = position;
+            }
+
+            wall.transform.localScale = scale;
+
+            BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
+            collider.size = Vector2.one;
+            return wall;
+        }
+
+        private static RoomViewController CreateRoomViewController(GameObject root, CameraFollow cameraFollow)
+        {
+            RoomViewController controller = root.GetComponent<RoomViewController>();
+            if (controller == null)
+            {
+                controller = root.AddComponent<RoomViewController>();
+            }
+
+            if (cameraFollow == null)
+            {
+                cameraFollow = UnityEngine.Object.FindFirstObjectByType<CameraFollow>();
+            }
+
+            controller.Configure(cameraFollow);
+            return controller;
+        }
+
+        private static BoxCollider2D CreateRoomViewBounds(string objectName, Vector3 position, Vector2 size, Transform _parent = null)
+        {
+            GameObject boundsObject = new(objectName);
+            if (_parent != null)
+            {
+                boundsObject.transform.SetParent(_parent, false);
+                boundsObject.transform.localPosition = position;
+            }
+            else
+            {
+                boundsObject.transform.position = position;
+            }
+
+            BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
+            bounds.isTrigger = true;
+            bounds.size = size;
+            return bounds;
+        }
+
+        private static RoomViewZone CreateRoomViewZone(
+            string objectName,
+            Vector3 position,
+            Vector2 size,
+            RoomViewController controller,
+            Collider2D cameraBounds,
+            float orthographicSize,
+            int priority,
+            GameObject[] hiddenObjects,
+            Transform _parent = null)
+        {
+            GameObject zoneObject = new(objectName);
+            if (_parent != null)
+            {
+                zoneObject.transform.SetParent(_parent, false);
+                zoneObject.transform.localPosition = position;
+            }
+            else
+            {
+                zoneObject.transform.position = position;
+            }
+
+            BoxCollider2D trigger = zoneObject.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = size;
+
+            RoomViewZone zone = zoneObject.AddComponent<RoomViewZone>();
+            zone.Configure(controller, cameraBounds, orthographicSize, priority, true, hiddenObjects, null);
+            return zone;
         }
 
         private static GameObject CreatePortal(
@@ -1128,7 +1523,7 @@ namespace ProjectEditor
             so.ApplyModifiedPropertiesWithoutUndo();
 
             string displayLabel = string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel;
-            CreateWorldLabel(objectName + "_Label", portal.transform, new Vector3(0f, 0.82f, 0f), displayLabel, Color.black, 2.6f, 50);
+            CreateWorldLabel(objectName + "_Label", portal.transform, new Vector3(0f, 0.82f, 0f), displayLabel, Color.black, WorldLabelFontSize, 50);
             return portal;
         }
 
@@ -1165,7 +1560,7 @@ namespace ProjectEditor
             so.FindProperty("promptLabel").stringValue = "메뉴 변경";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 0.80f, 0f), "메뉴판", Color.black, 2.6f, 50);
+            CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 0.80f, 0f), "메뉴판", Color.black, WorldLabelFontSize, 50);
         }
 
         private static void CreateServiceCounter(Vector3 position, Sprite sprite, RestaurantManager restaurantManager)
@@ -1181,7 +1576,230 @@ namespace ProjectEditor
             so.FindProperty("promptLabel").stringValue = "영업 시작";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.80f, 0f), "영업대", Color.black, 2.6f, 50);
+            CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.80f, 0f), "영업대", Color.black, WorldLabelFontSize, 50);
+        }
+
+        /// <summary>
+        /// 허브 아트는 레이어 루트와 테이블 그룹 루트를 먼저 만든 뒤 배치한다.
+        /// </summary>
+        private static void CreateHubLayerRoots(out Transform backgroundLayer, out Transform objectLayer, out Transform foregroundLayer, out Transform tableGroup)
+        {
+            GameObject hubArtRoot = new("HubArtRoot");
+            GameObject backgroundObject = new("HubBackgroundLayer");
+            backgroundObject.transform.SetParent(hubArtRoot.transform, false);
+            GameObject objectObject = new("HubObjectLayer");
+            objectObject.transform.SetParent(hubArtRoot.transform, false);
+            GameObject foregroundObject = new("HubForegroundLayer");
+            foregroundObject.transform.SetParent(hubArtRoot.transform, false);
+            GameObject tableObject = new(HubRoomLayout.TableRootObjectName);
+            tableObject.transform.SetParent(objectObject.transform, false);
+            tableObject.transform.localPosition = HubRoomLayout.TableGroupPosition;
+
+            backgroundLayer = backgroundObject.transform;
+            objectLayer = objectObject.transform;
+            foregroundLayer = foregroundObject.transform;
+            tableGroup = tableObject.transform;
+        }
+
+        /// <summary>
+        /// 허브 고정 아트와 가격 텍스트, 바닥 표지판, 오늘의 메뉴 보드를 한 번에 만든다.
+        /// </summary>
+        private static void BuildHubArtLayout(
+            SpriteLibrary sprites,
+            float mapWidth,
+            float mapHeight,
+            Transform backgroundLayer,
+            Transform objectLayer,
+            Transform foregroundLayer)
+        {
+            foreach (HubRoomLayout.HubArtPlacement placement in HubRoomLayout.ArtPlacements)
+            {
+                Transform parent = ResolveHubArtParent(placement.Anchor, backgroundLayer, objectLayer, foregroundLayer);
+                Sprite sprite = ResolveHubArtSprite(sprites, placement.SpriteId);
+
+                if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.FloorBackground && sprite == null)
+                {
+                    GameObject fallbackFloor = CreateFloorZone(
+                        placement.ObjectName,
+                        HubRoomLayout.BackgroundPosition,
+                        new Vector3(mapWidth, mapHeight, 1f),
+                        sprites.Floor,
+                        new Color(0.95f, 0.91f, 0.82f),
+                        placement.SortingOrder);
+                    fallbackFloor.transform.SetParent(parent, false);
+                    continue;
+                }
+
+                CreateHubArtSprite(placement.ObjectName, placement.LocalPosition, sprite, placement.SortingOrder, parent);
+            }
+            foreach (HubRoomLayout.HubFloorSignPlacement placement in HubRoomLayout.FloorSignPlacements)
+            {
+                CreateHubFloorSign(placement, sprites.Floor, objectLayer);
+            }
+        }
+
+        /// <summary>
+        /// 테이블은 개별 그룹 아래에 스프라이트와 콜라이더를 함께 두어,
+        /// 이후 위치 커스터마이즈가 와도 그룹 이동만으로 정렬을 유지한다.
+        /// </summary>
+        private static void BuildHubTableLayout(SpriteLibrary sprites, Transform tableGroup)
+        {
+            foreach (HubRoomLayout.HubTablePlacement placement in HubRoomLayout.TablePlacements)
+            {
+                GameObject groupObject = new(placement.GroupObjectName);
+                groupObject.transform.SetParent(tableGroup, false);
+                groupObject.transform.localPosition = placement.LocalPosition;
+
+                GameObject tableObject = CreateHubArtSprite(placement.TableObjectName, Vector3.zero, sprites.HubTableUnlocked, HubRoomLayout.ObjectSortingOrder, groupObject.transform);
+                Transform colliderParent = tableObject != null ? tableObject.transform : groupObject.transform;
+                CreateInvisibleWall(placement.ColliderObjectName, placement.ColliderLocalPosition, HubRoomLayout.TableColliderScale, colliderParent);
+            }
+        }
+
+        /// <summary>
+        /// 업그레이드 슬롯은 위치, 스프라이트, 비용 표시를 한 스펙으로 관리해
+        /// 이후 위치별 해금 비용 로직을 같은 기준으로 연결할 수 있게 만든다.
+        /// </summary>
+        private static void BuildHubUpgradeSlotLayout(SpriteLibrary sprites, Transform objectLayer)
+        {
+            foreach (HubRoomLayout.HubUpgradeSlotPlacement placement in HubRoomLayout.UpgradeSlotPlacements)
+            {
+                Sprite sprite = ResolveHubArtSprite(sprites, placement.SpriteId);
+                GameObject slotObject = CreateHubArtSprite(placement.SlotObjectName, placement.Position, sprite, HubRoomLayout.ObjectSortingOrder, objectLayer);
+                Transform priceParent = slotObject != null ? slotObject.transform : objectLayer;
+                CreateHubUpgradePriceText(placement.PriceObjectName, priceParent, HubRoomLayout.UpgradePriceTextLocalOffset, placement.GoldCostLabel);
+            }
+        }
+
+        /// <summary>
+        /// 허브 고정 충돌은 각 월드 오브젝트 하위로 붙여 씬 Hierarchy에서 아트와 함께 보이게 맞춘다.
+        /// </summary>
+        private static void BuildHubCollisionLayout()
+        {
+            foreach (HubRoomLayout.HubColliderPlacement placement in HubRoomLayout.ColliderPlacements)
+            {
+                Transform parent = GameObject.Find(placement.ParentObjectName)?.transform;
+                CreateInvisibleWall(placement.ObjectName, placement.LocalPosition, placement.Scale, parent);
+            }
+        }
+
+        private static Transform ResolveHubArtParent(
+            HubRoomLayout.HubArtAnchor anchor,
+            Transform backgroundLayer,
+            Transform objectLayer,
+            Transform foregroundLayer)
+        {
+            return anchor switch
+            {
+                HubRoomLayout.HubArtAnchor.BackgroundLayer => backgroundLayer,
+                HubRoomLayout.HubArtAnchor.ObjectLayer => objectLayer,
+                HubRoomLayout.HubArtAnchor.ForegroundLayer => foregroundLayer,
+                _ => objectLayer
+            };
+        }
+
+        private static Sprite ResolveHubArtSprite(SpriteLibrary sprites, HubRoomLayout.HubArtSpriteId spriteId)
+        {
+            return spriteId switch
+            {
+                HubRoomLayout.HubArtSpriteId.FloorBackground => sprites.HubFloorBackground,
+                HubRoomLayout.HubArtSpriteId.WallBackground => sprites.HubWallBackground,
+                HubRoomLayout.HubArtSpriteId.Bar => sprites.HubBar,
+                HubRoomLayout.HubArtSpriteId.TableUnlocked => sprites.HubTableUnlocked,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotLeft => sprites.HubUpgradeSlot,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotCenter => sprites.HubUpgradeSlot,
+                HubRoomLayout.HubArtSpriteId.UpgradeSlotRight => sprites.HubUpgradeSlot,
+                HubRoomLayout.HubArtSpriteId.FrontOutline => sprites.HubFrontOutline,
+                _ => null
+            };
+        }
+
+        private static void HideHubInteractionPresentations()
+        {
+            foreach (string objectName in HubRoomLayout.HiddenInteractionObjectNames)
+            {
+                HideWorldInteractionPresentation(GameObject.Find(objectName));
+            }
+        }
+
+        /// <summary>
+        /// 허브 벽면의 메뉴판을 PSD 배치 기준으로 다시 만든다.
+        /// 제목 텍스트와 슬롯 배경, 음식 아이콘을 각각 월드 오브젝트로 분리해 허브 아트처럼 유지한다.
+        /// </summary>
+        private static void CreateHubTodayMenuBoard(Vector3 position, SpriteLibrary sprites, RestaurantManager restaurantManager, Transform _parent = null)
+        {
+            GameObject boardRoot = new("HubTodayMenuBoard");
+            if (_parent != null)
+            {
+                boardRoot.transform.SetParent(_parent, false);
+                boardRoot.transform.localPosition = position;
+            }
+            else
+            {
+                boardRoot.transform.position = position;
+            }
+
+            CreateWorldTextObject(
+                "HubTodayMenuHeaderShadow",
+                boardRoot.transform,
+                HubRoomLayout.TodayMenuHeaderLabelLocalPosition + HubRoomLayout.TodayMenuHeaderShadowLocalOffset,
+                "오늘의 메뉴",
+                HubRoomLayout.TodayMenuHeaderShadowColor,
+                HubRoomLayout.TodayMenuHeaderFontSize,
+                HubRoomLayout.TodayMenuItemSortingOrder,
+                labelScale: HubRoomLayout.TodayMenuHeaderTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.04f);
+
+            TextMeshPro headerLabel = CreateWorldTextObject(
+                "HubTodayMenuHeaderLabel",
+                boardRoot.transform,
+                HubRoomLayout.TodayMenuHeaderLabelLocalPosition,
+                "오늘의 메뉴",
+                HubRoomLayout.TodayMenuHeaderTextColor,
+                HubRoomLayout.TodayMenuHeaderFontSize,
+                HubRoomLayout.TodayMenuTextSortingOrder,
+                labelScale: HubRoomLayout.TodayMenuHeaderTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.04f);
+
+            Sprite[] itemSprites =
+            {
+                sprites.HubTodayMenuItem2,
+                sprites.HubTodayMenuItem1,
+                sprites.HubTodayMenuItem3
+            };
+
+            SpriteRenderer[] entryBackdrops = new SpriteRenderer[HubRoomLayout.TodayMenuEntryLocalPositions.Length];
+            SpriteRenderer[] entryIcons = new SpriteRenderer[HubRoomLayout.TodayMenuEntryLocalPositions.Length];
+
+            for (int i = 0; i < HubRoomLayout.TodayMenuEntryLocalPositions.Length; i++)
+            {
+                GameObject backdrop = CreateDecorBlock(
+                    $"HubTodayMenuEntryBackdrop{i + 1}",
+                    HubRoomLayout.TodayMenuEntryLocalPositions[i],
+                    HubRoomLayout.TodayMenuEntryBackdropScale,
+                    sprites.HubTodayMenuBg,
+                    HubRoomLayout.TodayMenuBackdropColor,
+                    HubRoomLayout.TodayMenuBackdropSortingOrder,
+                    boardRoot.transform);
+
+                entryBackdrops[i] = backdrop.GetComponent<SpriteRenderer>();
+
+                GameObject item = CreateDecorBlock(
+                    $"HubTodayMenuEntryItem{i + 1}",
+                    HubRoomLayout.TodayMenuEntryIconLocalOffset,
+                    HubRoomLayout.TodayMenuEntryIconScale,
+                    itemSprites[i],
+                    HubRoomLayout.TodayMenuIconColor,
+                    HubRoomLayout.TodayMenuItemSortingOrder,
+                    backdrop.transform);
+
+                entryIcons[i] = item.GetComponent<SpriteRenderer>();
+            }
+
+            HubTodayMenuDisplay display = boardRoot.AddComponent<HubTodayMenuDisplay>();
+            display.Configure(restaurantManager, headerLabel, entryBackdrops, entryIcons);
         }
 
         private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform _parent = null)
@@ -1207,7 +1825,7 @@ namespace ProjectEditor
             };
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.72f, 0f), label, Color.black, 2.6f, 50);
+            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.72f, 0f), label, Color.black, WorldLabelFontSize, 50);
         }
 
         private static void CreateUpgradeStation(Vector3 position, Vector3 size, Sprite sprite, Color color, UpgradeManager upgradeManager)
@@ -1223,7 +1841,7 @@ namespace ProjectEditor
             so.FindProperty("promptLabel").stringValue = "작업대 사용";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 0.68f, 0f), "작업대", Color.black, 2.6f, 50);
+            CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 0.68f, 0f), "작업대", Color.black, WorldLabelFontSize, 50);
         }
 
         private static void CreateGatherable(string objectName, Vector3 position, Sprite sprite, ResourceData resource, ToolType requiredToolType, int minAmount, int maxAmount, string label)
@@ -1249,7 +1867,7 @@ namespace ProjectEditor
                 .SetValue(gatherable, resource);
             EditorUtility.SetDirty(gatherable);
 
-            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.64f, 0f), label, Color.black, 2.4f, 45);
+            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.64f, 0f), label, Color.black, WorldLabelSmallFontSize, 45);
         }
 
         private static void CreateGuideTriggerZone(string objectName, Vector3 position, Vector2 size, string hintId, string guideText)
@@ -1380,6 +1998,7 @@ namespace ProjectEditor
 
 			CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
 			CreatePanel("PhaseBadge", hudStatusGroup, PrototypeUILayout.PhaseBadge, chromeGlass);
+            CreatePanel("InteractionPromptBackdrop", hudRoot, PrototypeUILayout.PromptBackdrop(isHubScene), Color.white);
 			CreatePanel("GuideBackdrop", hudOverlayGroup, PrototypeUILayout.GuideBackdrop(isHubScene), chromeSurface);
 			CreatePanel("ResultBackdrop", hudOverlayGroup, PrototypeUILayout.ResultBackdrop(isHubScene), chromeSurface);
             if (isHubScene)
@@ -1469,7 +2088,10 @@ namespace ProjectEditor
             Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubRecipePanelButton, "\uC694\uB9AC \uBA54\uB274") : null;
             Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubUpgradePanelButton, "\uC5C5\uADF8\uB808\uC774\uB4DC") : null;
             Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubMaterialPanelButton, "\uC7AC\uB8CC") : null;
+            Button guideHelpButton = CreateUiButton("GuideHelpButton", hudOverlayGroup, PrototypeUILayout.GuideHelpButton(isHubScene), string.Empty);
             Button popupCloseButton = isHubScene ? CreateUiButton("PopupCloseButton", popupFrameRightGroup != null ? popupFrameRightGroup : (popupFrameGroup != null ? popupFrameGroup : popupRoot), PrototypeUILayout.HubPopupCloseButton, string.Empty) : null;
+            HideGeneratedButtonLabel(guideHelpButton);
+            HideGeneratedButtonLabel(popupCloseButton);
 
             if (storageCaption != null) storageCaption.text = "\uCC3D\uACE0";
             if (recipeCaption != null) recipeCaption.text = "\uC694\uB9AC \uBA54\uB274";
@@ -1569,6 +2191,7 @@ namespace ProjectEditor
             so.FindProperty("recipePanelButton").objectReferenceValue = recipePanelButton;
             so.FindProperty("upgradePanelButton").objectReferenceValue = upgradePanelButton;
             so.FindProperty("materialPanelButton").objectReferenceValue = materialPanelButton;
+            so.FindProperty("guideHelpButton").objectReferenceValue = guideHelpButton;
             so.FindProperty("popupCloseButton").objectReferenceValue = popupCloseButton;
             so.FindProperty("defaultPromptText").stringValue = "\uC774\uB3D9: WASD / \uBC29\uD5A5\uD0A4   \uC0C1\uD638\uC791\uC6A9: E";
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -1615,8 +2238,9 @@ namespace ProjectEditor
 
         private static InputActionAsset EnsureUiInputActionsAsset()
         {
-            string assetPath = DataRoot + "/GeneratedUiInputActions.asset";
+            string assetPath = InputDataRoot + "/generated-ui-input-actions.asset";
             InputActionAsset existingAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(assetPath);
+            EnsureMainObjectNameMatchesFileName(existingAsset, assetPath);
             if (existingAsset != null && HasRequiredUiActions(existingAsset))
             {
                 return existingAsset;
@@ -1628,7 +2252,7 @@ namespace ProjectEditor
             }
 
             InputActionAsset asset = ScriptableObject.CreateInstance<InputActionAsset>();
-            asset.name = "GeneratedUiInputActions";
+            asset.name = "generated-ui-input-actions";
             InputActionMap uiMap = new("UI");
             asset.AddActionMap(uiMap);
 
@@ -2252,6 +2876,23 @@ namespace ProjectEditor
                 label);
         }
 
+        private static void HideGeneratedButtonLabel(Button button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label == null)
+            {
+                return;
+            }
+
+            label.text = string.Empty;
+            label.gameObject.SetActive(false);
+        }
+
         private static void ApplyHubPopupObjectIdentity(GameObject target)
         {
             if (target == null || !IsHubPopupDisplayObject(target.name))
@@ -2271,6 +2912,12 @@ namespace ProjectEditor
         private static bool TryApplyHubPopupSceneImage(Image image, string objectName)
         {
             if (image == null || string.IsNullOrEmpty(objectName))
+            {
+                return false;
+            }
+
+            if (PrototypeUISkinCatalog.UsesGeneratedUiDesignPanel(objectName)
+                || PrototypeUISkinCatalog.UsesGeneratedUiDesignButton(objectName))
             {
                 return false;
             }
@@ -2302,6 +2949,7 @@ namespace ProjectEditor
                 PrototypeUISkin.ApplyPanel(image, objectName, fallbackColor);
             }
 
+            // generated UI 스킨은 기본값으로 적용하고, 씬 저장으로 동기화한 오버라이드가 있으면 마지막에 우선 반영한다.
             PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
@@ -2320,6 +2968,7 @@ namespace ProjectEditor
                 PrototypeUISkin.ApplyButton(image, objectName, fallbackColor);
             }
 
+            // generated UI 스킨은 기본값으로 적용하고, 씬 저장으로 동기화한 오버라이드가 있으면 마지막에 우선 반영한다.
             PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
@@ -2340,6 +2989,25 @@ namespace ProjectEditor
         }
 
         private static void CreateWorldLabel(string objectName, Transform _parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
+        {
+            CreateWorldTextObject(objectName, _parent, localPosition, content, color, fontSize, sortingOrder);
+        }
+
+        /// <summary>
+        /// 월드 배치용 TextMeshPro 오브젝트를 만들고 참조를 바로 돌려준다.
+        /// 메뉴 보드처럼 후속 구성에서 텍스트 컴포넌트가 필요할 때 사용한다.
+        /// </summary>
+        private static TextMeshPro CreateWorldTextObject(
+            string objectName,
+            Transform _parent,
+            Vector3 localPosition,
+            string content,
+            Color color,
+            float fontSize,
+            int sortingOrder,
+            float? labelScale = null,
+            FontStyles? fontStyle = null,
+            float? characterSpacing = null)
         {
             bool isLargeLabel = fontSize >= 3.4f;
             bool isPrimaryLabel = fontSize >= 2.5f;
@@ -2362,11 +3030,10 @@ namespace ProjectEditor
             text.alignment = TextAlignmentOptions.Center;
             text.color = color;
             text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.characterSpacing = isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f;
+            text.characterSpacing = characterSpacing ?? (isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f);
             text.wordSpacing = 0f;
             text.lineSpacing = 0f;
-            text.fontStyle = isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal;
-            // 런타임 월드 텍스트 외곽선은 적용하되 편집 모드 머티리얼을 오염시키지 않도록 분리합니다.
+            text.fontStyle = fontStyle ?? (isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal);
 
             if (preferredFont != null)
             {
@@ -2377,11 +3044,117 @@ namespace ProjectEditor
                 text.font = TMP_Settings.defaultFontAsset;
             }
 
-            float labelScale = isLargeLabel ? 0.30f : isPrimaryLabel ? 0.27f : 0.25f;
-            labelObject.transform.localScale = Vector3.one * labelScale;
+            float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
+            labelObject.transform.localScale = Vector3.one * resolvedLabelScale;
+            Material worldTextMaterial = EnsureWorldTextSharedMaterial(text.font, isLargeLabel || isPrimaryLabel);
+            if (worldTextMaterial != null)
+            {
+                text.fontSharedMaterial = worldTextMaterial;
+            }
+
+            ApplyWorldTextReadability(text, isLargeLabel || isPrimaryLabel);
 
             MeshRenderer meshRenderer = text.GetComponent<MeshRenderer>();
             meshRenderer.sortingOrder = sortingOrder;
+            return text;
+        }
+
+        /// <summary>
+        /// 허브 월드 텍스트는 배경 그림 위에서도 읽히도록 외곽선과 패딩을 기본 적용한다.
+        /// </summary>
+        private static void ApplyWorldTextReadability(TextMeshPro text, bool useStrongOutline)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            text.extraPadding = true;
+        }
+
+        /// <summary>
+        /// 에디터 빌드에서는 TMP setter가 renderer.material을 열지 않도록
+        /// 공유 머티리얼 에셋을 만들어 폰트별/강도별로 재사용한다.
+        /// </summary>
+        private static Material EnsureWorldTextSharedMaterial(TMP_FontAsset fontAsset, bool useStrongOutline)
+        {
+            if (fontAsset == null || fontAsset.material == null)
+            {
+                return null;
+            }
+
+            string materialName = fontAsset.name + (useStrongOutline ? "WorldTextStrong" : "WorldTextNormal");
+            if (CachedWorldTextMaterials.TryGetValue(materialName, out Material cachedMaterial) && cachedMaterial != null)
+            {
+                return cachedMaterial;
+            }
+
+            string materialPath = $"{FontRoot}/{materialName}.mat";
+            Material materialAsset = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            if (materialAsset == null)
+            {
+                materialAsset = new Material(fontAsset.material)
+                {
+                    name = materialName
+                };
+                AssetDatabase.CreateAsset(materialAsset, materialPath);
+            }
+
+            materialAsset.SetColor(ShaderUtilities.ID_OutlineColor, HubRoomLayout.WorldTextOutlineColor);
+            materialAsset.SetFloat(
+                ShaderUtilities.ID_OutlineWidth,
+                useStrongOutline
+                    ? HubRoomLayout.WorldTextStrongOutlineWidth
+                    : HubRoomLayout.WorldTextNormalOutlineWidth);
+            EditorUtility.SetDirty(materialAsset);
+
+            CachedWorldTextMaterials[materialName] = materialAsset;
+            return materialAsset;
+        }
+
+        /// <summary>
+        /// 업그레이드 슬롯 내부 가격 표시는 슬롯 자식 텍스트로 생성해 슬롯 이동과 함께 유지한다.
+        /// </summary>
+        private static void CreateHubUpgradePriceText(string objectName, Transform _parent, Vector3 localPosition, string content)
+        {
+            CreateWorldTextObject(
+                objectName,
+                _parent,
+                localPosition,
+                content,
+                HubRoomLayout.UpgradePriceTextColor,
+                HubRoomLayout.UpgradePriceFontSize,
+                HubRoomLayout.SignTextSortingOrder,
+                labelScale: HubRoomLayout.UpgradePriceTextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: 0.08f);
+        }
+
+        /// <summary>
+        /// 허브 바닥 표시는 별도 이미지 대신 얇은 바닥 패널과 텍스트 조합으로 다시 만든다.
+        /// </summary>
+        private static void CreateHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Sprite floorSprite, Transform _parent)
+        {
+            GameObject sign = CreateDecorBlock(
+                placement.ObjectName,
+                placement.Position,
+                placement.BackdropScale,
+                floorSprite,
+                HubRoomLayout.SignBackdropColor,
+                HubRoomLayout.SignSortingOrder,
+                _parent);
+
+            CreateWorldTextObject(
+                placement.ObjectName + "Label",
+                sign.transform,
+                placement.TextLocalPosition,
+                placement.Content,
+                HubRoomLayout.SignTextColor,
+                placement.FontSize,
+                HubRoomLayout.SignTextSortingOrder,
+                labelScale: placement.TextScale,
+                fontStyle: FontStyles.Bold,
+                characterSpacing: placement.CharacterSpacing);
         }
 
         private static GameObject CreateFloorZone(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder)
@@ -2392,6 +3165,19 @@ namespace ProjectEditor
         private static GameObject CreateFeaturePad(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color)
         {
             return CreateDecorBlock(objectName, position, scale, sprite, color, 3);
+        }
+
+        /// <summary>
+        /// 허브 전용 배경 아트를 레이어별 자식 오브젝트로 배치한다.
+        /// </summary>
+        private static GameObject CreateHubArtSprite(string objectName, Vector3 position, Sprite sprite, int sortingOrder, Transform parent)
+        {
+            if (sprite == null)
+            {
+                return null;
+            }
+
+            return CreateDecorBlock(objectName, position, Vector3.one, sprite, Color.white, sortingOrder, parent);
         }
 
         private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform _parent = null)
@@ -2416,17 +3202,39 @@ namespace ProjectEditor
             return go;
         }
 
+        /// <summary>
+        /// 배경 아트 위에 상호작용만 남기고 싶은 허브 오브젝트는 렌더러와 월드 라벨을 숨긴다.
+        /// 콜라이더와 상호작용 컴포넌트는 유지하므로 프롬프트와 기능은 그대로 동작한다.
+        /// </summary>
+        private static void HideWorldInteractionPresentation(GameObject root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            foreach (SpriteRenderer renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                renderer.enabled = false;
+            }
+
+            foreach (TextMeshPro label in root.GetComponentsInChildren<TextMeshPro>(true))
+            {
+                label.gameObject.SetActive(false);
+            }
+        }
+
         private static ResourceLibrary CreateResources()
         {
             return new ResourceLibrary
             {
-                Fish = CreateResourceAsset(DataRoot + "/Fish.asset", "fish", "생선", "바닷가에서 쉽게 얻을 수 있는 기본 재료입니다.", "바닷가", 10, ResourceRarity.Common),
-                Shell = CreateResourceAsset(DataRoot + "/Shell.asset", "shell", "조개", "국물 요리에 쓰기 좋은 바닷가 재료입니다.", "바닷가", 12, ResourceRarity.Common),
-                Seaweed = CreateResourceAsset(DataRoot + "/Seaweed.asset", "seaweed", "해초", "향이 좋은 해산 재료입니다.", "바닷가", 8, ResourceRarity.Common),
-                Herb = CreateResourceAsset(DataRoot + "/Herb.asset", "herb", "약초", "깊은 숲에서 얻는 향이 짙은 약초입니다.", "깊은 숲", 14, ResourceRarity.Uncommon),
-                Mushroom = CreateResourceAsset(DataRoot + "/Mushroom.asset", "mushroom", "버섯", "숲의 그늘 아래에서 자라는 식재료입니다.", "깊은 숲", 16, ResourceRarity.Uncommon),
-                GlowMoss = CreateResourceAsset(DataRoot + "/GlowMoss.asset", "glow_moss", "발광 이끼", "폐광산 안쪽의 습한 벽면에서 자라는 희귀 식재료입니다.", "폐광산", 22, ResourceRarity.Rare),
-                WindHerb = CreateResourceAsset(DataRoot + "/WindHerb.asset", "wind_herb", "향초", "바람이 센 언덕에서만 자라는 고급 허브입니다.", "바람 언덕", 18, ResourceRarity.Rare)
+                Fish = CreateResourceAsset(ResourceDataRoot + "/resource-fish.asset", "fish", "생선", "바닷가에서 쉽게 얻을 수 있는 기본 재료입니다.", "바닷가", 10, ResourceRarity.Common),
+                Shell = CreateResourceAsset(ResourceDataRoot + "/resource-shell.asset", "shell", "조개", "국물 요리에 쓰기 좋은 바닷가 재료입니다.", "바닷가", 12, ResourceRarity.Common),
+                Seaweed = CreateResourceAsset(ResourceDataRoot + "/resource-seaweed.asset", "seaweed", "해초", "향이 좋은 해산 재료입니다.", "바닷가", 8, ResourceRarity.Common),
+                Herb = CreateResourceAsset(ResourceDataRoot + "/resource-herb.asset", "herb", "약초", "깊은 숲에서 얻는 향이 짙은 약초입니다.", "깊은 숲", 14, ResourceRarity.Uncommon),
+                Mushroom = CreateResourceAsset(ResourceDataRoot + "/resource-mushroom.asset", "mushroom", "버섯", "숲의 그늘 아래에서 자라는 식재료입니다.", "깊은 숲", 16, ResourceRarity.Uncommon),
+                GlowMoss = CreateResourceAsset(ResourceDataRoot + "/resource-glow-moss.asset", "glow_moss", "발광 이끼", "폐광산 안쪽의 습한 벽면에서 자라는 희귀 식재료입니다.", "폐광산", 22, ResourceRarity.Rare),
+                WindHerb = CreateResourceAsset(ResourceDataRoot + "/resource-wind-herb.asset", "wind_herb", "향초", "바람이 센 언덕에서만 자라는 고급 허브입니다.", "바람 언덕", 18, ResourceRarity.Rare)
             };
         }
 
@@ -2435,7 +3243,7 @@ namespace ProjectEditor
             return new RecipeLibrary
             {
                 SushiSet = CreateRecipeAsset(
-                    DataRoot + "/SushiSet.asset",
+                    RecipeDataRoot + "/recipe-sushi-set.asset",
                     "sushi_set",
                     "생선 한 접시",
                     "생선으로 빠르게 준비할 수 있는 기본 메뉴입니다.",
@@ -2446,7 +3254,7 @@ namespace ProjectEditor
                         new RecipeIngredientDefinition(resources.Fish, 1)
                     }),
                 SeafoodSoup = CreateRecipeAsset(
-                    DataRoot + "/SeafoodSoup.asset",
+                    RecipeDataRoot + "/recipe-seafood-soup.asset",
                     "seafood_soup",
                     "해물탕",
                     "생선, 조개, 해초를 모두 넣은 고가 메뉴입니다.",
@@ -2459,7 +3267,7 @@ namespace ProjectEditor
                         new RecipeIngredientDefinition(resources.Seaweed, 1)
                     }),
                 HerbFishSoup = CreateRecipeAsset(
-                    DataRoot + "/HerbFishSoup.asset",
+                    RecipeDataRoot + "/recipe-herb-fish-soup.asset",
                     "herb_fish_soup",
                     "약초 생선탕",
                     "바닷가 생선과 숲 약초를 넣어 향을 살린 메뉴입니다.",
@@ -2471,7 +3279,7 @@ namespace ProjectEditor
                         new RecipeIngredientDefinition(resources.Herb, 1)
                     }),
                 ForestBasket = CreateRecipeAsset(
-                    DataRoot + "/ForestBasket.asset",
+                    RecipeDataRoot + "/recipe-forest-basket.asset",
                     "forest_basket",
                     "숲 버섯 모둠",
                     "약초와 버섯을 엮어 만든 가벼운 숲 메뉴입니다.",
@@ -2483,7 +3291,7 @@ namespace ProjectEditor
                         new RecipeIngredientDefinition(resources.Mushroom, 1)
                     }),
                 GlowMossStew = CreateRecipeAsset(
-                    DataRoot + "/GlowMossStew.asset",
+                    RecipeDataRoot + "/recipe-glow-moss-stew.asset",
                     "glow_moss_stew",
                     "광채 해물탕",
                     "발광 이끼와 해초를 함께 넣어 진한 향을 낸 후반 메뉴입니다.",
@@ -2496,7 +3304,7 @@ namespace ProjectEditor
                         new RecipeIngredientDefinition(resources.GlowMoss, 1)
                     }),
                 WindHerbSalad = CreateRecipeAsset(
-                    DataRoot + "/WindHerbSalad.asset",
+                    RecipeDataRoot + "/recipe-wind-herb-salad.asset",
                     "wind_herb_salad",
                     "향초 해초 무침",
                     "바람 언덕 향초와 해초를 함께 버무린 고급 메뉴입니다.",
@@ -2514,46 +3322,182 @@ namespace ProjectEditor
         {
             return new SpriteLibrary
             {
-                PlayerFront = CreatePlayerSprite(SpriteRoot + "/PlayerFront.png", "image (2).png"),
-                PlayerBack = CreatePlayerSprite(SpriteRoot + "/PlayerBack.png", "image (1).png"),
-                PlayerSide = CreatePlayerSprite(SpriteRoot + "/PlayerSide.png", "image.png"),
-                Portal = CreateColorSprite(SpriteRoot + "/Portal.png", new Color(0.95f, 0.52f, 0.22f)),
-                Selector = CreateColorSprite(SpriteRoot + "/Selector.png", new Color(0.98f, 0.84f, 0.23f)),
-                Counter = CreateColorSprite(SpriteRoot + "/Counter.png", new Color(0.84f, 0.34f, 0.24f)),
-                Fish = CreateColorSprite(SpriteRoot + "/Fish.png", new Color(0.19f, 0.73f, 0.92f)),
-                Shell = CreateColorSprite(SpriteRoot + "/Shell.png", new Color(0.90f, 0.79f, 0.66f)),
-                Seaweed = CreateColorSprite(SpriteRoot + "/Seaweed.png", new Color(0.24f, 0.66f, 0.35f)),
-                Herb = CreateColorSprite(SpriteRoot + "/Herb.png", new Color(0.47f, 0.78f, 0.27f)),
-                Mushroom = CreateColorSprite(SpriteRoot + "/Mushroom.png", new Color(0.71f, 0.55f, 0.36f)),
-                GlowMoss = CreateColorSprite(SpriteRoot + "/GlowMoss.png", new Color(0.45f, 0.95f, 0.78f)),
-                WindHerb = CreateColorSprite(SpriteRoot + "/WindHerb.png", new Color(0.79f, 0.93f, 0.61f)),
-                Floor = CreateColorSprite(SpriteRoot + "/Floor.png", Color.white)
+                PlayerFront = CreatePlayerSprite(PlayerSpriteRoot + "/player-front.png", "image (2).png"),
+                PlayerBack = CreatePlayerSprite(PlayerSpriteRoot + "/player-back.png", "image (1).png"),
+                PlayerSide = CreatePlayerSprite(PlayerSpriteRoot + "/player-side.png", "image.png"),
+                HubFloorBackground = LoadConfiguredSprite(HubFloorBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubFloorBackgroundSpritePath),
+                HubWallBackground = LoadConfiguredSprite(HubWallBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubWallBackgroundSpritePath),
+                HubFrontOutline = LoadConfiguredSprite(HubFrontOutlineSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubFrontOutlineSpritePath),
+                HubBar = LoadConfiguredSprite(HubBarSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubBarSpritePath),
+                HubTableUnlocked = LoadConfiguredSprite(HubTableUnlockedSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTableUnlockedSpritePath),
+                HubUpgradeSlot = LoadConfiguredSprite(HubUpgradeSlotSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubUpgradeSlotSpritePath),
+                HubTodayMenuBg = LoadConfiguredSprite(HubTodayMenuBgSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTodayMenuBgSpritePath),
+                HubTodayMenuItem1 = LoadConfiguredSprite(HubTodayMenuItem1SpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTodayMenuItem1SpritePath),
+                HubTodayMenuItem2 = LoadConfiguredSprite(HubTodayMenuItem2SpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTodayMenuItem2SpritePath),
+                HubTodayMenuItem3 = LoadConfiguredSprite(HubTodayMenuItem3SpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTodayMenuItem3SpritePath),
+                Portal = CreateColorSprite(WorldSpriteRoot + "/world-portal.png", new Color(0.95f, 0.52f, 0.22f)),
+                Selector = CreateColorSprite(WorldSpriteRoot + "/world-selector.png", new Color(0.98f, 0.84f, 0.23f)),
+                Counter = CreateColorSprite(WorldSpriteRoot + "/world-counter.png", new Color(0.84f, 0.34f, 0.24f)),
+                Fish = CreateColorSprite(GatherSpriteRoot + "/gather-fish.png", new Color(0.19f, 0.73f, 0.92f)),
+                Shell = CreateColorSprite(GatherSpriteRoot + "/gather-shell.png", new Color(0.90f, 0.79f, 0.66f)),
+                Seaweed = CreateColorSprite(GatherSpriteRoot + "/gather-seaweed.png", new Color(0.24f, 0.66f, 0.35f)),
+                Herb = CreateColorSprite(GatherSpriteRoot + "/gather-herb.png", new Color(0.47f, 0.78f, 0.27f)),
+                Mushroom = CreateColorSprite(GatherSpriteRoot + "/gather-mushroom.png", new Color(0.71f, 0.55f, 0.36f)),
+                GlowMoss = CreateColorSprite(GatherSpriteRoot + "/gather-glow-moss.png", new Color(0.45f, 0.95f, 0.78f)),
+                WindHerb = CreateColorSprite(GatherSpriteRoot + "/gather-wind-herb.png", new Color(0.79f, 0.93f, 0.61f)),
+                Floor = CreateColorSprite(WorldSpriteRoot + "/world-floor.png", Color.white)
             };
+        }
+
+        /// <summary>
+        /// 디자인 원본 UI PNG를 generated 스프라이트 경로로 복사하고 런타임 Resources 경로에도 같은 구조로 미러링한다.
+        /// </summary>
+        private static void CreateUiDesignSprites()
+        {
+            EnsureUiDesignSpriteAsset(
+                CloseButtonDesignSourcePath,
+                UiButtonSpriteRoot + "/close-button.png",
+                ResourceUiButtonSpriteRoot + "/close-button.png",
+                Vector4.zero);
+            EnsureUiDesignSpriteAsset(
+                HelpButtonDesignSourcePath,
+                UiButtonSpriteRoot + "/help-button.png",
+                ResourceUiButtonSpriteRoot + "/help-button.png",
+                Vector4.zero);
+            EnsureUiDesignSpriteAsset(
+                SystemTextBoxDesignSourcePath,
+                UiMessageBoxSpriteRoot + "/system-text-box.png",
+                ResourceUiMessageBoxSpriteRoot + "/system-text-box.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                InteractionTextBoxDesignSourcePath,
+                UiMessageBoxSpriteRoot + "/interaction-text-box.png",
+                ResourceUiMessageBoxSpriteRoot + "/interaction-text-box.png",
+                new Vector4(8f, 14f, 8f, 14f));
+            EnsureUiDesignSpriteAsset(
+                DarkOutlinePanelDesignSourcePath,
+                UiPanelSpriteRoot + "/dark-outline-panel.png",
+                ResourceUiPanelSpriteRoot + "/dark-outline-panel.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                DarkOutlinePanelAltDesignSourcePath,
+                UiPanelSpriteRoot + "/dark-outline-panel-alt.png",
+                ResourceUiPanelSpriteRoot + "/dark-outline-panel-alt.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                DarkSolidPanelDesignSourcePath,
+                UiPanelSpriteRoot + "/dark-solid-panel.png",
+                ResourceUiPanelSpriteRoot + "/dark-solid-panel.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                DarkThinOutlinePanelDesignSourcePath,
+                UiPanelSpriteRoot + "/dark-thin-outline-panel.png",
+                ResourceUiPanelSpriteRoot + "/dark-thin-outline-panel.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                LightOutlinePanelDesignSourcePath,
+                UiPanelSpriteRoot + "/light-outline-panel.png",
+                ResourceUiPanelSpriteRoot + "/light-outline-panel.png",
+                new Vector4(8f, 8f, 8f, 8f));
+            EnsureUiDesignSpriteAsset(
+                LightSolidPanelDesignSourcePath,
+                UiPanelSpriteRoot + "/light-solid-panel.png",
+                ResourceUiPanelSpriteRoot + "/light-solid-panel.png",
+                new Vector4(8f, 8f, 8f, 8f));
+        }
+
+        private static void EnsureUiDesignSpriteAsset(string sourceAssetPath, string generatedAssetPath, string resourceAssetPath, Vector4 border)
+        {
+            string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceAssetPath);
+            if (!File.Exists(sourceFullPath))
+            {
+                return;
+            }
+
+            string generatedFullPath = Path.Combine(Directory.GetCurrentDirectory(), generatedAssetPath);
+            string resourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
+
+            CopyFileIfDifferent(sourceFullPath, generatedFullPath);
+            CopyFileIfDifferent(sourceFullPath, resourceFullPath);
+
+            AssetDatabase.ImportAsset(generatedAssetPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+            ConfigureSpriteAsset(generatedAssetPath, 100f, new Vector2(0.5f, 0.5f), border);
+            ConfigureSpriteAsset(resourceAssetPath, 100f, new Vector2(0.5f, 0.5f), border);
         }
 
         private static Sprite CreatePlayerSprite(string assetPath, string sourceFileName)
         {
             string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), "temperature", sourceFileName);
             string targetFullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-            string resourceAssetPath = assetPath.Replace(SpriteRoot, ResourceSpriteRoot);
-            string resourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
+            string resourceAssetPath = GetMirroredResourceSpriteAssetPath(assetPath);
+            string resourceFullPath = string.IsNullOrWhiteSpace(resourceAssetPath)
+                ? null
+                : Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
 
             if (File.Exists(sourceFullPath))
             {
                 CopyFileIfDifferent(sourceFullPath, targetFullPath);
-                CopyFileIfDifferent(sourceFullPath, resourceFullPath);
+                if (!string.IsNullOrWhiteSpace(resourceFullPath))
+                {
+                    CopyFileIfDifferent(sourceFullPath, resourceFullPath);
+                }
+
                 AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+                if (!string.IsNullOrWhiteSpace(resourceAssetPath))
+                {
+                    AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(resourceFullPath)
+                && File.Exists(targetFullPath)
+                && !File.Exists(resourceFullPath))
+            {
+                CopyFileIfDifferent(targetFullPath, resourceFullPath);
                 AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
             }
 
             Sprite importedSprite = ConfigureSpriteAsset(assetPath, PlayerSpritePixelsPerUnit);
-            ConfigureSpriteAsset(resourceAssetPath, PlayerSpritePixelsPerUnit);
+            if (!string.IsNullOrWhiteSpace(resourceAssetPath))
+            {
+                ConfigureSpriteAsset(resourceAssetPath, PlayerSpritePixelsPerUnit);
+            }
+
             if (importedSprite != null)
             {
                 return importedSprite;
             }
 
             return CreateColorSprite(assetPath, Color.white);
+        }
+
+        private static Sprite LoadConfiguredSprite(string assetPath, float pixelsPerUnit, Vector2 pivot, string pairedAssetPath = null)
+        {
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+            if (!File.Exists(fullPath))
+            {
+                return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            }
+
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            Sprite sprite = ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot);
+
+            if (!string.IsNullOrWhiteSpace(pairedAssetPath))
+            {
+                string pairedFullPath = Path.Combine(Directory.GetCurrentDirectory(), pairedAssetPath);
+                if (!File.Exists(pairedFullPath) && File.Exists(fullPath))
+                {
+                    CopyFileIfDifferent(fullPath, pairedFullPath);
+                }
+
+                if (File.Exists(pairedFullPath))
+                {
+                    AssetDatabase.ImportAsset(pairedAssetPath, ImportAssetOptions.ForceUpdate);
+                    ConfigureSpriteAsset(pairedAssetPath, pixelsPerUnit, pivot);
+                }
+            }
+
+            return sprite;
         }
 
         private static ResourceData CreateResourceAsset(string assetPath, string id, string displayName, string description, string regionTag, int sellPrice, ResourceRarity rarity)
@@ -2564,6 +3508,8 @@ namespace ProjectEditor
                 asset = ScriptableObject.CreateInstance<ResourceData>();
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
+
+            EnsureMainObjectNameMatchesFileName(asset, assetPath);
 
             SerializedObject so = new(asset);
             so.FindProperty("resourceId").stringValue = id;
@@ -2594,6 +3540,8 @@ namespace ProjectEditor
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
 
+            EnsureMainObjectNameMatchesFileName(asset, assetPath);
+
             SerializedObject so = new(asset);
             so.FindProperty("recipeId").stringValue = id;
             so.FindProperty("displayName").stringValue = displayName;
@@ -2617,12 +3565,64 @@ namespace ProjectEditor
             return asset;
         }
 
+        /// <summary>
+        /// generated 자산은 파일명과 메인 오브젝트 이름을 같게 유지해 저장 경고를 막는다.
+        /// </summary>
+        private static void EnsureMainObjectNameMatchesFileName(UnityEngine.Object asset, string assetPath)
+        {
+            if (asset == null || string.IsNullOrWhiteSpace(assetPath))
+            {
+                return;
+            }
+
+            string expectedName = Path.GetFileNameWithoutExtension(assetPath);
+            if (string.IsNullOrWhiteSpace(expectedName)
+                || string.Equals(asset.name, expectedName, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            asset.name = expectedName;
+            EditorUtility.SetDirty(asset);
+        }
+
         private static Sprite CreateColorSprite(string assetPath, Color color)
+        {
+            EnsureColorSpriteAssetExists(assetPath, color);
+
+            string mirroredResourceAssetPath = GetMirroredResourceSpriteAssetPath(assetPath);
+            if (!string.IsNullOrWhiteSpace(mirroredResourceAssetPath))
+            {
+                EnsureColorSpriteAssetExists(mirroredResourceAssetPath, color);
+                ConfigureSpriteAsset(mirroredResourceAssetPath, 100f);
+            }
+
+            return ConfigureSpriteAsset(assetPath, 100f);
+        }
+
+        /// <summary>
+        /// generated 스프라이트는 Resources 폴더에도 같은 상대 경로로 한 벌 더 만들어 런타임 폴백에서 재사용한다.
+        /// </summary>
+        private static string GetMirroredResourceSpriteAssetPath(string assetPath)
+        {
+            if (string.IsNullOrWhiteSpace(assetPath)
+                || !assetPath.StartsWith(SpriteRoot + "/", StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return assetPath.Replace(SpriteRoot, ResourceSpriteRoot);
+        }
+
+        /// <summary>
+        /// 단색 스프라이트는 파일이 없을 때만 만들고, 이미 있으면 기존 GUID와 참조를 유지한다.
+        /// </summary>
+        private static void EnsureColorSpriteAssetExists(string assetPath, Color color)
         {
             Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
             if (existing != null)
             {
-                return existing;
+                return;
             }
 
             string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
@@ -2642,10 +3642,19 @@ namespace ProjectEditor
             UnityEngine.Object.DestroyImmediate(texture);
 
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-            return ConfigureSpriteAsset(assetPath, 100f);
         }
 
         private static Sprite ConfigureSpriteAsset(string assetPath, float pixelsPerUnit)
+        {
+            return ConfigureSpriteAsset(assetPath, pixelsPerUnit, new Vector2(0.5f, 0.08f), Vector4.zero);
+        }
+
+        private static Sprite ConfigureSpriteAsset(string assetPath, float pixelsPerUnit, Vector2 pivot)
+        {
+            return ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot, Vector4.zero);
+        }
+
+        private static Sprite ConfigureSpriteAsset(string assetPath, float pixelsPerUnit, Vector2 pivot, Vector4 border)
         {
             TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
             if (importer == null)
@@ -2667,7 +3676,8 @@ namespace ProjectEditor
             importer.ReadTextureSettings(spriteSettings);
             spriteSettings.spriteMeshType = SpriteMeshType.FullRect;
             spriteSettings.spriteAlignment = (int)SpriteAlignment.Custom;
-            spriteSettings.spritePivot = new Vector2(0.5f, 0.08f);
+            spriteSettings.spritePivot = pivot;
+            spriteSettings.spriteBorder = border;
             importer.SetTextureSettings(spriteSettings);
 
             ApplyUncompressedPlatformSettings(importer, "DefaultTexturePlatform");

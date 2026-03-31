@@ -15,7 +15,7 @@ namespace Data
     public static class GeneratedGameDataLocator
     {
         private const string GeneratedDataRoot = "Assets/Generated/GameData";
-        private const string GeneratedDataManifestPath = "Generated/GeneratedGameDataManifest";
+        private const string GeneratedDataManifestPath = "Generated/generated-game-data-manifest";
 
         private static readonly Dictionary<string, ResourceData> ResourceCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, RecipeData> RecipeCache = new(StringComparer.OrdinalIgnoreCase);
@@ -217,9 +217,30 @@ namespace Data
         /// </summary>
         private static string NormalizeKey(string key)
         {
-            return string.IsNullOrWhiteSpace(key)
-                ? string.Empty
-                : key.Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return string.Empty;
+            }
+
+            string normalized = key.Trim().ToLowerInvariant();
+
+            if (normalized.StartsWith("resource-", StringComparison.Ordinal)
+                || normalized.StartsWith("resource_", StringComparison.Ordinal)
+                || normalized.StartsWith("resource ", StringComparison.Ordinal))
+            {
+                normalized = normalized["resource".Length..].TrimStart('-', '_', ' ');
+            }
+            else if (normalized.StartsWith("recipe-", StringComparison.Ordinal)
+                     || normalized.StartsWith("recipe_", StringComparison.Ordinal)
+                     || normalized.StartsWith("recipe ", StringComparison.Ordinal))
+            {
+                normalized = normalized["recipe".Length..].TrimStart('-', '_', ' ');
+            }
+
+            return normalized
+                .Replace("-", string.Empty, StringComparison.Ordinal)
+                .Replace("_", string.Empty, StringComparison.Ordinal)
+                .Replace(" ", string.Empty, StringComparison.Ordinal);
         }
 
 #if UNITY_EDITOR
@@ -233,11 +254,14 @@ namespace Data
                 return null;
             }
 
-            string exactPath = $"{GeneratedDataRoot}/{assetName}.asset";
-            T asset = AssetDatabase.LoadAssetAtPath<T>(exactPath);
-            if (asset != null)
+            T asset;
+            foreach (string candidatePath in GetCandidateAssetPaths<T>(assetName))
             {
-                return asset;
+                asset = AssetDatabase.LoadAssetAtPath<T>(candidatePath);
+                if (asset != null)
+                {
+                    return asset;
+                }
             }
 
             string[] guids = AssetDatabase.FindAssets($"{assetName} t:{typeof(T).Name}", new[] { GeneratedDataRoot });
@@ -252,6 +276,66 @@ namespace Data
             }
 
             return null;
+        }
+
+        private static IEnumerable<string> GetCandidateAssetPaths<T>(string assetName) where T : UnityEngine.Object
+        {
+            string kebabAssetName = ToKebabCase(assetName);
+
+            if (typeof(T) == typeof(ResourceData))
+            {
+                string resourceFileName = kebabAssetName.StartsWith("resource-", StringComparison.Ordinal)
+                    ? kebabAssetName
+                    : $"resource-{kebabAssetName}";
+                yield return $"{GeneratedDataRoot}/{resourceFileName}.asset";
+            }
+            else if (typeof(T) == typeof(RecipeData))
+            {
+                string recipeFileName = kebabAssetName.StartsWith("recipe-", StringComparison.Ordinal)
+                    ? kebabAssetName
+                    : $"recipe-{kebabAssetName}";
+                yield return $"{GeneratedDataRoot}/{recipeFileName}.asset";
+            }
+
+            yield return $"{GeneratedDataRoot}/{kebabAssetName}.asset";
+        }
+
+        private static string ToKebabCase(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            System.Text.StringBuilder builder = new(value.Length + 8);
+            for (int index = 0; index < value.Length; index++)
+            {
+                char current = value[index];
+
+                if (current is '_' or ' ')
+                {
+                    if (builder.Length > 0 && builder[^1] != '-')
+                    {
+                        builder.Append('-');
+                    }
+
+                    continue;
+                }
+
+                bool shouldInsertDash =
+                    index > 0
+                    && char.IsUpper(current)
+                    && (char.IsLower(value[index - 1]) || char.IsDigit(value[index - 1]));
+
+                if (shouldInsertDash && builder.Length > 0 && builder[^1] != '-')
+                {
+                    builder.Append('-');
+                }
+
+                builder.Append(char.ToLowerInvariant(current));
+            }
+
+            return builder.ToString();
         }
 #endif
     }
