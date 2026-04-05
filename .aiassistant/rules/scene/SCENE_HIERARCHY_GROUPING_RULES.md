@@ -1,5 +1,5 @@
 ---
-applies: always
+적용: 항상
 ---
 
 # Jonggu Restaurant Scene Hierarchy Grouping Rules
