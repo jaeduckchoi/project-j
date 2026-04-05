@@ -2,7 +2,7 @@
 
 이 프로젝트의 공통 AI 작업 규칙은 아래 경로를 기준으로 관리한다.
 
-- 공유 규칙: `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
+- 공유 규칙: `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
 - 로컬 전용 규칙: `.aiassistant/rules/local/`
 
 에이전트별 진입 파일은 루트에 둔다.
@@ -18,6 +18,6 @@
 
 추가 기준:
 
-- 커밋 메시지, 커밋 초안 정리, squash merge 제목 작성은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`의 Git 섹션을 우선 기준으로 따른다.
+- 커밋 메시지, 커밋 초안 정리, squash merge 제목 작성은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`의 Git 섹션을 우선 기준으로 따른다.
 - 영문 diff 요약이나 자동 생성된 영문 커밋 초안이 있어도 최종 커밋 메시지는 한글로 다시 작성한다.
-- Git 커밋 템플릿은 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE_KO.md`를 기준으로 사용한다.
+- Git 커밋 템플릿은 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`를 기준으로 사용한다.

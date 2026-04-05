@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf3c0b34e20e1ff4388f7b0572fe3155, type: 3}
+  m_Name: recipe-seafood-soup
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeData
+  recipeId: seafood_soup
+  displayName: "\uD574\uBB3C\uD0D5"
+  description: "\uC0DD\uC120, \uC870\uAC1C, \uD574\uCD08\uB97C \uBAA8\uB450 \uB123\uC740
+    \uACE0\uAC00 \uBA54\uB274\uC785\uB2C8\uB2E4."
+  sellPrice: 55
+  reputationDelta: 2
+  ingredients:
+  - resource: {fileID: 11400000, guid: 17b6240e79f034245a131c2073160e5e, type: 2}
+    amount: 1
+  - resource: {fileID: 11400000, guid: f351daf3dc67b034eaa8aa9184d09ce7, type: 2}
+    amount: 1
+  - resource: {fileID: 11400000, guid: 192ccda8e1562ce439d8fd7e937c5477, type: 2}
+    amount: 1

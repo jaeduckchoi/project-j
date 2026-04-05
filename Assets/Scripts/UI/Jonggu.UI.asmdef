@@ -1,0 +1,21 @@
+{
+    "name": "Jonggu.UI",
+    "rootNamespace": "",
+    "references": [
+        "Jonggu.Gameplay",
+        "Jonggu.Shared",
+        "Unity.InputSystem",
+        "Unity.InputSystem.ForUI",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

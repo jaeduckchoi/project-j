@@ -86,3 +86,14 @@ InitTestScene*.unity*
 # AI assistant 로컬 전용 규칙
 /.aiassistant/rules/local/*
 !/.aiassistant/rules/local/README.md
+
+# Unity 복구/임시 저장 폴더
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
+
+# OS / 머지 임시 파일
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.orig
+*.rej

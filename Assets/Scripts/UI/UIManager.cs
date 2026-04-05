@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Core;
@@ -435,12 +435,12 @@ namespace UI
         {
             return popupPanel switch
             {
-                HubPopupPanel.None => PrototypeUIPreviewPanel.Materials,
+                HubPopupPanel.None => PrototypeUIPreviewPanel.None,
                 HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
                 HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
                 HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,
                 HubPopupPanel.Materials => PrototypeUIPreviewPanel.Materials,
-                _ => PrototypeUIPreviewPanel.Materials
+                _ => PrototypeUIPreviewPanel.None
             };
         }
 
@@ -757,7 +757,50 @@ namespace UI
 
         private void ResolveOptionalUiReferences()
         {
-            if (recipePanelButton == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("SkipExplorationButton"))
+            {
+                skipExplorationButton = null;
+            }
+            else if (skipExplorationButton == null)
+            {
+                Transform skipExplorationTransform = FindNamedUiTransform("SkipExplorationButton");
+                if (skipExplorationTransform != null)
+                {
+                    skipExplorationButton = skipExplorationTransform.GetComponent<Button>();
+                }
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("SkipServiceButton"))
+            {
+                skipServiceButton = null;
+            }
+            else if (skipServiceButton == null)
+            {
+                Transform skipServiceTransform = FindNamedUiTransform("SkipServiceButton");
+                if (skipServiceTransform != null)
+                {
+                    skipServiceButton = skipServiceTransform.GetComponent<Button>();
+                }
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("NextDayButton"))
+            {
+                nextDayButton = null;
+            }
+            else if (nextDayButton == null)
+            {
+                Transform nextDayTransform = FindNamedUiTransform("NextDayButton");
+                if (nextDayTransform != null)
+                {
+                    nextDayButton = nextDayTransform.GetComponent<Button>();
+                }
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("RecipePanelButton"))
+            {
+                recipePanelButton = null;
+            }
+            else if (recipePanelButton == null)
             {
                 Transform recipeTransform = FindNamedUiTransform("RecipePanelButton");
                 if (recipeTransform != null)
@@ -766,7 +809,11 @@ namespace UI
                 }
             }
 
-            if (upgradePanelButton == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("UpgradePanelButton"))
+            {
+                upgradePanelButton = null;
+            }
+            else if (upgradePanelButton == null)
             {
                 Transform upgradeTransform = FindNamedUiTransform("UpgradePanelButton");
                 if (upgradeTransform != null)
@@ -775,7 +822,11 @@ namespace UI
                 }
             }
 
-            if (materialPanelButton == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("MaterialPanelButton"))
+            {
+                materialPanelButton = null;
+            }
+            else if (materialPanelButton == null)
             {
                 Transform materialTransform = FindNamedUiTransform("MaterialPanelButton");
                 if (materialTransform != null)
@@ -784,7 +835,11 @@ namespace UI
                 }
             }
 
-            if (popupCloseButton == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("PopupCloseButton"))
+            {
+                popupCloseButton = null;
+            }
+            else if (popupCloseButton == null)
             {
                 Transform closeTransform = FindNamedUiTransform("PopupCloseButton");
                 if (closeTransform != null)
@@ -793,7 +848,11 @@ namespace UI
                 }
             }
 
-            if (guideHelpButton == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("GuideHelpButton"))
+            {
+                guideHelpButton = null;
+            }
+            else if (guideHelpButton == null)
             {
                 Transform helpTransform = FindNamedUiTransform("GuideHelpButton");
                 if (helpTransform != null)
@@ -802,7 +861,11 @@ namespace UI
                 }
             }
 
-            if (guideText == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("GuideText"))
+            {
+                guideText = null;
+            }
+            else if (guideText == null)
             {
                 Transform guideTransform = FindNamedUiTransform("GuideText");
                 if (guideTransform != null)
@@ -811,7 +874,11 @@ namespace UI
                 }
             }
 
-            if (resultText == null)
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("RestaurantResultText"))
+            {
+                resultText = null;
+            }
+            else if (resultText == null)
             {
                 Transform resultTransform = FindNamedUiTransform("RestaurantResultText");
                 if (resultTransform != null)
@@ -1088,7 +1155,7 @@ namespace UI
             }
         }
 
-        private static bool ReadPopupActionPressed(KeyCode legacyKey, System.Func<Keyboard, KeyControl> keySelector)
+        private static bool ReadPopupActionPressed(KeyCode legacyKey, Func<Keyboard, KeyControl> keySelector)
         {
             bool pressed = false;
 
@@ -1164,6 +1231,8 @@ namespace UI
                 return;
             }
 
+            RemoveDeletedCanvasObjects();
+
             Transform hudRoot = EnsureCanvasGroupRoot(HudRootName, 0);
             Transform popupRoot = EnsureCanvasGroupRoot(PopupRootName, 1);
 
@@ -1172,6 +1241,8 @@ namespace UI
             ReparentHudCanvasObjects(hudRoot);
             ReparentPopupCanvasObjects(popupRoot);
             ReparentCanvasObject("InventoryText", IsHubScene() ? GetPopupCanvasGroupParent("InventoryText", popupRoot) : GetHudCanvasGroupParent("InventoryText", hudRoot));
+            ApplySavedCanvasHierarchyOverrides();
+            RemoveDeletedCanvasObjects();
         }
 
         private Transform EnsureCanvasGroupRoot(string groupName, int siblingIndex)
@@ -1181,7 +1252,9 @@ namespace UI
 
         private static Transform EnsureCanvasGroupRoot(Transform parent, string groupName, int siblingIndex)
         {
-            if (parent == null)
+            if (parent == null
+                || string.IsNullOrWhiteSpace(groupName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(groupName))
             {
                 return null;
             }
@@ -1196,6 +1269,11 @@ namespace UI
                     Vector2.zero));
 
             Transform existing = parent.Find(groupName);
+            if (existing == null)
+            {
+                existing = FindNamedUiTransformRecursive(parent, groupName);
+            }
+
             GameObject rootObject = existing != null ? existing.gameObject : new GameObject(groupName, typeof(RectTransform));
             ApplyHubPopupObjectIdentity(rootObject);
             if (existing == null)
@@ -1214,7 +1292,8 @@ namespace UI
             rect.pivot = resolvedLayout.Pivot;
             rect.anchoredPosition = resolvedLayout.AnchoredPosition;
             rect.sizeDelta = resolvedLayout.SizeDelta;
-            rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1)));
+            Transform siblingParent = rect.parent != null ? rect.parent : parent;
+            rect.SetSiblingIndex(ClampSiblingIndex(siblingParent, siblingIndex));
             return rect;
         }
 
@@ -1284,6 +1363,11 @@ namespace UI
                 return null;
             }
 
+            if (TryGetSavedCanvasGroupParent(objectName, out Transform savedParent))
+            {
+                return savedParent;
+            }
+
             string subgroupName = GetPopupSubgroupName(objectName);
             if (string.IsNullOrWhiteSpace(subgroupName))
             {
@@ -1313,6 +1397,11 @@ namespace UI
             if (hudRoot == null)
             {
                 return null;
+            }
+
+            if (TryGetSavedCanvasGroupParent(objectName, out Transform savedParent))
+            {
+                return savedParent;
             }
 
             string subgroupName = GetHudSubgroupName(objectName);
@@ -1359,15 +1448,32 @@ namespace UI
 
         private static int GetHudSubgroupSiblingIndex(string subgroupName)
         {
-            return subgroupName switch
+            if (subgroupName == HudStatusGroupName)
             {
-                HudStatusGroupName => 0,
-                HudActionGroupName => 1,
-                HudBottomGroupName => 2,
-                HudPanelButtonGroupObjectName => 3,
-                HudOverlayGroupName => 4,
-                _ => 0
-            };
+                return 0;
+            }
+
+            if (subgroupName == HudActionGroupName)
+            {
+                return 1;
+            }
+
+            if (subgroupName == HudBottomGroupName)
+            {
+                return 2;
+            }
+
+            if (subgroupName == HudPanelButtonGroupObjectName)
+            {
+                return 3;
+            }
+
+            if (subgroupName == HudOverlayGroupName)
+            {
+                return 4;
+            }
+
+            return 0;
         }
 
         private static int GetPopupSubgroupSiblingIndex(string subgroupName)
@@ -1385,9 +1491,11 @@ namespace UI
 
         private Transform EnsurePopupLayoutContainer(Transform parent, string objectName, int siblingIndex)
         {
-            if (parent == null || string.IsNullOrWhiteSpace(objectName))
+            if (parent == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
-                return parent;
+                return null;
             }
 
             Transform existing = parent.Find(objectName);
@@ -1420,12 +1528,18 @@ namespace UI
                 rect.sizeDelta = Vector2.zero;
             }
 
-            rect.SetSiblingIndex(Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1)));
+            rect.SetSiblingIndex(ClampSiblingIndex(rect.parent != null ? rect.parent : parent, siblingIndex));
             return rect;
         }
 
         private void ReparentCanvasObject(string objectName, Transform targetParent)
         {
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                DestroyNamedUiTransform(objectName);
+                return;
+            }
+
             if (targetParent == null)
             {
                 return;
@@ -1445,9 +1559,14 @@ namespace UI
 
         private Transform GetCanvasGroupParent(string objectName)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
                 return null;
+            }
+
+            if (TryGetSavedCanvasGroupParent(objectName, out Transform savedParent))
+            {
+                return savedParent;
             }
 
             bool usePopupRoot = objectName == "InventoryText" ? IsHubScene() : PopupCanvasObjectNames.Contains(objectName);
@@ -1491,6 +1610,300 @@ namespace UI
             {
                 target.SetParent(groupParent, false);
             }
+        }
+
+        private void ApplySavedCanvasHierarchyOverrides()
+        {
+            if (transform == null)
+            {
+                return;
+            }
+
+            Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
+            CollectNamedUiTransforms(transform, transformMap);
+
+            List<Transform> existingTransforms = new(transformMap.Values);
+            for (int index = 0; index < existingTransforms.Count; index++)
+            {
+                Transform current = existingTransforms[index];
+                if (current == null || string.IsNullOrWhiteSpace(current.name))
+                {
+                    continue;
+                }
+
+                EnsureSavedHierarchyTransform(current.name, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            }
+
+            transformMap.Clear();
+            CollectNamedUiTransforms(transform, transformMap);
+
+            List<Transform> orderedTransforms = new(transformMap.Values);
+            orderedTransforms.Sort((left, right) => CompareTransformDepth(left, right));
+            for (int index = 0; index < orderedTransforms.Count; index++)
+            {
+                ApplySavedCanvasHierarchyOverride(orderedTransforms[index], transformMap);
+            }
+        }
+
+        private void RemoveDeletedCanvasObjects()
+        {
+            if (transform == null)
+            {
+                return;
+            }
+
+            List<GameObject> targets = new();
+            CollectDeletedCanvasObjects(transform, targets, includeCurrent: false);
+            for (int index = 0; index < targets.Count; index++)
+            {
+                DestroyCanvasObject(targets[index]);
+            }
+        }
+
+        private void DestroyNamedUiTransform(string objectName)
+        {
+            Transform target = FindNamedUiTransform(objectName);
+            if (target != null)
+            {
+                DestroyCanvasObject(target.gameObject);
+            }
+        }
+
+        private void DestroyCanvasObject(GameObject target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(target);
+            }
+            else
+            {
+                DestroyImmediate(target);
+            }
+        }
+
+        private static void CollectDeletedCanvasObjects(Transform current, ICollection<GameObject> targets, bool includeCurrent)
+        {
+            if (current == null || targets == null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CollectDeletedCanvasObjects(current.GetChild(index), targets, includeCurrent: true);
+            }
+
+            if (includeCurrent && PrototypeUISceneLayoutCatalog.IsObjectRemoved(current.name))
+            {
+                targets.Add(current.gameObject);
+            }
+        }
+
+        private bool TryGetSavedCanvasGroupParent(string objectName, out Transform targetParent)
+        {
+            targetParent = null;
+
+            if (transform == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName)
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentName, out _)
+                || string.IsNullOrWhiteSpace(parentName))
+            {
+                return false;
+            }
+
+            if (string.Equals(parentName, transform.name, StringComparison.Ordinal))
+            {
+                targetParent = transform;
+                return true;
+            }
+
+            if (!Application.isPlaying && _suppressCanvasGroupingInEditorPreview)
+            {
+                targetParent = FindNamedUiTransform(parentName);
+                return targetParent != null;
+            }
+
+            Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
+            CollectNamedUiTransforms(transform, transformMap);
+            targetParent = EnsureSavedHierarchyTransform(parentName, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            return targetParent != null;
+        }
+
+        private Transform EnsureSavedHierarchyTransform(
+            string objectName,
+            IDictionary<string, Transform> transformMap,
+            ISet<string> visiting)
+        {
+            if (transform == null)
+            {
+                return null;
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(objectName) || string.Equals(objectName, transform.name, StringComparison.Ordinal))
+            {
+                return transform;
+            }
+
+            if (transformMap.TryGetValue(objectName, out Transform existing))
+            {
+                return existing;
+            }
+
+            if (visiting == null || !visiting.Add(objectName))
+            {
+                return transform;
+            }
+
+            Transform parent = ResolveSavedHierarchyParent(objectName, transformMap, visiting);
+            if (parent == null)
+            {
+                visiting.Remove(objectName);
+                return null;
+            }
+
+            GameObject groupObject = new(objectName, typeof(RectTransform));
+            ApplyHubPopupObjectIdentity(groupObject);
+            groupObject.transform.SetParent(parent != null ? parent : transform, false);
+
+            RectTransform rect = groupObject.GetComponent<RectTransform>();
+            ApplySavedHierarchyLayout(rect, objectName);
+            if (PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out _, out int siblingIndex))
+            {
+                rect.SetSiblingIndex(ClampSiblingIndex(rect.parent, siblingIndex));
+            }
+
+            transformMap[objectName] = rect;
+            visiting.Remove(objectName);
+            return rect;
+        }
+
+        private Transform ResolveSavedHierarchyParent(
+            string objectName,
+            IDictionary<string, Transform> transformMap,
+            ISet<string> visiting)
+        {
+            if (transform == null)
+            {
+                return null;
+            }
+
+            if (!PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentName, out _)
+                || string.IsNullOrWhiteSpace(parentName))
+            {
+                return transform;
+            }
+
+            if (string.Equals(parentName, transform.name, StringComparison.Ordinal))
+            {
+                return transform;
+            }
+
+            return EnsureSavedHierarchyTransform(parentName, transformMap, visiting);
+        }
+
+        private void ApplySavedCanvasHierarchyOverride(Transform target, IDictionary<string, Transform> transformMap)
+        {
+            if (transform == null
+                || target == null
+                || target == transform
+                || string.IsNullOrWhiteSpace(target.name)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(target.name)
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(target.name, out string parentName, out int siblingIndex)
+                || string.IsNullOrWhiteSpace(parentName))
+            {
+                return;
+            }
+
+            Transform targetParent = string.Equals(parentName, transform.name, StringComparison.Ordinal)
+                ? transform
+                : EnsureSavedHierarchyTransform(parentName, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            if (targetParent == null || targetParent == target)
+            {
+                return;
+            }
+
+            if (target.parent != targetParent)
+            {
+                target.SetParent(targetParent, false);
+            }
+
+            target.SetSiblingIndex(ClampSiblingIndex(target.parent, siblingIndex));
+            transformMap[target.name] = target;
+        }
+
+        private static void CollectNamedUiTransforms(Transform current, IDictionary<string, Transform> transformMap)
+        {
+            if (current == null || transformMap == null || string.IsNullOrWhiteSpace(current.name))
+            {
+                return;
+            }
+
+            transformMap[current.name] = current;
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CollectNamedUiTransforms(current.GetChild(index), transformMap);
+            }
+        }
+
+        private static void ApplySavedHierarchyLayout(RectTransform rect, string objectName)
+        {
+            if (rect == null)
+            {
+                return;
+            }
+
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(
+                    Vector2.zero,
+                    Vector2.one,
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    Vector2.zero));
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
+        }
+
+        private static int CompareTransformDepth(Transform left, Transform right)
+        {
+            return GetTransformDepth(left).CompareTo(GetTransformDepth(right));
+        }
+
+        private static int GetTransformDepth(Transform target)
+        {
+            int depth = 0;
+            Transform current = target;
+            while (current != null)
+            {
+                depth++;
+                current = current.parent;
+            }
+
+            return depth;
+        }
+
+        private static int ClampSiblingIndex(Transform parent, int siblingIndex)
+        {
+            if (parent == null)
+            {
+                return 0;
+            }
+
+            return Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1));
         }
 
         private Transform FindNamedUiTransform(string objectName)
@@ -1550,15 +1963,13 @@ namespace UI
             resultText = EnsureOverlayText(resultText, "RestaurantResultText");
             PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
 
-            EnsureCommonHudChrome(isHubScene, preferredFont, theme.Parchment, theme.Paper, theme.Glass, theme.OceanAccent, theme.AmberAccent);
+            EnsureCommonHudChrome(isHubScene, preferredFont, theme.Parchment, theme.Paper, theme.Glass);
             if (isHubScene)
             {
                 EnsureHubHudChrome(preferredFont, theme.Paper, theme.Dock, theme.AmberAccent, theme.ActionText);
             }
 
-            /// <summary>
-            /// 실제 HUD 배치와 텍스트 스타일은 아래 공용 레이아웃 메서드에서 한 번만 적용합니다.
-            /// </summary>
+            // 실제 HUD 배치와 텍스트 스타일은 아래 공용 레이아웃 메서드에서 한 번만 적용합니다.
             ApplyCompactHudLayout(preferredFont, headingFont, theme.Text, theme.OceanAccent, theme.AmberAccent, theme.CoralAccent, theme.GoldAccent);
             ApplyMenuPanelState();
             RefreshStoragePanelVisibility();
@@ -1573,9 +1984,7 @@ namespace UI
             TMP_FontAsset preferredFont,
             Color parchment,
             Color paper,
-            Color glass,
-            Color oceanAccent,
-            Color amberAccent)
+            Color glass)
         {
 			EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
 			EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
@@ -1628,7 +2037,7 @@ namespace UI
             Vector2 sizeDelta,
             Color color)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
                 return;
             }
@@ -1638,11 +2047,17 @@ namespace UI
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             Transform existing = FindNamedUiTransform(objectName);
+            Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
+            if (existing == null && targetParent == null)
+            {
+                return;
+            }
+
             GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(backdropObject);
             if (existing == null)
             {
-                backdropObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
+                backdropObject.transform.SetParent(targetParent, false);
             }
             else
             {
@@ -1718,15 +2133,26 @@ namespace UI
             Vector2 sizeDelta,
             Color color)
         {
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             Transform existing = FindNamedUiTransform(objectName);
+            Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
+            if (existing == null && targetParent == null)
+            {
+                return;
+            }
+
             GameObject accentObject = existing != null ? existing.gameObject : new GameObject(objectName);
             if (existing == null)
             {
-                accentObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
+                accentObject.transform.SetParent(targetParent, false);
             }
             else
             {
@@ -1787,18 +2213,29 @@ namespace UI
             Color color,
             TextAlignmentOptions alignment)
         {
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             Transform existing = FindNamedUiTransform(objectName);
+            Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
+            if (existing == null && targetParent == null)
+            {
+                return;
+            }
+
             GameObject captionObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(captionObject);
             TextMeshProUGUI existingText = captionObject.GetComponent<TextMeshProUGUI>();
             bool preserveExistingPopupHeading = existing != null && existingText != null && IsFixedPopupHeading(objectName);
             if (existing == null)
             {
-                captionObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
+                captionObject.transform.SetParent(targetParent, false);
             }
             else if (!preserveExistingPopupHeading)
             {
@@ -1875,6 +2312,11 @@ namespace UI
 
         private TextMeshProUGUI EnsureOverlayText(TextMeshProUGUI current, string objectName)
         {
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
             if (current != null)
             {
                 AssignCanvasGroupParent(current.transform, objectName);
@@ -1882,11 +2324,17 @@ namespace UI
             }
 
             Transform existing = FindNamedUiTransform(objectName);
+            Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
+            if (existing == null && targetParent == null)
+            {
+                return null;
+            }
+
             GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(textObject);
             if (existing == null)
             {
-                textObject.transform.SetParent(GetCanvasGroupParent(objectName), false);
+                textObject.transform.SetParent(targetParent, false);
             }
             else
             {
@@ -1921,17 +2369,24 @@ namespace UI
         /// </summary>
         private void EnsurePopupCloseButton(TMP_FontAsset font)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved("PopupCloseButton"))
             {
                 return;
             }
 
             Transform existing = FindNamedUiTransform("PopupCloseButton");
+            Transform targetParent = existing == null ? GetCanvasGroupParent("PopupCloseButton") : null;
+            if (existing == null && targetParent == null)
+            {
+                popupCloseButton = null;
+                return;
+            }
+
             GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("PopupCloseButton");
             ApplyHubPopupObjectIdentity(buttonObject);
             if (existing == null)
             {
-                buttonObject.transform.SetParent(GetCanvasGroupParent("PopupCloseButton"), false);
+                buttonObject.transform.SetParent(targetParent, false);
             }
             else
             {
@@ -1986,16 +2441,23 @@ namespace UI
 
         private void EnsureGuideHelpButton(TMP_FontAsset font, bool isHubScene)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved("GuideHelpButton"))
             {
                 return;
             }
 
             Transform existing = FindNamedUiTransform("GuideHelpButton");
+            Transform targetParent = existing == null ? GetCanvasGroupParent("GuideHelpButton") : null;
+            if (existing == null && targetParent == null)
+            {
+                guideHelpButton = null;
+                return;
+            }
+
             GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("GuideHelpButton");
             if (existing == null)
             {
-                buttonObject.transform.SetParent(GetCanvasGroupParent("GuideHelpButton"), false);
+                buttonObject.transform.SetParent(targetParent, false);
             }
             else
             {
@@ -2177,12 +2639,10 @@ namespace UI
 
             Image image = button.GetComponent<Image>();
             bool hasKenneySkin = false;
-            bool hasImageOverride = false;
             if (image != null)
             {
                 hasKenneySkin = PrototypeUISkin.ApplyButton(image, button.name, accentColor);
-                hasImageOverride = PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, button.name);
-                if (hasImageOverride)
+                if (PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, button.name))
                 {
                     hasKenneySkin = true;
                 }
@@ -2367,7 +2827,7 @@ namespace UI
             }
             else
             {
-                ApplyExplorationInventoryLayout(bodyFont, headingFont, textColor, oceanAccent);
+                ApplyExplorationInventoryLayout();
             }
 
             SetButtonGameObjectActive(recipePanelButton, isHubScene);
@@ -2623,6 +3083,11 @@ namespace UI
 
         private Image EnsurePopupBodyItemBox(Transform parent, string objectName, PrototypeUIRect layout, bool isInteractive)
         {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject boxObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(boxObject);
@@ -2688,6 +3153,11 @@ namespace UI
 
         private void EnsurePopupBodyItemIcon(Transform parent, string objectName)
         {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject iconObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(iconObject);
@@ -2723,6 +3193,11 @@ namespace UI
 
         private void EnsurePopupBodyItemText(Transform parent, string objectName, TMP_FontAsset bodyFont, Color textColor)
         {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
             Transform existing = FindNamedUiTransform(objectName);
             GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(textObject);
@@ -2868,11 +3343,7 @@ namespace UI
         /// <summary>
         /// 탐험 씬은 우측 상단 재료/가방 HUD만 유지하고 허브용 카드는 숨깁니다.
         /// </summary>
-        private void ApplyExplorationInventoryLayout(
-            TMP_FontAsset bodyFont,
-            TMP_FontAsset headingFont,
-            Color textColor,
-            Color oceanAccent)
+        private void ApplyExplorationInventoryLayout()
         {
             SetHubPopupDesignActive(false);
             SetLegacyHubPopupObjectsActive(false);
@@ -3058,12 +3529,12 @@ namespace UI
             InventoryEntry detailEntry = null;
             foreach (InventoryEntry entry in inventory.RuntimeItems)
             {
-                if (entry == null || entry.Resource == null || entry.Amount <= 0)
+                if (entry == null || entry.resource == null || entry.amount <= 0)
                 {
                     continue;
                 }
 
-                if (detailEntry == null || entry.Resource == _selectedMaterialPopupResource)
+                if (detailEntry == null || entry.resource == _selectedMaterialPopupResource)
                 {
                     detailEntry = entry;
                 }
@@ -3071,20 +3542,20 @@ namespace UI
 
             foreach (InventoryEntry entry in inventory.RuntimeItems)
             {
-                if (entry == null || entry.Resource == null || entry.Amount <= 0)
+                if (entry == null || entry.resource == null || entry.amount <= 0)
                 {
                     continue;
                 }
 
-                ResourceData resource = entry.Resource;
-                int amount = entry.Amount;
+                ResourceData resource = entry.resource;
+                int amount = entry.amount;
                 entries.Add(new PopupListEntry(
                     resource.ResourceId,
                     $"{resource.DisplayName} x{amount}",
                     BuildPopupItemSummary(resource.Description, $"{resource.RegionTag} · {GetRarityLabel(resource.Rarity)}"),
                     BuildMaterialPopupDetailText(resource, amount),
                     resource.Icon,
-                    detailEntry != null && resource == detailEntry.Resource,
+                    detailEntry != null && resource == detailEntry.resource,
                     () =>
                     {
                         _selectedMaterialPopupResource = resource;
@@ -3092,7 +3563,7 @@ namespace UI
                     }));
             }
 
-            return new PopupPanelContent(entries, BuildMaterialPopupDetailText(detailEntry != null ? detailEntry.Resource : null, detailEntry != null ? detailEntry.Amount : 0));
+            return new PopupPanelContent(entries, BuildMaterialPopupDetailText(detailEntry != null ? detailEntry.resource : null, detailEntry != null ? detailEntry.amount : 0));
         }
 
         private PopupPanelContent BuildStoragePopupContent()
@@ -3108,12 +3579,12 @@ namespace UI
             InventoryEntry detailEntry = null;
             foreach (InventoryEntry entry in _cachedStorage.RuntimeItems)
             {
-                if (entry == null || entry.Resource == null || entry.Amount <= 0)
+                if (entry == null || entry.resource == null || entry.amount <= 0)
                 {
                     continue;
                 }
 
-                if (detailEntry == null || entry.Resource == _selectedStoragePopupResource)
+                if (detailEntry == null || entry.resource == _selectedStoragePopupResource)
                 {
                     detailEntry = entry;
                 }
@@ -3121,20 +3592,20 @@ namespace UI
 
             foreach (InventoryEntry entry in _cachedStorage.RuntimeItems)
             {
-                if (entry == null || entry.Resource == null || entry.Amount <= 0)
+                if (entry == null || entry.resource == null || entry.amount <= 0)
                 {
                     continue;
                 }
 
-                ResourceData resource = entry.Resource;
-                int amount = entry.Amount;
+                ResourceData resource = entry.resource;
+                int amount = entry.amount;
                 entries.Add(new PopupListEntry(
                     resource.ResourceId,
                     $"{resource.DisplayName} x{amount}",
                     BuildPopupItemSummary(resource.Description, "보관 중인 재료"),
                     BuildStoragePopupDetailText(entry),
                     resource.Icon,
-                    detailEntry != null && resource == detailEntry.Resource,
+                    detailEntry != null && resource == detailEntry.resource,
                     () =>
                     {
                         _selectedStoragePopupResource = resource;
@@ -3255,12 +3726,14 @@ namespace UI
                 return string.Empty;
             }
 
+            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+
             return _cachedUpgradeManager.GetPreferredAction() switch
             {
                 UpgradeWorkbenchAction.UnlockTool when _cachedUpgradeManager.GetPreferredToolType() != ToolType.None
                     => $"tool:{_cachedUpgradeManager.GetPreferredToolType()}",
-                UpgradeWorkbenchAction.UpgradeInventory when GameManager.Instance != null && GameManager.Instance.Inventory != null
-                    => $"inventory:{GameManager.Instance.Inventory.CapacityLevel}",
+                UpgradeWorkbenchAction.UpgradeInventory when inventory != null
+                    => $"inventory:{inventory.CapacityLevel}",
                 _ => string.Empty
             };
         }
@@ -3286,9 +3759,10 @@ namespace UI
 
             foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
-                if (ingredient != null && ingredient.Resource != null && ingredient.Resource.Icon != null)
+                if (RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out _)
+                    && resource.Icon != null)
                 {
-                    return ingredient.Resource.Icon;
+                    return resource.Icon;
                 }
             }
 
@@ -3335,15 +3809,15 @@ namespace UI
 
             foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
-                if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
                     continue;
                 }
 
                 int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
-                    ? GameManager.Instance.Inventory.GetAmount(ingredient.Resource)
+                    ? GameManager.Instance.Inventory.GetAmount(resource)
                     : 0;
-                builder.AppendLine($"  {ingredient.Resource.DisplayName} {ownedAmount}/{ingredient.Amount}");
+                builder.AppendLine($"  {resource.DisplayName} {ownedAmount}/{ingredientAmount}");
             }
 
             return builder.ToString().TrimEnd();
@@ -3543,23 +4017,23 @@ namespace UI
             InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
             InventoryEntry depositEntry = _cachedStorage.GetSelectedInventoryEntry(inventory);
             InventoryEntry withdrawEntry = _cachedStorage.GetSelectedStoredEntry();
-            depositEntry = depositEntry != null && depositEntry.Resource != null ? depositEntry : null;
-            withdrawEntry = withdrawEntry != null && withdrawEntry.Resource != null ? withdrawEntry : null;
+            depositEntry = depositEntry != null && depositEntry.resource != null ? depositEntry : null;
+            withdrawEntry = withdrawEntry != null && withdrawEntry.resource != null ? withdrawEntry : null;
 
             StringBuilder builder = new();
-            if (entry != null && entry.Resource != null)
+            if (entry != null && entry.resource != null)
             {
-                builder.AppendLine(entry.Resource.DisplayName);
+                builder.AppendLine(entry.resource.DisplayName);
 
-                if (!string.IsNullOrWhiteSpace(entry.Resource.Description))
+                if (!string.IsNullOrWhiteSpace(entry.resource.Description))
                 {
-                    builder.AppendLine(entry.Resource.Description);
+                    builder.AppendLine(entry.resource.Description);
                     builder.AppendLine();
                 }
 
-                builder.AppendLine($"- 보관 수량: x{entry.Amount}");
-                builder.AppendLine($"- 원산지: {entry.Resource.RegionTag}");
-                builder.AppendLine($"- 기본 판매가: {entry.Resource.BaseSellPrice}");
+                builder.AppendLine($"- 보관 수량: x{entry.amount}");
+                builder.AppendLine($"- 원산지: {entry.resource.RegionTag}");
+                builder.AppendLine($"- 기본 판매가: {entry.resource.BaseSellPrice}");
                 builder.AppendLine();
             }
             else
@@ -3569,10 +4043,10 @@ namespace UI
             }
 
             builder.AppendLine(depositEntry != null
-                ? $"맡길 재료: {depositEntry.Resource.DisplayName} x{depositEntry.Amount}"
+                ? $"맡길 재료: {depositEntry.resource.DisplayName} x{depositEntry.amount}"
                 : "맡길 재료: 없음");
             builder.AppendLine(withdrawEntry != null
-                ? $"꺼낼 재료: {withdrawEntry.Resource.DisplayName} x{withdrawEntry.Amount}"
+                ? $"꺼낼 재료: {withdrawEntry.resource.DisplayName} x{withdrawEntry.amount}"
                 : "꺼낼 재료: 없음");
             builder.AppendLine();
             builder.AppendLine("Q 품목 변경");
@@ -3598,9 +4072,10 @@ namespace UI
 
             foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
-                if (ingredient != null && ingredient.Resource == resource)
+                if (RecipeIngredient.TryResolve(ingredient, out ResourceData ingredientResource, out int ingredientAmount)
+                    && ingredientResource == resource)
                 {
-                    return ingredient.Amount;
+                    return ingredientAmount;
                 }
             }
 
@@ -3777,31 +4252,25 @@ namespace UI
                 return;
             }
 
-            if (shouldPause)
-            {
-                if (_isPopupPauseApplied)
-                {
-                    return;
-                }
-
-                _popupPausePreviousTimeScale = Time.timeScale;
-                Time.timeScale = 0f;
-                _isPopupPauseApplied = true;
-                return;
-            }
-
-            RestorePopupPauseIfNeeded();
+            PopupPauseStateUtility.Snapshot snapshot = PopupPauseStateUtility.Apply(
+                shouldPause,
+                _isPopupPauseApplied,
+                _popupPausePreviousTimeScale,
+                Time.timeScale);
+            _popupPausePreviousTimeScale = snapshot.PreviousTimeScale;
+            Time.timeScale = snapshot.NextTimeScale;
+            _isPopupPauseApplied = snapshot.IsPauseApplied;
         }
 
         private void RestorePopupPauseIfNeeded()
         {
-            if (!_isPopupPauseApplied)
-            {
-                return;
-            }
-
-            Time.timeScale = _popupPausePreviousTimeScale;
-            _isPopupPauseApplied = false;
+            PopupPauseStateUtility.Snapshot snapshot = PopupPauseStateUtility.Restore(
+                _isPopupPauseApplied,
+                _popupPausePreviousTimeScale,
+                Time.timeScale);
+            _popupPausePreviousTimeScale = snapshot.PreviousTimeScale;
+            Time.timeScale = snapshot.NextTimeScale;
+            _isPopupPauseApplied = snapshot.IsPauseApplied;
         }
 
         private static bool IsHubScene()
@@ -3817,7 +4286,7 @@ namespace UI
             Vector2 anchoredPosition,
             Vector2 sizeDelta)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
                 return;
             }
@@ -3849,7 +4318,7 @@ namespace UI
 
         private void SetNamedObjectActive(string objectName, bool isActive)
         {
-            if (transform == null)
+            if (transform == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
                 return;
             }
@@ -3866,9 +4335,7 @@ namespace UI
         /// </summary>
         private void RefreshAll()
         {
-            /// <summary>
-            /// 개별 이벤트가 누락돼도 전체 재계산 한 번으로 화면 상태를 다시 복구합니다.
-            /// </summary>
+            // 개별 이벤트가 누락돼도 전체 재계산 한 번으로 화면 상태를 다시 복구합니다.
             RefreshInventoryText();
             RefreshStorageText();
             RefreshUpgradeText();
@@ -3952,12 +4419,12 @@ namespace UI
 
             foreach (InventoryEntry entry in entries)
             {
-                if (entry == null || entry.Resource == null)
+                if (entry == null || entry.resource == null)
                 {
                     continue;
                 }
 
-                builder.AppendLine($"- {entry.Resource.DisplayName} x{entry.Amount}");
+                builder.AppendLine($"- {entry.resource.DisplayName} x{entry.amount}");
             }
 
             inventoryText.text = builder.ToString().TrimEnd();
@@ -4132,11 +4599,8 @@ namespace UI
                 return;
             }
 
-            string finalText = string.Empty;
-            finalText = result;
-
-            resultText.text = finalText;
-            resultText.gameObject.SetActive(!string.IsNullOrWhiteSpace(finalText));
+            resultText.text = result;
+            resultText.gameObject.SetActive(!string.IsNullOrWhiteSpace(result));
             SetNamedObjectActive("ResultBackdrop", !IsHubScene() && resultText.gameObject.activeSelf);
         }
 

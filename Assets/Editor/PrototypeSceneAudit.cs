@@ -6,7 +6,6 @@ using Player;
 using UI;
 using UI.Layout;
 using World;
-using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -132,6 +131,7 @@ namespace ProjectEditor
             string hudPanelButtonGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDPanelButtonGroup");
 
             List<GameObject> objects = GetAllSceneObjects(scene);
+            ValidateExpectedSceneHierarchy(issues, sceneName, objects);
 
             ValidateExactCount(issues, sceneName, objects, "Canvas", 1);
             ValidateComponentCount<UIManager>(issues, sceneName, objects, 1);
@@ -247,9 +247,9 @@ namespace ProjectEditor
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionDock", 1);
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionAccent", 1);
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionCaption", 1);
-                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "SkipExplorationButton", 1);
-                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "SkipServiceButton", 1);
-                ValidateChildCount(issues, sceneName, objects, "HUDBottomGroup", "NextDayButton", 1);
+                ValidateChildCount(issues, sceneName, objects, "ActionDock", "SkipExplorationButton", 1);
+                ValidateChildCount(issues, sceneName, objects, "ActionDock", "SkipServiceButton", 1);
+                ValidateChildCount(issues, sceneName, objects, "ActionDock", "NextDayButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "RecipePanelButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "UpgradePanelButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "MaterialPanelButton", 1);
@@ -323,10 +323,13 @@ namespace ProjectEditor
             string objectName,
             int expectedCount)
         {
+            int resolvedExpectedCount = PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName)
+                ? 0
+                : expectedCount;
             int actualCount = objects.Count(gameObject => gameObject != null && gameObject.name == objectName);
-            if (actualCount != expectedCount)
+            if (actualCount != resolvedExpectedCount)
             {
-                issues.Add($"[{sceneName}] '{objectName}' count mismatch. expected={expectedCount}, actual={actualCount}");
+                issues.Add($"[{sceneName}] '{objectName}' count mismatch. expected={resolvedExpectedCount}, actual={actualCount}");
             }
         }
 
@@ -338,7 +341,21 @@ namespace ProjectEditor
             string childName,
             int expectedCount)
         {
-            GameObject parent = objects.FirstOrDefault(gameObject => gameObject != null && gameObject.name == parentName);
+            string resolvedParentName = parentName;
+            int resolvedExpectedCount = expectedCount;
+            if (PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(childName, out string overriddenParentName, out _)
+                && !string.IsNullOrWhiteSpace(overriddenParentName))
+            {
+                resolvedParentName = overriddenParentName;
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(childName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(resolvedParentName))
+            {
+                resolvedExpectedCount = 0;
+            }
+
+            GameObject parent = objects.FirstOrDefault(gameObject => gameObject != null && gameObject.name == resolvedParentName);
             int actualCount = 0;
 
             if (parent != null)
@@ -347,9 +364,9 @@ namespace ProjectEditor
                 actualCount = directChild != null ? 1 : 0;
             }
 
-            if (actualCount != expectedCount)
+            if (actualCount != resolvedExpectedCount)
             {
-                issues.Add($"[{sceneName}] '{parentName}/{childName}' count mismatch. expected={expectedCount}, actual={actualCount}");
+                issues.Add($"[{sceneName}] '{resolvedParentName}/{childName}' count mismatch. expected={resolvedExpectedCount}, actual={actualCount}");
             }
         }
 
@@ -387,6 +404,48 @@ namespace ProjectEditor
             }
         }
 
+        private static void ValidateExpectedSceneHierarchy(
+            ICollection<string> issues,
+            string sceneName,
+            IEnumerable<GameObject> objects)
+        {
+            if (!PrototypeSceneHierarchyCatalog.IsSupportedScene(sceneName))
+            {
+                return;
+            }
+
+            foreach (PrototypeSceneHierarchyEntry entry in PrototypeSceneHierarchyCatalog.EnumerateManagedEntries(sceneName))
+            {
+                ValidateExactCount(issues, sceneName, objects, entry.ObjectName, 1);
+
+                if (string.IsNullOrWhiteSpace(entry.ParentName))
+                {
+                    ValidateRootPlacement(issues, sceneName, objects, entry.ObjectName);
+                    continue;
+                }
+
+                ValidateChildCount(issues, sceneName, objects, entry.ParentName, entry.ObjectName, 1);
+            }
+        }
+
+        private static void ValidateRootPlacement(
+            ICollection<string> issues,
+            string sceneName,
+            IEnumerable<GameObject> objects,
+            string objectName)
+        {
+            GameObject target = objects.FirstOrDefault(gameObject => gameObject != null && gameObject.name == objectName);
+            if (target == null)
+            {
+                return;
+            }
+
+            if (target.transform.parent != null)
+            {
+                issues.Add($"[{sceneName}] '{objectName}' should be a root object.");
+            }
+        }
+
         private static void ValidateLayout(
             ICollection<string> issues,
             string sceneName,
@@ -394,6 +453,11 @@ namespace ProjectEditor
             string objectName,
             PrototypeUIRect expectedLayout)
         {
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
             GameObject target = objects.FirstOrDefault(gameObject => gameObject != null && gameObject.name == objectName);
             if (target == null)
             {

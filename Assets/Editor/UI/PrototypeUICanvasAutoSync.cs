@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 namespace ProjectEditor.UI
 {
     /// <summary>
-    /// 지원하는 Canvas 씬을 저장하면 공용 UI 오버라이드 자산을 자동으로 다시 동기화합니다.
-    /// Hub는 공용 기준과 탐험 HUD 전체를 갱신하고, 탐험 씬은 현재 씬 값만 오버레이합니다.
+    /// 지원하는 Canvas 씬을 저장하면 공용 UI 오버라이드 자산을 다시 동기화하고,
+    /// 같은 관리 대상 Canvas 변경을 다른 지원 씬 Canvas 파일에도 자동으로 반영합니다.
     /// </summary>
     [InitializeOnLoad]
     internal static class PrototypeUICanvasAutoSync

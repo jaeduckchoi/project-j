@@ -1,8 +1,5 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 // UI.Controllers 네임스페이스
 namespace UI.Controllers
@@ -19,7 +16,7 @@ namespace UI.Controllers
     }
 
     /// <summary>
-    /// UI 런타임 로직과 별도로 편집 모드 프리뷰와 디자인 확인만 담당합니다.
+    /// UI 런타임 로직과 분리해 에디터 모드 프리뷰 상태만 관리하는 보조 컨트롤러다.
     /// </summary>
     [RequireComponent(typeof(UIManager))]
     [DisallowMultipleComponent]
@@ -40,7 +37,7 @@ namespace UI.Controllers
         public PrototypeUIPreviewPanel EditorPreviewPanel => editorPreviewPanel;
 
         /// <summary>
-        /// 에디터 확장에서 UIManager를 생성 직후 연결할 수 있게 한다.
+        /// 에디터 확장에서 UIManager를 생성 직후 연결할 때 사용한다.
         /// </summary>
         public void Configure(UIManager manager)
         {
@@ -48,7 +45,7 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 컴포넌트를 붙였을 때 같은 오브젝트의 UIManager를 기본값으로 잡는다.
+        /// 컴포넌트를 붙였을 때 같은 오브젝트의 UIManager를 기본값으로 연결한다.
         /// </summary>
         private void Reset()
         {
@@ -69,10 +66,10 @@ namespace UI.Controllers
             SyncUiManagerReference();
         }
 
-        [ContextMenu("Apply Editor UI Preview")]
         /// <summary>
         /// 플레이 모드 없이 현재 프리뷰 설정을 UIManager에 반영한다.
         /// </summary>
+        [ContextMenu("Apply Editor UI Preview")]
         public void ApplyEditorPreviewInEditor()
         {
             if (Application.isPlaying || _isApplyingPreview)
@@ -97,10 +94,10 @@ namespace UI.Controllers
             }
         }
 
-        [ContextMenu("Clear Editor UI Preview")]
         /// <summary>
-        /// 프리뷰 표시 플래그를 끄고 즉시 화면도 정리한다.
+        /// 프리뷰 표시 플래그를 끄고 즉시 화면을 정리한다.
         /// </summary>
+        [ContextMenu("Clear Editor UI Preview")]
         public void ClearEditorPreviewInEditor()
         {
             if (Application.isPlaying)
@@ -111,11 +108,10 @@ namespace UI.Controllers
             showEditorPreview = false;
             ApplyEditorPreviewInEditor();
         }
-
 #endif
 
         /// <summary>
-        /// 명시적으로 연결되지 않았으면 같은 GameObject의 UIManager를 찾아 쓴다.
+        /// 명시적으로 연결하지 않았으면 같은 GameObject의 UIManager를 찾는다.
         /// </summary>
         private void SyncUiManagerReference()
         {

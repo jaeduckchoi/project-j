@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,9 +44,9 @@ namespace ProjectEditor
         private const string PopupRightCaptionObjectName = "PopupRightCaption";
         private const string GeneratedRoot = "Assets/Generated";
         private const string GameDataRoot = GeneratedRoot + "/GameData";
-        private const string ResourceDataRoot = GameDataRoot;
-        private const string RecipeDataRoot = GameDataRoot;
-        private const string InputDataRoot = GameDataRoot;
+        private const string ResourceDataRoot = GameDataRoot + "/Resources";
+        private const string RecipeDataRoot = GameDataRoot + "/Recipes";
+        private const string InputDataRoot = GameDataRoot + "/Input";
         private const string SpriteRoot = GeneratedRoot + "/Sprites";
         private const string PlayerSpriteRoot = SpriteRoot + "/Player";
         private const string GatherSpriteRoot = SpriteRoot + "/Gather";
@@ -319,8 +319,12 @@ namespace ProjectEditor
         /// </summary>
         private static void PrepareGeneratedFolders()
         {
+            ProjectStructureUtility.EnsureBaseProjectFolders();
             EnsureFolder("Assets", "Generated");
             EnsureFolder(GeneratedRoot, "GameData");
+            EnsureFolder(GameDataRoot, "Input");
+            EnsureFolder(GameDataRoot, "Resources");
+            EnsureFolder(GameDataRoot, "Recipes");
             EnsureFolder(GeneratedRoot, "Sprites");
             EnsureFolder(SpriteRoot, "UI");
             EnsureFolder(UiSpriteRoot, "Buttons");
@@ -356,8 +360,15 @@ namespace ProjectEditor
         private static void SyncBuildCanvasOverrides()
         {
             SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
-            TrySyncCanvasOverridesFromScenePath(SharedExplorationHudSourceScene, out _);
-            TrySyncCanvasOverridesFromActiveScene(out _);
+            if (!TrySyncCanvasOverridesFromScenePath(SharedExplorationHudSourceScene, out string hubSyncMessage))
+            {
+                Debug.LogWarning(hubSyncMessage);
+            }
+
+            if (!TrySyncCanvasOverridesFromActiveScene(out string activeSceneSyncMessage))
+            {
+                Debug.LogWarning(activeSceneSyncMessage);
+            }
         }
 
         /// <summary>
@@ -415,6 +426,7 @@ namespace ProjectEditor
 
             EnsureGeneratedAssetsForBuilderPreview();
             PrototypeSceneRuntimeAugmenter.EnsureSceneReady(activeScene);
+            PrototypeSceneHierarchyOrganizer.OrganizeSceneHierarchy(activeScene, saveScene: false);
             ApplySceneUiPreviewIfAvailable();
             EditorSceneManager.MarkSceneDirty(activeScene);
             EditorApplication.QueuePlayerLoopUpdate();
@@ -455,13 +467,44 @@ namespace ProjectEditor
             controller.ApplyEditorPreviewInEditor();
         }
 
-        private static void SyncSharedExplorationHudRoots()
+        private static IEnumerable<string> EnumerateAutoSyncCanvasScenePaths()
         {
-            SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
+            yield return SharedExplorationHudSourceScene;
 
-            foreach (string targetScenePath in SharedExplorationHudTargetScenes)
+            foreach (string scenePath in SharedExplorationHudTargetScenes)
             {
-                SyncHudRootBetweenScenes(SharedExplorationHudSourceScene, targetScenePath);
+                if (!string.IsNullOrWhiteSpace(scenePath))
+                {
+                    yield return scenePath;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 한 지원 씬에서 저장한 Canvas 변경을 다른 지원 씬 파일에도 바로 반영합니다.
+        /// 공용 오버라이드 자산을 먼저 갱신한 뒤 대상 씬 Canvas에 빠진 관리 대상 UI를 복제하고,
+        /// hierarchy/레이아웃 오버라이드를 다시 적용해 같은 구조로 맞춥니다.
+        /// </summary>
+        private static void SyncCanvasAcrossSupportedScenes(string sourceScenePath)
+        {
+            if (string.IsNullOrWhiteSpace(sourceScenePath))
+            {
+                return;
+            }
+
+            SaveSceneIfLoadedAndDirty(sourceScenePath);
+
+            HashSet<string> visitedScenePaths = new(StringComparer.OrdinalIgnoreCase);
+            foreach (string targetScenePath in EnumerateAutoSyncCanvasScenePaths())
+            {
+                if (string.IsNullOrWhiteSpace(targetScenePath)
+                    || !visitedScenePaths.Add(targetScenePath)
+                    || string.Equals(sourceScenePath, targetScenePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                SyncCanvasBetweenScenes(sourceScenePath, targetScenePath);
             }
         }
 
@@ -490,8 +533,8 @@ namespace ProjectEditor
                     return false;
                 }
 
-                SyncSharedExplorationHudRoots();
-                message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드와 모든 탐험 씬 HUD에 자동 반영했습니다.";
+                SyncCanvasAcrossSupportedScenes(scene.path);
+                message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드와 다른 지원 씬 Canvas에 자동 반영했습니다.";
                 return true;
             }
 
@@ -500,7 +543,8 @@ namespace ProjectEditor
                 return false;
             }
 
-            message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드에 자동 반영했습니다.";
+            SyncCanvasAcrossSupportedScenes(scene.path);
+            message = $"{scene.name} Canvas 변경을 공용 UI 오버라이드와 다른 지원 씬 Canvas에 자동 반영했습니다.";
             return true;
         }
 
@@ -771,60 +815,6 @@ namespace ProjectEditor
         }
 
         /// <summary>
-        /// 기존 씬에 저장된 Canvas 루트를 통째로 복제해 현재 빌드 씬으로 가져옵니다.
-        /// 이렇게 하면 수동으로 맞춘 Canvas 하위 구조와 컴포넌트 값이 빌드 후에도 그대로 유지됩니다.
-        /// </summary>
-        private static bool TryReuseExistingSceneCanvas(string scenePath)
-        {
-            if (!File.Exists(scenePath))
-            {
-                return false;
-            }
-
-            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
-            bool openedTemporarily = false;
-
-            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
-            {
-                sourceScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
-                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
-            }
-
-            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
-            {
-                return false;
-            }
-
-            try
-            {
-                GameObject sourceCanvas = sourceScene
-                    .GetRootGameObjects()
-                    .FirstOrDefault(root => root != null
-                                            && string.Equals(root.name, "Canvas", StringComparison.Ordinal)
-                                            && root.GetComponent<Canvas>() != null);
-                if (sourceCanvas == null)
-                {
-                    return false;
-                }
-
-                GameObject clonedCanvas = UnityEngine.Object.Instantiate(sourceCanvas);
-                clonedCanvas.name = sourceCanvas.name;
-                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
-                    clonedCanvas,
-                    UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-                ApplySceneOverridesToHierarchy(clonedCanvas.transform);
-                return true;
-            }
-            finally
-            {
-                if (openedTemporarily)
-                {
-                    EditorSceneManager.CloseScene(sourceScene, true);
-                }
-            }
-        }
-
-        /// <summary>
         /// 열려 있는 대상 씬에 아직 저장되지 않은 변경이 있으면 먼저 저장해,
         /// 빌더가 방금 수정한 Canvas 기준을 그대로 다시 사용할 수 있게 맞춥니다.
         /// </summary>
@@ -840,71 +830,19 @@ namespace ProjectEditor
         }
 
         /// <summary>
-        /// Hub 씬의 HUDRoot를 현재 활성 씬 Canvas에 복제해 탐험 HUD 기준을 통일합니다.
-        /// PopupRoot는 대상 씬 값을 유지하고, HUDRoot만 교체합니다.
+        /// 저장한 기준 씬 Canvas를 다른 지원 씬 Canvas에 직접 반영합니다.
+        /// 같은 이름 관리 대상 UI가 빠져 있으면 복제하고, hierarchy/레이아웃 오버라이드를 다시 적용합니다.
         /// </summary>
-        private static bool TryApplySharedHudRootFromScene(string sourceScenePath)
-        {
-            if (!File.Exists(sourceScenePath))
-            {
-                return false;
-            }
-
-            UnityEngine.SceneManagement.Scene targetScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            GameObject targetCanvas = FindSceneCanvasRoot(targetScene);
-            if (targetCanvas == null)
-            {
-                return false;
-            }
-
-            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(sourceScenePath);
-            bool openedTemporarily = false;
-
-            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
-            {
-                sourceScene = EditorSceneManager.OpenScene(sourceScenePath, OpenSceneMode.Additive);
-                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
-            }
-
-            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
-            {
-                return false;
-            }
-
-            try
-            {
-                GameObject sourceCanvas = FindSceneCanvasRoot(sourceScene);
-                Transform sourceHudRoot = sourceCanvas != null ? sourceCanvas.transform.Find("HUDRoot") : null;
-                if (sourceHudRoot == null)
-                {
-                    return false;
-                }
-
-                return ReplaceHudRoot(targetScene, targetCanvas, sourceHudRoot);
-            }
-            finally
-            {
-                if (openedTemporarily)
-                {
-                    EditorSceneManager.CloseScene(sourceScene, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Hub 씬의 HUDRoot를 대상 탐험 씬 자산에 직접 반영해,
-        /// 빌드를 다시 돌리지 않아도 같은 HUD 구조를 유지하도록 맞춥니다.
-        /// </summary>
-        private static bool SyncHudRootBetweenScenes(string sourceScenePath, string targetScenePath)
+        private static void SyncCanvasBetweenScenes(string sourceScenePath, string targetScenePath)
         {
             if (!File.Exists(sourceScenePath) || !File.Exists(targetScenePath))
             {
-                return false;
+                return;
             }
 
             if (string.Equals(sourceScenePath, targetScenePath, StringComparison.OrdinalIgnoreCase))
             {
-                return false;
+                return;
             }
 
             UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(sourceScenePath);
@@ -926,28 +864,25 @@ namespace ProjectEditor
 
             if (!sourceScene.IsValid() || !sourceScene.isLoaded || !targetScene.IsValid() || !targetScene.isLoaded)
             {
-                return false;
+                return;
             }
 
             try
             {
                 GameObject sourceCanvas = FindSceneCanvasRoot(sourceScene);
                 GameObject targetCanvas = FindSceneCanvasRoot(targetScene);
-                Transform sourceHudRoot = sourceCanvas != null ? sourceCanvas.transform.Find("HUDRoot") : null;
-                if (targetCanvas == null || sourceHudRoot == null)
+                if (sourceCanvas == null || targetCanvas == null)
                 {
-                    return false;
+                    return;
                 }
 
-                bool replaced = ReplaceHudRoot(targetScene, targetCanvas, sourceHudRoot);
-                if (!replaced)
-                {
-                    return false;
-                }
+                bool isHubTargetScene = string.Equals(targetScenePath, SharedExplorationHudSourceScene, StringComparison.OrdinalIgnoreCase);
+                SyncMissingManagedCanvasObjects(sourceCanvas, targetCanvas, isHubTargetScene);
+                ApplySceneOverridesToHierarchy(targetCanvas.transform);
+                RebindCanvasUiManagerReferences(targetCanvas);
 
                 EditorSceneManager.MarkSceneDirty(targetScene);
                 EditorSceneManager.SaveScene(targetScene);
-                return true;
             }
             finally
             {
@@ -973,38 +908,115 @@ namespace ProjectEditor
         }
 
         /// <summary>
-        /// 대상 Canvas 아래 HUDRoot만 교체하고 나머지 PopupRoot 및 개별 팝업 값은 유지합니다.
+        /// 기준 씬 Canvas에 있는 관리 대상 UI가 대상 씬에 없으면 복제합니다.
+        /// 전체 Canvas를 통째로 갈아엎지 않고, 빠진 오브젝트만 채운 뒤 오버라이드로 최종 정렬합니다.
         /// </summary>
-        private static bool ReplaceHudRoot(
-            UnityEngine.SceneManagement.Scene targetScene,
+        private static void SyncMissingManagedCanvasObjects(
+            GameObject sourceCanvas,
             GameObject targetCanvas,
-            Transform sourceHudRoot)
+            bool isHubTargetScene)
         {
-            if (targetCanvas == null || sourceHudRoot == null)
+            if (sourceCanvas == null || targetCanvas == null)
             {
-                return false;
+                return;
             }
 
-            Transform existingHudRoot = targetCanvas.transform.Find("HUDRoot");
-            int siblingIndex = existingHudRoot != null ? existingHudRoot.GetSiblingIndex() : 0;
-            if (existingHudRoot != null)
+            Dictionary<string, Transform> sourceMap = new(StringComparer.Ordinal);
+            Dictionary<string, Transform> targetMap = new(StringComparer.Ordinal);
+            CollectNamedHierarchyTransforms(sourceCanvas.transform, sourceMap);
+            CollectNamedHierarchyTransforms(targetCanvas.transform, targetMap);
+
+            HashSet<string> allowedNames = PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(isHubTargetScene);
+            HashSet<string> allManagedNames = PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(true);
+            List<Transform> missingTransforms = new();
+            foreach (string objectName in allowedNames)
             {
-                UnityEngine.Object.DestroyImmediate(existingHudRoot.gameObject);
+                if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName)
+                    || !sourceMap.TryGetValue(objectName, out Transform sourceTransform)
+                    || sourceTransform == null
+                    || targetMap.ContainsKey(objectName))
+                {
+                    continue;
+                }
+
+                missingTransforms.Add(sourceTransform);
             }
 
-            GameObject clonedHudRoot = UnityEngine.Object.Instantiate(sourceHudRoot.gameObject, targetCanvas.transform);
-            clonedHudRoot.name = "HUDRoot";
-            clonedHudRoot.transform.SetSiblingIndex(siblingIndex);
-            // 부모를 targetCanvas로 지정해 복제하면 이미 대상 씬 자식으로 생성되므로
-            // 비루트 HUDRoot를 다시 MoveGameObjectToScene 할 필요가 없습니다.
-            ApplySceneOverridesToHierarchy(clonedHudRoot.transform);
+            missingTransforms.Sort(CompareTransformDepth);
+            for (int index = 0; index < missingTransforms.Count; index++)
+            {
+                Transform sourceTransform = missingTransforms[index];
+                if (sourceTransform == null || targetMap.ContainsKey(sourceTransform.name))
+                {
+                    continue;
+                }
 
-            RebindCanvasUiManagerReferences(targetCanvas);
-            return true;
+                HashSet<string> existingNames = new(targetMap.Keys, StringComparer.Ordinal);
+                GameObject clonedObject = UnityEngine.Object.Instantiate(sourceTransform.gameObject, targetCanvas.transform);
+                ApplyHubPopupObjectIdentity(clonedObject);
+                PruneDuplicateNamedCanvasObjects(clonedObject.transform, existingNames, includeCurrent: false);
+
+                if (!isHubTargetScene)
+                {
+                    PruneUnsupportedManagedCanvasObjects(clonedObject.transform, allowedNames, allManagedNames, includeCurrent: false);
+                }
+
+                CollectNamedHierarchyTransforms(clonedObject.transform, targetMap);
+            }
+        }
+
+        private static void PruneUnsupportedManagedCanvasObjects(
+            Transform current,
+            ISet<string> allowedNames,
+            ISet<string> managedNames,
+            bool includeCurrent)
+        {
+            if (current == null || allowedNames == null || managedNames == null)
+            {
+                return;
+            }
+
+            for (int index = current.childCount - 1; index >= 0; index--)
+            {
+                PruneUnsupportedManagedCanvasObjects(current.GetChild(index), allowedNames, managedNames, includeCurrent: true);
+            }
+
+            if (!includeCurrent
+                || string.IsNullOrWhiteSpace(current.name)
+                || !managedNames.Contains(current.name)
+                || allowedNames.Contains(current.name))
+            {
+                return;
+            }
+
+            UnityEngine.Object.DestroyImmediate(current.gameObject);
+        }
+
+        private static void PruneDuplicateNamedCanvasObjects(
+            Transform current,
+            ISet<string> existingNames,
+            bool includeCurrent)
+        {
+            if (current == null || existingNames == null)
+            {
+                return;
+            }
+
+            for (int index = current.childCount - 1; index >= 0; index--)
+            {
+                PruneDuplicateNamedCanvasObjects(current.GetChild(index), existingNames, includeCurrent: true);
+            }
+
+            if (!includeCurrent || string.IsNullOrWhiteSpace(current.name) || !existingNames.Contains(current.name))
+            {
+                return;
+            }
+
+            UnityEngine.Object.DestroyImmediate(current.gameObject);
         }
 
         /// <summary>
-        /// HUDRoot를 다른 씬 기준으로 교체하면 UIManager가 들고 있던 텍스트/버튼 참조를 새 오브젝트로 다시 맞춥니다.
+        /// Canvas 구조를 직접 동기화한 뒤 UIManager가 들고 있던 텍스트/버튼 참조를 새 오브젝트로 다시 맞춥니다.
         /// </summary>
         private static void RebindCanvasUiManagerReferences(GameObject canvasObject)
         {
@@ -1052,11 +1064,252 @@ namespace ProjectEditor
                 return;
             }
 
+            RemoveDeletedCanvasObjects(root);
+
+            Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
+            CollectNamedHierarchyTransforms(root, transformMap);
+
+            List<Transform> existingTransforms = new(transformMap.Values);
+            for (int index = 0; index < existingTransforms.Count; index++)
+            {
+                Transform current = existingTransforms[index];
+                if (current == null || string.IsNullOrWhiteSpace(current.name))
+                {
+                    continue;
+                }
+
+                EnsureHierarchyTransform(root, current.name, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            }
+
+            transformMap.Clear();
+            CollectNamedHierarchyTransforms(root, transformMap);
+
+            List<Transform> orderedTransforms = new(transformMap.Values);
+            orderedTransforms.Sort((left, right) => CompareTransformDepth(left, right));
+            for (int index = 0; index < orderedTransforms.Count; index++)
+            {
+                ApplySceneHierarchyOverride(root, orderedTransforms[index], transformMap);
+            }
+
+            ApplySceneOverridesRecursively(root);
+        }
+
+        private static void ApplySceneOverridesRecursively(Transform root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
             ApplySceneOverridesToTransform(root);
             for (int index = 0; index < root.childCount; index++)
             {
-                ApplySceneOverridesToHierarchy(root.GetChild(index));
+                ApplySceneOverridesRecursively(root.GetChild(index));
             }
+        }
+
+        private static void CollectNamedHierarchyTransforms(Transform current, IDictionary<string, Transform> transformMap)
+        {
+            if (current == null || transformMap == null || string.IsNullOrWhiteSpace(current.name))
+            {
+                return;
+            }
+
+            transformMap[current.name] = current;
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CollectNamedHierarchyTransforms(current.GetChild(index), transformMap);
+            }
+        }
+
+        private static Transform EnsureHierarchyTransform(
+            Transform root,
+            string objectName,
+            IDictionary<string, Transform> transformMap,
+            ISet<string> visiting)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(objectName) || string.Equals(objectName, root.name, StringComparison.Ordinal))
+            {
+                return root;
+            }
+
+            if (transformMap.TryGetValue(objectName, out Transform existing))
+            {
+                return existing;
+            }
+
+            if (visiting == null || !visiting.Add(objectName))
+            {
+                return root;
+            }
+
+            Transform parent = ResolveHierarchyParent(root, objectName, transformMap, visiting);
+            if (parent == null)
+            {
+                visiting.Remove(objectName);
+                return null;
+            }
+
+            GameObject groupObject = new(objectName);
+            ApplyHubPopupObjectIdentity(groupObject);
+            groupObject.transform.SetParent(parent != null ? parent : root, false);
+
+            RectTransform rect = groupObject.AddComponent<RectTransform>();
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
+                objectName,
+                new PrototypeUIRect(
+                    Vector2.zero,
+                    Vector2.one,
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    Vector2.zero));
+            rect.anchorMin = resolvedLayout.AnchorMin;
+            rect.anchorMax = resolvedLayout.AnchorMax;
+            rect.pivot = resolvedLayout.Pivot;
+            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
+            rect.sizeDelta = resolvedLayout.SizeDelta;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            if (PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out _, out int siblingIndex))
+            {
+                rect.SetSiblingIndex(ClampSiblingIndex(rect.parent, siblingIndex));
+            }
+
+            transformMap[objectName] = rect;
+            visiting.Remove(objectName);
+            return rect;
+        }
+
+        private static Transform ResolveHierarchyParent(
+            Transform root,
+            string objectName,
+            IDictionary<string, Transform> transformMap,
+            ISet<string> visiting)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            if (!PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentName, out _)
+                || string.IsNullOrWhiteSpace(parentName))
+            {
+                return root;
+            }
+
+            if (string.Equals(parentName, root.name, StringComparison.Ordinal))
+            {
+                return root;
+            }
+
+            return EnsureHierarchyTransform(root, parentName, transformMap, visiting);
+        }
+
+        private static void ApplySceneHierarchyOverride(
+            Transform root,
+            Transform target,
+            IDictionary<string, Transform> transformMap)
+        {
+            if (root == null
+                || target == null
+                || target == root
+                || string.IsNullOrWhiteSpace(target.name)
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(target.name, out string parentName, out int siblingIndex)
+                || string.IsNullOrWhiteSpace(parentName))
+            {
+                return;
+            }
+
+            Transform targetParent = string.Equals(parentName, root.name, StringComparison.Ordinal)
+                ? root
+                : EnsureHierarchyTransform(root, parentName, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            if (targetParent == null || targetParent == target)
+            {
+                return;
+            }
+
+            if (target.parent != targetParent)
+            {
+                target.SetParent(targetParent, false);
+            }
+
+            target.SetSiblingIndex(ClampSiblingIndex(target.parent, siblingIndex));
+            transformMap[target.name] = target;
+        }
+
+        private static void RemoveDeletedCanvasObjects(Transform root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            List<GameObject> targets = new();
+            CollectDeletedCanvasObjects(root, targets, includeCurrent: false);
+            for (int index = 0; index < targets.Count; index++)
+            {
+                if (targets[index] != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(targets[index]);
+                }
+            }
+        }
+
+        private static void CollectDeletedCanvasObjects(Transform current, ICollection<GameObject> targets, bool includeCurrent)
+        {
+            if (current == null || targets == null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CollectDeletedCanvasObjects(current.GetChild(index), targets, includeCurrent: true);
+            }
+
+            if (includeCurrent && PrototypeUISceneLayoutCatalog.IsObjectRemoved(current.name))
+            {
+                targets.Add(current.gameObject);
+            }
+        }
+
+        private static int CompareTransformDepth(Transform left, Transform right)
+        {
+            return GetTransformDepth(left).CompareTo(GetTransformDepth(right));
+        }
+
+        private static int GetTransformDepth(Transform target)
+        {
+            int depth = 0;
+            Transform current = target;
+            while (current != null)
+            {
+                depth++;
+                current = current.parent;
+            }
+
+            return depth;
+        }
+
+        private static int ClampSiblingIndex(Transform parent, int siblingIndex)
+        {
+            if (parent == null)
+            {
+                return 0;
+            }
+
+            return Mathf.Clamp(siblingIndex, 0, Mathf.Max(0, parent.childCount - 1));
         }
 
         private static void ApplySceneOverridesToTransform(Transform target)
@@ -1404,12 +1657,12 @@ namespace ProjectEditor
             collider.size = Vector2.one;
         }
 
-        private static GameObject CreateInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform _parent = null)
+        private static void CreateInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform parent = null)
         {
             GameObject wall = new(objectName);
-            if (_parent != null)
+            if (parent != null)
             {
-                wall.transform.SetParent(_parent, false);
+                wall.transform.SetParent(parent, false);
                 wall.transform.localPosition = position;
             }
             else
@@ -1421,77 +1674,9 @@ namespace ProjectEditor
 
             BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
-            return wall;
         }
 
-        private static RoomViewController CreateRoomViewController(GameObject root, CameraFollow cameraFollow)
-        {
-            RoomViewController controller = root.GetComponent<RoomViewController>();
-            if (controller == null)
-            {
-                controller = root.AddComponent<RoomViewController>();
-            }
-
-            if (cameraFollow == null)
-            {
-                cameraFollow = UnityEngine.Object.FindFirstObjectByType<CameraFollow>();
-            }
-
-            controller.Configure(cameraFollow);
-            return controller;
-        }
-
-        private static BoxCollider2D CreateRoomViewBounds(string objectName, Vector3 position, Vector2 size, Transform _parent = null)
-        {
-            GameObject boundsObject = new(objectName);
-            if (_parent != null)
-            {
-                boundsObject.transform.SetParent(_parent, false);
-                boundsObject.transform.localPosition = position;
-            }
-            else
-            {
-                boundsObject.transform.position = position;
-            }
-
-            BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
-            bounds.isTrigger = true;
-            bounds.size = size;
-            return bounds;
-        }
-
-        private static RoomViewZone CreateRoomViewZone(
-            string objectName,
-            Vector3 position,
-            Vector2 size,
-            RoomViewController controller,
-            Collider2D cameraBounds,
-            float orthographicSize,
-            int priority,
-            GameObject[] hiddenObjects,
-            Transform _parent = null)
-        {
-            GameObject zoneObject = new(objectName);
-            if (_parent != null)
-            {
-                zoneObject.transform.SetParent(_parent, false);
-                zoneObject.transform.localPosition = position;
-            }
-            else
-            {
-                zoneObject.transform.position = position;
-            }
-
-            BoxCollider2D trigger = zoneObject.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = size;
-
-            RoomViewZone zone = zoneObject.AddComponent<RoomViewZone>();
-            zone.Configure(controller, cameraBounds, orthographicSize, priority, true, hiddenObjects, null);
-            return zone;
-        }
-
-        private static GameObject CreatePortal(
+        private static void CreatePortal(
             string objectName,
             Vector3 position,
             Sprite sprite,
@@ -1524,7 +1709,6 @@ namespace ProjectEditor
 
             string displayLabel = string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel;
             CreateWorldLabel(objectName + "_Label", portal.transform, new Vector3(0f, 0.82f, 0f), displayLabel, Color.black, WorldLabelFontSize, 50);
-            return portal;
         }
 
         private static RestaurantManager CreateRestaurantManager(RecipeLibrary recipes)
@@ -1726,12 +1910,12 @@ namespace ProjectEditor
         /// 허브 벽면의 메뉴판을 PSD 배치 기준으로 다시 만든다.
         /// 제목 텍스트와 슬롯 배경, 음식 아이콘을 각각 월드 오브젝트로 분리해 허브 아트처럼 유지한다.
         /// </summary>
-        private static void CreateHubTodayMenuBoard(Vector3 position, SpriteLibrary sprites, RestaurantManager restaurantManager, Transform _parent = null)
+        private static void CreateHubTodayMenuBoard(Vector3 position, SpriteLibrary sprites, RestaurantManager restaurantManager, Transform parent = null)
         {
             GameObject boardRoot = new("HubTodayMenuBoard");
-            if (_parent != null)
+            if (parent != null)
             {
-                boardRoot.transform.SetParent(_parent, false);
+                boardRoot.transform.SetParent(parent, false);
                 boardRoot.transform.localPosition = position;
             }
             else
@@ -1802,9 +1986,9 @@ namespace ProjectEditor
             display.Configure(restaurantManager, headerLabel, entryBackdrops, entryIcons);
         }
 
-        private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform _parent = null)
+        private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform parent = null)
         {
-            GameObject go = CreateDecorBlock(objectName, position, size, sprite, color, 8, _parent);
+            GameObject go = CreateDecorBlock(objectName, position, size, sprite, color, 8, parent);
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = Vector2.one;
@@ -1976,7 +2160,6 @@ namespace ProjectEditor
             Color chromeSurface = new(0.98f, 0.98f, 0.99f, 1f);
             Color chromeGlass = new(0.93f, 0.95f, 0.98f, 1f);
             Color chromeOverlay = new(0f, 0f, 0f, 0.52f);
-            Color chromeOcean = new(0.18f, 0.66f, 0.90f, 1f);
             Color chromeAmber = new(0.94f, 0.74f, 0.10f, 1f);
             Color chromeText = new(0.23f, 0.27f, 0.34f, 1f);
             Color chromeDock = new(0.22f, 0.60f, 0.87f, 1f);
@@ -1990,10 +2173,11 @@ namespace ProjectEditor
             RectTransform hudBottomGroup = CreateCanvasGroupRoot("HUDBottomGroup", hudRoot, 2);
             RectTransform hudOverlayGroup = CreateCanvasGroupRoot("HUDOverlayGroup", hudRoot, 4);
             RectTransform popupShellGroup = CreateCanvasGroupRoot("PopupShellGroup", popupRoot, 0);
-            RectTransform popupFrameHeaderGroup = CreateCanvasGroupRoot("PopupFrameHeader", popupRoot, 2);
+            CreateCanvasGroupRoot("PopupFrameHeader", popupRoot, 2);
             RectTransform popupFrameGroup = null;
             RectTransform popupFrameLeftGroup = null;
             RectTransform popupFrameRightGroup = null;
+            RectTransform actionDock = null;
             RectTransform hudPanelButtonGroup = null;
 
 			CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
@@ -2007,6 +2191,7 @@ namespace ProjectEditor
                 hudPanelButtonGroup = FindChildRecursive(hudRoot, hudPanelButtonGroupName) as RectTransform;
                 CreatePanel("PopupOverlay", popupShellGroup, PrototypeUILayout.HubPopupOverlay, chromeOverlay);
                 CreatePanel("ActionDock", hudActionGroup, PrototypeUILayout.HubActionDock, chromeDock);
+                actionDock = FindChildRecursive(hudActionGroup, "ActionDock") as RectTransform;
                 CreatePanel("ActionAccent", hudActionGroup, PrototypeUILayout.HubActionAccent, chromeAmber);
                 CreatePanel("PopupFrame", popupRoot, PrototypeUILayout.HubPopupFrame, new Color(1f, 1f, 1f, 0f));
                 popupFrameGroup = FindChildRecursive(popupRoot, "PopupFrame") as RectTransform;
@@ -2049,7 +2234,7 @@ namespace ProjectEditor
 
                 actionCaption = CreateScreenText(
                     "ActionCaption",
-                    hudActionGroup,
+                    actionDock != null ? actionDock : hudActionGroup,
                     PrototypeUILayout.HubActionCaption,
                     15,
                     TextAlignmentOptions.TopRight,
@@ -2082,9 +2267,10 @@ namespace ProjectEditor
             ApplyPopupDetailTextPresentation(selectedRecipeText);
             ApplyPopupDetailTextPresentation(upgradeText);
 
-            Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", hudBottomGroup, PrototypeUILayout.HubSkipExplorationButton, "\uD0D0\uD5D8 \uC2A4\uD0B5") : null;
-            Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", hudBottomGroup, PrototypeUILayout.HubSkipServiceButton, "\uC601\uC5C5 \uC2A4\uD0B5") : null;
-            Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", hudBottomGroup, PrototypeUILayout.HubNextDayButton, "\uB2E4\uC74C \uB0A0") : null;
+            // 허브 진행 버튼은 ActionDock 안에서 phase별로 교체 표시한다.
+            Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubSkipExplorationButton, "\uD0D0\uD5D8 \uC2A4\uD0B5") : null;
+            Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubSkipServiceButton, "\uC601\uC5C5 \uC2A4\uD0B5") : null;
+            Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubNextDayButton, "\uB2E4\uC74C \uB0A0") : null;
             Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubRecipePanelButton, "\uC694\uB9AC \uBA54\uB274") : null;
             Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubUpgradePanelButton, "\uC5C5\uADF8\uB808\uC774\uB4DC") : null;
             Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubMaterialPanelButton, "\uC7AC\uB8CC") : null;
@@ -2111,7 +2297,7 @@ namespace ProjectEditor
             if (upgradeCaption != null) upgradeCaption.margin = Vector4.zero;
             if (actionCaption != null) actionCaption.margin = Vector4.zero;
 
-            dayPhaseText.fontStyle = FontStyles.Bold;
+            if (dayPhaseText != null) dayPhaseText.fontStyle = FontStyles.Bold;
             if (inventoryText != null) inventoryText.textWrappingMode = TextWrappingModes.Normal;
             if (inventoryText != null) inventoryText.overflowMode = TextOverflowModes.Masking;
             if (storageText != null) storageText.textWrappingMode = TextWrappingModes.Normal;
@@ -2121,15 +2307,17 @@ namespace ProjectEditor
             if (upgradeText != null) upgradeText.textWrappingMode = TextWrappingModes.Normal;
             if (upgradeText != null) upgradeText.overflowMode = TextOverflowModes.Masking;
 
-            goldText.text = "\uCF54\uC778: 0   \uD3C9\uD310: 0";
+            if (goldText != null) goldText.text = "\uCF54\uC778: 0   \uD3C9\uD310: 0";
             if (inventoryText != null) inventoryText.text = "\uC778\uBCA4\uD1A0\uB9AC 0/8\uCE78\n- \uBE44\uC5B4 \uC788\uC74C";
             if (storageText != null) storageText.text = "- \uBE44\uC5B4 \uC788\uC74C";
-            promptText.text = "\uC774\uB3D9: WASD / \uBC29\uD5A5\uD0A4   \uC0C1\uD638\uC791\uC6A9: E";
-            guideText.text = string.Empty;
-            resultText.text = string.Empty;
+            if (promptText != null) promptText.text = "\uC774\uB3D9: WASD / \uBC29\uD5A5\uD0A4   \uC0C1\uD638\uC791\uC6A9: E";
+            if (guideText != null) guideText.text = string.Empty;
+            if (resultText != null) resultText.text = string.Empty;
             if (selectedRecipeText != null) selectedRecipeText.text = "\uC120\uD0DD \uBA54\uB274: \uC5C6\uC74C";
             if (upgradeText != null) upgradeText.text = "- \uC778\uBCA4\uD1A0\uB9AC 8\uCE78 -> 12\uCE78";
-            dayPhaseText.text = "1\uC77C\uCC28 \u00B7 \uC624\uC804 \uD0D0\uD5D8";
+            if (dayPhaseText != null) dayPhaseText.text = "1\uC77C\uCC28 \u00B7 \uC624\uC804 \uD0D0\uD5D8";
+
+            ApplySceneOverridesToHierarchy(canvasObject.transform);
 
             if (isHubScene)
             {
@@ -2161,8 +2349,8 @@ namespace ProjectEditor
             SetChildActive(canvasObject.transform, PopupRightCaptionObjectName, false);
             if (inventoryText != null) inventoryText.gameObject.SetActive(false);
             if (storageText != null) storageText.gameObject.SetActive(false);
-            guideText.gameObject.SetActive(false);
-            resultText.gameObject.SetActive(false);
+            if (guideText != null) guideText.gameObject.SetActive(false);
+            if (resultText != null) resultText.gameObject.SetActive(false);
             if (selectedRecipeText != null) selectedRecipeText.gameObject.SetActive(false);
             if (upgradeText != null) upgradeText.gameObject.SetActive(false);
             if (skipExplorationButton != null) skipExplorationButton.gameObject.SetActive(false);
@@ -2333,9 +2521,16 @@ namespace ProjectEditor
         /// <summary>
         /// 화면 고정 UI 텍스트를 만들고 generated 한글 폰트와 기본 여백을 같이 적용합니다.
         /// </summary>
+        private static bool ShouldSkipCanvasObjectCreation(string objectName, Transform parent)
+        {
+            return parent == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName);
+        }
+
         private static TextMeshProUGUI CreateScreenText(
             string objectName,
-            Transform _parent,
+            Transform parent,
             Vector2 anchorMin,
             Vector2 anchorMax,
             Vector2 pivot,
@@ -2345,13 +2540,18 @@ namespace ProjectEditor
             TextAlignmentOptions alignment,
             Color color)
         {
+            if (ShouldSkipCanvasObjectCreation(objectName, parent))
+            {
+                return null;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             GameObject go = new(objectName);
             ApplyHubPopupObjectIdentity(go);
-            go.transform.SetParent(_parent, false);
+            go.transform.SetParent(parent, false);
 
             RectTransform rect = go.AddComponent<RectTransform>();
             rect.anchorMin = resolvedLayout.AnchorMin;
@@ -2392,7 +2592,7 @@ namespace ProjectEditor
         /// </summary>
         private static TextMeshProUGUI CreateScreenText(
             string objectName,
-            Transform _parent,
+            Transform parent,
             PrototypeUIRect layout,
             float fontSize,
             TextAlignmentOptions alignment,
@@ -2400,7 +2600,7 @@ namespace ProjectEditor
         {
             return CreateScreenText(
                 objectName,
-                _parent,
+                parent,
                 layout.AnchorMin,
                 layout.AnchorMax,
                 layout.Pivot,
@@ -2443,9 +2643,9 @@ namespace ProjectEditor
             }
         }
 
-        private static TextMeshProUGUI CreatePopupHeadingText(
+        private static void CreatePopupHeadingText(
             string objectName,
-            Transform _parent,
+            Transform parent,
             PrototypeUIRect layout,
             float fontSize,
             float sceneFontSizeMax,
@@ -2453,7 +2653,12 @@ namespace ProjectEditor
             Color color,
             bool enableAutoSizing)
         {
-            TextMeshProUGUI text = CreateScreenText(objectName, _parent, layout, fontSize, TextAlignmentOptions.TopLeft, color);
+            TextMeshProUGUI text = CreateScreenText(objectName, parent, layout, fontSize, TextAlignmentOptions.TopLeft, color);
+            if (text == null)
+            {
+                return;
+            }
+
             text.text = content;
             TMP_FontAsset headingFont = EnsureHeadingTmpFontAsset();
             if (headingFont != null)
@@ -2467,7 +2672,6 @@ namespace ProjectEditor
 
             ApplyPopupHeadingPresentation(text, fontSize, sceneFontSizeMax, enableAutoSizing);
             ApplySceneTextOverride(text);
-            return text;
         }
 
         private static void ApplyPopupHeadingPresentation(TextMeshProUGUI text, float fontSize, float sceneFontSizeMax, bool enableAutoSizing)
@@ -2538,7 +2742,7 @@ namespace ProjectEditor
         /// </summary>
         private static void CreatePanel(
             string objectName,
-            Transform _parent,
+            Transform parent,
             Vector2 anchorMin,
             Vector2 anchorMax,
             Vector2 pivot,
@@ -2546,13 +2750,18 @@ namespace ProjectEditor
             Vector2 sizeDelta,
             Color color)
         {
+            if (ShouldSkipCanvasObjectCreation(objectName, parent))
+            {
+                return;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             GameObject panelObject = new(objectName);
             ApplyHubPopupObjectIdentity(panelObject);
-            panelObject.transform.SetParent(_parent, false);
+            panelObject.transform.SetParent(parent, false);
 
             RectTransform rect = panelObject.AddComponent<RectTransform>();
             rect.anchorMin = resolvedLayout.AnchorMin;
@@ -2580,13 +2789,13 @@ namespace ProjectEditor
         /// </summary>
         private static void CreatePanel(
             string objectName,
-            Transform _parent,
+            Transform parent,
             PrototypeUIRect layout,
             Color color)
         {
             CreatePanel(
                 objectName,
-                _parent,
+                parent,
                 layout.AnchorMin,
                 layout.AnchorMax,
                 layout.Pivot,
@@ -2661,6 +2870,11 @@ namespace ProjectEditor
                     17f,
                     TextAlignmentOptions.TopLeft,
                     textColor);
+                if (text == null)
+                {
+                    continue;
+                }
+
                 text.textWrappingMode = TextWrappingModes.Normal;
                 text.overflowMode = TextOverflowModes.Ellipsis;
                 text.margin = Vector4.zero;
@@ -2675,8 +2889,13 @@ namespace ProjectEditor
             }
         }
 
-        private static void CreatePopupBodyItemIcon(string objectName, Transform _parent)
+        private static void CreatePopupBodyItemIcon(string objectName, Transform parent)
         {
+            if (ShouldSkipCanvasObjectCreation(objectName, parent))
+            {
+                return;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(
@@ -2688,7 +2907,7 @@ namespace ProjectEditor
 
             GameObject iconObject = new(objectName);
             ApplyHubPopupObjectIdentity(iconObject);
-            iconObject.transform.SetParent(_parent, false);
+            iconObject.transform.SetParent(parent, false);
 
             RectTransform rect = iconObject.AddComponent<RectTransform>();
             rect.anchorMin = resolvedLayout.AnchorMin;
@@ -2704,8 +2923,13 @@ namespace ProjectEditor
             PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
         }
 
-        private static RectTransform CreateCanvasGroupRoot(string objectName, Transform _parent, int siblingIndex)
+        private static RectTransform CreateCanvasGroupRoot(string objectName, Transform parent, int siblingIndex)
         {
+            if (ShouldSkipCanvasObjectCreation(objectName, parent))
+            {
+                return null;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(
@@ -2717,7 +2941,7 @@ namespace ProjectEditor
 
             GameObject groupObject = new(objectName);
             ApplyHubPopupObjectIdentity(groupObject);
-            groupObject.transform.SetParent(_parent, false);
+            groupObject.transform.SetParent(parent, false);
 
             RectTransform rect = groupObject.AddComponent<RectTransform>();
             rect.anchorMin = resolvedLayout.AnchorMin;
@@ -2731,23 +2955,28 @@ namespace ProjectEditor
             return rect;
         }
 
-        private static void SetChildActive(Transform _parent, string objectName, bool isActive)
+        private static void SetChildActive(Transform parent, string objectName, bool isActive)
         {
-            if (_parent == null)
+            if (parent == null)
             {
                 return;
             }
 
-            Transform child = FindChildRecursive(_parent, objectName);
+            Transform child = FindChildRecursive(parent, objectName);
             if (child != null)
             {
                 child.gameObject.SetActive(isActive);
             }
         }
 
-        private static Transform FindChildRecursive(Transform _parent, string objectName)
+        private static Transform FindChildRecursive(Transform parent, string objectName)
         {
-            foreach (Transform child in _parent)
+            if (parent == null || string.IsNullOrWhiteSpace(objectName))
+            {
+                return null;
+            }
+
+            foreach (Transform child in parent)
             {
                 if (child.name == objectName)
                 {
@@ -2798,7 +3027,7 @@ namespace ProjectEditor
         /// </summary>
         private static Button CreateUiButton(
             string objectName,
-            Transform _parent,
+            Transform parent,
             Vector2 anchorMin,
             Vector2 anchorMax,
             Vector2 pivot,
@@ -2806,13 +3035,18 @@ namespace ProjectEditor
             Vector2 sizeDelta,
             string label)
         {
+            if (ShouldSkipCanvasObjectCreation(objectName, parent))
+            {
+                return null;
+            }
+
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
 
             GameObject buttonObject = new(objectName);
             ApplyHubPopupObjectIdentity(buttonObject);
-            buttonObject.transform.SetParent(_parent, false);
+            buttonObject.transform.SetParent(parent, false);
 
             RectTransform rect = buttonObject.AddComponent<RectTransform>();
             rect.anchorMin = resolvedLayout.AnchorMin;
@@ -2861,13 +3095,13 @@ namespace ProjectEditor
         /// </summary>
         private static Button CreateUiButton(
             string objectName,
-            Transform _parent,
+            Transform parent,
             PrototypeUIRect layout,
             string label)
         {
             return CreateUiButton(
                 objectName,
-                _parent,
+                parent,
                 layout.AnchorMin,
                 layout.AnchorMax,
                 layout.Pivot,
@@ -2988,9 +3222,9 @@ namespace ProjectEditor
                    || objectName is "InventoryText" or "StorageText" or "SelectedRecipeText" or "UpgradeText";
         }
 
-        private static void CreateWorldLabel(string objectName, Transform _parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
+        private static void CreateWorldLabel(string objectName, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
         {
-            CreateWorldTextObject(objectName, _parent, localPosition, content, color, fontSize, sortingOrder);
+            CreateWorldTextObject(objectName, parent, localPosition, content, color, fontSize, sortingOrder);
         }
 
         /// <summary>
@@ -2999,7 +3233,7 @@ namespace ProjectEditor
         /// </summary>
         private static TextMeshPro CreateWorldTextObject(
             string objectName,
-            Transform _parent,
+            Transform parent,
             Vector3 localPosition,
             string content,
             Color color,
@@ -3014,9 +3248,9 @@ namespace ProjectEditor
             TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
 
             GameObject labelObject = new(objectName);
-            if (_parent != null)
+            if (parent != null)
             {
-                labelObject.transform.SetParent(_parent, false);
+                labelObject.transform.SetParent(parent, false);
                 labelObject.transform.localPosition = localPosition;
             }
             else
@@ -3052,7 +3286,7 @@ namespace ProjectEditor
                 text.fontSharedMaterial = worldTextMaterial;
             }
 
-            ApplyWorldTextReadability(text, isLargeLabel || isPrimaryLabel);
+            ApplyWorldTextReadability(text);
 
             MeshRenderer meshRenderer = text.GetComponent<MeshRenderer>();
             meshRenderer.sortingOrder = sortingOrder;
@@ -3062,7 +3296,7 @@ namespace ProjectEditor
         /// <summary>
         /// 허브 월드 텍스트는 배경 그림 위에서도 읽히도록 외곽선과 패딩을 기본 적용한다.
         /// </summary>
-        private static void ApplyWorldTextReadability(TextMeshPro text, bool useStrongOutline)
+        private static void ApplyWorldTextReadability(TextMeshPro text)
         {
             if (text == null)
             {
@@ -3115,11 +3349,11 @@ namespace ProjectEditor
         /// <summary>
         /// 업그레이드 슬롯 내부 가격 표시는 슬롯 자식 텍스트로 생성해 슬롯 이동과 함께 유지한다.
         /// </summary>
-        private static void CreateHubUpgradePriceText(string objectName, Transform _parent, Vector3 localPosition, string content)
+        private static void CreateHubUpgradePriceText(string objectName, Transform parent, Vector3 localPosition, string content)
         {
             CreateWorldTextObject(
                 objectName,
-                _parent,
+                parent,
                 localPosition,
                 content,
                 HubRoomLayout.UpgradePriceTextColor,
@@ -3133,7 +3367,7 @@ namespace ProjectEditor
         /// <summary>
         /// 허브 바닥 표시는 별도 이미지 대신 얇은 바닥 패널과 텍스트 조합으로 다시 만든다.
         /// </summary>
-        private static void CreateHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Sprite floorSprite, Transform _parent)
+        private static void CreateHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Sprite floorSprite, Transform parent)
         {
             GameObject sign = CreateDecorBlock(
                 placement.ObjectName,
@@ -3142,7 +3376,7 @@ namespace ProjectEditor
                 floorSprite,
                 HubRoomLayout.SignBackdropColor,
                 HubRoomLayout.SignSortingOrder,
-                _parent);
+                parent);
 
             CreateWorldTextObject(
                 placement.ObjectName + "Label",
@@ -3162,9 +3396,9 @@ namespace ProjectEditor
             return CreateDecorBlock(objectName, position, scale, sprite, color, sortingOrder);
         }
 
-        private static GameObject CreateFeaturePad(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color)
+        private static void CreateFeaturePad(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color)
         {
-            return CreateDecorBlock(objectName, position, scale, sprite, color, 3);
+            CreateDecorBlock(objectName, position, scale, sprite, color, 3);
         }
 
         /// <summary>
@@ -3180,12 +3414,12 @@ namespace ProjectEditor
             return CreateDecorBlock(objectName, position, Vector3.one, sprite, Color.white, sortingOrder, parent);
         }
 
-        private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform _parent = null)
+        private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform parent = null)
         {
             GameObject go = new(objectName);
-            if (_parent != null)
+            if (parent != null)
             {
-                go.transform.SetParent(_parent, false);
+                go.transform.SetParent(parent, false);
                 go.transform.localPosition = position;
             }
             else
@@ -3555,8 +3789,8 @@ namespace ProjectEditor
             for (int index = 0; index < ingredients.Count; index++)
             {
                 SerializedProperty item = ingredientsProperty.GetArrayElementAtIndex(index);
-                item.FindPropertyRelative("Resource").objectReferenceValue = ingredients[index].Resource;
-                item.FindPropertyRelative("Amount").intValue = ingredients[index].Amount;
+                item.FindPropertyRelative("resource").objectReferenceValue = ingredients[index].Resource;
+                item.FindPropertyRelative("amount").intValue = ingredients[index].Amount;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -3809,7 +4043,7 @@ namespace ProjectEditor
                 return existingFont;
             }
 
-            TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+            TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024);
             if (fontAsset == null)
             {
                 Debug.LogWarning($"TMP 폰트 자산 '{fontAssetName}' 생성에 실패해 기본 폰트를 사용합니다.");
@@ -3932,6 +4166,8 @@ namespace ProjectEditor
                 Directory.CreateDirectory(directoryPath);
             }
 
+            PrototypeSceneHierarchyOrganizer.OrganizeSceneHierarchy(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), saveScene: false);
+
             if (File.Exists(scenePath))
             {
                 File.Delete(scenePath);
@@ -3952,12 +4188,12 @@ namespace ProjectEditor
             };
         }
 
-        private static void EnsureFolder(string _parent, string child)
+        private static void EnsureFolder(string parent, string child)
         {
-            string fullPath = _parent + "/" + child;
+            string fullPath = parent + "/" + child;
             if (!AssetDatabase.IsValidFolder(fullPath))
             {
-                AssetDatabase.CreateFolder(_parent, child);
+                AssetDatabase.CreateFolder(parent, child);
             }
         }
 

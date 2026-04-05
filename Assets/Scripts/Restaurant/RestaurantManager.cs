@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Core;
 using Data;
+using Economy;
 using Flow;
+using Inventory;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -119,16 +121,16 @@ namespace Restaurant
 
             foreach (RecipeIngredient ingredient in SelectedRecipe.Ingredients)
             {
-                if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
                     continue;
                 }
 
                 int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
-                    ? GameManager.Instance.Inventory.GetAmount(ingredient.Resource)
+                    ? GameManager.Instance.Inventory.GetAmount(resource)
                     : 0;
 
-                builder.AppendLine($"  {ingredient.Resource.DisplayName} {ownedAmount}/{ingredient.Amount}");
+                builder.AppendLine($"  {resource.DisplayName} {ownedAmount}/{ingredientAmount}");
             }
 
             return builder.ToString().TrimEnd();
@@ -141,7 +143,8 @@ namespace Restaurant
         {
             EnsureRecipeList();
 
-            if (recipe == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
+            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            if (recipe == null || inventory == null)
             {
                 return 0;
             }
@@ -156,13 +159,13 @@ namespace Restaurant
 
             foreach (RecipeIngredient ingredient in ingredients)
             {
-                if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
                     return 0;
                 }
 
-                int ownedAmount = GameManager.Instance.Inventory.GetAmount(ingredient.Resource);
-                servings = Mathf.Min(servings, ownedAmount / ingredient.Amount);
+                int ownedAmount = inventory.GetAmount(resource);
+                servings = Mathf.Min(servings, ownedAmount / ingredientAmount);
             }
 
             return servings == int.MaxValue ? 0 : servings;
@@ -176,7 +179,10 @@ namespace Restaurant
             EnsureRecipeList();
             RefreshSelectedRecipe();
 
-            if (GameManager.Instance != null && GameManager.Instance.DayCycle != null && GameManager.Instance.DayCycle.CurrentPhase != DayPhase.AfternoonService)
+            GameManager gameManager = GameManager.Instance;
+            DayCycleManager dayCycle = gameManager != null ? gameManager.DayCycle : null;
+
+            if (dayCycle != null && dayCycle.CurrentPhase != DayPhase.AfternoonService)
             {
                 SetResult("아직 장사 시간이 아닙니다.");
                 return;
@@ -185,6 +191,13 @@ namespace Restaurant
             if (SelectedRecipe == null)
             {
                 SetResult("선택된 메뉴가 없습니다.");
+                return;
+            }
+
+            InventoryManager inventory = gameManager != null ? gameManager.Inventory : null;
+            if (inventory == null)
+            {
+                SetResult("?μ궗瑜?吏꾪뻾????몃깽?좊━瑜?李얠쓣 ???놁뒿?덈떎.");
                 return;
             }
 
@@ -200,16 +213,22 @@ namespace Restaurant
             // 실제 판매 인분 수에 맞춰 재료를 차감합니다.
             foreach (RecipeIngredient ingredient in SelectedRecipe.Ingredients)
             {
-                GameManager.Instance.Inventory.TryRemove(ingredient.Resource, ingredient.Amount * servingsToSell);
+                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
+                {
+                    continue;
+                }
+
+                inventory.TryRemove(resource, ingredientAmount * servingsToSell);
             }
 
             int revenue = SelectedRecipe.SellPrice * servingsToSell;
             int reputationGain = Mathf.Max(0, SelectedRecipe.ReputationDelta * servingsToSell);
 
-            if (GameManager.Instance != null && GameManager.Instance.Economy != null)
+            EconomyManager economy = gameManager != null ? gameManager.Economy : null;
+            if (economy != null)
             {
-                GameManager.Instance.Economy.AddGold(revenue);
-                GameManager.Instance.Economy.AddReputation(reputationGain);
+                economy.AddGold(revenue);
+                economy.AddReputation(reputationGain);
             }
 
             StringBuilder builder = new();
@@ -220,7 +239,7 @@ namespace Restaurant
             builder.Append($"- 평판 변화: +{reputationGain}");
 
             SetResult(builder.ToString());
-            GameManager.Instance?.DayCycle?.CompleteService(LastServiceResult);
+            dayCycle?.CompleteService(LastServiceResult);
             BroadcastState();
         }
 
@@ -312,12 +331,12 @@ namespace Restaurant
 
             foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
-                if (ingredient == null || ingredient.Resource == null || ingredient.Amount <= 0)
+                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
                     continue;
                 }
 
-                parts.Add($"{ingredient.Resource.DisplayName} x{ingredient.Amount * servings}");
+                parts.Add($"{resource.DisplayName} x{ingredientAmount * servings}");
             }
 
             return parts.Count > 0 ? string.Join(", ", parts) : "없음";

@@ -1,17 +1,18 @@
-﻿# Agent Entry
+# Agent Entry
 
 이 저장소의 공통 작업 기준 문서:
 
-- `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
+- `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
 
 작업 전에 우선 확인할 문서:
 
-1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
-2. `Assets/Docs/GAME_PROJECT_STRUCTURE_KO.md`
-3. `Assets/Docs/GAME_FEATURE_REFERENCE_KO.md`
-4. `Assets/Docs/UI_AND_TEXT_GUIDE_KO.md`
-5. `Assets/Docs/GAME_SCENE_AND_SETUP_KO.md`
-6. `Assets/Docs/GAME_BUILD_GUIDE_KO.md`
+1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
+2. `.aiassistant/rules/project/GAME_DOCS_INDEX.md`
+3. `.aiassistant/rules/project/GAME_PROJECT_STRUCTURE.md`
+4. `.aiassistant/rules/gameplay/GAME_FEATURE_REFERENCE.md`
+5. `.aiassistant/rules/ui/UI_AND_TEXT_GUIDE.md`
+6. `.aiassistant/rules/scene/GAME_SCENE_AND_SETUP.md`
+7. `.aiassistant/rules/build/GAME_BUILD_GUIDE.md`
 
 응답 및 작업 원칙:
 
@@ -24,6 +25,7 @@
 프로젝트 추가 규칙:
 
 - 플레이어 비주얼은 맵 스케일에 맞게 유지하고, 필요하면 물리 루트와 비주얼 루트를 분리한다.
+- 런타임 코드는 Assets/Scripts/CoreLoop, Assets/Scripts/Exploration, Assets/Scripts/Management, Assets/Scripts/Restaurant, Assets/Scripts/UI, Assets/Scripts/Shared 기능 루트를 기준으로 정리하고, 생성 데이터는 Assets/Generated/GameData/{Resources,Recipes,Input} 기준으로 배치한다.
 - 런타임 스크립트와 에디터 스크립트는 폴더 기준 네임스페이스를 따른다.
 - `Camera`, `Editor`처럼 Unity 또는 .NET 주요 타입과 충돌하는 폴더명은 `GameCamera`, `ProjectEditor` 같은 예외 네임스페이스를 사용한다.
 - partial 타입 보조 파일은 부모 타입과 같은 네임스페이스를 유지하는 폴더에 둔다.
@@ -34,8 +36,8 @@
 - 레거시 버튼, 오래된 도크, 사용하지 않는 카드처럼 중복 UI 경로가 남지 않게 정리한다.
 - 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 명시적 요청 없이는 초기화하거나 덮어쓰지 않는다.
 - Canvas 내부 공용 루트 이름은 `HUDRoot`, `PopupRoot`를 기준으로 유지한다.
-- 탐험 씬 공용 HUD 기준은 `Hub` 씬 Canvas에서 같은 이름으로 저장한 UI 오버라이드 값이다. `프로토타입 빌드 및 감사`를 실행하면 `Hub` 씬 값을 먼저 동기화한 뒤 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` UI를 다시 생성한다.
-- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 `RectTransform`, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값이 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장된다.
+- 지원하는 Canvas 씬 공용 HUD 기준은 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장한 관리 대상 UI 오버라이드 값이다. 지원 씬 중 하나를 저장하면 같은 관리 대상 Canvas 변경이 `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` 씬 Canvas에도 함께 반영된다.
+- 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 `RectTransform`, 부모 그룹/형제 순서, 삭제 상태, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값이 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장된다.
 - `프로토타입 빌드 및 감사`는 레이아웃과 표시 값은 `Hub` 기준을 우선 사용하고, `HUDActionGroup`, `HUDPanelButtonGroup` 이름과 해당 그룹 하위 UI 값은 현재 열려 있는 씬 기준으로 마지막에 다시 동기화한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
 - 생성 구조, UI 기준, 네임스페이스를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 배치 컴파일 결과를 함께 맞춘다.
@@ -44,8 +46,8 @@
 - 게임플레이나 UI를 바꿀 때는 현재 동작 기준이 드러나도록 메서드와 블록 주석을 유지하고, 관련 파일에 무주석 핵심 메서드나 블록이 있으면 함께 보강한다.
 - 새로 추가하거나 수정하는 코드 주석과 문서는 UTF-8 한글 기준으로 작성하고, 기존 영어 주석을 손볼 때도 한글로 통일한다.
 - Git 커밋 메시지는 한글로 작성하고 `type : subject` 형식을 따른다.
-- Git 커밋 메시지 상세 규칙은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`의 Git 섹션을 기준으로 유지하고, 규칙을 바꾸면 `AGENTS.md`와 project rules 문서를 함께 갱신한다.
-- Git 커밋 템플릿 경로는 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE_KO.md`를 기준으로 사용하고, 규칙을 바꾸면 템플릿과 문서를 함께 갱신한다.
+- Git 커밋 메시지 상세 규칙은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`의 Git 섹션을 기준으로 유지하고, 규칙을 바꾸면 `AGENTS.md`와 project rules 문서를 함께 갱신한다.
+- Git 커밋 템플릿 경로는 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`를 기준으로 사용하고, 규칙을 바꾸면 템플릿과 문서를 함께 갱신한다.
 - 커밋 제목은 50자 이내로 작성하고, 제목 끝에 마침표를 붙이지 않는다. 제목만으로 충분하면 본문은 생략한다.
 - 영어 diff 요약, PR 제목, 자동 생성 커밋 초안이 들어와도 최종 커밋 메시지는 자연스러운 한글로 다시 작성한다.
 - 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영문 문장을 제목이나 본문에 그대로 쓰지 않는다.

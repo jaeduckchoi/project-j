@@ -52,9 +52,6 @@ namespace UI.Style
         private const string GeneratedUiButtonResourceRoot = "Generated/Sprites/UI/Buttons";
         private const string GeneratedUiMessageBoxResourceRoot = "Generated/Sprites/UI/MessageBoxes";
         private const string GeneratedUiPanelResourceRoot = "Generated/Sprites/UI/Panels";
-        private const string PopupDefaultSpriteSheetResource = "Generated/Sprites/UI/ui-spritesheet-default";
-        private const string PopupDoubleSpriteSheetResource = "Generated/Sprites/UI/ui-spritesheet-double";
-
         /// <summary>
         /// 패널 오브젝트 이름을 실제 리소스 경로로 바꾼다.
         /// </summary>

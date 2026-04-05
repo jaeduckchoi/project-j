@@ -1,0 +1,26 @@
+{
+    "name": "Jonggu.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Jonggu.Gameplay",
+        "Jonggu.Shared",
+        "Jonggu.UI",
+        "Unity.InputSystem",
+        "Unity.InputSystem.ForUI",
+        "Unity.TextMeshPro",
+        "Unity.TextMeshPro.Editor",
+        "UnityEngine.UI",
+        "UnityEditor.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

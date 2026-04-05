@@ -2,13 +2,14 @@
 
 이 저장소의 공통 AI 작업 규칙은 아래 문서를 기준으로 한다.
 
-- `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
+- `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
 
 작업 전 우선 읽을 문서:
 
-1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES_KO.md`
-2. `Assets/Docs/GAME_FEATURE_REFERENCE_KO.md`
-3. `Assets/Docs/UI_AND_TEXT_GUIDE_KO.md`
+1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
+2. `.aiassistant/rules/project/GAME_DOCS_INDEX.md`
+3. `.aiassistant/rules/gameplay/GAME_FEATURE_REFERENCE.md`
+4. `.aiassistant/rules/ui/UI_AND_TEXT_GUIDE.md`
 
 핵심 규칙 요약:
 

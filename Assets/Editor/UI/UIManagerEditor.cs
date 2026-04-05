@@ -45,7 +45,7 @@ namespace ProjectEditor.UI
 
                 if (GUILayout.Button("씬 빌더 미리보기"))
                 {
-                    ProjectEditor.JongguMinimalPrototypeBuilder.ApplyOpenSceneBuilderPreview();
+                    JongguMinimalPrototypeBuilder.ApplyOpenSceneBuilderPreview();
                     MarkSceneDirty(uiManager.gameObject);
                 }
 
