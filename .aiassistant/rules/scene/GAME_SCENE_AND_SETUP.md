@@ -2,41 +2,41 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Scene And Setup Guide
+# 종구의 식당 씬 구성 및 설정 가이드
 
-## 1. Supported Scene Composition
+## 1. 지원 씬 구성
 
 ### Hub
 
-- Main hub scene
-- Uses a locked `16:9` camera baseline with world art layers, interaction points, and HUD/popup UI
-- Contains the menu selector, service counter, storage, upgrade workbench, and region portals
+- 메인 허브 씬이다.
+- 월드 아트 레이어, 상호작용 지점, HUD/팝업 UI를 포함한 `16:9` 고정 카메라 기준을 사용한다.
+- 메뉴 선택기, 영업대, 창고, 업그레이드 작업대, 지역 포탈이 포함된다.
 
 ### Beach
 
-- Introductory exploration scene
-- Used to verify the base gathering loop and return-to-hub flow
+- 입문용 탐험 씬이다.
+- 기본 채집 루프와 허브 복귀 흐름 검증에 사용한다.
 
 ### DeepForest
 
-- Mid-game exploration scene
-- Used to verify mushroom/herb gathering and slowdown zones
+- 중반 탐험 씬이다.
+- 버섯/약초 채집과 감속 지대 검증에 사용한다.
 
 ### AbandonedMine
 
-- Late-game exploration scene
-- Used to verify lantern gating, `Glow Moss`, and darkness flow
+- 후반 탐험 씬이다.
+- 랜턴 조건, `Glow Moss`, 어둠 흐름 검증에 사용한다.
 
 ### WindHill
 
-- Final exploration scene
-- Used to verify gust zones and the reputation-based shortcut
+- 최종 탐험 씬이다.
+- 돌풍 지대와 평판 기반 지름길 검증에 사용한다.
 
-## 2. Shared Runtime Setup
+## 2. 공용 런타임 설정
 
 ### GameManager
 
-Core linked references:
+핵심 연결 참조는 다음과 같다.
 
 - `InventoryManager`
 - `StorageManager`
@@ -45,11 +45,11 @@ Core linked references:
 - `DayCycleManager`
 - `UpgradeManager`
 
-Some runtime augmentation can compensate for missing references, but direct scene wiring is still easier to maintain and verify.
+일부 런타임 보강이 누락된 참조를 보완할 수는 있지만, 직접 씬에 연결해 두는 편이 유지보수와 검증에 더 유리하다.
 
 ### UIManager
 
-Key connected fields include:
+주요 연결 필드는 다음과 같다.
 
 - `interactionPromptText`
 - `inventoryText`
@@ -68,22 +68,22 @@ Key connected fields include:
 - `materialPanelButton`
 - `popupCloseButton`
 
-Current UI baseline behavior:
+현재 UI 기준 동작은 다음과 같다.
 
-- In the hub, the lower buttons open the `Cooking Menu`, `Upgrade`, and `Materials` popups.
-- When a hub popup opens, gameplay pauses. Closing through `Esc` or `PopupCloseButton` restores the original time flow.
-- Storage opens through `E` interaction at `StorageStation` rather than automatic proximity UI.
-- Major panel and button imagery is shared through generated UI resource paths defined by `PrototypeUISkinCatalog`.
+- 허브에서 하단 버튼은 `Cooking Menu`, `Upgrade`, `Materials` 팝업을 연다.
+- 허브 팝업이 열리면 게임 진행이 멈춘다. `Esc` 또는 `PopupCloseButton`으로 닫으면 원래 시간 흐름을 복구한다.
+- 창고는 자동 근접 UI가 아니라 `StorageStation`에서 `E` 상호작용으로 열린다.
+- 주요 패널과 버튼 이미지는 `PrototypeUISkinCatalog`가 정의한 생성 UI 리소스 경로를 공유한다.
 
 ### PrototypeUIDesignController
 
-- Path: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
-- Supports editor helpers such as `Apply Preview`, `Canvas Grouping`, `Open Scene Builder Preview`, `Refresh SVG Cache`, and `Reset Canvas UI Layouts`
-- Keeps Canvas objects grouped under `HUDRoot` and `PopupRoot`, and the builder/runtime follow the same structure
+- 경로: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+- `Apply Preview`, `Canvas Grouping`, `Open Scene Builder Preview`, `Refresh SVG Cache`, `Reset Canvas UI Layouts` 같은 에디터 보조 기능을 지원한다.
+- Canvas 오브젝트를 `HUDRoot`, `PopupRoot` 아래에 그룹화하며, 빌더와 런타임도 같은 구조를 따른다.
 
-## 3. World Hierarchy Baseline
+## 3. 월드 계층 기준
 
-Keep supported scenes aligned to the following top-level structure:
+지원 씬은 다음 최상위 구조에 맞춰 정렬한다.
 
 ```text
 Scene
@@ -94,15 +94,15 @@ Scene
 ```
 
 - `SceneWorldRoot`
-  World visuals and boundary objects
+  월드 비주얼과 경계 오브젝트를 그룹화한다.
 - `SceneGameplayRoot`
-  Player, spawn points, portals, interactables, gatherables, and hazard zones
+  플레이어, 스폰 지점, 포탈, 상호작용 오브젝트, 채집 오브젝트, 위험 지대를 그룹화한다.
 - `SceneSystemRoot`
-  System objects such as `GameManager`, `RestaurantManager`, `Main Camera`, and `EventSystem`
+  `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` 같은 시스템 오브젝트를 그룹화한다.
 - `Canvas`
-  The UI root, with internal grouping based on `HUDRoot` and `PopupRoot`
+  UI 루트이며 내부는 `HUDRoot`, `PopupRoot` 기준으로 구성한다.
 
-## 4. Hub Checkpoints
+## 4. 허브 체크포인트
 
 - `RecipeSelector`
 - `ServiceCounter`
@@ -116,37 +116,37 @@ Scene
 - `HubTodayMenuBoard`
 - `CameraBounds`
 
-Expected hub flow:
+기대하는 허브 흐름은 다음과 같다.
 
-1. Choose a menu
-2. Choose storage items
-3. Deposit or withdraw
-4. Review upgrades
-5. Travel to a region
-6. Run service
+1. 메뉴 선택
+2. 창고 품목 선택
+3. 맡기기 또는 꺼내기
+4. 업그레이드 확인
+5. 지역 이동
+6. 영업 진행
 
-## 5. Exploration Scene Checkpoints
+## 5. 탐험 씬 체크포인트
 
 - `GatherableResource.resourceData`
 - `GatherableResource.requiredToolType`
-- Return `ScenePortal`
+- 복귀용 `ScenePortal`
 - `MovementModifierZone`
 - `DarknessZone`
 - `WindGustZone`
 
-The key is verifying interactability, blocking guidance, return-portal behavior, and hazard feel.
+핵심은 상호작용 가능 여부, 차단 이유 안내, 복귀 포탈 동작, 위험 지대 체감이 제대로 동작하는지 확인하는 것이다.
 
-## 6. Recommended Playtest Order
+## 6. 권장 플레이테스트 순서
 
-1. In `Hub`, verify text readability, storage `E` popup behavior, and menu-selection UI
-2. In `Beach`, gather basic resources and return to the hub
-3. In `DeepForest`, verify mushroom/herb gathering and slowdown zones
-4. At the hub workbench, check inventory-expansion or lantern-unlock costs
-5. In `AbandonedMine`, verify `Glow Moss` and darkness traversal
-6. Raise reputation and verify `WindHillShortcut`
-7. In the hub, verify menu selection, service, settlement, and next-day flow
+1. `Hub`에서 텍스트 가독성, 창고 `E` 팝업 동작, 메뉴 선택 UI를 확인한다.
+2. `Beach`에서 기본 자원을 채집하고 허브로 돌아온다.
+3. `DeepForest`에서 버섯/약초 채집과 감속 지대를 확인한다.
+4. 허브 작업대에서 인벤토리 확장이나 랜턴 해금 비용을 확인한다.
+5. `AbandonedMine`에서 `Glow Moss`와 어둠 이동을 확인한다.
+6. 평판을 올리고 `WindHillShortcut`을 확인한다.
+7. 허브에서 메뉴 선택, 영업, 정산, 다음 날 흐름을 확인한다.
 
-## 7. Related Editor Menus
+## 7. 관련 에디터 메뉴
 
 - `Prototype Build and Audit`
 - `Rebuild Generated Assets and Scenes`
@@ -154,8 +154,8 @@ The key is verifying interactability, blocking guidance, return-portal behavior,
 - `Organize Active Scene Hierarchy`
 - `Light Automation Audit`
 
-## 8. Current Risks
+## 8. 현재 위험 요소
 
-- Unity execution and C# compilation were not directly verified in this environment
-- Final balance numbers may still need adjustment after real playtesting
-- `PrototypeSceneRuntimeAugmenter` safety nets are still present and could be reduced later once scene serialization becomes more stable
+- 이 환경에서는 Unity 실행과 C# 컴파일을 직접 검증하지 못했다.
+- 최종 밸런스 수치는 실제 플레이테스트 이후 추가 조정이 필요할 수 있다.
+- `PrototypeSceneRuntimeAugmenter` 안전장치는 아직 남아 있으며, 씬 직렬화가 더 안정되면 축소할 수 있다.

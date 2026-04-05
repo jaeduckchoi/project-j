@@ -1,17 +1,17 @@
 using System.Collections.Generic;
-using Core;
-using Player;
+using CoreLoop.Core;
+using Exploration.Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 주기에 따라 켜지고 꺼지는 강풍 구간이다. 활성 상태에서는 플레이어를 한 방향으로 밀어낸다.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "WindGustZone")]
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "WindGustZone")]
     public class WindGustZone : MonoBehaviour
     {
         // 바람 방향, 세기, 주기, 안내 문구를 인스펙터에서 조정한다.
@@ -24,18 +24,18 @@ namespace World
         [SerializeField, TextArea] private string calmGuideText = "바람이 멈춘 짧은 틈에 이동하면 안전합니다.";
         [SerializeField] private string hintIdPrefix = "wind_zone";
 
-        private readonly HashSet<PlayerController> _playersInZone = new();
-        private Collider2D _triggerCollider;
-        private bool _wasActiveLastFrame;
+        private readonly HashSet<PlayerController> playersInZone = new();
+        private Collider2D triggerCollider;
+        private bool wasActiveLastFrame;
 
         /// <summary>
         /// 트리거를 준비하고 초기 활성 상태를 기억한다.
         /// </summary>
         private void Awake()
         {
-            _triggerCollider = GetComponent<Collider2D>();
-            _triggerCollider.isTrigger = true;
-            _wasActiveLastFrame = IsActiveNow();
+            triggerCollider = GetComponent<Collider2D>();
+            triggerCollider.isTrigger = true;
+            wasActiveLastFrame = IsActiveNow();
         }
 
         /// <summary>
@@ -44,11 +44,11 @@ namespace World
         private void Update()
         {
             bool isActive = IsActiveNow();
-            if (isActive != _wasActiveLastFrame)
+            if (isActive != wasActiveLastFrame)
             {
-                _wasActiveLastFrame = isActive;
+                wasActiveLastFrame = isActive;
 
-                if (_playersInZone.Count > 0)
+                if (playersInZone.Count > 0)
                 {
                     string hintText = isActive ? activeGuideText : calmGuideText;
                     string hintId = isActive ? $"{hintIdPrefix}_active" : $"{hintIdPrefix}_calm";
@@ -74,7 +74,7 @@ namespace World
                 return;
             }
 
-            _playersInZone.Add(player);
+            playersInZone.Add(player);
             ApplyWind(player, IsActiveNow());
         }
 
@@ -89,7 +89,7 @@ namespace World
                 return;
             }
 
-            _playersInZone.Add(player);
+            playersInZone.Add(player);
             ApplyWind(player, IsActiveNow());
         }
 
@@ -105,7 +105,7 @@ namespace World
             }
 
             player.ClearExternalVelocitySource(this);
-            _playersInZone.Remove(player);
+            playersInZone.Remove(player);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace World
         /// </summary>
         private void OnDisable()
         {
-            foreach (PlayerController player in _playersInZone)
+            foreach (PlayerController player in playersInZone)
             {
                 if (player == null)
                 {
@@ -123,7 +123,7 @@ namespace World
                 player.ClearExternalVelocitySource(this);
             }
 
-            _playersInZone.Clear();
+            playersInZone.Clear();
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace World
         /// </summary>
         private void ApplyWindToPlayers(bool isActive)
         {
-            foreach (PlayerController player in _playersInZone)
+            foreach (PlayerController player in playersInZone)
             {
                 if (player == null)
                 {

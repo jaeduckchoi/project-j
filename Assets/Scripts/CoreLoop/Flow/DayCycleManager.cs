@@ -4,42 +4,42 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Flow 네임스페이스
-namespace Flow
+namespace CoreLoop.Flow
 {
     /// <summary>
     /// 오전 탐험, 오후 장사, 결과 정산, 다음 날 전환과 안내 문구를 관리한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DayCycleManager")]
+    [MovedFrom(false, sourceNamespace: "Flow", sourceAssembly: "Assembly-CSharp", sourceClassName: "DayCycleManager")]
     public class DayCycleManager : MonoBehaviour
     {
         [SerializeField, Min(1)] private int startingDay = 1;
         [SerializeField] private DayPhase startingPhase = DayPhase.MorningExplore;
         [SerializeField, Min(1f)] private float defaultHintDuration = 5f;
 
-        private readonly HashSet<string> _shownHintIds = new();
-        private bool _initialized;
-        private string _baseGuideText = string.Empty;
-        private string _temporaryGuideText = string.Empty;
-        private float _temporaryGuideExpireTime;
+        private readonly HashSet<string> shownHintIds = new();
+        private bool initialized;
+        private string baseGuideText = string.Empty;
+        private string temporaryGuideText = string.Empty;
+        private float temporaryGuideExpireTime;
 
         public event Action StateChanged;
 
         public int CurrentDay { get; private set; }
         public DayPhase CurrentPhase { get; private set; }
-        public string CurrentGuideText => HasTemporaryGuide ? _temporaryGuideText : _baseGuideText;
+        public string CurrentGuideText => HasTemporaryGuide ? temporaryGuideText : baseGuideText;
         public string LastSettlementSummary { get; private set; } = string.Empty;
 
         private bool HasTemporaryGuide =>
-            !string.IsNullOrWhiteSpace(_temporaryGuideText) && Time.unscaledTime < _temporaryGuideExpireTime;
+            !string.IsNullOrWhiteSpace(temporaryGuideText) && Time.unscaledTime < temporaryGuideExpireTime;
 
         /// <summary>
         /// 임시 안내 문구의 만료 시간을 감시하고 기본 안내로 되돌립니다.
         /// </summary>
         private void Update()
         {
-            if (!HasTemporaryGuide && !string.IsNullOrWhiteSpace(_temporaryGuideText))
+            if (!HasTemporaryGuide && !string.IsNullOrWhiteSpace(temporaryGuideText))
             {
-                _temporaryGuideText = string.Empty;
+                temporaryGuideText = string.Empty;
                 RaiseStateChanged();
             }
         }
@@ -49,15 +49,15 @@ namespace Flow
         /// </summary>
         public void InitializeIfNeeded()
         {
-            if (_initialized)
+            if (initialized)
             {
                 return;
             }
 
-            _initialized = true;
+            initialized = true;
             CurrentDay = Mathf.Max(1, startingDay);
             CurrentPhase = startingPhase;
-            _baseGuideText = GetDefaultGuide(CurrentPhase);
+            baseGuideText = GetDefaultGuide(CurrentPhase);
             LastSettlementSummary = "오늘 하루를 시작하세요.";
             RaiseStateChanged();
         }
@@ -181,8 +181,8 @@ namespace Flow
                 return;
             }
 
-            _temporaryGuideText = guideText;
-            _temporaryGuideExpireTime = Time.unscaledTime + (duration > 0f ? duration : defaultHintDuration);
+            temporaryGuideText = guideText;
+            temporaryGuideExpireTime = Time.unscaledTime + (duration > 0f ? duration : defaultHintDuration);
             RaiseStateChanged();
         }
 
@@ -198,7 +198,7 @@ namespace Flow
             }
 
             InitializeIfNeeded();
-            if (!_shownHintIds.Add(hintId))
+            if (!shownHintIds.Add(hintId))
             {
                 return;
             }
@@ -225,7 +225,7 @@ namespace Flow
         /// </summary>
         private void SetBaseGuide(string guideText)
         {
-            _baseGuideText = guideText;
+            baseGuideText = guideText;
             RaiseStateChanged();
         }
 

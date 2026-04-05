@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Interaction 네임스페이스
-namespace Interaction
+namespace Exploration.Interaction
 {
     /// <summary>
     /// 플레이어가 E 키로 실행할 수 있는 상호작용 대상 규약이다.

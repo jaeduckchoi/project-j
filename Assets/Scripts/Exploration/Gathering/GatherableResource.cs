@@ -1,19 +1,19 @@
 using System.Collections;
-using Core;
-using Data;
-using Interaction;
-using Tools;
+using CoreLoop.Core;
+using Shared.Data;
+using Exploration.Interaction;
+using Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Gathering 네임스페이스
-namespace Gathering
+namespace Exploration.Gathering
 {
     /// <summary>
     /// 맵 위의 채집 지점이다. 필요한 도구를 확인하고 상호작용 시 인벤토리에 자원을 추가한다.
     /// 막힌 상태에서도 상호작용을 받아 이유를 안내한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GatherableResource")]
+    [MovedFrom(false, sourceNamespace: "Gathering", sourceAssembly: "Assembly-CSharp", sourceClassName: "GatherableResource")]
     public class GatherableResource : MonoBehaviour, IInteractable
     {
         [SerializeField] private ResourceData resourceData;
@@ -26,14 +26,14 @@ namespace Gathering
         [SerializeField] private Collider2D blockingCollider;
         [SerializeField] private GameObject visualsRoot;
 
-        private bool _isAvailable = true;
-        private Coroutine _respawnRoutine;
+        private bool isAvailable = true;
+        private Coroutine respawnRoutine;
 
         public string InteractionPrompt
         {
             get
             {
-                if (!_isAvailable)
+                if (!isAvailable)
                 {
                     return string.Empty;
                 }
@@ -85,7 +85,7 @@ namespace Gathering
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
-            return _isAvailable && resourceData != null;
+            return isAvailable && resourceData != null;
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Gathering
 
             if (respawnAfterGathering)
             {
-                _respawnRoutine = StartCoroutine(RespawnRoutine());
+                respawnRoutine = StartCoroutine(RespawnRoutine());
             }
         }
 
@@ -172,7 +172,7 @@ namespace Gathering
         private IEnumerator RespawnRoutine()
         {
             yield return new WaitForSeconds(respawnDelay);
-            _respawnRoutine = null;
+            respawnRoutine = null;
             SetAvailable(true);
         }
 
@@ -181,7 +181,7 @@ namespace Gathering
         /// </summary>
         private void SetAvailable(bool available)
         {
-            _isAvailable = available;
+            isAvailable = available;
 
             if (blockingCollider != null)
             {
@@ -207,10 +207,10 @@ namespace Gathering
         /// </summary>
         private void OnDisable()
         {
-            if (_respawnRoutine != null)
+            if (respawnRoutine != null)
             {
-                StopCoroutine(_respawnRoutine);
-                _respawnRoutine = null;
+                StopCoroutine(respawnRoutine);
+                respawnRoutine = null;
             }
         }
     }

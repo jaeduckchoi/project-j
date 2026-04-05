@@ -2,14 +2,14 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Project Structure Guide
+# 종구의 식당 프로젝트 구조 가이드
 
-## 1. Purpose
+## 1. 목적
 
-This document defines the actual folder structure and responsibility boundaries in the `Jonggu Restaurant` repository.
-The baseline is to keep working standards under `.aiassistant/rules` and actual Unity assets under `Assets`.
+이 문서는 `Jonggu Restaurant` 저장소의 실제 폴더 구조와 책임 경계를 정의한다.
+기본 원칙은 작업 기준 문서는 `.aiassistant/rules` 아래에 두고, 실제 Unity 에셋은 `Assets` 아래에 유지하는 것이다.
 
-## 2. Current Top-Level Structure
+## 2. 현재 최상위 구조
 
 ```text
 .
@@ -37,22 +37,22 @@ The baseline is to keep working standards under `.aiassistant/rules` and actual 
 └─ Tools
 ```
 
-## 3. `.aiassistant/rules` Responsibilities
+## 3. `.aiassistant/rules`의 역할
 
 - `project`
-  Shared working rules, the document index, and repository-structure standards.
+  공용 작업 규칙, 문서 인덱스, 저장소 구조 기준을 둔다.
 - `gameplay`
-  Core loop, exploration, restaurant or growth, and integrated gameplay references.
+  코어 루프, 탐험, 식당/성장, 통합 게임플레이 기준을 둔다.
 - `ui`
-  HUD/popup structure, text, and Canvas grouping rules.
+  HUD/팝업 구조, 텍스트, Canvas 그룹 기준을 둔다.
 - `scene`
-  Scene composition, hierarchy grouping, and scene checkpoint documents.
+  씬 구성, 계층 그룹, 씬 점검 문서를 둔다.
 - `build`
-  Builder flow, generated-asset recreation, and audit flow documents.
+  빌더 흐름, 생성 자산 복구, 감사 흐름 문서를 둔다.
 - `local`
-  Personal-machine notes or local execution rules.
+  개인 PC 메모나 로컬 실행 규칙을 둔다.
 
-## 4. Current `Assets` Structure
+## 4. 현재 `Assets` 구조
 
 ```text
 Assets
@@ -111,141 +111,141 @@ Assets
 └─ _Recovery
 ```
 
-## 5. Folder Responsibilities
+## 5. 폴더별 책임
 
 - `Assets/Scripts`
-  Runtime code only. Use the feature roots `CoreLoop`, `Exploration`, `Management`, `Restaurant`, `UI`, and `Shared` to keep related systems close together.
+  런타임 코드 전용이다. `CoreLoop`, `Exploration`, `Management`, `Restaurant`, `UI`, `Shared` 기능 루트를 사용해 관련 시스템을 가깝게 유지한다.
 - `Assets/Editor`
-  Editor-only code such as builders, audits, Canvas auto-sync, and custom inspectors.
+  빌더, 감사, Canvas 자동 동기화, 커스텀 인스펙터 같은 에디터 전용 코드를 둔다.
 - `Assets/Scenes`
-  Playable scenes. Supported scenes are `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, and `WindHill`.
+  플레이 가능한 씬을 둔다. 지원 씬은 `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`이다.
 - `Assets/Generated`
-  Builder-generated or builder-refreshed source outputs.
+  빌더가 생성하거나 새로 고치는 원본 출력물을 둔다.
 - `Assets/Resources/Generated`
-  Generated assets loaded directly at runtime via `Resources.Load`.
+  런타임에서 `Resources.Load`로 직접 읽는 생성 자산을 둔다.
 - `Assets/Design`
-  Design-source and review materials only. Runtime should not reference this path directly.
+  디자인 원본과 검토 자료 전용이다. 런타임이 이 경로를 직접 참조하면 안 된다.
 - `Assets/Settings/Scenes`
-  Project settings related to Build Settings and scene configuration.
+  Build Settings와 씬 설정 관련 프로젝트 설정을 둔다.
 - `Assets/TextMesh Pro`
-  TMP Settings and default TMP resources.
+  TMP 설정과 기본 TMP 리소스를 둔다.
 - `Assets/UI Toolkit`
-  Unity UI Toolkit default resources.
+  Unity UI Toolkit 기본 리소스를 둔다.
 - `Assets/_Recovery`
-  Recovery or temporary storage path, not a formal runtime baseline.
+  복구 또는 임시 저장 경로이며 정식 런타임 기준은 아니다.
 
-## 6. Generated Asset Structure
+## 6. 생성 자산 구조
 
 ### `Assets/Generated/GameData`
 
-- Group generated data by feature role under `Resources`, `Recipes`, and `Input`.
-- Use kebab-case filenames with patterns like `resource-*`, `recipe-*`, and `generated-ui-*`.
-- Core resources live under `Assets/Generated/GameData/Resources`, recipes live under `Assets/Generated/GameData/Recipes`, and generated input assets live under `Assets/Generated/GameData/Input`.
+- 생성 데이터는 `Resources`, `Recipes`, `Input` 역할 기준으로 묶는다.
+- 파일명은 `resource-*`, `recipe-*`, `generated-ui-*` 같은 kebab-case 패턴을 사용한다.
+- 핵심 자원은 `Assets/Generated/GameData/Resources`, 레시피는 `Assets/Generated/GameData/Recipes`, 생성 입력 자산은 `Assets/Generated/GameData/Input` 아래에 둔다.
 
 ### `Assets/Generated/Fonts`
 
-- Keep the body font baseline at `maplestoryLightSdf.asset` and the heading font baseline at `maplestoryBoldSdf.asset`.
-- Source TTFs are `maplestoryLight.ttf` and `maplestoryBold.ttf`, and generated font filenames keep lower camelCase.
-- `malgunGothicSdf.asset` may remain as a fallback or legacy asset, but the current builder default is the Maplestory family.
+- 본문 폰트 기준은 `maplestoryLightSdf.asset`, 제목 폰트 기준은 `maplestoryBoldSdf.asset`를 유지한다.
+- 원본 TTF는 `maplestoryLight.ttf`, `maplestoryBold.ttf`이며, 생성 폰트 파일명은 lower camelCase를 유지한다.
+- `malgunGothicSdf.asset`는 폴백 또는 레거시 자산으로 남아 있을 수 있지만, 현재 빌더 기본값은 메이플스토리 계열이다.
 
 ### `Assets/Generated/Sprites`
 
-- Generated sprites are organized under `Player`, `Gather`, `World`, `Hub`, and `UI`.
-- `Assets/Design/GeneratedSources/UI` is mirrored by the builder into both `Assets/Generated/Sprites/UI` and `Assets/Resources/Generated/Sprites/UI`.
-- UI sources should stay organized by categories such as `Buttons`, `MessageBoxes`, and `Panels`.
+- 생성 스프라이트는 `Player`, `Gather`, `World`, `Hub`, `UI` 아래로 구분한다.
+- `Assets/Design/GeneratedSources/UI`는 빌더를 통해 `Assets/Generated/Sprites/UI`와 `Assets/Resources/Generated/Sprites/UI`에 모두 반영된다.
+- UI 원본은 `Buttons`, `MessageBoxes`, `Panels` 같은 카테고리 기준으로 정리한다.
 
 ### `Assets/Resources/Generated`
 
-- Store shared generated assets that runtime reads directly.
+- 런타임이 직접 읽는 공용 생성 자산을 둔다.
 - `generated-game-data-manifest.asset`
-  The manifest used for generated-data recovery and runtime loading.
+  생성 데이터 복구와 런타임 로딩에 쓰는 매니페스트다.
 - `ui-layout-overrides.asset`
-  The shared Canvas layout and display-value override asset for supported scenes.
+  지원 씬 공용 Canvas 레이아웃과 표시값 오버라이드 자산이다.
 
-## 7. Runtime Code Structure
+## 7. 런타임 코드 구조
 
 - Assets/Scripts/CoreLoop
-  Global composition and day-loop entry points such as GameManager and DayCycleManager.
+  GameManager, DayCycleManager 같은 전역 조합과 하루 루프 진입점을 둔다.
 - Assets/Scripts/Exploration
-  Player movement, camera, gathering, interaction, portals, hazard zones, and scene augmentation.
+  플레이어 이동, 카메라, 채집, 상호작용, 포탈, 위험 지대, 씬 보강을 둔다.
 - Assets/Scripts/Management
-  Economy, inventory, storage, tools, and upgrade progression.
+  경제, 인벤토리, 창고, 도구, 업그레이드 진행을 둔다.
 - Assets/Scripts/Restaurant
-  Menu selection, service execution, and related hub interaction logic.
+  메뉴 선택, 영업 실행, 허브 상호작용 로직을 둔다.
 - Assets/Scripts/Shared
-  Shared data definitions such as ResourceData, RecipeData, generated-data locators, and manifest types.
+  ResourceData, RecipeData, 생성 데이터 로케이터, 매니페스트 타입 같은 공용 정의를 둔다.
 - Assets/Scripts/UI
-  UIManager, popup pause logic, layouts, styles, and content catalogs.
+  UIManager, 팝업 일시정지 로직, 레이아웃, 스타일, 콘텐츠 카탈로그를 둔다.
 
-## 8. Editor Code Structure
+## 8. 에디터 코드 구조
 
 - `Assets/Editor/JongguMinimalPrototypeBuilder.cs`
-  Recreates generated assets, base scenes, and base UI placement.
+  생성 자산, 기본 씬, 기본 UI 배치를 재구성한다.
 - `Assets/Editor/PrototypeSceneAudit.cs`
-  Audits generated-scene structure and UI baselines.
+  생성 씬 구조와 UI 기준을 감사한다.
 - `Assets/Editor/GameplayAutomationAudit.cs`
-  Checks day-loop flow, popup pause, portal locking, and missing-scene guidance.
+  day-loop 흐름, 팝업 일시정지, 포탈 잠금, 누락 씬 안내를 점검한다.
 - `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`
-  Reorganizes supported scene hierarchy into the shared root structure.
+  지원 씬 계층을 공용 루트 구조로 다시 정리한다.
 - `Assets/Editor/UI/*`
-  Canvas auto-sync, UI preview tools, and generated-sprite helper editors.
+  Canvas 자동 동기화, UI 프리뷰 도구, 생성 스프라이트 보조 에디터를 둔다.
 
-## 9. Placement Rules
+## 9. 배치 규칙
 
-### Adding New Scripts
+### 새 스크립트 추가
 
-- Runtime code must be placed under the correct feature root in `Assets/Scripts`.
-- Editor code must be placed under `Assets/Editor`.
-- Shared scene augmentation, spawn logic, or travel helpers should prefer `Assets/Scripts/Exploration/World`.
+- 런타임 코드는 `Assets/Scripts` 아래 올바른 기능 루트에 배치해야 한다.
+- 에디터 코드는 `Assets/Editor` 아래에 배치해야 한다.
+- 씬 보강, 스폰 로직, 이동 보조 로직은 가능하면 `Assets/Scripts/Exploration/World`를 사용한다.
 
-### Adding New Data
+### 새 데이터 추가
 
-- Put data type definitions under `Assets/Scripts/Shared/Data`.
-- Put builder-generated data assets under the matching subfolder in `Assets/Generated/GameData` and keep role-revealing kebab-case filenames.
-- If runtime loads the data through `Resources.Load`, keep `Assets/Resources/Generated/generated-game-data-manifest.asset` and related paths aligned.
+- 데이터 타입 정의는 `Assets/Scripts/Shared/Data` 아래에 둔다.
+- 빌더가 생성하는 데이터 자산은 `Assets/Generated/GameData`의 대응 하위 폴더에 두고, 역할이 드러나는 kebab-case 파일명을 유지한다.
+- 런타임이 `Resources.Load`로 데이터를 읽는다면 `Assets/Resources/Generated/generated-game-data-manifest.asset`와 관련 경로를 함께 맞춘다.
 
-### Adding New UI
+### 새 UI 추가
 
-- Check `Assets/Scripts/UI/UIManager.cs` first for state updates and button connections.
-- Put static strings and text catalogs under `Assets/Scripts/UI/Content`.
-- Put spacing, positions, and grouping baselines under `Assets/Scripts/UI/Layout`.
-- Put sprite paths and skin application under `Assets/Scripts/UI/Style`.
-- When changing UI, also review `Assets/Editor/JongguMinimalPrototypeBuilder.cs` and `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`.
+- 먼저 `Assets/Scripts/UI/UIManager.cs`에서 상태 갱신과 버튼 연결 방식을 확인한다.
+- 정적 문자열과 텍스트 카탈로그는 `Assets/Scripts/UI/Content` 아래에 둔다.
+- 간격, 위치, 그룹 기준은 `Assets/Scripts/UI/Layout` 아래에 둔다.
+- 스프라이트 경로와 스킨 적용 로직은 `Assets/Scripts/UI/Style` 아래에 둔다.
+- UI를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`와 `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`도 함께 검토한다.
 
-## 10. Generation Path Rules
+## 10. 생성 경로 규칙
 
-- Do not patch only generated scenes, generated assets, or runtime outputs. Change the builder path first.
-- `Assets/Generated` is the builder-source output path, while `Assets/Resources/Generated` is the runtime-loading path. Preserve that distinction.
-- If runtime code uses `Resources.Load`, documented paths and actual folder structure must match exactly.
-- Supported-scene Canvas layout should follow `ui-layout-overrides.asset`, and the auto-sync flow triggered on scene save must remain intact.
+- 생성 씬, 생성 자산, 런타임 출력물만 직접 수정하지 않는다. 먼저 빌더 경로를 수정한다.
+- `Assets/Generated`는 빌더 원본 출력 경로이고, `Assets/Resources/Generated`는 런타임 로딩 경로다. 이 구분을 유지한다.
+- 런타임 코드가 `Resources.Load`를 쓰면 문서 경로와 실제 폴더 구조가 정확히 일치해야 한다.
+- 지원 씬 Canvas 레이아웃은 `ui-layout-overrides.asset`를 기준으로 따라야 하며, 씬 저장 시 트리거되는 자동 동기화 흐름이 유지되어야 한다.
 
-## 11. Working Checklist
+## 11. 작업 체크리스트
 
-### Gameplay Changes
+### 게임플레이 변경
 
-- Is the new code placed under the correct responsibility folder?
-- Are related `GameManager` or manager references required?
-- If new data was added, were `Assets/Generated/GameData` conventions and documents updated too?
-- If world layout changed, were `Assets/Scripts/Exploration/World`, `Scenes`, builder code, and hierarchy-rule documents reviewed together?
+- 새 코드가 올바른 책임 폴더 아래에 배치되었는가?
+- 관련 `GameManager` 또는 매니저 참조가 필요한가?
+- 새 데이터를 추가했다면 `Assets/Generated/GameData` 규칙과 문서도 함께 갱신했는가?
+- 월드 레이아웃을 바꿨다면 `Assets/Scripts/Exploration/World`, `Scenes`, 빌더 코드, 계층 규칙 문서를 함께 검토했는가?
 
-### UI Changes
+### UI 변경
 
-- Was `Assets/Scripts/UI/UIManager.cs` reviewed?
-- Was `Assets/Editor/JongguMinimalPrototypeBuilder.cs` reviewed together?
-- Are save/load paths aligned with `Assets/Resources/Generated/ui-layout-overrides.asset`?
-- If the change touches a popup, does pause-and-restore behavior still work?
+- `Assets/Scripts/UI/UIManager.cs`를 검토했는가?
+- `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 검토했는가?
+- 저장/로드 경로가 `Assets/Resources/Generated/ui-layout-overrides.asset`와 맞는가?
+- 팝업 관련 변경이라면 일시정지와 복구 동작이 여전히 정상인가?
 
-### Generated Structure Changes
+### 생성 구조 변경
 
-- Was builder code changed instead of only scene output?
-- Was `Assets/Editor/PrototypeSceneAudit.cs` updated to match?
-- Were `Assets/Scripts/Exploration/World/PrototypeSceneHierarchyCatalog.cs` and organizer baselines kept aligned?
-- Are namespaces, serialized paths, and resource paths all consistent?
+- 결과 씬만이 아니라 빌더 코드부터 변경했는가?
+- `Assets/Editor/PrototypeSceneAudit.cs`도 기준에 맞게 갱신했는가?
+- `Assets/Scripts/Exploration/World/PrototypeSceneHierarchyCatalog.cs`와 정리기 기준이 서로 맞는가?
+- 네임스페이스, 직렬화 경로, 리소스 경로가 모두 일관된가?
 
-## 12. Current Baseline Notes
+## 12. 현재 기준 메모
 
-- Shared working standards live under `.aiassistant/rules`.
-- Generated data is grouped under `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, and `Assets/Generated/GameData/Input`.
-- The generated font defaults are `maplestoryLightSdf` and `maplestoryBoldSdf`.
-- Canvas UI overrides are stored in `Assets/Resources/Generated/ui-layout-overrides.asset`.
-- Unity execution and compilation were not directly verified in this task, so builder, audit, and play-mode validation are still needed afterward.
+- 공용 작업 기준 문서는 `.aiassistant/rules` 아래에 있다.
+- 생성 데이터는 `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, `Assets/Generated/GameData/Input` 아래에 묶여 있다.
+- 생성 폰트 기본값은 `maplestoryLightSdf`와 `maplestoryBoldSdf`다.
+- Canvas UI 오버라이드는 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장된다.
+- 이 작업에서는 Unity 실행과 컴파일을 직접 검증하지 못했으므로, 이후 빌더/감사/플레이 모드 검증이 추가로 필요하다.

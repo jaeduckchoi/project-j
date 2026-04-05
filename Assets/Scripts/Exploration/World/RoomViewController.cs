@@ -1,19 +1,21 @@
 using System.Collections.Generic;
-using GameCamera;
+using Exploration.Camera;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 플레이어가 머문 방에 맞춰 카메라 bounds와 가림 오브젝트를 함께 전환한다.
     /// </summary>
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "RoomViewController")]
     public class RoomViewController : MonoBehaviour
     {
         [SerializeField] private CameraFollow cameraFollow;
 
-        private readonly HashSet<RoomViewZone> _occupiedZones = new();
-        private RoomViewZone _currentZone;
+        private readonly HashSet<RoomViewZone> occupiedZones = new();
+        private RoomViewZone currentZone;
 
         private void Awake()
         {
@@ -38,7 +40,7 @@ namespace World
                 return;
             }
 
-            _occupiedZones.Add(zone);
+            occupiedZones.Add(zone);
             RefreshCurrentZone(true);
         }
 
@@ -49,7 +51,7 @@ namespace World
                 return;
             }
 
-            _occupiedZones.Remove(zone);
+            occupiedZones.Remove(zone);
             RefreshCurrentZone(true);
         }
 
@@ -60,11 +62,11 @@ namespace World
                 return;
             }
 
-            _occupiedZones.Remove(zone);
-            if (_currentZone == zone)
+            occupiedZones.Remove(zone);
+            if (currentZone == zone)
             {
                 zone.ApplyPresentation(false);
-                _currentZone = null;
+                currentZone = null;
             }
 
             RefreshCurrentZone(false);
@@ -73,7 +75,7 @@ namespace World
         private void RefreshCurrentZone(bool snapImmediately)
         {
             RoomViewZone nextZone = ResolveHighestPriorityZone();
-            if (_currentZone == nextZone)
+            if (currentZone == nextZone)
             {
                 if (nextZone != null)
                 {
@@ -83,17 +85,17 @@ namespace World
                 return;
             }
 
-            if (_currentZone != null)
+            if (currentZone != null)
             {
-                _currentZone.ApplyPresentation(false);
+                currentZone.ApplyPresentation(false);
             }
 
-            _currentZone = nextZone;
+            currentZone = nextZone;
 
-            if (_currentZone != null)
+            if (currentZone != null)
             {
-                _currentZone.ApplyPresentation(true);
-                ApplyZone(_currentZone, snapImmediately);
+                currentZone.ApplyPresentation(true);
+                ApplyZone(currentZone, snapImmediately);
                 return;
             }
 
@@ -126,7 +128,7 @@ namespace World
         private RoomViewZone ResolveHighestPriorityZone()
         {
             RoomViewZone bestZone = null;
-            foreach (RoomViewZone zone in _occupiedZones)
+            foreach (RoomViewZone zone in occupiedZones)
             {
                 if (zone == null || !zone.isActiveAndEnabled || !zone.IsOccupied)
                 {

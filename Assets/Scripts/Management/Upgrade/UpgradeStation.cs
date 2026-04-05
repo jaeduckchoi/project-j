@@ -1,16 +1,16 @@
-using Core;
-using Interaction;
-using Tools;
+using CoreLoop.Core;
+using Exploration.Interaction;
+using Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Upgrade 네임스페이스
-namespace Upgrade
+namespace Management.Upgrade
 {
     /// <summary>
     /// 허브 작업대에서 현재 우선순위 업그레이드를 실행하는 상호작용 지점입니다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeStation")]
+    [MovedFrom(false, sourceNamespace: "Upgrade", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeStation")]
     public class UpgradeStation : MonoBehaviour, IInteractable
     {
         [SerializeField] private UpgradeManager upgradeManager;

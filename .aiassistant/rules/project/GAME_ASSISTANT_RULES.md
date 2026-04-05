@@ -2,16 +2,16 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Working Rules
+# 종구의 식당 작업 규칙
 
-## 1. Project Overview
+## 1. 프로젝트 개요
 
-- This repository is a Unity prototype that combines 2D top-down exploration with restaurant management.
-- The core loop is `check hub state -> explore -> collect materials -> return to hub -> choose menu -> run simple service -> settle results -> grow -> advance to next day`.
-- Keep the overall feel close to `exploration 8 : restaurant 2`.
-- Default user-facing responses and documentation should be written in Korean unless explicitly requested otherwise.
+- 이 저장소는 2D 탑다운 탐험과 식당 운영을 결합한 Unity 프로토타입이다.
+- 핵심 루프는 `허브 상태 확인 -> 탐험 -> 재료 수집 -> 허브 복귀 -> 메뉴 선택 -> 간단한 영업 진행 -> 결과 정산 -> 성장 -> 다음 날 진행`이다.
+- 전체적인 체감 비중은 `탐험 8 : 식당 2`에 가깝게 유지한다.
+- 명시적 요청이 없는 한 사용자 대상 응답과 문서는 기본적으로 한국어로 작성한다.
 
-## 2. Documents To Review Before Working
+## 2. 작업 전에 확인할 문서
 
 - `project/GAME_DOCS_INDEX.md`
 - `project/GAME_PROJECT_STRUCTURE.md`
@@ -25,118 +25,134 @@
 - `scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - `build/GAME_BUILD_GUIDE.md`
 
-## 3. Prototype Scope
+## 3. 프로토타입 범위
 
-- Basic player controls are `WASD` or arrow-key movement plus `E` for interaction.
-- Click-to-move, equipment swap UI, discard systems, and complex real-time restaurant operation are out of scope for the base prototype.
-- The inventory should remain a material-only slot system and expand from `8 -> 12 -> 16` slots through upgrades.
-- Tools should remain permanently unlocked items that do not consume inventory slots.
-- Storage should remain a simple hub-only storage system.
-- Upgrades should remain data-driven and consume both `gold + specific materials`.
-- The default exploration region order is `Beach -> DeepForest -> AbandonedMine -> WindHill`.
+- 기본 플레이어 조작은 `WASD` 또는 방향키 이동과 `E` 상호작용이다.
+- 클릭 이동, 장비 교체 UI, 버리기 시스템, 복잡한 실시간 식당 운영은 기본 프로토타입 범위에서 제외한다.
+- 인벤토리는 재료 전용 슬롯 구조를 유지하고 업그레이드를 통해 `8 -> 12 -> 16`칸으로 확장한다.
+- 도구는 인벤토리 슬롯을 차지하지 않는 영구 해금 아이템으로 유지한다.
+- 창고는 허브 전용의 단순한 보관 시스템으로 유지한다.
+- 업그레이드는 데이터 중심 구조를 유지하고 `골드 + 특정 재료`를 함께 소모한다.
+- 기본 탐험 지역 순서는 `Beach -> DeepForest -> AbandonedMine -> WindHill`이다.
 
-## 4. Implementation Structure Rules
+## 4. 구현 구조 규칙
 
-- Maintain system separation by responsibility. Example types include `PlayerController`, `InteractionDetector`, `IInteractable`, `InventoryManager`, `StorageManager`, `RestaurantManager`, `EconomyManager`, `UpgradeManager`, `ScenePortal`, `DayCycleManager`, and `UIManager`.
-- Keep shared working standards under `.aiassistant/rules/{project|gameplay|ui|scene|build}` and separate them from runtime asset paths.
-- Use `Assets/Scripts` for runtime code, `Assets/Editor` for editor-only code, `Assets/Scenes` for playable scenes, `Assets/Generated` for builder-managed generated assets, and `Assets/Resources/Generated` for generated assets loaded through `Resources.Load`.
+- 시스템은 책임 기준으로 분리한다. 예시 타입은 `PlayerController`, `InteractionDetector`, `IInteractable`, `InventoryManager`, `StorageManager`, `RestaurantManager`, `EconomyManager`, `UpgradeManager`, `ScenePortal`, `DayCycleManager`, `UIManager`가 있다.
+- 공용 작업 기준은 `.aiassistant/rules/{project|gameplay|ui|scene|build}` 아래에 두고 런타임 에셋 경로와 분리한다.
+- 런타임 코드는 `Assets/Scripts`, 에디터 전용 코드는 `Assets/Editor`, 플레이 가능한 씬은 `Assets/Scenes`, 빌더가 관리하는 생성 자산은 `Assets/Generated`, `Resources.Load`로 읽는 생성 자산은 `Assets/Resources/Generated`를 사용한다.
 - 런타임 코드는 기능 기준으로 `Assets/Scripts/CoreLoop`, `Assets/Scripts/Exploration`, `Assets/Scripts/Management`, `Assets/Scripts/Restaurant`, `Assets/Scripts/UI`, `Assets/Scripts/Shared` 아래에 배치한다.
-- Shared regional logic or augmentation logic should go under `Assets/Scripts/Exploration/World`.
-- Generated game data should stay grouped under `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, and `Assets/Generated/GameData/Input`.
-- Maintain UI role separation across `UIManager`, `UI/Controllers`, `UI/Content`, `UI/Layout`, and `UI/Style`.
-- Prefer data-first structures such as `ScriptableObject` where practical.
-- Unity serialized files and asset references have wide impact, so verify both paths and reference links together.
-- Do not fix only generated scene YAML, generated assets, or resource outputs directly. Fix the generation path first.
-- When changing generated structure, update `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, related documents, and generated resource paths together.
-- When changing UI, review both `Assets/Scripts/UI/UIManager.cs` and `Assets/Editor/JongguMinimalPrototypeBuilder.cs`.
+- 지역 공통 로직이나 런타임 보강 로직은 `Assets/Scripts/Exploration/World` 아래에 둔다.
+- 생성 게임 데이터는 `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, `Assets/Generated/GameData/Input` 아래에 역할별로 유지한다.
+- UI 역할 분리는 `UIManager`, `UI/Controllers`, `UI/Content`, `UI/Layout`, `UI/Style` 기준으로 유지한다.
+- 가능하면 `ScriptableObject` 같은 데이터 우선 구조를 선호한다.
+- Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 경로와 참조 링크를 함께 확인한다.
+- 생성된 씬 YAML, 생성 자산, 런타임 출력물만 직접 고치지 않는다. 먼저 생성 경로를 수정한다.
+- 생성 구조를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 생성 리소스 경로를 함께 맞춘다.
+- UI를 바꿀 때는 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 검토한다.
 
-## 5. Namespace And Naming Rules
+## 5. 네임스페이스와 네이밍 규칙
 
-- Runtime scripts and editor scripts should follow folder-based namespaces.
-- For folder names that collide with Unity or .NET types such as `Camera` or `Editor`, use exception namespaces such as `GameCamera` or `ProjectEditor`.
-- Place helper files for partial types in folders that keep the same namespace as the parent type.
-- When moving existing `MonoBehaviour`, `ScriptableObject`, or serialized types into a namespace, preserve serialized paths with `UnityEngine.Scripting.APIUpdating.MovedFrom`.
-- Default private-field naming rules are:
+- 런타임 스크립트와 에디터 스크립트는 폴더 기준 네임스페이스를 따른다.
+- `Camera`, `Editor`처럼 Unity 또는 .NET 타입과 충돌하는 폴더명은 `GameCamera`, `ProjectEditor` 같은 예외 네임스페이스를 사용한다.
+- partial 타입 보조 파일은 부모 타입과 같은 네임스페이스를 유지하는 폴더에 둔다.
+- 기존 `MonoBehaviour`, `ScriptableObject`, 직렬화 타입을 네임스페이스로 옮길 때는 `UnityEngine.Scripting.APIUpdating.MovedFrom`으로 직렬화 경로를 보존한다.
+- 기본 private 필드 네이밍 규칙은 다음과 같다.
   - `[SerializeField] private` : lower camelCase
-  - regular `private`, `private static` : `_camelCase`
+  - 일반 `private`, `private static` : `_camelCase`
   - `private static readonly`, `private const` : PascalCase
-- In `.editorconfig`, keep the `Unity serialized field` rule applied before the general `Instance fields (private)` rule.
+- `.editorconfig`에서는 `Unity serialized field` 규칙이 일반 `Instance fields (private)` 규칙보다 먼저 적용되도록 유지한다.
 
-## 6. UI, Builder, And Audit Rules
+## 6. UI, 빌더, 감사 규칙
 
-- When a hub popup UI (`Cooking Menu`, `Upgrade`, `Materials`, `Storage`) opens, gameplay must pause; when it closes, the previous time flow must be restored.
-- The popup pause rule is shared by `PopupPauseStateUtility` and `UIManager`, so do not change only one side.
-- Remove duplicate UI paths such as legacy buttons, outdated docks, or unused cards.
-- Do not reset or overwrite scene-assigned `Image.sprite`, `PopupTitle`, or `PopupLeftCaption` font and layout values in hub popups unless explicitly requested.
-- Keep the common Canvas root names as `HUDRoot` and `PopupRoot`.
-- The shared HUD baseline for supported Canvas scenes is stored in `Assets/Resources/Generated/ui-layout-overrides.asset`. Saving one supported scene should propagate the same managed Canvas changes to the other supported scene Canvases.
-- `Tools > Jonggu Restaurant > Prototype Build and Audit` should run generated asset preparation, base scene regeneration, Canvas sync, and generated scene auditing in one flow.
-- Prefer the automatic audit inside the build flow over separate manual scene-audit routines.
-- Saving a supported Canvas scene should automatically store `RectTransform`, parent group and sibling order, deletion state, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` display values, and `HUDActionGroup` or `HUDPanelButtonGroup` name overrides into `Assets/Resources/Generated/ui-layout-overrides.asset`.
-- The builder, runtime `UIManager`, and automatic audit code must all use the same override asset baseline.
-- Keep supported scene world hierarchy aligned to `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, and `Canvas`. If that structure changes, update `PrototypeSceneHierarchyCatalog`, the organizer, and audit logic together.
-- When adding or changing menu entries under `Tools > Jonggu Restaurant`, use Korean labels by default and keep maintenance tools below frequently used build tools by adjusting `MenuItem` priority.
-- Frequently regressed core rules are covered by `Light Automation Audit`, so when you change day-cycle flow, portal locking, or popup pause rules, update that audit together.
+- 허브 팝업 UI(`Cooking Menu`, `Upgrade`, `Materials`, `Storage`)가 열리면 게임 진행을 멈추고, 닫히면 이전 시간 흐름을 복구해야 한다.
+- 팝업 일시정지 규칙은 `PopupPauseStateUtility`와 `UIManager`가 함께 공유하므로 한쪽만 바꾸지 않는다.
+- 레거시 버튼, 오래된 도크, 사용하지 않는 카드처럼 중복 UI 경로는 제거한다.
+- 명시적 요청이 없는 한 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 초기화하거나 덮어쓰지 않는다.
+- 공용 Canvas 루트 이름은 `HUDRoot`와 `PopupRoot`를 유지한다.
+- 지원하는 Canvas 씬의 공용 HUD 기준은 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장한다. 지원 씬 하나를 저장하면 같은 관리 대상 Canvas 변경이 다른 지원 씬 Canvas에도 전파되어야 한다.
+- `Tools > Jonggu Restaurant > Prototype Build and Audit`는 생성 자산 준비, 기본 씬 재생성, Canvas 동기화, 생성 씬 감사를 한 흐름으로 수행해야 한다.
+- 별도 수동 씬 감사보다 빌드 흐름 안의 자동 감사를 우선한다.
+- 지원하는 Canvas 씬 저장 시 `RectTransform`, 부모 그룹과 형제 순서, 삭제 상태, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값, `HUDActionGroup` 또는 `HUDPanelButtonGroup` 이름 오버라이드가 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장되어야 한다.
+- 빌더, 런타임 `UIManager`, 자동 감사 코드는 모두 같은 오버라이드 자산 기준을 사용해야 한다.
+- 지원 씬의 월드 계층은 `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, `Canvas` 구조에 맞춘다. 이 구조가 바뀌면 `PrototypeSceneHierarchyCatalog`, 정리기, 감사 로직을 함께 갱신한다.
+- `Tools > Jonggu Restaurant` 아래 메뉴를 추가하거나 바꿀 때는 기본적으로 한국어 라벨을 사용하고, 자주 쓰는 빌드 도구보다 유지보수 도구가 아래쪽에 오도록 `MenuItem` priority를 조정한다.
+- 자주 깨지는 핵심 규칙은 `Light Automation Audit`가 다루므로, day-cycle 흐름, 포탈 잠금, 팝업 일시정지 규칙을 바꾸면 해당 감사도 함께 갱신한다.
 
-## 7. Comments And Documentation Rules
+## 7. 주석과 문서 규칙
 
-- Keep method summaries and block comments where they help reveal the intended current behavior of complex logic.
-- New or updated code comments and documents should be written in UTF-8 Korean by default unless there is an explicit request to use another language.
-- When editing existing English comments or documents, preserve meaning but normalize them into the requested language policy for the task.
-- Do not add verbose comments for obvious assignments or self-explanatory logic.
-- If you touch important methods or blocks that currently lack comments, improve them within the same task.
-- When behavior changes, update related documents together.
-- If a new standard becomes a rule, reflect it in both `AGENTS.md` and this document.
+- 복잡한 로직의 현재 의도를 드러내는 데 도움이 되는 메서드 요약과 블록 주석은 유지한다.
+- 새로 작성하거나 수정하는 코드 주석과 문서는 명시적 요청이 없는 한 UTF-8 한국어로 작성한다.
+- 기존 영어 주석이나 문서를 수정할 때는 의미를 보존하되 현재 작업의 언어 정책에 맞춰 정리한다.
+- 자명한 대입문이나 설명이 필요 없는 로직에는 장황한 주석을 추가하지 않는다.
+- 중요한 메서드나 블록에 주석이 없다면 같은 작업 안에서 보강한다.
+- 동작이 바뀌면 관련 문서도 함께 갱신한다.
+- 새 기준이 규칙이 되면 `AGENTS.md`와 이 문서에 함께 반영한다.
 
-## 8. Font And Asset Rules
+## 8. 폰트와 에셋 규칙
 
-- Asset filenames under `Assets` should use kebab-case by default. Generated font assets and source font files under `Assets/Generated/Fonts` keep the existing lower camelCase convention.
-- Keep the default TMP body font at `Assets/Generated/Fonts/maplestoryLightSdf.asset` and the heading font at `Assets/Generated/Fonts/maplestoryBoldSdf.asset`, and keep the source TTF paths aligned so the builder can regenerate them.
-- `Assets/Design` is for design-source storage only; game-facing resources should resolve through `Assets/Resources` or generated paths.
-- If a filename changes, update builder code, documents, and TMP reference paths together.
-- Match asset naming rules to builder-generated naming rules whenever practical.
+- `Assets` 아래 에셋 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일은 기존 lower camelCase 규칙을 유지한다.
+- 기본 TMP 본문 폰트는 `Assets/Generated/Fonts/maplestoryLightSdf.asset`, 제목 폰트는 `Assets/Generated/Fonts/maplestoryBoldSdf.asset`를 유지하고, 빌더가 재생성할 수 있도록 원본 TTF 경로도 함께 맞춘다.
+- `Assets/Design`는 디자인 원본 저장소 전용이며, 게임 런타임 리소스는 `Assets/Resources` 또는 생성 경로를 통해 참조해야 한다.
+- 파일명이 바뀌면 빌더 코드, 문서, TMP 참조 경로를 함께 갱신한다.
+- 가능하면 에셋 네이밍 규칙은 빌더가 생성하는 이름 규칙과 일치시킨다.
 
-## 9. Validation Rules
+## 9. 검증 규칙
 
-- If you could not directly verify Unity play mode or compilation, state that explicitly.
-- If automatic audits or batch compilation exist, check and report their results together.
-- When changing generated structure or UI baselines, validate with `Tools > Jonggu Restaurant > Prototype Build and Audit` and `Light Automation Audit` whenever practical.
-- If runtime validation is not possible, record exactly which files, coordinates, and references were reviewed.
-- When changing generated structure, namespaces, or UI baselines, keep saved scenes, related `using` directives, builder code, audit code, and batch compilation results aligned.
+- Unity 플레이 모드나 컴파일을 직접 검증하지 못했다면 그 사실을 명시한다.
+- 자동 감사나 배치 컴파일이 있으면 결과를 함께 확인하고 보고한다.
+- 생성 구조나 UI 기준을 바꿀 때는 가능하면 `Tools > Jonggu Restaurant > Prototype Build and Audit`와 `Light Automation Audit`로 검증한다.
+- 런타임 검증이 불가능하다면 어떤 파일, 좌표, 참조를 확인했는지 구체적으로 남긴다.
+- 생성 구조, 네임스페이스, UI 기준을 바꿀 때는 저장된 씬, 관련 `using` 지시문, 빌더 코드, 감사 코드, 배치 컴파일 결과가 모두 서로 맞는지 확인한다.
 
-## 10. Git Commit Message Rules
+## 10. Git 커밋 메시지 규칙
 
-- All Git commit messages must be written in Korean.
-- The basic format is `type : subject`.
-- Keep the title within 50 characters and do not end it with a period.
-- If the title is sufficient on its own, body and footer may be omitted.
-- Write the body after one blank line, briefly and concretely.
-- Even if you receive an English diff summary, PR title, or auto-generated draft, rewrite the final commit message into natural Korean.
-- Do not leave English sentences as-is except for proper nouns that should not be translated, such as file paths, code identifiers, or branch names.
-- Use a footer only for issue numbers, follow-up work, or breaking changes.
-- Squash-merge commit messages follow the format `[squash] branch-name`.
-- Use `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md` as the local `commit.template` baseline, and update the template together with the documents if the rule changes.
+### 기본 원칙
 
-### Allowed `type` Values
+- 모든 Git 커밋 메시지는 한국어로 작성한다.
+- 기본 형식은 `type : subject`이다.
+- 영어 diff 요약, PR 제목, 자동 생성 초안을 받더라도 최종 커밋 메시지는 자연스러운 한국어로 다시 작성한다.
+- 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영어 문장을 그대로 남기지 않는다.
+- `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`를 로컬 `commit.template` 기준으로 사용하고, 규칙이 바뀌면 템플릿과 `AGENTS.md`, project rules 문서를 함께 갱신한다.
 
-- `feat` : add a new feature
-- `update` : modify an existing feature
-- `fix` : bug fix
-- `docs` : documentation or comment change
-- `design` : UI design or CSS-like presentation change
-- `style` : formatting-only changes with no behavior change, such as typos, spacing, or semicolons
-- `rename` : rename a file or identifier
-- `delete` : remove unnecessary files
-- `refactor` : structural refactoring
-- `test` : add or improve tests
-- `chore` : maintenance such as build settings, project settings, import changes, or function-name cleanup
+### 제목
 
-### Format
+- 제목은 50자 이내로 작성하고, 끝에 마침표를 붙이지 않는다.
+- 제목은 변경 대상과 결과가 드러나게 작성한다.
+- `수정`, `작업`, `정리`처럼 범위가 넓은 표현만 단독으로 쓰지 않는다.
+- 한 커밋에는 가능하면 한 가지 의도를 담고, 제목도 그 의도를 기준으로 작성한다.
+
+### 본문과 footer
+
+- 제목만으로 충분하면 본문과 footer는 생략할 수 있다.
+- 본문은 필요할 때만 작성하고, 변경 이유와 핵심 내용만 짧게 적는다.
+- footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 사용한다.
+
+### `type` 선택 기준
+
+| type | 의미 |
+| --- | --- |
+| `feat` | 새로운 기능 추가 |
+| `update` | 기존 기능 조정 |
+| `fix` | 버그 수정 |
+| `docs` | 문서 또는 주석 수정 |
+| `design` | UI 또는 시각 표현 변경 |
+| `style` | 동작 변화 없는 형식 수정 |
+| `rename` | 파일 또는 식별자 이름 변경 |
+| `delete` | 불필요한 파일 또는 코드 삭제 |
+| `refactor` | 동작 유지 전제의 구조 개선 |
+| `test` | 테스트 추가 또는 개선 |
+| `chore` | 빌드, 설정, import 정리 등 유지보수 작업 |
+
+### 형식
 
 ```text
 type : subject
 
-body
+본문
 
 footer
 ```
+
+### squash merge
+
+- `[squash] branch-name`

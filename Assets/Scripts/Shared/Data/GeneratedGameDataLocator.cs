@@ -6,7 +6,7 @@ using UnityEditor;
 #endif
 
 // Data ?ㅼ엫?ㅽ럹?댁뒪
-namespace Data
+namespace Shared.Data
 {
     /// <summary>
     /// Generated 寃뚯엫 ?곗씠???먯뀑???대쫫?쇰줈 ?ㅼ떆 李얜뒗 ?대갚 濡쒕뜑??

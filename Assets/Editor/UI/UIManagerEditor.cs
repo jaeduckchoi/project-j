@@ -5,13 +5,13 @@ using UI.Controllers;
 using UnityEngine;
 
 // ProjectEditor.UI 네임스페이스
-namespace ProjectEditor.UI
+namespace Editor.UI
 {
     /// <summary>
     /// UIManager 인스펙터에서 Canvas 정리와 디자인 컨트롤러 진입점을 함께 제공한다.
     /// </summary>
     [CustomEditor(typeof(UIManager))]
-    public class UIManagerEditor : Editor
+    public class UIManagerEditor : UnityEditor.Editor
     {
         /// <summary>
         /// 기본 인스펙터 아래에 편집 보조 버튼을 추가한다.

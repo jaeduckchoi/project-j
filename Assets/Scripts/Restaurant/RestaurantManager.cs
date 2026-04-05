@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Core;
-using Data;
-using Economy;
-using Flow;
-using Inventory;
+using CoreLoop.Core;
+using Shared.Data;
+using Management.Economy;
+using CoreLoop.Flow;
+using Management.Inventory;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 

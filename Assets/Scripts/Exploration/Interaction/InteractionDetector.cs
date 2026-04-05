@@ -4,17 +4,17 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Interaction 네임스페이스
-namespace Interaction
+namespace Exploration.Interaction
 {
     /// <summary>
     /// 플레이어 주변의 상호작용 후보를 관리하고 가장 가까운 대상을 현재 대상으로 선택한다.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "InteractionDetector")]
+    [MovedFrom(false, sourceNamespace: "Interaction", sourceAssembly: "Assembly-CSharp", sourceClassName: "InteractionDetector")]
     public class InteractionDetector : MonoBehaviour
     {
-        private readonly List<IInteractable> _nearbyInteractables = new();
-        private Collider2D _triggerCollider;
+        private readonly List<IInteractable> nearbyInteractables = new();
+        private Collider2D triggerCollider;
 
         public event Action<IInteractable> CurrentInteractableChanged;
 
@@ -25,10 +25,10 @@ namespace Interaction
         /// </summary>
         private void Awake()
         {
-            _triggerCollider = GetComponent<Collider2D>();
-            if (_triggerCollider != null)
+            triggerCollider = GetComponent<Collider2D>();
+            if (triggerCollider != null)
             {
-                _triggerCollider.isTrigger = true;
+                triggerCollider.isTrigger = true;
             }
         }
 
@@ -62,12 +62,12 @@ namespace Interaction
         private void OnTriggerEnter2D(Collider2D other)
         {
             IInteractable interactable = FindInteractable(other);
-            if (interactable == null || _nearbyInteractables.Contains(interactable))
+            if (interactable == null || nearbyInteractables.Contains(interactable))
             {
                 return;
             }
 
-            _nearbyInteractables.Add(interactable);
+            nearbyInteractables.Add(interactable);
             RefreshCurrentInteractable();
         }
 
@@ -82,7 +82,7 @@ namespace Interaction
                 return;
             }
 
-            _nearbyInteractables.Remove(interactable);
+            nearbyInteractables.Remove(interactable);
             RefreshCurrentInteractable();
         }
 
@@ -113,12 +113,12 @@ namespace Interaction
         /// </summary>
         private void CleanupMissingInteractables()
         {
-            for (int index = _nearbyInteractables.Count - 1; index >= 0; index--)
+            for (int index = nearbyInteractables.Count - 1; index >= 0; index--)
             {
-                IInteractable interactable = _nearbyInteractables[index];
+                IInteractable interactable = nearbyInteractables[index];
                 if (interactable == null || interactable.InteractionTransform == null)
                 {
-                    _nearbyInteractables.RemoveAt(index);
+                    nearbyInteractables.RemoveAt(index);
                 }
             }
         }
@@ -132,7 +132,7 @@ namespace Interaction
             float bestDistance = float.MaxValue;
             Vector3 detectorPosition = transform.position;
 
-            foreach (IInteractable interactable in _nearbyInteractables)
+            foreach (IInteractable interactable in nearbyInteractables)
             {
                 if (interactable == null || interactable.InteractionTransform == null)
                 {

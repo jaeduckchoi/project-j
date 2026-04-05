@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-using Player;
+using Exploration.Player;
 using CameraComponent = UnityEngine.Camera;
 
 // GameCamera 네임스페이스
-namespace GameCamera
+namespace Exploration.Camera
 {
     /// <summary>
     /// 플레이어를 부드럽게 따라가고, 필요할 때는 맵 바깥으로 카메라가 벗어나지 않게 제한한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "CameraFollow")]
+    [MovedFrom(false, sourceNamespace: "GameCamera", sourceAssembly: "Assembly-CSharp", sourceClassName: "CameraFollow")]
     public class CameraFollow : MonoBehaviour
     {
         // 추적 대상과 카메라 감쇠 설정이다.
@@ -17,20 +17,20 @@ namespace GameCamera
         [SerializeField, Min(0f)] private float smoothTime = 0.15f;
         [SerializeField] private Collider2D mapBounds;
 
-        private CameraComponent _targetCamera;
-        private Vector3 _velocity;
-        private Collider2D _boundsOverride;
-        private float _defaultOrthographicSize;
+        private CameraComponent targetCamera;
+        private Vector3 velocity;
+        private Collider2D boundsOverride;
+        private float defaultOrthographicSize;
 
         /// <summary>
         /// 카메라 컴포넌트 참조를 캐시한다.
         /// </summary>
         private void Awake()
         {
-            _targetCamera = GetComponent<CameraComponent>();
-            if (_targetCamera != null)
+            targetCamera = GetComponent<CameraComponent>();
+            if (targetCamera != null)
             {
-                _defaultOrthographicSize = _targetCamera.orthographicSize;
+                defaultOrthographicSize = targetCamera.orthographicSize;
             }
         }
 
@@ -69,7 +69,7 @@ namespace GameCamera
             }
 
             Vector3 desiredPosition = new(target.position.x, target.position.y, transform.position.z);
-            Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref _velocity, smoothTime);
+            Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
             transform.position = ClampToBounds(smoothedPosition);
         }
 
@@ -78,8 +78,8 @@ namespace GameCamera
         /// </summary>
         public void SetBoundsOverride(Collider2D bounds, bool snapImmediately = false)
         {
-            _boundsOverride = bounds;
-            _velocity = Vector3.zero;
+            boundsOverride = bounds;
+            velocity = Vector3.zero;
 
             if (snapImmediately)
             {
@@ -92,8 +92,8 @@ namespace GameCamera
         /// </summary>
         public void ClearBoundsOverride(bool snapImmediately = false)
         {
-            _boundsOverride = null;
-            _velocity = Vector3.zero;
+            boundsOverride = null;
+            velocity = Vector3.zero;
 
             if (snapImmediately)
             {
@@ -106,12 +106,12 @@ namespace GameCamera
         /// </summary>
         public void SetOrthographicSizeOverride(float orthographicSize, bool snapImmediately = false)
         {
-            if (_targetCamera == null)
+            if (targetCamera == null)
             {
                 return;
             }
 
-            _targetCamera.orthographicSize = Mathf.Max(0.1f, orthographicSize);
+            targetCamera.orthographicSize = Mathf.Max(0.1f, orthographicSize);
 
             if (snapImmediately)
             {
@@ -124,12 +124,12 @@ namespace GameCamera
         /// </summary>
         public void ClearOrthographicSizeOverride(bool snapImmediately = false)
         {
-            if (_targetCamera == null)
+            if (targetCamera == null)
             {
                 return;
             }
 
-            _targetCamera.orthographicSize = _defaultOrthographicSize;
+            targetCamera.orthographicSize = defaultOrthographicSize;
 
             if (snapImmediately)
             {
@@ -142,14 +142,14 @@ namespace GameCamera
         /// </summary>
         public void SetDefaultOrthographicSize(float orthographicSize, bool snapImmediately = false)
         {
-            _defaultOrthographicSize = Mathf.Max(0.1f, orthographicSize);
+            defaultOrthographicSize = Mathf.Max(0.1f, orthographicSize);
 
-            if (_targetCamera == null)
+            if (targetCamera == null)
             {
                 return;
             }
 
-            _targetCamera.orthographicSize = _defaultOrthographicSize;
+            targetCamera.orthographicSize = defaultOrthographicSize;
 
             if (snapImmediately)
             {
@@ -163,7 +163,7 @@ namespace GameCamera
         public void SetDefaultBounds(Collider2D bounds, bool snapImmediately = false)
         {
             mapBounds = bounds;
-            _velocity = Vector3.zero;
+            velocity = Vector3.zero;
 
             if (snapImmediately)
             {
@@ -176,15 +176,15 @@ namespace GameCamera
         /// </summary>
         private Vector3 ClampToBounds(Vector3 cameraPosition)
         {
-            Collider2D activeBounds = _boundsOverride != null ? _boundsOverride : mapBounds;
-            if (activeBounds == null || _targetCamera == null || !_targetCamera.orthographic)
+            Collider2D activeBounds = boundsOverride != null ? boundsOverride : mapBounds;
+            if (activeBounds == null || targetCamera == null || !targetCamera.orthographic)
             {
                 return cameraPosition;
             }
 
             Bounds bounds = activeBounds.bounds;
-            float verticalExtent = _targetCamera.orthographicSize;
-            float horizontalExtent = verticalExtent * _targetCamera.aspect;
+            float verticalExtent = targetCamera.orthographicSize;
+            float horizontalExtent = verticalExtent * targetCamera.aspect;
             float minX = bounds.min.x + horizontalExtent;
             float maxX = bounds.max.x - horizontalExtent;
             float minY = bounds.min.y + verticalExtent;

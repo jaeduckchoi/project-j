@@ -1,18 +1,18 @@
 using System.Collections.Generic;
-using Core;
-using Player;
-using Tools;
+using CoreLoop.Core;
+using Exploration.Player;
+using Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 플레이어가 영역 안에 있는 동안 이동 속도 배율을 변경한다.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "MovementModifierZone")]
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "MovementModifierZone")]
     public class MovementModifierZone : MonoBehaviour
     {
         [SerializeField, Range(0.1f, 2f)] private float movementMultiplier = 0.6f;
@@ -20,16 +20,16 @@ namespace World
         [SerializeField, TextArea] private string guideText = string.Empty;
         [SerializeField] private string hintId = "movement_zone";
 
-        private readonly HashSet<PlayerController> _playersInZone = new();
-        private Collider2D _triggerCollider;
+        private readonly HashSet<PlayerController> playersInZone = new();
+        private Collider2D triggerCollider;
 
         /// <summary>
         /// 이동 보정 지대를 트리거 영역으로 고정합니다.
         /// </summary>
         private void Awake()
         {
-            _triggerCollider = GetComponent<Collider2D>();
-            _triggerCollider.isTrigger = true;
+            triggerCollider = GetComponent<Collider2D>();
+            triggerCollider.isTrigger = true;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace World
             }
 
             player.ClearMovementMultiplierSource(this);
-            _playersInZone.Remove(player);
+            playersInZone.Remove(player);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace World
         /// </summary>
         private void OnDisable()
         {
-            foreach (PlayerController player in _playersInZone)
+            foreach (PlayerController player in playersInZone)
             {
                 if (player == null)
                 {
@@ -93,7 +93,7 @@ namespace World
                 player.ClearMovementMultiplierSource(this);
             }
 
-            _playersInZone.Clear();
+            playersInZone.Clear();
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace World
                 return;
             }
 
-            _playersInZone.Add(player);
+            playersInZone.Add(player);
 
             // 특정 도구가 있으면 감속을 무시하도록 열어둔 확장 포인트입니다.
             if (CanIgnorePenalty())

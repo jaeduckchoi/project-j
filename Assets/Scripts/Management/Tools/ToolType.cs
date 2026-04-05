@@ -1,5 +1,5 @@
 // Tools 네임스페이스
-namespace Tools
+namespace Management.Tools
 {
     /// <summary>
     /// 탐험에서 사용하는 상시 해금형 도구 종류다.

@@ -2,32 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core;
-using Data;
-using Inventory;
+using CoreLoop.Core;
+using Shared.Data;
+using Management.Inventory;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Storage 네임스페이스
-namespace Storage
+namespace Management.Storage
 {
     /// <summary>
     /// 허브 창고의 보관 목록과 선택형 맡기기, 꺼내기 상태를 관리한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageManager")]
+    [MovedFrom(false, sourceNamespace: "Storage", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageManager")]
     public class StorageManager : MonoBehaviour
     {
         [SerializeField] private List<InventoryEntry> runtimeItems = new();
         [SerializeField] private int selectedInventoryIndex;
         [SerializeField] private int selectedStorageIndex;
 
-        private readonly Dictionary<ResourceData, int> _itemAmounts = new();
-        private bool _initialized;
+        private readonly Dictionary<ResourceData, int> itemAmounts = new();
+        private bool initialized;
 
         public event Action StorageChanged;
 
         public IReadOnlyList<InventoryEntry> RuntimeItems => runtimeItems;
-        public int UsedSlotCount => _itemAmounts.Count;
+        public int UsedSlotCount => itemAmounts.Count;
         public string LastOperationMessage { get; private set; } = "창고가 비어 있습니다.";
 
         /// <summary>
@@ -35,12 +35,12 @@ namespace Storage
         /// </summary>
         public void InitializeIfNeeded()
         {
-            if (_initialized)
+            if (initialized)
             {
                 return;
             }
 
-            _initialized = true;
+            initialized = true;
             RefreshRuntimeItems();
             RaiseChanged();
         }
@@ -51,7 +51,7 @@ namespace Storage
         public bool HasAnyStoredItems()
         {
             InitializeIfNeeded();
-            return _itemAmounts.Count > 0;
+            return itemAmounts.Count > 0;
         }
 
         /// <summary>
@@ -355,13 +355,13 @@ namespace Storage
                 return;
             }
 
-            if (_itemAmounts.ContainsKey(resource))
+            if (itemAmounts.ContainsKey(resource))
             {
-                _itemAmounts[resource] += amount;
+                itemAmounts[resource] += amount;
                 return;
             }
 
-            _itemAmounts.Add(resource, amount);
+            itemAmounts.Add(resource, amount);
         }
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace Storage
                 return;
             }
 
-            if (!_itemAmounts.TryGetValue(resource, out int currentAmount))
+            if (!itemAmounts.TryGetValue(resource, out int currentAmount))
             {
                 return;
             }
@@ -382,11 +382,11 @@ namespace Storage
             int remainingAmount = currentAmount - amount;
             if (remainingAmount <= 0)
             {
-                _itemAmounts.Remove(resource);
+                itemAmounts.Remove(resource);
                 return;
             }
 
-            _itemAmounts[resource] = remainingAmount;
+            itemAmounts[resource] = remainingAmount;
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Storage
         {
             runtimeItems.Clear();
 
-            foreach (KeyValuePair<ResourceData, int> pair in _itemAmounts.OrderBy(entry => entry.Key.DisplayName))
+            foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
             {
                 runtimeItems.Add(new InventoryEntry(pair.Key, pair.Value));
             }

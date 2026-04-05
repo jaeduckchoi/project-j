@@ -1,17 +1,17 @@
-using Core;
-using Data;
-using Gathering;
-using GameCamera;
-using Player;
+using CoreLoop.Core;
+using Shared.Data;
+using Exploration.Gathering;
+using Exploration.Camera;
+using Exploration.Player;
 using Restaurant;
-using Storage;
-using Tools;
-using Upgrade;
+using Management.Storage;
+using Management.Tools;
+using Management.Upgrade;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 기존 씬 직렬화에 남아 있는 보강 오브젝트를 런타임에서 정리한다.

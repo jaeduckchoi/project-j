@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace ProjectEditor
+namespace Editor
 {
     /// <summary>
     /// 기능 기반 기본 폴더 구조를 한 번에 맞춰 이후 작업 경로를 예측 가능하게 유지한다.

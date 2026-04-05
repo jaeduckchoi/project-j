@@ -3,19 +3,19 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Economy 네임스페이스
-namespace Economy
+namespace Management.Economy
 {
     /// <summary>
     /// 골드와 평판을 관리하는 최소 경제 시스템이다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "EconomyManager")]
+    [MovedFrom(false, sourceNamespace: "Economy", sourceAssembly: "Assembly-CSharp", sourceClassName: "EconomyManager")]
     public class EconomyManager : MonoBehaviour
     {
         // 하루 루프에서 누적할 시작 재화 값이다.
         [SerializeField, Min(0)] private int startingGold;
         [SerializeField] private int startingReputation;
 
-        private bool _initialized;
+        private bool initialized;
 
         // UI가 골드와 평판 변화를 바로 반영할 수 있도록 이벤트를 노출한다.
         public event Action<int> GoldChanged;
@@ -37,12 +37,12 @@ namespace Economy
         /// </summary>
         public void InitializeIfNeeded()
         {
-            if (_initialized)
+            if (initialized)
             {
                 return;
             }
 
-            _initialized = true;
+            initialized = true;
             CurrentGold = Mathf.Max(0, startingGold);
             CurrentReputation = startingReputation;
             GoldChanged?.Invoke(CurrentGold);

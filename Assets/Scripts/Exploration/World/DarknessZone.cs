@@ -1,26 +1,26 @@
 using System.Collections.Generic;
-using Core;
-using Player;
-using Tools;
+using CoreLoop.Core;
+using Exploration.Player;
+using Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 랜턴 보유 여부에 따라 어두운 지역의 이동 난이도를 조절한다.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DarknessZone")]
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "DarknessZone")]
     public class DarknessZone : MonoBehaviour
     {
         [SerializeField, Range(0.1f, 1f)] private float noLanternMovementMultiplier = 0.55f;
         [SerializeField, TextArea] private string noLanternGuideText = "랜턴이 있으면 어두운 지역을 더 안전하게 이동할 수 있습니다.";
         [SerializeField] private string hintId = "darkness_zone";
 
-        private readonly HashSet<PlayerController> _playersInZone = new();
-        private Collider2D _triggerCollider;
+        private readonly HashSet<PlayerController> playersInZone = new();
+        private Collider2D triggerCollider;
 
         /// <summary>
         /// 어둠 지대를 트리거 영역으로 고정합니다.
@@ -29,7 +29,7 @@ namespace World
         (
         )
         {
-        _triggerCollider
+        triggerCollider
         =
         GetComponent
         <
@@ -38,7 +38,7 @@ namespace World
         (
         )
         ;
-        _triggerCollider
+        triggerCollider
         .
         isTrigger
         = true;
@@ -156,7 +156,7 @@ namespace World
         this
         )
         ;
-        _playersInZone
+        playersInZone
         .
         Remove
         (
@@ -175,7 +175,7 @@ namespace World
         PlayerController
         player
         in
-        _playersInZone
+        playersInZone
         )
         {
         if
@@ -196,7 +196,7 @@ namespace World
         )
         ;
         }
-        _playersInZone
+        playersInZone
         .
         Clear();
         }
@@ -229,7 +229,7 @@ namespace World
         return
         ;
         }
-        _playersInZone
+        playersInZone
         .
         Add
         (

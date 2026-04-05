@@ -1,6 +1,6 @@
-using Core;
-using Flow;
-using Interaction;
+using CoreLoop.Core;
+using CoreLoop.Flow;
+using Exploration.Interaction;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 

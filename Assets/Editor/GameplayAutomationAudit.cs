@@ -2,17 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Core;
-using Economy;
-using Flow;
-using Tools;
+using CoreLoop.Core;
+using Management.Economy;
+using CoreLoop.Flow;
+using Management.Tools;
 using UI;
-using World;
+using Exploration.World;
 using UnityEditor;
 using UnityEngine;
 
 // ProjectEditor 네임스페이스
-namespace ProjectEditor
+namespace Editor
 {
     /// <summary>
     /// 생성 씬 구조 감사에 더해 핵심 게임플레이 규칙이 크게 깨지지 않았는지 빠르게 점검합니다.
@@ -188,13 +188,13 @@ namespace ProjectEditor
         {
             List<string> issues = new();
             using TemporaryGameManagerScope gameManagerScope = new();
-            const string MissingSceneName = "GameplayAutomationAuditMissingScene";
+            const string missingSceneName = "GameplayAutomationAuditMissingScene";
 
-            gameManagerScope.GameManager.LoadScene(MissingSceneName);
+            gameManagerScope.GameManager.LoadScene(missingSceneName);
 
             AssertCondition(
                 issues,
-                gameManagerScope.DayCycle.CurrentGuideText.Contains(MissingSceneName, StringComparison.Ordinal),
+                gameManagerScope.DayCycle.CurrentGuideText.Contains(missingSceneName, StringComparison.Ordinal),
                 "없는 씬을 열려고 할 때 안내 문구에 씬 이름이 포함되지 않았습니다.");
 
             return issues;

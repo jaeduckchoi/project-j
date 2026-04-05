@@ -5,7 +5,7 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
 // Data 네임스페이스
-namespace Data
+namespace Shared.Data
 {
     /// <summary>
     /// 식당에서 판매 가능한 메뉴의 이름, 설명, 가격과 필요 재료를 담는 데이터 에셋이다.
@@ -14,7 +14,7 @@ namespace Data
         fileName = "recipe-data",
         menuName = "Jonggu Restaurant/Data/Recipe",
         order = 1)]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeData")]
+    [MovedFrom(false, sourceNamespace: "Data", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeData")]
     public class RecipeData : ScriptableObject
     {
         // 레시피 식별자와 기본 표시 정보다.

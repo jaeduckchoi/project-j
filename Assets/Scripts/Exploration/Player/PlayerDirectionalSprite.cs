@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Player 네임스페이스
-namespace Player
+namespace Exploration.Player
 {
     [RequireComponent(typeof(PlayerController))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]
+    [MovedFrom(false, sourceNamespace: "Player", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]
     public sealed class PlayerDirectionalSprite : MonoBehaviour
     {
         private const float PlayerSpritePixelsPerUnit = 1000f;
@@ -19,7 +19,7 @@ namespace Player
         [SerializeField] private bool sideSpriteFacesLeft = true;
         [SerializeField, Min(0.0001f)] private float movementThreshold = 0.0001f;
 
-        private PlayerController _playerController;
+        private PlayerController playerController;
 
         /// <summary>
         /// 외부에서 방향 스프라이트를 주입할 때는 null이 아닌 값만 갱신합니다.
@@ -52,7 +52,7 @@ namespace Player
 
         private void Awake()
         {
-            _playerController = GetComponent<PlayerController>();
+            playerController = GetComponent<PlayerController>();
             InitializeVisuals();
         }
 
@@ -76,7 +76,7 @@ namespace Player
         /// </summary>
         private void RefreshSprite()
         {
-            if (_playerController == null || targetRenderer == null)
+            if (playerController == null || targetRenderer == null)
             {
                 return;
             }
@@ -106,9 +106,9 @@ namespace Player
         /// </summary>
         private Vector2 ResolveFacingDirection()
         {
-            Vector2 direction = _playerController.CurrentVelocity.sqrMagnitude > movementThreshold
-                ? _playerController.CurrentVelocity
-                : _playerController.LastMoveDirection;
+            Vector2 direction = playerController.CurrentVelocity.sqrMagnitude > movementThreshold
+                ? playerController.CurrentVelocity
+                : playerController.LastMoveDirection;
 
             if (direction.sqrMagnitude <= movementThreshold)
             {

@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using World;
+using Exploration.World;
 
-namespace ProjectEditor
+namespace Editor
 {
     /// <summary>
     /// 지원 씬의 월드 Hierarchy를 공통 그룹 규칙에 맞게 정렬합니다.

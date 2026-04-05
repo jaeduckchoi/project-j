@@ -29,7 +29,7 @@ namespace UI.Controllers
         [SerializeField] private PrototypeUIPreviewPanel editorPreviewPanel = PrototypeUIPreviewPanel.Recipe;
 
 #if UNITY_EDITOR
-        private bool _isApplyingPreview;
+        private bool isApplyingPreview;
 #endif
 
         public UIManager UiManager => uiManager;
@@ -58,7 +58,7 @@ namespace UI.Controllers
         /// </summary>
         private void OnValidate()
         {
-            if (Application.isPlaying || _isApplyingPreview)
+            if (Application.isPlaying || isApplyingPreview)
             {
                 return;
             }
@@ -72,7 +72,7 @@ namespace UI.Controllers
         [ContextMenu("Apply Editor UI Preview")]
         public void ApplyEditorPreviewInEditor()
         {
-            if (Application.isPlaying || _isApplyingPreview)
+            if (Application.isPlaying || isApplyingPreview)
             {
                 return;
             }
@@ -83,14 +83,14 @@ namespace UI.Controllers
                 return;
             }
 
-            _isApplyingPreview = true;
+            isApplyingPreview = true;
             try
             {
                 uiManager.ApplyEditorDesignPreview(showEditorPreview, editorPreviewPanel);
             }
             finally
             {
-                _isApplyingPreview = false;
+                isApplyingPreview = false;
             }
         }
 

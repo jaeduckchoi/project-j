@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Data 네임스페이스
-namespace Data
+namespace Shared.Data
 {
     /// <summary>
     /// 빌드에서 generated 게임 데이터 에셋이 유지되도록 참조를 묶어두는 manifest다.
@@ -12,7 +12,7 @@ namespace Data
         fileName = "generated-game-data-manifest",
         menuName = "Jonggu Restaurant/Data/Generated Game Data Manifest",
         order = 2)]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GeneratedGameDataManifest")]
+    [MovedFrom(false, sourceNamespace: "Data", sourceAssembly: "Assembly-CSharp", sourceClassName: "GeneratedGameDataManifest")]
     public class GeneratedGameDataManifest : ScriptableObject
     {
         // 런타임 복구에서 찾을 수 있도록 generated 자원 에셋을 유지합니다.

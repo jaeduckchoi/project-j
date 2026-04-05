@@ -1,28 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Core;
-using Data;
-using Economy;
-using Inventory;
-using Tools;
+using CoreLoop.Core;
+using Shared.Data;
+using Management.Economy;
+using Management.Inventory;
+using Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Upgrade 네임스페이스
-namespace Upgrade
+namespace Management.Upgrade
 {
     /// <summary>
     /// 작업대 업그레이드 비용과 적용 결과를 관리한다.
     /// 인벤토리 확장과 도구 해금 모두 골드와 재료 조합으로 처리한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeManager")]
+    [MovedFrom(false, sourceNamespace: "Upgrade", sourceAssembly: "Assembly-CSharp", sourceClassName: "UpgradeManager")]
     public class UpgradeManager : MonoBehaviour
     {
         [SerializeField] private List<InventoryUpgradeCost> inventoryUpgradeCosts = new();
         [SerializeField] private List<ToolUnlockCost> toolUnlockCosts = new();
 
-        private bool _initialized;
+        private bool initialized;
 
         public event Action UpgradeStateChanged;
 
@@ -37,7 +37,7 @@ namespace Upgrade
         {
             bool changed = EnsureUpgradeCostsConfigured();
 
-            if (_initialized)
+            if (initialized)
             {
                 if (changed)
                 {
@@ -47,7 +47,7 @@ namespace Upgrade
                 return;
             }
 
-            _initialized = true;
+            initialized = true;
             RaiseChanged();
         }
 

@@ -1,22 +1,22 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
-using Economy;
-using Flow;
-using Inventory;
-using Player;
-using Storage;
-using Tools;
-using Upgrade;
-using World;
+using Management.Economy;
+using CoreLoop.Flow;
+using Management.Inventory;
+using Exploration.Player;
+using Management.Storage;
+using Management.Tools;
+using Management.Upgrade;
+using Exploration.World;
 
 // Core 네임스페이스
-namespace Core
+namespace CoreLoop.Core
 {
     /// <summary>
     /// 인벤토리, 창고, 업그레이드, 도구, 하루 흐름, 경제, 씬 이동 상태를 유지하는 전역 게임 진입점이다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GameManager")]
+    [MovedFrom(false, sourceNamespace: "Core", sourceAssembly: "Assembly-CSharp", sourceClassName: "GameManager")]
     public class GameManager : MonoBehaviour
     {
         [Header("Scene Names")] [SerializeField]
@@ -31,7 +31,7 @@ namespace Core
         [SerializeField] private DayCycleManager dayCycleManager;
         [SerializeField] private UpgradeManager upgradeManager;
 
-        private string _pendingSpawnPointId;
+        private string pendingSpawnPointId;
 
         public static GameManager Instance { get; private set; }
 
@@ -129,7 +129,7 @@ namespace Core
             // 하루 단계는 이동 직전에 바뀌어야 허브 복귀 / 출발 상태가 꼬이지 않습니다.
             dayCycleManager?.HandleSceneTravel(SceneManager.GetActiveScene().name, sceneName, hubSceneName);
 
-            _pendingSpawnPointId = spawnPointId;
+            pendingSpawnPointId = spawnPointId;
             SceneManager.LoadScene(sceneName);
         }
 
@@ -157,7 +157,7 @@ namespace Core
         /// </summary>
         private void TryMovePlayerToPendingSpawn(Scene scene)
         {
-            if (string.IsNullOrWhiteSpace(_pendingSpawnPointId))
+            if (string.IsNullOrWhiteSpace(pendingSpawnPointId))
             {
                 return;
             }
@@ -173,18 +173,18 @@ namespace Core
             SceneSpawnPoint[] spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsSortMode.None);
             foreach (SceneSpawnPoint spawnPoint in spawnPoints)
             {
-                if (!spawnPoint.Matches(_pendingSpawnPointId))
+                if (!spawnPoint.Matches(pendingSpawnPointId))
                 {
                     continue;
                 }
 
                 player.SetWorldPosition(spawnPoint.transform.position);
-                _pendingSpawnPointId = string.Empty;
+                pendingSpawnPointId = string.Empty;
                 return;
             }
 
-            Debug.LogWarning($"Spawn point '{_pendingSpawnPointId}' was not found in scene '{scene.name}'.");
-            _pendingSpawnPointId = string.Empty;
+            Debug.LogWarning($"Spawn point '{pendingSpawnPointId}' was not found in scene '{scene.name}'.");
+            pendingSpawnPointId = string.Empty;
         }
 
         /// <summary>

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Data 네임스페이스
-namespace Data
+namespace Shared.Data
 {
     /// <summary>
     /// 채집, 요리, 판매에 공통으로 쓰는 자원 정의 데이터다.
@@ -11,7 +11,7 @@ namespace Data
         fileName = "resource-data",
         menuName = "Jonggu Restaurant/Data/Resource",
         order = 0)]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ResourceData")]
+    [MovedFrom(false, sourceNamespace: "Data", sourceAssembly: "Assembly-CSharp", sourceClassName: "ResourceData")]
     public class ResourceData : ScriptableObject
     {
         // 자원을 식별하고 툴팁에 표시할 기본 정보다.

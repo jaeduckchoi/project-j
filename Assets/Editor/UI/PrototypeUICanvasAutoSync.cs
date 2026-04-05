@@ -1,11 +1,10 @@
 #if UNITY_EDITOR
-using ProjectEditor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
 // ProjectEditor.UI 네임스페이스
-namespace ProjectEditor.UI
+namespace Editor.UI
 {
     /// <summary>
     /// 지원하는 Canvas 씬을 저장하면 공용 UI 오버라이드 자산을 다시 동기화하고,

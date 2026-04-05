@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Tools 네임스페이스
-namespace Tools
+namespace Management.Tools
 {
     /// <summary>
     /// 인벤토리와 별개로 상시 해금된 도구 목록을 관리한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "ToolManager")]
+    [MovedFrom(false, sourceNamespace: "Tools", sourceAssembly: "Assembly-CSharp", sourceClassName: "ToolManager")]
     public class ToolManager : MonoBehaviour
     {
         // 시작 시점에 열려 있는 도구 목록과 런타임 표시용 목록이다.
@@ -22,8 +22,8 @@ namespace Tools
 
         [SerializeField] private List<ToolType> runtimeUnlockedTools = new();
 
-        private readonly HashSet<ToolType> _unlockedTools = new();
-        private bool _initialized;
+        private readonly HashSet<ToolType> unlockedTools = new();
+        private bool initialized;
 
         public event Action ToolsChanged;
 
@@ -38,17 +38,17 @@ namespace Tools
         {
         if
         (
-        _initialized
+        initialized
         )
         {
         return
         ;
         }
-        _initialized
+        initialized
         =
         true
         ;
-        _unlockedTools
+        unlockedTools
         .
         Clear
         (
@@ -74,7 +74,7 @@ namespace Tools
         continue
         ;
         }
-        _unlockedTools
+        unlockedTools
         .
         Add
         (
@@ -109,7 +109,7 @@ namespace Tools
         .
         None
         ||
-        _unlockedTools
+        unlockedTools
         .
         Contains
         (
@@ -142,7 +142,7 @@ namespace Tools
         if
         (
         !
-        _unlockedTools
+        unlockedTools
         .
         Add
         (
@@ -186,7 +186,7 @@ namespace Tools
         ToolType
         toolType
         in
-        _unlockedTools
+        unlockedTools
         )
         {
         runtimeUnlockedTools

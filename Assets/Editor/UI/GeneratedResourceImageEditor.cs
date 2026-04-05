@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -6,7 +6,7 @@ using UnityEngine;
 using Image = UnityEngine.UI.Image;
 
 // ProjectEditor.UI 네임스페이스
-namespace ProjectEditor.UI
+namespace Editor.UI
 {
     /// <summary>
     /// Image 인스펙터 아래에 generated UI 스프라이트 추천과 Resources 미러 전환 도구를 붙인다.

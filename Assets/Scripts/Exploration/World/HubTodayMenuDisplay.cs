@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Data;
+using Shared.Data;
 using Restaurant;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 허브 상단 메뉴판의 제목과 슬롯 강조 상태를 현재 레시피 선택 상태에 맞춰 갱신한다.
     /// 아이콘 자체는 고정 아트로 두고, 슬롯 배경과 표시 여부만 런타임에서 조정한다.
     /// </summary>
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "HubTodayMenuDisplay")]
     public class HubTodayMenuDisplay : MonoBehaviour
     {
         [SerializeField] private RestaurantManager restaurantManager;
@@ -19,8 +21,8 @@ namespace World
         [SerializeField] private SpriteRenderer[] menuIcons = Array.Empty<SpriteRenderer>();
         [SerializeField] private string headerText = "오늘의 메뉴";
 
-        private RestaurantManager _subscribedRestaurant;
-        private IReadOnlyList<RecipeData> _displayRecipes = Array.Empty<RecipeData>();
+        private RestaurantManager subscribedRestaurant;
+        private IReadOnlyList<RecipeData> displayRecipes = Array.Empty<RecipeData>();
 
         private void OnEnable()
         {
@@ -60,7 +62,7 @@ namespace World
         /// </summary>
         public void SetDisplayRecipes(IReadOnlyList<RecipeData> recipes)
         {
-            _displayRecipes = recipes ?? Array.Empty<RecipeData>();
+            displayRecipes = recipes ?? Array.Empty<RecipeData>();
             RefreshDisplay();
         }
 
@@ -110,7 +112,7 @@ namespace World
                 ? restaurantManager
                 : FindFirstObjectByType<RestaurantManager>();
 
-            if (targetRestaurant == _subscribedRestaurant)
+            if (targetRestaurant == subscribedRestaurant)
             {
                 return;
             }
@@ -118,25 +120,25 @@ namespace World
             UnbindRestaurant();
 
             restaurantManager = targetRestaurant;
-            _subscribedRestaurant = targetRestaurant;
+            subscribedRestaurant = targetRestaurant;
 
-            if (_subscribedRestaurant == null)
+            if (subscribedRestaurant == null)
             {
                 return;
             }
 
-            _subscribedRestaurant.SelectedRecipeChanged += HandleSelectedRecipeChanged;
+            subscribedRestaurant.SelectedRecipeChanged += HandleSelectedRecipeChanged;
         }
 
         private void UnbindRestaurant()
         {
-            if (_subscribedRestaurant == null)
+            if (subscribedRestaurant == null)
             {
                 return;
             }
 
-            _subscribedRestaurant.SelectedRecipeChanged -= HandleSelectedRecipeChanged;
-            _subscribedRestaurant = null;
+            subscribedRestaurant.SelectedRecipeChanged -= HandleSelectedRecipeChanged;
+            subscribedRestaurant = null;
         }
 
         private void HandleSelectedRecipeChanged(RecipeData _)
@@ -146,9 +148,9 @@ namespace World
 
         private IReadOnlyList<RecipeData> ResolveDisplayRecipes()
         {
-            if (_displayRecipes != null && _displayRecipes.Count > 0)
+            if (displayRecipes != null && displayRecipes.Count > 0)
             {
-                return _displayRecipes;
+                return displayRecipes;
             }
 
             return restaurantManager != null

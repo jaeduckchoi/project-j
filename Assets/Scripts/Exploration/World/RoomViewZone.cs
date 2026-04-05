@@ -1,13 +1,15 @@
 using System;
-using Player;
+using Exploration.Player;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 특정 방 안에 들어왔을 때 카메라 화면과 가림 오브젝트를 전환하는 트리거다.
     /// </summary>
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "RoomViewZone")]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Collider2D))]
     public class RoomViewZone : MonoBehaviour
@@ -20,30 +22,30 @@ namespace World
         [SerializeField] private GameObject[] hideWhenActive = Array.Empty<GameObject>();
         [SerializeField] private GameObject[] showOnlyWhenActive = Array.Empty<GameObject>();
 
-        private Collider2D _trigger;
-        private int _occupantCount;
+        private Collider2D trigger;
+        private int occupantCount;
 
         public Collider2D CameraBounds => cameraBounds;
         public int Priority => priority;
         public float CameraOrthographicSize => cameraOrthographicSize;
         public bool SnapCameraOnEnter => snapCameraOnEnter;
-        public bool IsOccupied => _occupantCount > 0;
+        public bool IsOccupied => occupantCount > 0;
 
         private void Reset()
         {
-            _trigger = GetComponent<Collider2D>();
-            if (_trigger != null)
+            trigger = GetComponent<Collider2D>();
+            if (trigger != null)
             {
-                _trigger.isTrigger = true;
+                trigger.isTrigger = true;
             }
         }
 
         private void Awake()
         {
-            _trigger = GetComponent<Collider2D>();
-            if (_trigger != null)
+            trigger = GetComponent<Collider2D>();
+            if (trigger != null)
             {
-                _trigger.isTrigger = true;
+                trigger.isTrigger = true;
             }
 
             if (controller == null)
@@ -56,7 +58,7 @@ namespace World
 
         private void OnDisable()
         {
-            _occupantCount = 0;
+            occupantCount = 0;
             ApplyPresentation(false);
             controller?.NotifyZoneDisabled(this);
         }
@@ -96,7 +98,7 @@ namespace World
                 return;
             }
 
-            _occupantCount++;
+            occupantCount++;
             controller?.NotifyZoneEntered(this);
         }
 
@@ -107,7 +109,7 @@ namespace World
                 return;
             }
 
-            _occupantCount = Mathf.Max(0, _occupantCount - 1);
+            occupantCount = Mathf.Max(0, occupantCount - 1);
             controller?.NotifyZoneExited(this);
         }
 

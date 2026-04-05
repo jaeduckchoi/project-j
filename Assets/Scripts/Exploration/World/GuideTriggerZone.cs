@@ -1,16 +1,16 @@
-using Core;
-using Player;
+using CoreLoop.Core;
+using Exploration.Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 플레이어가 특정 구역에 들어왔을 때 짧은 안내 문구를 띄우는 트리거다.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "GuideTriggerZone")]
+    [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "GuideTriggerZone")]
     public class GuideTriggerZone : MonoBehaviour
     {
         // 한 번만 보여줄 힌트인지, 얼마 동안 유지할지 설정한다.
@@ -19,15 +19,15 @@ namespace World
         [SerializeField, Min(1f)] private float duration = 5f;
         [SerializeField] private bool triggerOnlyOnce = true;
 
-        private Collider2D _triggerCollider;
+        private Collider2D triggerCollider;
 
         /// <summary>
         /// 트리거 콜라이더를 강제하고 참조를 캐시한다.
         /// </summary>
         private void Awake()
         {
-            _triggerCollider = GetComponent<Collider2D>();
-            _triggerCollider.isTrigger = true;
+            triggerCollider = GetComponent<Collider2D>();
+            triggerCollider.isTrigger = true;
         }
 
         /// <summary>

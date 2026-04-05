@@ -2,55 +2,55 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Rules Index
+# 종구의 식당 규칙 문서 인덱스
 
-## 1. Purpose
+## 1. 목적
 
-This document is the index for the standards that were reorganized from `Assets/Docs` into category-based folders under `.aiassistant/rules`.
-Its goal is to separate runtime assets from working standards so both human collaborators and AI assistants can quickly find the right rule documents.
+이 문서는 `Assets/Docs`에서 `.aiassistant/rules` 아래 카테고리별 폴더로 재정리된 기준 문서들의 인덱스다.
+목적은 런타임 에셋과 작업 기준 문서를 분리해, 사람 협업자와 AI 도우미가 필요한 규칙 문서를 빠르게 찾을 수 있도록 하는 것이다.
 
-## 2. Current Document Categories
+## 2. 현재 문서 분류
 
 ### `project`
 
 - `GAME_ASSISTANT_RULES.md`
-  Shared working rules, documentation policy, UI/builder/audit standards, and Git rules.
+  공용 작업 규칙, 문서 정책, UI/빌더/감사 기준, Git 규칙을 다룬다.
 - `GAME_DOCS_INDEX.md`
-  Overall document map and recommended reading order.
+  전체 문서 지도와 권장 읽기 순서를 제공한다.
 - `GAME_PROJECT_STRUCTURE.md`
-  Repository structure, `.aiassistant/rules`, `Assets`, generated assets, and editor-code placement rules.
+  저장소 구조, `.aiassistant/rules`, `Assets`, 생성 자산, 에디터 코드 배치 규칙을 다룬다.
 
 ### `gameplay`
 
 - `GAME_FEATURE_REFERENCE.md`
-  Integrated summary of game systems, regions, data, and progression axes.
+  게임 시스템, 지역, 데이터, 성장 축을 통합해서 요약한다.
 - `GAMEPLAY_CORE_LOOP.md`
-  The day loop and state-transition baseline.
+  하루 루프와 상태 전이 기준을 정리한다.
 - `GAMEPLAY_EXPLORATION.md`
-  Exploration regions, tools, hazard zones, and portal-locking rules.
+  탐험 지역, 도구, 위험 지대, 포탈 잠금 규칙을 다룬다.
 - `GAMEPLAY_RESTAURANT_AND_GROWTH.md`
-  Menu flow, restaurant service, storage, upgrades, and reputation flow.
+  메뉴 흐름, 식당 영업, 창고, 업그레이드, 평판 흐름을 다룬다.
 
 ### `ui`
 
 - `UI_AND_TEXT_GUIDE.md`
-  HUD/popup structure, TMP fonts, generated UI sprites, and editor-preview guidance.
+  HUD/팝업 구조, TMP 폰트, 생성 UI 스프라이트, 에디터 프리뷰 기준을 다룬다.
 - `UI_GROUPING_RULES.md`
-  Canvas grouping rules centered on `HUDRoot` and `PopupRoot`.
+  `HUDRoot`, `PopupRoot`를 중심으로 한 Canvas 그룹 규칙을 다룬다.
 
 ### `scene`
 
 - `GAME_SCENE_AND_SETUP.md`
-  Supported scene structure, inspector checkpoints, and recommended test order.
+  지원 씬 구조, 인스펙터 점검 지점, 권장 테스트 순서를 다룬다.
 - `SCENE_HIERARCHY_GROUPING_RULES.md`
-  World hierarchy rules based on `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, and `Canvas`.
+  `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, `Canvas` 기준의 월드 계층 규칙을 다룬다.
 
 ### `build`
 
 - `GAME_BUILD_GUIDE.md`
-  `Tools > Jonggu Restaurant` menu roles and the generated-asset or audit flow.
+  `Tools > Jonggu Restaurant` 메뉴 역할과 생성 자산/감사 흐름을 다룬다.
 
-## 3. Recommended Reading Order
+## 3. 권장 읽기 순서
 
 1. `project/GAME_ASSISTANT_RULES.md`
 2. `project/GAME_DOCS_INDEX.md`
@@ -61,26 +61,26 @@ Its goal is to separate runtime assets from working standards so both human coll
 7. `scene/GAME_SCENE_AND_SETUP.md`
 8. `build/GAME_BUILD_GUIDE.md`
 
-## 4. Quick Navigation By Task Type
+## 4. 작업 유형별 빠른 이동
 
-- Structure changes
+- 구조 변경
   `project/GAME_PROJECT_STRUCTURE.md`, `scene/SCENE_HIERARCHY_GROUPING_RULES.md`, `build/GAME_BUILD_GUIDE.md`
-- Gameplay changes
+- 게임플레이 변경
   `gameplay/GAME_FEATURE_REFERENCE.md`, `gameplay/GAMEPLAY_CORE_LOOP.md`, `gameplay/GAMEPLAY_EXPLORATION.md`, `gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md`
-- UI changes
+- UI 변경
   `ui/UI_AND_TEXT_GUIDE.md`, `ui/UI_GROUPING_RULES.md`, `scene/GAME_SCENE_AND_SETUP.md`
-- Builder or audit changes
+- 빌더 또는 감사 변경
   `build/GAME_BUILD_GUIDE.md`, `scene/SCENE_HIERARCHY_GROUPING_RULES.md`, `project/GAME_ASSISTANT_RULES.md`
 
-## 5. Current Project Snapshot
+## 5. 현재 프로젝트 요약
 
-- Supported playable scenes are `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, and `WindHill`.
-- The core loop is `hub preparation -> morning exploration -> return to hub -> afternoon service -> settlement -> next day`.
-- Main progression axes are inventory expansion, lantern unlock, and the reputation-6 shortcut unlock.
-- The shared UI baseline is stored in `Assets/Resources/Generated/ui-layout-overrides.asset` and auto-syncs when supported scenes are saved.
-- Scene-structure rules are shared through `PrototypeSceneHierarchyCatalog`, and UI-structure rules are shared through `PrototypeUISceneLayoutSettings` and `UIManager`.
+- 지원하는 플레이 가능 씬은 `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`이다.
+- 핵심 루프는 `허브 준비 -> 오전 탐험 -> 허브 복귀 -> 오후 영업 -> 정산 -> 다음 날`이다.
+- 주요 성장 축은 인벤토리 확장, 랜턴 해금, 평판 6 지름길 해금이다.
+- 공용 UI 기준은 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장되며, 지원 씬 저장 시 자동 동기화된다.
+- 씬 구조 규칙은 `PrototypeSceneHierarchyCatalog`를 통해, UI 구조 규칙은 `PrototypeUISceneLayoutSettings`와 `UIManager`를 통해 공유된다.
 
-## 6. Validation Notes
+## 6. 검증 메모
 
-- This index was updated against the current repository structure and code.
-- Unity play mode and batch compilation were not directly verified in this task, so build and audit menu validation is still needed after applying changes.
+- 이 인덱스는 현재 저장소 구조와 코드 기준으로 갱신되었다.
+- Unity 플레이 모드와 배치 컴파일은 이 작업에서 직접 검증하지 못했으므로, 변경 적용 후 빌드와 감사 메뉴 검증이 추가로 필요하다.

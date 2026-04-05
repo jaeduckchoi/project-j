@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace World
+namespace Exploration.World
 {
     /// <summary>
     /// 허브 16:9 고정 화면 아트와 상호작용 지점 좌표를 한 곳에서 관리한다.
@@ -221,8 +221,9 @@ namespace World
         public static readonly Color TodayMenuIconColor = Color.white;
         public static readonly Color TodayMenuEmptyIconColor = new(1f, 1f, 1f, 0.24f);
 
-        public static readonly Vector3 MovementBoundsPosition = new(0f, -0.05f, 0f);
-        public static readonly Vector2 MovementBoundsSize = new(18.7f, 10.1f);
+        // 하단 전경선 앞까지 자연스럽게 접근할 수 있도록 아래쪽 이동 여유를 조금 더 둔다.
+        public static readonly Vector3 MovementBoundsPosition = new(0f, -0.15f, 0f);
+        public static readonly Vector2 MovementBoundsSize = new(18.7f, 10.3f);
 
         public static readonly Vector3 PlayerStartPosition = new(-7.15f, -4.15f, 0f);
         public static readonly Vector3 HubEntryPosition = PlayerStartPosition;
@@ -261,8 +262,8 @@ namespace World
         public static readonly Vector3 RightWallColliderScale = new(0.72f, 6.85f, 1f);
         public static readonly Vector3 RightWallColliderLocalPosition = RightWallColliderPosition - WallBackgroundPosition;
 
-        // 전경 외곽선 하단의 실제 막힘 구간(좌측 출입구를 제외한 밴드)에 맞춰 충돌 범위를 유지한다.
-        public static readonly Vector3 BottomWallColliderPosition = new(1.50f, -4.95f, 0f);
+        // 플레이어 물리 루트가 발 기준이므로 캡슐 반높이만큼 내려 전경 외곽선과 체감 충돌선을 맞춘다.
+        public static readonly Vector3 BottomWallColliderPosition = new(1.50f, -5.475f, 0f);
         public static readonly Vector3 BottomWallColliderScale = new(16.20f, 0.90f, 1f);
         public static readonly Vector3 BottomWallColliderLocalPosition = BottomWallColliderPosition - WallBackgroundPosition;
 

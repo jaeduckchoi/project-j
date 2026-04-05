@@ -7,13 +7,13 @@ using UI.Style;
 using UnityEngine;
 
 // ProjectEditor.UI 네임스페이스
-namespace ProjectEditor.UI
+namespace Editor.UI
 {
     /// <summary>
     /// 편집 모드에서 UI 프리뷰 적용, SVG 경로 확인, Canvas 레이아웃 동기화를 묶어 제공합니다.
     /// </summary>
     [CustomEditor(typeof(PrototypeUIDesignController))]
-    public class PrototypeUIDesignControllerEditor : Editor
+    public class PrototypeUIDesignControllerEditor : UnityEditor.Editor
     {
         /// <summary>
         /// 기본 인스펙터 아래에 프리뷰와 동기화 보조 버튼을 그립니다.

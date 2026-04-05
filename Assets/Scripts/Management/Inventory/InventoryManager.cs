@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data;
+using Shared.Data;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
 // Inventory 네임스페이스
-namespace Inventory
+namespace Management.Inventory
 {
     /// <summary>
     /// 자원 전용 슬롯 기반 인벤토리다. 시작 8칸에서 업그레이드로 12칸, 16칸까지 확장한다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "InventoryManager")]
+    [MovedFrom(false, sourceNamespace: "Inventory", sourceAssembly: "Assembly-CSharp", sourceClassName: "InventoryManager")]
     public class InventoryManager : MonoBehaviour
     {
         // 슬롯 단계와 초기 소지품을 인스펙터에서 지정한다.
@@ -24,14 +24,14 @@ namespace Inventory
         // 디버깅과 UI 확인을 위한 현재 인벤토리 직렬화 목록이다.
         [SerializeField] private List<InventoryEntry> runtimeItems = new();
 
-        private readonly Dictionary<ResourceData, int> _itemAmounts = new();
-        private bool _initialized;
+        private readonly Dictionary<ResourceData, int> itemAmounts = new();
+        private bool initialized;
 
         public event Action InventoryChanged;
 
         public IReadOnlyList<InventoryEntry> RuntimeItems => runtimeItems;
-        public int TotalItemCount => _itemAmounts.Values.Sum();
-        public int UsedSlotCount => _itemAmounts.Count;
+        public int TotalItemCount => itemAmounts.Values.Sum();
+        public int UsedSlotCount => itemAmounts.Count;
         public int MaxSlotCount => GetSlotCapacityForLevel(capacityLevel);
         public int CapacityLevel => capacityLevel;
 
@@ -40,13 +40,13 @@ namespace Inventory
         /// </summary>
         public void InitializeIfNeeded()
         {
-            if (_initialized)
+            if (initialized)
             {
                 return;
             }
 
-            _initialized = true;
-            _itemAmounts.Clear();
+            initialized = true;
+            itemAmounts.Clear();
 
             foreach (InventoryEntry entry in startingItems)
             {
@@ -73,7 +73,7 @@ namespace Inventory
             }
 
             InitializeIfNeeded();
-            return _itemAmounts.ContainsKey(resource) || UsedSlotCount < MaxSlotCount;
+            return itemAmounts.ContainsKey(resource) || UsedSlotCount < MaxSlotCount;
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Inventory
             }
 
             InitializeIfNeeded();
-            return _itemAmounts.TryGetValue(resource, out int amount) && amount >= requiredAmount;
+            return itemAmounts.TryGetValue(resource, out int amount) && amount >= requiredAmount;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Inventory
 
             InitializeIfNeeded();
 
-            if (!_itemAmounts.TryGetValue(resource, out int currentAmount) || currentAmount < amount)
+            if (!itemAmounts.TryGetValue(resource, out int currentAmount) || currentAmount < amount)
             {
                 return false;
             }
@@ -137,11 +137,11 @@ namespace Inventory
 
             if (remainingAmount <= 0)
             {
-                _itemAmounts.Remove(resource);
+                itemAmounts.Remove(resource);
             }
             else
             {
-                _itemAmounts[resource] = remainingAmount;
+                itemAmounts[resource] = remainingAmount;
             }
 
             RefreshRuntimeItems();
@@ -160,7 +160,7 @@ namespace Inventory
             }
 
             InitializeIfNeeded();
-            return _itemAmounts.TryGetValue(resource, out int amount) ? amount : 0;
+            return itemAmounts.TryGetValue(resource, out int amount) ? amount : 0;
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Inventory
         public void ClearInventory()
         {
             InitializeIfNeeded();
-            _itemAmounts.Clear();
+            itemAmounts.Clear();
             RefreshRuntimeItems();
             RaiseChanged();
         }
@@ -210,13 +210,13 @@ namespace Inventory
         /// </summary>
         private void AddAmountInternal(ResourceData resource, int amount)
         {
-            if (_itemAmounts.ContainsKey(resource))
+            if (itemAmounts.ContainsKey(resource))
             {
-                _itemAmounts[resource] += amount;
+                itemAmounts[resource] += amount;
                 return;
             }
 
-            _itemAmounts.Add(resource, amount);
+            itemAmounts.Add(resource, amount);
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Inventory
         {
             runtimeItems.Clear();
 
-            foreach (KeyValuePair<ResourceData, int> pair in _itemAmounts.OrderBy(entry => entry.Key.DisplayName))
+            foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
             {
                 runtimeItems.Add(new InventoryEntry(pair.Key, pair.Value));
             }

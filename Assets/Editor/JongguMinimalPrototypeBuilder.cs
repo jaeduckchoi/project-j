@@ -4,25 +4,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Core;
-using Data;
-using Economy;
-using Flow;
-using Gathering;
-using GameCamera;
-using Inventory;
-using Interaction;
-using Player;
+using CoreLoop.Core;
+using Shared.Data;
+using Management.Economy;
+using CoreLoop.Flow;
+using Exploration.Gathering;
+using Exploration.Camera;
+using Management.Inventory;
+using Exploration.Interaction;
+using Exploration.Player;
 using Restaurant;
-using Storage;
+using Management.Storage;
 using TMPro;
-using Tools;
+using Management.Tools;
 using UI;
 using UI.Controllers;
 using UI.Layout;
 using UI.Style;
-using Upgrade;
-using World;
+using Management.Upgrade;
+using Exploration.World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -35,7 +35,7 @@ using UnityEngine.InputSystem.UI;
 #endif
 
 // ProjectEditor 네임스페이스
-namespace ProjectEditor
+namespace Editor
 {
     public static class JongguMinimalPrototypeBuilder
     {

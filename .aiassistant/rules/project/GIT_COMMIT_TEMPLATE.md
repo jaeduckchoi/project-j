@@ -2,33 +2,30 @@
 적용: 항상
 ---
 
-# Commit Message Template Rules
-# - All commit messages must be written in Korean.
-# - Even if you receive an English diff summary or an auto-generated draft, rewrite the final commit message into natural Korean.
-# - The first line must follow the `type : subject` format.
-# - Keep the title within 50 characters and do not end it with a period.
-# - If the title is enough on its own, the body and footer may be omitted.
-# - Write the body after one blank line, briefly and concretely.
-# - Do not leave English sentences as-is except for proper nouns that should not be translated, such as file paths, code identifiers, or branch names.
-#
-# Allowed type values
-# feat    : add a new feature
-# update  : modify an existing feature
-# fix     : bug fix
-# docs    : documentation or comment change
-# design  : UI design change
-# style   : formatting-only change with no behavior change, such as typos, spacing, or semicolons
-# rename  : rename a file or identifier
-# delete  : remove unnecessary files
-# refactor: refactoring
-# test    : add or improve tests
-# chore   : maintenance such as build settings, project settings, import changes, or function-name cleanup
-#
-# squash merge
-# [squash] branch-name
+# 커밋 메시지 작성 규칙
 
-type : subject
+## 기본 원칙
 
-# body
+- 모든 Git 커밋 메시지는 한국어로 작성한다.
+- 첫 줄은 `type : subject` 형식으로 작성한다.
+- 제목은 50자 이내로 쓰고, 끝에 마침표를 붙이지 않는다.
+- 제목은 변경 대상과 결과가 드러나게 작성한다.
+- 제목만으로 충분하면 본문과 footer는 생략할 수 있다.
+- 본문은 필요할 때만 작성하고, 변경 이유와 핵심 내용만 짧게 적는다.
+- footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 사용한다.
 
-# footer
+## type
+
+| type     | 의미                          |
+|----------|-----------------------------|
+| feat     | 새로운 기능 추가                   |
+| update   | 기존 기능 조정                    |
+| fix      | 버그 수정                       |
+| docs     | 문서 또는 주석 수정                 |
+| design   | UI 또는 시각 표현 변경              |
+| style    | 동작 변화 없는 형식 수정              |
+| rename   | 파일 또는 식별자 이름 변경             |
+| delete   | 불필요한 파일 또는 코드 삭제            |
+| refactor | 동작 유지 전제의 구조 개선             |
+| test     | 테스트 추가 또는 개선                |
+| chore    | 빌드, 설정, import 정리 등 유지보수 작업 |

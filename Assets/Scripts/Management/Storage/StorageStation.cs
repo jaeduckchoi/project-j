@@ -1,21 +1,26 @@
+using System;
 using TMPro;
-using Core;
-using Interaction;
-using Inventory;
-using UI;
+using CoreLoop.Core;
+using Exploration.Interaction;
+using Management.Inventory;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 // Storage 네임스페이스
-namespace Storage
+namespace Management.Storage
 {
     /// <summary>
     /// 허브 창고 팝업을 여는 단일 상호작용 지점이다.
     /// </summary>
-    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageStation")]
+    [MovedFrom(false, sourceNamespace: "Storage", sourceAssembly: "Assembly-CSharp", sourceClassName: "StorageStation")]
     public class StorageStation : MonoBehaviour, IInteractable
     {
+        /// <summary>
+        /// 창고 상호작용이 발생했을 때 UI 계층이 팝업을 열 수 있도록 전달하는 요청 이벤트입니다.
+        /// </summary>
+        public static event Action StoragePanelRequested;
+
         [SerializeField] private StorageManager storageManager;
         [SerializeField] private StorageStationAction stationAction = StorageStationAction.StoreAll;
         [SerializeField] private string promptLabel = "창고 열기";
@@ -86,7 +91,7 @@ namespace Storage
                 return;
             }
 
-            FindFirstObjectByType<UIManager>()?.ShowStoragePanel();
+            StoragePanelRequested?.Invoke();
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_storage_popup_open",
                 "창고 팝업에서 Q/W로 맡기기, A/S로 꺼내기를 진행할 수 있습니다.");

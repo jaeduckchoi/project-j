@@ -2,16 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Player;
+using Exploration.Player;
 using UI;
 using UI.Layout;
-using World;
+using Exploration.World;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // ProjectEditor 네임스페이스
-namespace ProjectEditor
+namespace Editor
 {
     /// <summary>
     /// 생성된 프로토타입 씬의 기본 구조를 점검하는 간단한 감사 도구입니다.
@@ -407,7 +407,7 @@ namespace ProjectEditor
         private static void ValidateExpectedSceneHierarchy(
             ICollection<string> issues,
             string sceneName,
-            IEnumerable<GameObject> objects)
+            IReadOnlyList<GameObject> objects)
         {
             if (!PrototypeSceneHierarchyCatalog.IsSupportedScene(sceneName))
             {

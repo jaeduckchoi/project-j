@@ -2,78 +2,78 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Build And Generation Guide
+# 종구의 식당 빌드 및 생성 가이드
 
-## 1. How To Rebuild In The Editor
+## 1. 에디터에서 다시 빌드하는 방법
 
-1. Open the project in Unity
-2. Run `Tools > Jonggu Restaurant > Prototype Build and Audit`
-3. After the build step finishes, generated-scene auditing should run automatically
-4. If needed, run `Light Automation Audit` to recheck core gameplay rules
-5. Open `Assets/Scenes/Hub.unity` and verify the flow in Play mode
+1. Unity에서 프로젝트를 연다.
+2. `Tools > Jonggu Restaurant > Prototype Build and Audit`를 실행한다.
+3. 빌드 단계가 끝나면 생성 씬 감사가 자동으로 이어서 실행되어야 한다.
+4. 필요하면 `Light Automation Audit`를 다시 실행해 핵심 게임플레이 규칙을 재확인한다.
+5. `Assets/Scenes/Hub.unity`를 열고 Play 모드에서 흐름을 검증한다.
 
-## 2. Generated Or Refreshed Targets
+## 2. 생성되거나 갱신되는 대상
 
 - `Hub.unity`
 - `Beach.unity`
 - `DeepForest.unity`
 - `AbandonedMine.unity`
 - `WindHill.unity`
-- generated resources and temporary assets
-- generated sprites
-- generated TMP fonts
-- Build Settings scene list
-- shared Canvas UI override asset
+- 생성 자원 및 임시 자산
+- 생성 스프라이트
+- 생성 TMP 폰트
+- Build Settings 씬 목록
+- 공용 Canvas UI 오버라이드 자산
 
-## 3. Work Performed During The Build Flow
+## 3. 빌드 흐름에서 수행하는 작업
 
-- Sync the `Hub` Canvas values into the shared override asset first
-- Regenerate `Beach`, `DeepForest`, `AbandonedMine`, and `WindHill` UI from that shared override baseline
-- Reorganize supported scene world hierarchy around `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, and `Canvas`
-- Normalize generated data assets in `Assets/Generated/GameData` using kebab-case file rules
-- Regenerate body and heading TMP fonts around `maplestoryLightSdf` and `maplestoryBoldSdf`
-- Keep the runtime data manifest aligned at `Assets/Resources/Generated/generated-game-data-manifest.asset`
-- Preserve generated sprite folder roles under both `Assets/Generated/Sprites` and `Assets/Resources/Generated/Sprites`
-- Run `PrototypeSceneAudit` to verify generated scene structure and layout
+- 먼저 `Hub` Canvas 값을 공용 오버라이드 자산에 동기화한다.
+- 그 공용 기준을 바탕으로 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill` UI를 재생성한다.
+- 지원 씬 월드 계층을 `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, `Canvas` 기준으로 다시 정렬한다.
+- `Assets/Generated/GameData`의 생성 데이터 자산을 kebab-case 파일 규칙에 맞춰 정리한다.
+- `maplestoryLightSdf`, `maplestoryBoldSdf` 기준으로 본문/제목 TMP 폰트를 재생성한다.
+- 런타임 데이터 매니페스트를 `Assets/Resources/Generated/generated-game-data-manifest.asset` 기준에 맞춘다.
+- `Assets/Generated/Sprites`와 `Assets/Resources/Generated/Sprites` 양쪽에서 생성 스프라이트 폴더 역할을 유지한다.
+- `PrototypeSceneAudit`를 실행해 생성 씬 구조와 레이아웃을 검증한다.
 
-## 4. Menu Roles
+## 4. 메뉴 역할
 
 - `Prototype Build and Audit`
-  Runs generated asset preparation, base scene rebuild, and generated scene auditing in one default flow
+  생성 자산 준비, 기본 씬 재빌드, 생성 씬 감사를 기본 흐름 한 번에 수행한다.
 - `Rebuild Generated Assets and Scenes`
-  Runs only the generation steps without the audit
+  감사 없이 생성 단계만 수행한다.
 - `Run Generated Scene Audit Only`
-  Rechecks the saved structures of `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, and `WindHill`
+  `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`의 저장 구조를 다시 점검한다.
 - `Organize Active Scene Hierarchy`
-  Re-groups the currently open supported scene around the shared world-group roots and saves it
+  현재 열려 있는 지원 씬을 공용 월드 그룹 루트 기준으로 다시 묶고 저장한다.
 - `Light Automation Audit`
-  Quickly verifies core gameplay rules such as the day loop, hub popup pause, portal locks, and missing-scene guidance on top of structural auditing
+  day-loop, 허브 팝업 일시정지, 포탈 잠금, 누락 씬 안내 같은 핵심 규칙을 구조 감사 위에서 빠르게 확인한다.
 
-## 5. When To Run It Again
+## 5. 다시 실행해야 하는 경우
 
-- When scenes are damaged or generated asset references are missing
-- When generated fonts or sprites need to be recreated
-- When builder-based layout or UI structure needs to be restored
-- When a supported Canvas scene changes shared managed UI values and those changes should propagate to the other supported scenes
-- When day-loop rules, portal locking, or popup pause behavior changes and regression verification is needed
+- 씬이 손상되었거나 생성 자산 참조가 누락되었을 때
+- 생성 폰트나 스프라이트를 다시 만들어야 할 때
+- 빌더 기반 레이아웃 또는 UI 구조를 복원해야 할 때
+- 지원 Canvas 씬의 공용 관리 UI 값이 바뀌었고 그 변경을 다른 지원 씬에도 전파해야 할 때
+- day-loop 규칙, 포탈 잠금, 팝업 일시정지 동작이 바뀌어 회귀 검증이 필요할 때
 
-## 6. Cautions
+## 6. 주의 사항
 
-- Do not patch only builder outputs. Change the source builder code and layout constants first.
-- Saving a supported Canvas scene automatically stores Canvas child `RectTransform`, parent-group and sibling order, deletion state, and `Image`, `TextMeshProUGUI`, and `Button` display values into the shared asset.
-- The shared UI override asset path is `Assets/Resources/Generated/ui-layout-overrides.asset`.
-- Supported scene world hierarchy follows `scene/SCENE_HIERARCHY_GROUPING_RULES.md`.
-- `Prototype Build and Audit` reads the `Hub` baseline first, then reapplies the currently open scene's Canvas values at the end.
-- Runtime-only popup resources that the builder does not generate should remain under `Assets/Resources/Generated/Sprites/UI`.
-- If generated-scene auditing fails, treat the build flow as failed and resolve the cause first.
+- 빌더 출력물만 직접 수정하지 않는다. 먼저 원본 빌더 코드와 레이아웃 상수를 수정한다.
+- 지원 Canvas 씬을 저장하면 Canvas 자식의 `RectTransform`, 부모 그룹과 형제 순서, 삭제 상태, `Image`, `TextMeshProUGUI`, `Button` 표시 값이 공용 자산에 자동 저장된다.
+- 공용 UI 오버라이드 자산 경로는 `Assets/Resources/Generated/ui-layout-overrides.asset`다.
+- 지원 씬 월드 계층은 `scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따른다.
+- `Prototype Build and Audit`는 먼저 `Hub` 기준을 읽고, 마지막에 현재 열려 있는 씬의 Canvas 값을 다시 적용한다.
+- 빌더가 직접 생성하지 않는 런타임 전용 팝업 리소스는 `Assets/Resources/Generated/Sprites/UI` 아래에 유지해야 한다.
+- 생성 씬 감사가 실패하면 빌드 흐름 전체를 실패로 간주하고 원인을 먼저 해결한다.
 
-## 7. Text And Font Notes
+## 7. 텍스트와 폰트 메모
 
-- Generated TMP fonts are recreated based on the project-default font baseline
-- UI and world text generated after the build follow current TMP Settings and builder baseline values
-- Default body font baseline is `maplestoryLightSdf`, and the heading baseline is `maplestoryBoldSdf`
+- 생성 TMP 폰트는 프로젝트 기본 폰트 기준으로 다시 만들어진다.
+- 빌드 후 생성되는 UI와 월드 텍스트는 현재 TMP Settings와 빌더 기준 값을 따른다.
+- 기본 본문 폰트는 `maplestoryLightSdf`, 제목 폰트는 `maplestoryBoldSdf`다.
 
-## 8. Validation Notes
+## 8. 검증 메모
 
-- This document was updated against the current menu structure and code baseline
-- Unity execution and real batch compilation were not directly verified in this task, so editor-menu validation is still needed afterward
+- 이 문서는 현재 메뉴 구조와 코드 기준에 맞춰 갱신되었다.
+- Unity 실행과 실제 배치 컴파일은 이 작업에서 직접 검증하지 못했으므로, 이후 에디터 메뉴 검증이 추가로 필요하다.
