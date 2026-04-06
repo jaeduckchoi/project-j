@@ -231,7 +231,9 @@ namespace Exploration.World
         public static readonly Vector3 HubEntryPosition = PlayerStartPosition;
 
         public static readonly Vector3 RecipeSelectorPosition = new(-1.10f, 2.45f, 0f);
+        public static readonly Vector3 RecipeSelectorScale = new(1.55f, 1.55f, 1f);
         public static readonly Vector3 ServiceCounterPosition = new(-3.10f, 2.20f, 0f);
+        public static readonly Vector3 ServiceCounterScale = new(1.95f, 1.55f, 1f);
 
         public static readonly Vector3 StorageStationPosition = new(8.00f, 4.10f, 0f);
         public static readonly Vector3 StorageStationScale = new(1.80f, 1.35f, 1f);

@@ -100,6 +100,7 @@ namespace Editor
         private const string LightOutlinePanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/light-outline-panel.png";
         private const string LightSolidPanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/light-solid-panel.png";
         private const float PlayerSpritePixelsPerUnit = 1000f;
+        private const float GeneratedTileSpritePixelsPerUnit = 32f;
         private const float PlayerVisualScale = 0.76f;
         private static readonly Vector3 DefaultPlayerRootScale = new(1.5f, 1.5f, 1f);
         private const float WorldTitleFontSize = 5.1f;
@@ -1892,9 +1893,11 @@ namespace Editor
 
         private static void CreateRecipeSelector(Vector3 position, Sprite sprite, RestaurantManager restaurantManager)
         {
-            GameObject go = CreateDecorBlock("RecipeSelector", position, new Vector3(1.55f, 1.55f, 1f), sprite, new Color(0.98f, 0.84f, 0.18f), 8);
+            Vector3 scale = CalculateTileAlignedScale(sprite, HubRoomLayout.RecipeSelectorScale);
+            GameObject go = CreateDecorBlock("RecipeSelector", position, scale, sprite, new Color(0.98f, 0.84f, 0.18f), 8);
+            go.transform.localScale = scale;
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
-            collider.size = Vector2.one;
+            collider.size = GetSpriteTileSize(sprite);
             collider.isTrigger = true;
 
             RecipeSelectorStation station = go.AddComponent<RecipeSelectorStation>();
@@ -1903,14 +1906,17 @@ namespace Editor
             so.FindProperty("promptLabel").stringValue = "메뉴 변경";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 0.80f, 0f), "메뉴판", Color.black, WorldLabelFontSize, 50);
+            TextMeshPro label = CreateWorldTextObject("RecipeSelectorLabel", go.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.80f, 0f), scale), "메뉴판", Color.black, WorldLabelFontSize, 50);
+            ForceChildTileTransform(label.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.80f, 0f), scale), scale, 0.36f);
         }
 
         private static void CreateServiceCounter(Vector3 position, Sprite sprite, RestaurantManager restaurantManager)
         {
-            GameObject go = CreateDecorBlock("ServiceCounter", position, new Vector3(1.95f, 1.55f, 1f), sprite, new Color(0.82f, 0.30f, 0.22f), 8);
+            Vector3 scale = CalculateTileAlignedScale(sprite, HubRoomLayout.ServiceCounterScale);
+            GameObject go = CreateDecorBlock("ServiceCounter", position, scale, sprite, new Color(0.82f, 0.30f, 0.22f), 8);
+            go.transform.localScale = scale;
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
-            collider.size = Vector2.one;
+            collider.size = GetSpriteTileSize(sprite);
             collider.isTrigger = true;
 
             ServiceCounterStation station = go.AddComponent<ServiceCounterStation>();
@@ -1919,7 +1925,8 @@ namespace Editor
             so.FindProperty("promptLabel").stringValue = "영업 시작";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.80f, 0f), "영업대", Color.black, WorldLabelFontSize, 50);
+            TextMeshPro label = CreateWorldTextObject("ServiceCounterLabel", go.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.80f, 0f), scale), "영업대", Color.black, WorldLabelFontSize, 50);
+            ForceChildTileTransform(label.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.80f, 0f), scale), scale, 0.36f);
         }
 
         /// <summary>
@@ -2151,10 +2158,12 @@ namespace Editor
 
         private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform parent = null)
         {
-            GameObject go = CreateDecorBlock(objectName, position, size, sprite, color, 8, parent);
+            Vector3 scale = CalculateTileAlignedScale(sprite, size);
+            GameObject go = CreateDecorBlock(objectName, position, scale, sprite, color, 8, parent);
+            go.transform.localScale = scale;
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = Vector2.one;
+            collider.size = GetSpriteTileSize(sprite);
 
             StorageStation station = go.AddComponent<StorageStation>();
             SerializedObject so = new(station);
@@ -2172,15 +2181,18 @@ namespace Editor
             };
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.72f, 0f), label, Color.black, WorldLabelFontSize, 50);
+            TextMeshPro labelText = CreateWorldTextObject(objectName + "_Label", go.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.72f, 0f), scale), label, Color.black, WorldLabelFontSize, 50);
+            ForceChildTileTransform(labelText.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.72f, 0f), scale), scale, 0.36f);
         }
 
         private static void CreateUpgradeStation(Vector3 position, Vector3 size, Sprite sprite, Color color, UpgradeManager upgradeManager)
         {
-            GameObject go = CreateDecorBlock("UpgradeStation", position, size, sprite, color, 8);
+            Vector3 scale = CalculateTileAlignedScale(sprite, size);
+            GameObject go = CreateDecorBlock("UpgradeStation", position, scale, sprite, color, 8);
+            go.transform.localScale = scale;
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = Vector2.one;
+            collider.size = GetSpriteTileSize(sprite);
 
             UpgradeStation station = go.AddComponent<UpgradeStation>();
             SerializedObject so = new(station);
@@ -2188,17 +2200,28 @@ namespace Editor
             so.FindProperty("promptLabel").stringValue = "작업대 사용";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 0.68f, 0f), "작업대", Color.black, WorldLabelFontSize, 50);
+            TextMeshPro label = CreateWorldTextObject("UpgradeStationLabel", go.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.68f, 0f), scale), "작업대", Color.black, WorldLabelFontSize, 50);
+            ForceChildTileTransform(label.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.68f, 0f), scale), scale, 0.36f);
         }
 
         private static void CreateGatherable(string objectName, Vector3 position, Sprite sprite, ResourceData resource, ToolType requiredToolType, int minAmount, int maxAmount, string label)
         {
-            CreateFeaturePad(objectName + "_Pad", position + new Vector3(0f, -0.35f, 0f), new Vector3(1.6f, 0.5f, 1f), sprite, new Color(0f, 0f, 0f, 0.12f));
+            Vector3 padScale = CalculateTileAlignedScale(sprite, new Vector3(1.6f, 0.5f, 1f));
+            GameObject pad = CreateDecorBlock(
+                objectName + "_Pad",
+                position + new Vector3(0f, -0.35f, 0f),
+                padScale,
+                sprite,
+                new Color(0f, 0f, 0f, 0.12f),
+                3);
+            pad.transform.localScale = padScale;
 
-            GameObject go = CreateDecorBlock(objectName, position, new Vector3(1.05f, 1.05f, 1f), sprite, Color.white, 6);
+            Vector3 scale = CalculateTileAlignedScale(sprite, new Vector3(1.05f, 1.05f, 1f));
+            GameObject go = CreateDecorBlock(objectName, position, scale, sprite, Color.white, 6);
+            go.transform.localScale = scale;
             CircleCollider2D collider = go.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.5f;
+            collider.radius = GetSpriteTileSize(sprite).x * 0.5f;
 
             GatherableResource gatherable = go.AddComponent<GatherableResource>();
             SerializedObject so = new(gatherable);
@@ -2214,7 +2237,8 @@ namespace Editor
                 .SetValue(gatherable, resource);
             EditorUtility.SetDirty(gatherable);
 
-            CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.64f, 0f), label, Color.black, WorldLabelSmallFontSize, 45);
+            TextMeshPro labelText = CreateWorldTextObject(objectName + "_Label", go.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.64f, 0f), scale), label, Color.black, WorldLabelSmallFontSize, 45);
+            ForceChildTileTransform(labelText.transform, ResolveScaledLocalOffset(new Vector3(0f, 0.64f, 0f), scale), scale, 0.36f);
         }
 
         private static void CreateGuideTriggerZone(string objectName, Vector3 position, Vector2 size, string hintId, string guideText)
@@ -3989,10 +4013,58 @@ namespace Editor
             if (!string.IsNullOrWhiteSpace(mirroredResourceAssetPath))
             {
                 EnsureColorSpriteAssetExists(mirroredResourceAssetPath, color);
-                ConfigureSpriteAsset(mirroredResourceAssetPath, 100f);
+                ConfigureSpriteAsset(mirroredResourceAssetPath, GeneratedTileSpritePixelsPerUnit);
             }
 
-            return ConfigureSpriteAsset(assetPath, 100f);
+            return ConfigureSpriteAsset(assetPath, GeneratedTileSpritePixelsPerUnit);
+        }
+
+        /// <summary>
+        /// 생성 월드 스프라이트는 32px을 1타일 기준으로 맞추고, 원본 해상도가 큰 경우엔 루트 스케일로 목표 타일 크기를 다시 맞춘다.
+        /// </summary>
+        private static Vector3 CalculateTileAlignedScale(Sprite sprite, Vector3 targetTileSize)
+        {
+            Vector2 spriteTileSize = GetSpriteTileSize(sprite);
+            if (spriteTileSize.x <= 0.0001f || spriteTileSize.y <= 0.0001f)
+            {
+                return targetTileSize;
+            }
+
+            return new Vector3(
+                targetTileSize.x / spriteTileSize.x,
+                targetTileSize.y / spriteTileSize.y,
+                targetTileSize.z);
+        }
+
+        private static Vector2 GetSpriteTileSize(Sprite sprite)
+        {
+            if (sprite == null)
+            {
+                return Vector2.one;
+            }
+
+            return new Vector2(
+                sprite.rect.width / GeneratedTileSpritePixelsPerUnit,
+                sprite.rect.height / GeneratedTileSpritePixelsPerUnit);
+        }
+
+        private static Vector3 ResolveScaledLocalOffset(Vector3 desiredWorldOffset, Vector3 parentScale)
+        {
+            float resolvedX = Mathf.Abs(parentScale.x) > 0.0001f ? desiredWorldOffset.x / parentScale.x : desiredWorldOffset.x;
+            float resolvedY = Mathf.Abs(parentScale.y) > 0.0001f ? desiredWorldOffset.y / parentScale.y : desiredWorldOffset.y;
+            float resolvedZ = Mathf.Abs(parentScale.z) > 0.0001f ? desiredWorldOffset.z / parentScale.z : desiredWorldOffset.z;
+            return new Vector3(resolvedX, resolvedY, resolvedZ);
+        }
+
+        private static void ForceChildTileTransform(Transform target, Vector3 localPosition, Vector3 parentScale, float desiredWorldScale)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            target.localPosition = localPosition;
+            target.localScale = ResolveScaledLocalOffset(Vector3.one * desiredWorldScale, parentScale);
         }
 
         /// <summary>
