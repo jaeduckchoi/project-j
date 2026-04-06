@@ -103,6 +103,14 @@ UI는 탐험 화면을 과하게 가리지 않으면서도 `상태 확인 -> 판
   지원 Canvas 씬 저장 시 공용 UI 오버라이드 자산을 다시 동기화하고, 같은 관리 대상 변경을 다른 지원 씬에도 전파한다.
 - 공용 자산 `Assets/Resources/Generated/ui-layout-overrides.asset`는 첫 동기화 시 자동 생성된다.
 - `Hub` 저장 시 공용 HUD 기준이 갱신되며, 탐험 씬 저장 시에는 해당 씬에서 관리하는 값만 공용 기준 위에 덮어쓴다.
+- 빌더 관리 월드 오브젝트는 지원 씬에서 같은 이름의 오브젝트 값을 저장하면 빌더가 `Transform`, 활성 상태, 월드 스프라이트·텍스트·콜라이더와 포털·지대·채집·스테이션 수치를 다시 반영한다.
+- 다만 `GameManager`, `UIManager`, `blockingCollider`처럼 씬 오브젝트를 가리키는 참조는 그대로 복사하지 않고 빌더가 새 씬에서 다시 연결해야 하며, 이름이 바뀌면 동기화되지 않는다.
+
+### Canvas UI 복구 원칙
+
+- 과거 커밋 기준으로 Canvas UI를 복구할 때는 전체 씬 롤백보다 `ui-layout-overrides.asset`, 필요한 TMP 폰트 자산, 씬 `Canvas` 하위, `UIManager` 직렬화를 함께 맞추는 방식을 우선한다.
+- `GuideHelpButton`, `ActionAccent`처럼 관리 대상 UI의 존재 여부가 바뀐 경우에는 `removedObjectNames`와 실제 씬 `Canvas` 구조, `UIManager` 직렬화가 서로 일치해야 하며, 빌더와 `UIManager`도 같은 제거 기준을 사용해야 한다.
+- Unity 씬 YAML을 직접 편집할 때는 파일 맨 앞 `%YAML 1.1`, `%TAG !u! tag:unity3d.com,2011:` 헤더를 보존해야 한다.
 
 ## 8. 생성 UI 리소스 기준
 

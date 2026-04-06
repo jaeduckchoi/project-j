@@ -74,9 +74,17 @@
 - 별도 수동 씬 감사보다 빌드 흐름 안의 자동 감사를 우선한다.
 - 지원하는 Canvas 씬 저장 시 `RectTransform`, 부모 그룹과 형제 순서, 삭제 상태, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값, `HUDActionGroup` 또는 `HUDPanelButtonGroup` 이름 오버라이드가 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장되어야 한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 모두 같은 오버라이드 자산 기준을 사용해야 한다.
+- 지원 씬에서 빌더 관리 오브젝트 값을 직접 바꾼 경우 빌더는 같은 오브젝트 이름 기준으로 `Transform`, 활성 상태, `SpriteRenderer`, 월드 `TextMeshPro`, `Collider2D`, `Camera`, 포털·지대·채집·스테이션·매니저의 안전한 직렬화 값만 다시 반영하고, 씬 오브젝트 참조는 빌더가 새 씬에 맞게 다시 연결해야 한다.
+- 위 오브젝트 값 오버라이드는 이름 기준이므로 지원 씬의 빌더 관리 오브젝트 이름이 바뀌면 빌더 코드와 감사 규칙도 함께 갱신한다.
 - 지원 씬의 월드 계층은 `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, `Canvas` 구조에 맞춘다. 이 구조가 바뀌면 `PrototypeSceneHierarchyCatalog`, 정리기, 감사 로직을 함께 갱신한다.
 - `Tools > Jonggu Restaurant` 아래 메뉴를 추가하거나 바꿀 때는 기본적으로 한국어 라벨을 사용하고, 자주 쓰는 빌드 도구보다 유지보수 도구가 아래쪽에 오도록 `MenuItem` priority를 조정한다.
 - 자주 깨지는 핵심 규칙은 `Light Automation Audit`가 다루므로, day-cycle 흐름, 포탈 잠금, 팝업 일시정지 규칙을 바꾸면 해당 감사도 함께 갱신한다.
+
+### Canvas UI 복구 원칙
+
+- Canvas UI를 과거 커밋 기준으로 복구할 때는 전체 씬을 통째로 되돌리지 말고 `Assets/Resources/Generated/ui-layout-overrides.asset`, 필요한 TMP 폰트 자산, 지원 씬의 `Canvas` 하위와 `UIManager` 직렬화만 기준 커밋에 맞춰 복구한다.
+- `GuideHelpButton`, `ActionAccent`처럼 후속 커밋에서 추가되거나 제거된 관리 대상 UI는 코드 삭제보다 `ui-layout-overrides.asset`의 `removedObjectNames`, 씬 `Canvas` 직렬화, `UIManager` 직렬화를 함께 맞춰 복구하고, 빌더와 `UIManager`가 같은 제거 기준을 쓰는지 확인한다.
+- Unity 씬 YAML을 수동으로 편집할 때는 `%YAML 1.1`, `%TAG !u! tag:unity3d.com,2011:` 헤더를 보존해야 하며, 복구 후에는 `Canvas` 바깥 직렬화가 바뀌지 않았는지 확인한다.
 
 ## 7. 주석과 문서 규칙
 

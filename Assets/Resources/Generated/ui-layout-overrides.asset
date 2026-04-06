@@ -13,69 +13,48 @@ MonoBehaviour:
   m_Name: ui-layout-overrides
   m_EditorClassIdentifier: Assembly-CSharp::UI.Layout.PrototypeUISceneLayoutSettings
   layoutEntries:
-  - objectName: ActionAccent
-    layout:
-      anchorMin: {x: 1, y: 0}
-      anchorMax: {x: 1, y: 0}
-      pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -18, y: 98}
-      sizeDelta: {x: 198, y: 6}
   - objectName: ActionCaption
     layout:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
       pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -28, y: 74}
+      anchoredPosition: {x: -10, y: 70}
       sizeDelta: {x: 120, y: 22}
   - objectName: ActionDock
     layout:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
       pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -18, y: 18}
-      sizeDelta: {x: 198, y: 86}
+      anchoredPosition: {x: -18, y: 4}
+      sizeDelta: {x: 198, y: 100}
   - objectName: DayPhaseText
     layout:
       anchorMin: {x: 1, y: 1}
       anchorMax: {x: 1, y: 1}
       pivot: {x: 1, y: 1}
-      anchoredPosition: {x: -28, y: -24}
-      sizeDelta: {x: 210, y: 24}
+      anchoredPosition: {x: -18, y: -10}
+      sizeDelta: {x: 286, y: 52}
   - objectName: GoldText
     layout:
       anchorMin: {x: 0, y: 1}
       anchorMax: {x: 0, y: 1}
       pivot: {x: 0, y: 1}
-      anchoredPosition: {x: 26, y: -28}
-      sizeDelta: {x: 286, y: 30}
+      anchoredPosition: {x: 18, y: -10}
+      sizeDelta: {x: 286, y: 52}
   - objectName: GuideBackdrop
     layout:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
       anchoredPosition: {x: 0, y: 154}
-      sizeDelta: {x: 860, y: 58}
-  - objectName: GuideHelpButton
-    layout:
-      anchorMin: {x: 0.5, y: 0}
-      anchorMax: {x: 0.5, y: 0}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 454, y: 154}
-      sizeDelta: {x: 34, y: 34}
-  - objectName: GuideHelpButton_Label
-    layout:
-      anchorMin: {x: 0, y: 0}
-      anchorMax: {x: 1, y: 1}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 0}
-      sizeDelta: {x: 0, y: 0}
+      sizeDelta: {x: 610, y: 58}
   - objectName: GuideText
     layout:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 128}
-      sizeDelta: {x: 900, y: 40}
+      anchoredPosition: {x: 0, y: 9}
+      sizeDelta: {x: 600, y: 40}
   - objectName: HUDActionGroup
     layout:
       anchorMin: {x: 0, y: 0}
@@ -123,15 +102,15 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 86}
-      sizeDelta: {x: 744, y: 58}
+      anchoredPosition: {x: 0, y: 92.7}
+      sizeDelta: {x: 610, y: 58}
   - objectName: InteractionPromptText
     layout:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 92}
-      sizeDelta: {x: 676, y: 40}
+      anchoredPosition: {x: 0, y: 10}
+      sizeDelta: {x: 600, y: 40}
   - objectName: InventoryText
     layout:
       anchorMin: {x: 0.5, y: 0.5}
@@ -144,7 +123,7 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 184, y: 18}
+      anchoredPosition: {x: 184, y: 14}
       sizeDelta: {x: 164, y: 44}
   - objectName: MaterialPanelButton_Label
     layout:
@@ -158,7 +137,7 @@ MonoBehaviour:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
       pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -28, y: 18}
+      anchoredPosition: {x: -12, y: 12}
       sizeDelta: {x: 156, y: 40}
   - objectName: NextDayButton_Label
     layout:
@@ -361,7 +340,7 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: -184, y: 18}
+      anchoredPosition: {x: -184, y: 14}
       sizeDelta: {x: 164, y: 44}
   - objectName: RecipePanelButton_Label
     layout:
@@ -375,15 +354,15 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 186}
-      sizeDelta: {x: 980, y: 64}
+      anchoredPosition: {x: 0, y: 10}
+      sizeDelta: {x: 600, y: 64}
   - objectName: ResultBackdrop
     layout:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
       anchoredPosition: {x: 0, y: 232}
-      sizeDelta: {x: 936, y: 84}
+      sizeDelta: {x: 610, y: 84}
   - objectName: SelectedRecipeText
     layout:
       anchorMin: {x: 0.5, y: 0.5}
@@ -396,7 +375,7 @@ MonoBehaviour:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
       pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -28, y: 18}
+      anchoredPosition: {x: -12, y: 12}
       sizeDelta: {x: 156, y: 40}
   - objectName: SkipExplorationButton_Label
     layout:
@@ -410,7 +389,7 @@ MonoBehaviour:
       anchorMin: {x: 1, y: 0}
       anchorMax: {x: 1, y: 0}
       pivot: {x: 1, y: 0}
-      anchoredPosition: {x: -19, y: 933}
+      anchoredPosition: {x: -12, y: 12}
       sizeDelta: {x: 156, y: 40}
   - objectName: SkipServiceButton_Label
     layout:
@@ -426,13 +405,6 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0.5}
       anchoredPosition: {x: 0, y: -112}
       sizeDelta: {x: 780, y: 488}
-  - objectName: 'TMP SubMeshUI [maplestoryBoldSdfMaterial + maplestoryBoldSdfAtlas1]'
-    layout:
-      anchorMin: {x: 0, y: 0}
-      anchorMax: {x: 1, y: 1}
-      pivot: {x: 0.5, y: 0.5}
-      anchoredPosition: {x: 0, y: 0}
-      sizeDelta: {x: 0, y: 0}
   - objectName: TopLeftPanel
     layout:
       anchorMin: {x: 0, y: 1}
@@ -445,7 +417,7 @@ MonoBehaviour:
       anchorMin: {x: 0.5, y: 0}
       anchorMax: {x: 0.5, y: 0}
       pivot: {x: 0.5, y: 0}
-      anchoredPosition: {x: 0, y: 18}
+      anchoredPosition: {x: 0, y: 14}
       sizeDelta: {x: 164, y: 44}
   - objectName: UpgradePanelButton_Label
     layout:
@@ -462,17 +434,11 @@ MonoBehaviour:
       anchoredPosition: {x: 0, y: -112}
       sizeDelta: {x: 780, y: 488}
   imageEntries:
-  - objectName: ActionAccent
-    overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.94, g: 0.74, b: 0.1, a: 1}
-    preserveAspect: 0
   - objectName: ActionDock
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 3abf163e0fb3d0c4893313758d7a8658, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
     preserveAspect: 0
   - objectName: GuideBackdrop
     overrideSprite: 1
@@ -480,15 +446,9 @@ MonoBehaviour:
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
-  - objectName: GuideHelpButton
-    overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 54f5244b2eb2e984e980d92317f5d3c4, type: 3}
-    type: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
-    preserveAspect: 0
   - objectName: HUDPanelButtonGroup
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 3abf163e0fb3d0c4893313758d7a8658, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
@@ -500,19 +460,19 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: MaterialPanelButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 21300000, guid: d3cd8d115696f4549bdaa3ba49dce873, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: NextDayButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: PhaseBadge
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 3abf163e0fb3d0c4893313758d7a8658, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
@@ -608,7 +568,7 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: RecipePanelButton
     overrideSprite: 1
-    sprite: {fileID: 8368325438045324623, guid: 11220f2c3f9d9894abd1c1ca7e425ab4, type: 3}
+    sprite: {fileID: 21300000, guid: d3cd8d115696f4549bdaa3ba49dce873, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
@@ -620,15 +580,15 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: SkipExplorationButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: SkipServiceButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: TopLeftPanel
     overrideSprite: 1
@@ -638,9 +598,9 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: UpgradePanelButton
     overrideSprite: 1
-    sprite: {fileID: 0}
-    type: 0
-    color: {r: 0.18, g: 0.18, b: 0.18, a: 0.82}
+    sprite: {fileID: 21300000, guid: d3cd8d115696f4549bdaa3ba49dce873, type: 3}
+    type: 1
+    color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   textEntries:
   - objectName: ActionCaption
@@ -699,25 +659,6 @@ MonoBehaviour:
     lineSpacing: 0
     paragraphSpacing: 0
     margin: {x: 10, y: 8, z: 10, w: 8}
-    isRightToLeftText: 0
-  - objectName: GuideHelpButton_Label
-    overrideFont: 1
-    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
-    fontSize: 20
-    color: {r: 1, g: 1, b: 1, a: 1}
-    alignment: 514
-    raycastTarget: 0
-    enableAutoSizing: 1
-    fontSizeMin: 14
-    fontSizeMax: 20
-    fontStyle: 1
-    textWrappingMode: 0
-    overflowMode: 3
-    characterSpacing: 0
-    wordSpacing: 0
-    lineSpacing: 0
-    paragraphSpacing: 0
-    margin: {x: 8, y: 6, z: 8, w: 6}
     isRightToLeftText: 0
   - objectName: GuideText
     overrideFont: 1
@@ -1119,18 +1060,6 @@ MonoBehaviour:
     margin: {x: 10, y: 8, z: 10, w: 8}
     isRightToLeftText: 0
   buttonEntries:
-  - objectName: GuideHelpButton
-    interactable: 1
-    transition: 1
-    colors:
-      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-      m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-      m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-      m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-      m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-      m_ColorMultiplier: 1
-      m_FadeDuration: 0.1
-    navigationMode: 3
   - objectName: MaterialPanelButton
     interactable: 1
     transition: 1
@@ -1264,42 +1193,33 @@ MonoBehaviour:
       m_FadeDuration: 0.1
     navigationMode: 3
   hierarchyEntries:
-  - objectName: ActionAccent
-    parentName: HUDActionGroup
-    siblingIndex: 1
   - objectName: ActionCaption
-    parentName: HUDActionGroup
-    siblingIndex: 2
+    parentName: ActionDock
+    siblingIndex: 0
   - objectName: ActionDock
     parentName: HUDActionGroup
     siblingIndex: 0
   - objectName: DayPhaseText
-    parentName: HUDStatusGroup
-    siblingIndex: 3
+    parentName: PhaseBadge
+    siblingIndex: 0
   - objectName: GoldText
-    parentName: HUDStatusGroup
-    siblingIndex: 2
+    parentName: TopLeftPanel
+    siblingIndex: 0
   - objectName: GuideBackdrop
     parentName: HUDOverlayGroup
     siblingIndex: 0
-  - objectName: GuideHelpButton
-    parentName: HUDOverlayGroup
-    siblingIndex: 4
-  - objectName: GuideHelpButton_Label
-    parentName: GuideHelpButton
-    siblingIndex: 0
   - objectName: GuideText
-    parentName: HUDOverlayGroup
-    siblingIndex: 2
+    parentName: GuideBackdrop
+    siblingIndex: 0
   - objectName: HUDActionGroup
     parentName: HUDRoot
     siblingIndex: 1
   - objectName: HUDBottomGroup
     parentName: HUDRoot
-    siblingIndex: 2
+    siblingIndex: 3
   - objectName: HUDOverlayGroup
     parentName: HUDRoot
-    siblingIndex: 3
+    siblingIndex: 2
   - objectName: HUDPanelButtonGroup
     parentName: HUDRoot
     siblingIndex: 5
@@ -1313,8 +1233,8 @@ MonoBehaviour:
     parentName: HUDRoot
     siblingIndex: 4
   - objectName: InteractionPromptText
-    parentName: HUDRoot
-    siblingIndex: 6
+    parentName: InteractionPromptBackdrop
+    siblingIndex: 0
   - objectName: InventoryText
     parentName: PopupFrameLeft
     siblingIndex: 3
@@ -1325,8 +1245,8 @@ MonoBehaviour:
     parentName: MaterialPanelButton
     siblingIndex: 0
   - objectName: NextDayButton
-    parentName: HUDBottomGroup
-    siblingIndex: 2
+    parentName: ActionDock
+    siblingIndex: 3
   - objectName: NextDayButton_Label
     parentName: NextDayButton
     siblingIndex: 0
@@ -1418,8 +1338,8 @@ MonoBehaviour:
     parentName: RecipePanelButton
     siblingIndex: 0
   - objectName: RestaurantResultText
-    parentName: HUDOverlayGroup
-    siblingIndex: 3
+    parentName: ResultBackdrop
+    siblingIndex: 0
   - objectName: ResultBackdrop
     parentName: HUDOverlayGroup
     siblingIndex: 1
@@ -1427,23 +1347,20 @@ MonoBehaviour:
     parentName: PopupFrameRight
     siblingIndex: 3
   - objectName: SkipExplorationButton
-    parentName: HUDBottomGroup
-    siblingIndex: 0
+    parentName: ActionDock
+    siblingIndex: 1
   - objectName: SkipExplorationButton_Label
     parentName: SkipExplorationButton
     siblingIndex: 0
   - objectName: SkipServiceButton
-    parentName: HUDBottomGroup
-    siblingIndex: 1
+    parentName: ActionDock
+    siblingIndex: 2
   - objectName: SkipServiceButton_Label
     parentName: SkipServiceButton
     siblingIndex: 0
   - objectName: StorageText
     parentName: PopupFrameRight
     siblingIndex: 2
-  - objectName: 'TMP SubMeshUI [maplestoryBoldSdfMaterial + maplestoryBoldSdfAtlas1]'
-    parentName: SkipServiceButton_Label
-    siblingIndex: 0
   - objectName: TopLeftPanel
     parentName: HUDStatusGroup
     siblingIndex: 0
@@ -1457,6 +1374,8 @@ MonoBehaviour:
     parentName: PopupFrameRight
     siblingIndex: 4
   removedObjectNames:
+  - ActionAccent
+  - GuideHelpButton
   - PopupRightItemBox01
   - PopupRightItemBox02
   - PopupRightItemBox03

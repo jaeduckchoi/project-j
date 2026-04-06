@@ -110,6 +110,49 @@ namespace Editor
         private static TMP_FontAsset _generatedHeadingFont;
         private static readonly Dictionary<string, Material> CachedWorldTextMaterials = new(StringComparer.Ordinal);
         private static readonly Dictionary<string, SceneTransformSnapshot> CachedSceneTransforms = new(StringComparer.Ordinal);
+        private static readonly Dictionary<string, bool> CachedSceneObjectActiveStates = new(StringComparer.Ordinal);
+        private static readonly Dictionary<string, Dictionary<Type, SceneSerializedComponentSnapshot>> CachedSceneComponentOverrides = new(StringComparer.Ordinal);
+        private static readonly Type[] SceneOverrideComponentTypes =
+        {
+            typeof(SpriteRenderer),
+            typeof(TextMeshPro),
+            typeof(MeshRenderer),
+            typeof(Rigidbody2D),
+            typeof(BoxCollider2D),
+            typeof(CircleCollider2D),
+            typeof(CapsuleCollider2D),
+            typeof(Camera),
+            typeof(AudioListener),
+            typeof(Canvas),
+            typeof(CanvasScaler),
+            typeof(GraphicRaycaster),
+            typeof(InventoryManager),
+            typeof(StorageManager),
+            typeof(EconomyManager),
+            typeof(ToolManager),
+            typeof(DayCycleManager),
+            typeof(UpgradeManager),
+            typeof(GameManager),
+            typeof(RestaurantManager),
+            typeof(UIManager),
+            typeof(InteractionDetector),
+            typeof(PlayerController),
+            typeof(PlayerDirectionalSprite),
+            typeof(CameraFollow),
+            typeof(PlayerBoundsLimiter),
+            typeof(ScenePortal),
+            typeof(SceneSpawnPoint),
+            typeof(GuideTriggerZone),
+            typeof(MovementModifierZone),
+            typeof(DarknessZone),
+            typeof(WindGustZone),
+            typeof(GatherableResource),
+            typeof(RecipeSelectorStation),
+            typeof(ServiceCounterStation),
+            typeof(StorageStation),
+            typeof(UpgradeStation),
+            typeof(HubTodayMenuDisplay)
+        };
 
         private static readonly string[] HubPopupSceneImageNames =
         {
@@ -164,6 +207,78 @@ namespace Editor
             public Vector3 LocalPosition { get; }
             public Quaternion LocalRotation { get; }
             public Vector3 LocalScale { get; }
+        }
+
+        private enum SceneSerializedValueKind
+        {
+            Boolean,
+            Integer,
+            Float,
+            String,
+            Color,
+            ObjectReference,
+            Vector2,
+            Vector3,
+            Vector4,
+            Quaternion,
+            Rect
+        }
+
+        private readonly struct SceneSerializedPropertySnapshot
+        {
+            public SceneSerializedPropertySnapshot(
+                string propertyPath,
+                SceneSerializedValueKind valueKind,
+                bool boolValue = default,
+                int intValue = default,
+                float floatValue = default,
+                string stringValue = null,
+                Color colorValue = default,
+                UnityEngine.Object objectReferenceValue = null,
+                Vector2 vector2Value = default,
+                Vector3 vector3Value = default,
+                Vector4 vector4Value = default,
+                Quaternion quaternionValue = default,
+                Rect rectValue = default)
+            {
+                PropertyPath = propertyPath;
+                ValueKind = valueKind;
+                BoolValue = boolValue;
+                IntValue = intValue;
+                FloatValue = floatValue;
+                StringValue = stringValue;
+                ColorValue = colorValue;
+                ObjectReferenceValue = objectReferenceValue;
+                Vector2Value = vector2Value;
+                Vector3Value = vector3Value;
+                Vector4Value = vector4Value;
+                QuaternionValue = quaternionValue;
+                RectValue = rectValue;
+            }
+
+            public string PropertyPath { get; }
+            public SceneSerializedValueKind ValueKind { get; }
+            public bool BoolValue { get; }
+            public int IntValue { get; }
+            public float FloatValue { get; }
+            public string StringValue { get; }
+            public Color ColorValue { get; }
+            public UnityEngine.Object ObjectReferenceValue { get; }
+            public Vector2 Vector2Value { get; }
+            public Vector3 Vector3Value { get; }
+            public Vector4 Vector4Value { get; }
+            public Quaternion QuaternionValue { get; }
+            public Rect RectValue { get; }
+        }
+
+        private sealed class SceneSerializedComponentSnapshot
+        {
+            public SceneSerializedComponentSnapshot(IReadOnlyList<SceneSerializedPropertySnapshot> properties)
+            {
+                Properties = properties ?? Array.Empty<SceneSerializedPropertySnapshot>();
+            }
+
+            public IReadOnlyList<SceneSerializedPropertySnapshot> Properties { get; }
         }
 
         private sealed class ResourceLibrary
@@ -665,7 +780,7 @@ namespace Editor
 
         private static void BuildHubScene(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
         {
-            LoadSceneObjectScaleOverrides(SceneRoot + "/Hub.unity");
+            LoadSceneObjectOverrides(SceneRoot + "/Hub.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/Hub.unity");
             CacheHubPopupSceneImages(SceneRoot + "/Hub.unity");
             try
@@ -683,14 +798,15 @@ namespace Editor
                     mapHeight,
                     new Color(0.88f, 0.80f, 0.70f),
                     HubRoomLayout.ScreenOrthographicSize);
-                cameraBounds.transform.position = HubRoomLayout.CameraPosition;
+                ApplySceneTransformOverride(cameraBounds.transform, cameraBounds.name, HubRoomLayout.CameraPosition, Quaternion.identity, Vector3.one, useLocalSpace: false);
                 cameraBounds.size = HubRoomLayout.CameraSize;
+                ApplySceneComponentOverride(cameraBounds, cameraBounds.name);
 
                 BoxCollider2D movementBounds = CreateMovementBounds(
                     "HubMovementBounds",
                     HubRoomLayout.MovementBoundsSize.x,
                     HubRoomLayout.MovementBoundsSize.y);
-                movementBounds.transform.position = HubRoomLayout.MovementBoundsPosition;
+                ApplySceneTransformOverride(movementBounds.transform, movementBounds.name, HubRoomLayout.MovementBoundsPosition, Quaternion.identity, Vector3.one, useLocalSpace: false);
                 AttachPlayerBoundsLimiter(player, movementBounds);
 
                 CreateHubLayerRoots(out Transform hubBackgroundLayer, out Transform hubObjectLayer, out Transform hubForegroundLayer, out Transform hubTableGroup);
@@ -740,13 +856,15 @@ namespace Editor
             finally
             {
                 CachedSceneTransforms.Clear();
+                CachedSceneObjectActiveStates.Clear();
+                CachedSceneComponentOverrides.Clear();
                 CachedHubPopupSceneImages.Clear();
             }
         }
 
         private static void BuildBeachScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
-            LoadSceneObjectScaleOverrides(SceneRoot + "/Beach.unity");
+            LoadSceneObjectOverrides(SceneRoot + "/Beach.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/Beach.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -784,6 +902,8 @@ namespace Editor
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/Beach.unity");
             CachedSceneTransforms.Clear();
+            CachedSceneObjectActiveStates.Clear();
+            CachedSceneComponentOverrides.Clear();
         }
 
         /// <summary>
@@ -1384,7 +1504,7 @@ namespace Editor
 
         private static void BuildDeepForestScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
-            LoadSceneObjectScaleOverrides(SceneRoot + "/DeepForest.unity");
+            LoadSceneObjectOverrides(SceneRoot + "/DeepForest.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/DeepForest.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1423,11 +1543,13 @@ namespace Editor
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/DeepForest.unity");
             CachedSceneTransforms.Clear();
+            CachedSceneObjectActiveStates.Clear();
+            CachedSceneComponentOverrides.Clear();
         }
 
         private static void BuildAbandonedMineScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
-            LoadSceneObjectScaleOverrides(SceneRoot + "/AbandonedMine.unity");
+            LoadSceneObjectOverrides(SceneRoot + "/AbandonedMine.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/AbandonedMine.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1465,11 +1587,13 @@ namespace Editor
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/AbandonedMine.unity");
             CachedSceneTransforms.Clear();
+            CachedSceneObjectActiveStates.Clear();
+            CachedSceneComponentOverrides.Clear();
         }
 
         private static void BuildWindHillScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
-            LoadSceneObjectScaleOverrides(SceneRoot + "/WindHill.unity");
+            LoadSceneObjectOverrides(SceneRoot + "/WindHill.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/WindHill.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1520,6 +1644,8 @@ namespace Editor
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/WindHill.unity");
             CachedSceneTransforms.Clear();
+            CachedSceneObjectActiveStates.Clear();
+            CachedSceneComponentOverrides.Clear();
         }
 
         private static GameObject CreateGameManager(string hubSceneName, string explorationSceneName, ResourceLibrary resources)
@@ -1575,12 +1701,23 @@ namespace Editor
                 upgradeSo.ApplyModifiedPropertiesWithoutUndo();
             }
 
+            ApplySceneComponentOverride(inventory, go.name);
+            ApplySceneComponentOverride(storage, go.name);
+            ApplySceneComponentOverride(economy, go.name);
+            ApplySceneComponentOverride(toolManager, go.name);
+            ApplySceneComponentOverride(dayCycleManager, go.name);
+            ApplySceneComponentOverride(upgradeManager, go.name);
+            ApplySceneComponentOverride(gameManager, go.name);
+            ApplySceneActiveOverride(go, go.name);
+
             return go;
         }
 
-        private static void LoadSceneObjectScaleOverrides(string scenePath)
+        private static void LoadSceneObjectOverrides(string scenePath)
         {
             CachedSceneTransforms.Clear();
+            CachedSceneObjectActiveStates.Clear();
+            CachedSceneComponentOverrides.Clear();
 
             if (string.IsNullOrWhiteSpace(scenePath) || !File.Exists(scenePath))
             {
@@ -1610,7 +1747,7 @@ namespace Editor
                         continue;
                     }
 
-                    CacheTransformScaleRecursive(root.transform);
+                    CacheSceneObjectOverridesRecursive(root.transform);
                 }
             }
             finally
@@ -1622,7 +1759,7 @@ namespace Editor
             }
         }
 
-        private static void CacheTransformScaleRecursive(Transform current)
+        private static void CacheSceneObjectOverridesRecursive(Transform current)
         {
             if (current == null)
             {
@@ -1631,18 +1768,261 @@ namespace Editor
 
             if (!string.IsNullOrWhiteSpace(current.name))
             {
+                CachedSceneObjectActiveStates[current.name] = current.gameObject.activeSelf;
                 CachedSceneTransforms[current.name] = new SceneTransformSnapshot(
                     current.position,
                     current.rotation,
                     current.localPosition,
                     current.localRotation,
                     current.localScale);
+
+                CacheSupportedComponentOverrides(current.gameObject);
             }
 
             for (int index = 0; index < current.childCount; index++)
             {
-                CacheTransformScaleRecursive(current.GetChild(index));
+                CacheSceneObjectOverridesRecursive(current.GetChild(index));
             }
+        }
+
+        private static void CacheSupportedComponentOverrides(GameObject gameObject)
+        {
+            if (gameObject == null || string.IsNullOrWhiteSpace(gameObject.name))
+            {
+                return;
+            }
+
+            Dictionary<Type, SceneSerializedComponentSnapshot> objectOverrides = null;
+
+            foreach (Type componentType in SceneOverrideComponentTypes)
+            {
+                Component component = gameObject.GetComponent(componentType);
+                if (component == null || !TryCreateSceneSerializedComponentSnapshot(component, out SceneSerializedComponentSnapshot snapshot))
+                {
+                    continue;
+                }
+
+                objectOverrides ??= new Dictionary<Type, SceneSerializedComponentSnapshot>();
+                objectOverrides[componentType] = snapshot;
+            }
+
+            if (objectOverrides != null && objectOverrides.Count > 0)
+            {
+                CachedSceneComponentOverrides[gameObject.name] = objectOverrides;
+            }
+        }
+
+        private static bool TryCreateSceneSerializedComponentSnapshot(
+            Component component,
+            out SceneSerializedComponentSnapshot snapshot)
+        {
+            snapshot = null;
+
+            if (component == null)
+            {
+                return false;
+            }
+
+            SerializedObject serializedObject = new(component);
+            SerializedProperty iterator = serializedObject.GetIterator();
+            List<SceneSerializedPropertySnapshot> properties = new();
+            bool enterChildren = true;
+
+            while (iterator.NextVisible(enterChildren))
+            {
+                enterChildren = true;
+
+                if (ShouldSkipSceneSerializedProperty(iterator)
+                    || !TryCreateSceneSerializedPropertySnapshot(iterator, out SceneSerializedPropertySnapshot propertySnapshot))
+                {
+                    continue;
+                }
+
+                properties.Add(propertySnapshot);
+            }
+
+            if (properties.Count == 0)
+            {
+                return false;
+            }
+
+            snapshot = new SceneSerializedComponentSnapshot(properties);
+            return true;
+        }
+
+        private static bool ShouldSkipSceneSerializedProperty(SerializedProperty property)
+        {
+            if (property == null)
+            {
+                return true;
+            }
+
+            string propertyPath = property.propertyPath;
+            return string.IsNullOrWhiteSpace(propertyPath)
+                   || string.Equals(propertyPath, "m_Script", StringComparison.Ordinal)
+                   || string.Equals(propertyPath, "m_GameObject", StringComparison.Ordinal)
+                   || string.Equals(propertyPath, "m_EditorClassIdentifier", StringComparison.Ordinal);
+        }
+
+        private static bool TryCreateSceneSerializedPropertySnapshot(
+            SerializedProperty property,
+            out SceneSerializedPropertySnapshot snapshot)
+        {
+            snapshot = default;
+
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.Boolean:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Boolean, boolValue: property.boolValue);
+                    return true;
+
+                case SerializedPropertyType.Integer:
+                case SerializedPropertyType.Enum:
+                case SerializedPropertyType.ArraySize:
+                case SerializedPropertyType.Character:
+                case SerializedPropertyType.LayerMask:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Integer, intValue: property.intValue);
+                    return true;
+
+                case SerializedPropertyType.Float:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Float, floatValue: property.floatValue);
+                    return true;
+
+                case SerializedPropertyType.String:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.String, stringValue: property.stringValue);
+                    return true;
+
+                case SerializedPropertyType.Color:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Color, colorValue: property.colorValue);
+                    return true;
+
+                case SerializedPropertyType.ObjectReference:
+                    if (property.objectReferenceValue == null || !EditorUtility.IsPersistent(property.objectReferenceValue))
+                    {
+                        return false;
+                    }
+
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.ObjectReference, objectReferenceValue: property.objectReferenceValue);
+                    return true;
+
+                case SerializedPropertyType.Vector2:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Vector2, vector2Value: property.vector2Value);
+                    return true;
+
+                case SerializedPropertyType.Vector3:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Vector3, vector3Value: property.vector3Value);
+                    return true;
+
+                case SerializedPropertyType.Vector4:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Vector4, vector4Value: property.vector4Value);
+                    return true;
+
+                case SerializedPropertyType.Quaternion:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Quaternion, quaternionValue: property.quaternionValue);
+                    return true;
+
+                case SerializedPropertyType.Rect:
+                    snapshot = new SceneSerializedPropertySnapshot(property.propertyPath, SceneSerializedValueKind.Rect, rectValue: property.rectValue);
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private static void ApplySceneComponentOverride(Component component, string objectName)
+        {
+            if (component == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || !CachedSceneComponentOverrides.TryGetValue(objectName, out Dictionary<Type, SceneSerializedComponentSnapshot> objectOverrides)
+                || !objectOverrides.TryGetValue(component.GetType(), out SceneSerializedComponentSnapshot snapshot))
+            {
+                return;
+            }
+
+            SerializedObject serializedObject = new(component);
+            bool changed = false;
+
+            foreach (SceneSerializedPropertySnapshot propertySnapshot in snapshot.Properties)
+            {
+                SerializedProperty property = serializedObject.FindProperty(propertySnapshot.PropertyPath);
+                if (property == null)
+                {
+                    continue;
+                }
+
+                ApplySceneSerializedPropertySnapshot(property, propertySnapshot);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                serializedObject.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
+
+        private static void ApplySceneSerializedPropertySnapshot(
+            SerializedProperty property,
+            SceneSerializedPropertySnapshot snapshot)
+        {
+            switch (snapshot.ValueKind)
+            {
+                case SceneSerializedValueKind.Boolean:
+                    property.boolValue = snapshot.BoolValue;
+                    break;
+
+                case SceneSerializedValueKind.Integer:
+                    property.intValue = snapshot.IntValue;
+                    break;
+
+                case SceneSerializedValueKind.Float:
+                    property.floatValue = snapshot.FloatValue;
+                    break;
+
+                case SceneSerializedValueKind.String:
+                    property.stringValue = snapshot.StringValue;
+                    break;
+
+                case SceneSerializedValueKind.Color:
+                    property.colorValue = snapshot.ColorValue;
+                    break;
+
+                case SceneSerializedValueKind.ObjectReference:
+                    property.objectReferenceValue = snapshot.ObjectReferenceValue;
+                    break;
+
+                case SceneSerializedValueKind.Vector2:
+                    property.vector2Value = snapshot.Vector2Value;
+                    break;
+
+                case SceneSerializedValueKind.Vector3:
+                    property.vector3Value = snapshot.Vector3Value;
+                    break;
+
+                case SceneSerializedValueKind.Vector4:
+                    property.vector4Value = snapshot.Vector4Value;
+                    break;
+
+                case SceneSerializedValueKind.Quaternion:
+                    property.quaternionValue = snapshot.QuaternionValue;
+                    break;
+
+                case SceneSerializedValueKind.Rect:
+                    property.rectValue = snapshot.RectValue;
+                    break;
+            }
+        }
+
+        private static void ApplySceneActiveOverride(GameObject gameObject, string objectName)
+        {
+            if (gameObject == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || !CachedSceneObjectActiveStates.TryGetValue(objectName, out bool isActive))
+            {
+                return;
+            }
+
+            gameObject.SetActive(isActive);
         }
 
         private static Vector3 ResolveSceneObjectScale(string objectName, Vector3 fallbackScale)
@@ -1710,7 +2090,7 @@ namespace Editor
 
             Sprite frontSprite = sprites.PlayerFront != null ? sprites.PlayerFront : sprites.PlayerSide;
             GameObject shadow = CreateDecorBlock("Shadow", Vector3.zero, new Vector3(0.46f, 0.14f, 1f), sprites.Floor, new Color(0f, 0f, 0f, 0.20f), 9, player.transform);
-            shadow.transform.localPosition = new Vector3(0f, -0.28f, 0f);
+            ApplySceneTransformOverride(shadow.transform, shadow.name, new Vector3(0f, -0.28f, 0f), Quaternion.identity, new Vector3(0.46f, 0.14f, 1f), useLocalSpace: true);
 
             // 물리는 루트에 유지하고, 맵 크기 보정은 비주얼 자식만 스케일해서 처리합니다.
             GameObject visualRoot = new("PlayerVisual");
@@ -1726,6 +2106,7 @@ namespace Editor
             renderer.sprite = frontSprite;
             renderer.color = Color.white;
             renderer.sortingOrder = 12;
+            ApplySceneComponentOverride(renderer, visualRoot.name);
 
             Rigidbody2D body = player.GetComponent<Rigidbody2D>();
             if (body == null)
@@ -1737,6 +2118,7 @@ namespace Editor
             body.freezeRotation = true;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            ApplySceneComponentOverride(body, player.name);
 
             CapsuleCollider2D collider = player.GetComponent<CapsuleCollider2D>();
             if (collider == null)
@@ -1745,12 +2127,14 @@ namespace Editor
             }
 
             collider.size = new Vector2(0.9f, 1.05f);
+            ApplySceneComponentOverride(collider, player.name);
 
             PlayerController controller = player.GetComponent<PlayerController>();
             if (controller == null)
             {
                 controller = player.AddComponent<PlayerController>();
             }
+            ApplySceneComponentOverride(controller, player.name);
 
             PlayerDirectionalSprite directionalSprite = player.GetComponent<PlayerDirectionalSprite>();
             if (directionalSprite == null)
@@ -1759,17 +2143,25 @@ namespace Editor
             }
 
             directionalSprite.Configure(renderer, sprites.PlayerFront, sprites.PlayerBack, sprites.PlayerSide);
+            ApplySceneComponentOverride(directionalSprite, player.name);
 
             GameObject interactionRange = new("InteractionRange");
             interactionRange.transform.SetParent(player.transform, false);
+            ApplySceneTransformOverride(interactionRange.transform, interactionRange.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
             CircleCollider2D rangeCollider = interactionRange.AddComponent<CircleCollider2D>();
             rangeCollider.isTrigger = true;
             rangeCollider.radius = 1.35f;
+            ApplySceneComponentOverride(rangeCollider, interactionRange.name);
             InteractionDetector detector = interactionRange.AddComponent<InteractionDetector>();
+            ApplySceneComponentOverride(detector, interactionRange.name);
 
             SerializedObject controllerSo = new(controller);
             controllerSo.FindProperty("interactionDetector").objectReferenceValue = detector;
             controllerSo.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(controller, player.name);
+            ApplySceneActiveOverride(player, player.name);
+            ApplySceneActiveOverride(visualRoot, visualRoot.name);
+            ApplySceneActiveOverride(interactionRange, interactionRange.name);
 
             return player;
         }
@@ -1784,20 +2176,26 @@ namespace Editor
             camera.orthographic = true;
             camera.orthographicSize = orthographicSize;
             camera.backgroundColor = backgroundColor;
+            ApplySceneComponentOverride(camera, cameraObject.name);
 
-            cameraObject.AddComponent<AudioListener>();
+            AudioListener listener = cameraObject.AddComponent<AudioListener>();
+            ApplySceneComponentOverride(listener, cameraObject.name);
 
             GameObject boundsObject = new("CameraBounds");
             ApplySceneTransformOverride(boundsObject.transform, boundsObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: false);
             BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
             bounds.isTrigger = true;
             bounds.size = new Vector2(mapWidth, mapHeight);
+            ApplySceneComponentOverride(bounds, boundsObject.name);
 
             CameraFollow follow = cameraObject.AddComponent<CameraFollow>();
             SerializedObject followSo = new(follow);
             followSo.FindProperty("target").objectReferenceValue = target;
             followSo.FindProperty("mapBounds").objectReferenceValue = bounds;
             followSo.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(follow, cameraObject.name);
+            ApplySceneActiveOverride(cameraObject, cameraObject.name);
+            ApplySceneActiveOverride(boundsObject, boundsObject.name);
             return bounds;
         }
 
@@ -1816,6 +2214,7 @@ namespace Editor
             GameObject wall = CreateDecorBlock(objectName, position, scale, sprite, color, 15);
             BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
+            ApplySceneComponentOverride(collider, objectName);
         }
 
         private static void CreateInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform parent = null)
@@ -1833,6 +2232,8 @@ namespace Editor
 
             BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
+            ApplySceneComponentOverride(collider, objectName);
+            ApplySceneActiveOverride(wall, objectName);
         }
 
         private static void CreatePortal(
@@ -1854,6 +2255,7 @@ namespace Editor
             BoxCollider2D collider = portal.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
             collider.isTrigger = true;
+            ApplySceneComponentOverride(collider, objectName);
 
             ScenePortal scenePortal = portal.AddComponent<ScenePortal>();
             SerializedObject so = new(scenePortal);
@@ -1865,6 +2267,8 @@ namespace Editor
             so.FindProperty("requiredReputation").intValue = requiredReputation;
             so.FindProperty("lockedGuideText").stringValue = lockedGuideText;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(scenePortal, objectName);
+            ApplySceneActiveOverride(portal, objectName);
 
             string displayLabel = string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel;
             CreateWorldLabel(objectName + "_Label", portal.transform, new Vector3(0f, 0.82f, 0f), displayLabel, Color.black, WorldLabelFontSize, 50);
@@ -1886,6 +2290,8 @@ namespace Editor
             recipesProperty.GetArrayElementAtIndex(5).objectReferenceValue = recipes.WindHerbSalad;
             so.FindProperty("serviceCapacity").intValue = 3;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(manager, go.name);
+            ApplySceneActiveOverride(go, go.name);
 
             return manager;
         }
@@ -1896,12 +2302,15 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
             collider.isTrigger = true;
+            ApplySceneComponentOverride(collider, go.name);
 
             RecipeSelectorStation station = go.AddComponent<RecipeSelectorStation>();
             SerializedObject so = new(station);
             so.FindProperty("restaurantManager").objectReferenceValue = restaurantManager;
             so.FindProperty("promptLabel").stringValue = "메뉴 변경";
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(station, go.name);
+            ApplySceneActiveOverride(go, go.name);
 
             CreateWorldLabel("RecipeSelectorLabel", go.transform, new Vector3(0f, 0.80f, 0f), "메뉴판", Color.black, WorldLabelFontSize, 50);
         }
@@ -1912,12 +2321,15 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
             collider.isTrigger = true;
+            ApplySceneComponentOverride(collider, go.name);
 
             ServiceCounterStation station = go.AddComponent<ServiceCounterStation>();
             SerializedObject so = new(station);
             so.FindProperty("restaurantManager").objectReferenceValue = restaurantManager;
             so.FindProperty("promptLabel").stringValue = "영업 시작";
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(station, go.name);
+            ApplySceneActiveOverride(go, go.name);
 
             CreateWorldLabel("ServiceCounterLabel", go.transform, new Vector3(0f, 0.80f, 0f), "영업대", Color.black, WorldLabelFontSize, 50);
         }
@@ -1941,6 +2353,11 @@ namespace Editor
             ApplySceneTransformOverride(objectObject.transform, objectObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
             ApplySceneTransformOverride(foregroundObject.transform, foregroundObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
             ApplySceneTransformOverride(tableObject.transform, tableObject.name, HubRoomLayout.TableGroupPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
+            ApplySceneActiveOverride(hubArtRoot, hubArtRoot.name);
+            ApplySceneActiveOverride(backgroundObject, backgroundObject.name);
+            ApplySceneActiveOverride(objectObject, objectObject.name);
+            ApplySceneActiveOverride(foregroundObject, foregroundObject.name);
+            ApplySceneActiveOverride(tableObject, tableObject.name);
 
             backgroundLayer = backgroundObject.transform;
             objectLayer = objectObject.transform;
@@ -1996,6 +2413,7 @@ namespace Editor
                 GameObject groupObject = new(placement.GroupObjectName);
                 groupObject.transform.SetParent(tableGroup, false);
                 ApplySceneTransformOverride(groupObject.transform, groupObject.name, placement.LocalPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
+                ApplySceneActiveOverride(groupObject, groupObject.name);
 
                 GameObject tableObject = CreateHubArtSprite(placement.TableObjectName, Vector3.zero, sprites.HubTableUnlocked, HubRoomLayout.ObjectSortingOrder, groupObject.transform);
                 Transform colliderParent = tableObject != null ? tableObject.transform : groupObject.transform;
@@ -2085,6 +2503,7 @@ namespace Editor
             {
                 ApplySceneTransformOverride(boardRoot.transform, boardRoot.name, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
             }
+            ApplySceneActiveOverride(boardRoot, boardRoot.name);
 
             CreateWorldTextObject(
                 "HubTodayMenuHeaderShadow",
@@ -2147,6 +2566,7 @@ namespace Editor
 
             HubTodayMenuDisplay display = boardRoot.AddComponent<HubTodayMenuDisplay>();
             display.Configure(restaurantManager, headerLabel, entryBackdrops, entryIcons);
+            ApplySceneComponentOverride(display, boardRoot.name);
         }
 
         private static void CreateStorageStation(string objectName, Vector3 position, Vector3 size, Sprite sprite, Color color, string label, StorageManager storageManager, StorageStationAction action, Transform parent = null)
@@ -2155,6 +2575,7 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = Vector2.one;
+            ApplySceneComponentOverride(collider, objectName);
 
             StorageStation station = go.AddComponent<StorageStation>();
             SerializedObject so = new(station);
@@ -2171,6 +2592,8 @@ namespace Editor
                 _ => "창고 사용"
             };
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(station, objectName);
+            ApplySceneActiveOverride(go, objectName);
 
             CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.72f, 0f), label, Color.black, WorldLabelFontSize, 50);
         }
@@ -2181,12 +2604,15 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = Vector2.one;
+            ApplySceneComponentOverride(collider, go.name);
 
             UpgradeStation station = go.AddComponent<UpgradeStation>();
             SerializedObject so = new(station);
             so.FindProperty("upgradeManager").objectReferenceValue = upgradeManager;
             so.FindProperty("promptLabel").stringValue = "작업대 사용";
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(station, go.name);
+            ApplySceneActiveOverride(go, go.name);
 
             CreateWorldLabel("UpgradeStationLabel", go.transform, new Vector3(0f, 0.68f, 0f), "작업대", Color.black, WorldLabelFontSize, 50);
         }
@@ -2199,6 +2625,7 @@ namespace Editor
             CircleCollider2D collider = go.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
             collider.radius = 0.5f;
+            ApplySceneComponentOverride(collider, objectName);
 
             GatherableResource gatherable = go.AddComponent<GatherableResource>();
             SerializedObject so = new(gatherable);
@@ -2213,6 +2640,8 @@ namespace Editor
                 .GetField("resourceData", BindingFlags.Instance | BindingFlags.NonPublic)?
                 .SetValue(gatherable, resource);
             EditorUtility.SetDirty(gatherable);
+            ApplySceneComponentOverride(gatherable, objectName);
+            ApplySceneActiveOverride(go, objectName);
 
             CreateWorldLabel(objectName + "_Label", go.transform, new Vector3(0f, 0.64f, 0f), label, Color.black, WorldLabelSmallFontSize, 45);
         }
@@ -2225,6 +2654,7 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = size;
+            ApplySceneComponentOverride(collider, objectName);
 
             GuideTriggerZone trigger = go.AddComponent<GuideTriggerZone>();
             SerializedObject so = new(trigger);
@@ -2233,6 +2663,8 @@ namespace Editor
             so.FindProperty("duration").floatValue = 5f;
             so.FindProperty("triggerOnlyOnce").boolValue = true;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(trigger, objectName);
+            ApplySceneActiveOverride(go, objectName);
         }
 
         private static void CreateMovementModifierZone(string objectName, Vector3 position, Vector2 size, float multiplier, string guideText)
@@ -2243,6 +2675,7 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = size;
+            ApplySceneComponentOverride(collider, objectName);
 
             MovementModifierZone zone = go.AddComponent<MovementModifierZone>();
             SerializedObject so = new(zone);
@@ -2250,6 +2683,8 @@ namespace Editor
             so.FindProperty("guideText").stringValue = guideText;
             so.FindProperty("hintId").stringValue = objectName;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(zone, objectName);
+            ApplySceneActiveOverride(go, objectName);
         }
 
         private static void CreateDarknessZone(string objectName, Vector3 position, Vector2 size)
@@ -2260,6 +2695,7 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = size;
+            ApplySceneComponentOverride(collider, objectName);
 
             DarknessZone zone = go.AddComponent<DarknessZone>();
             SerializedObject so = new(zone);
@@ -2267,6 +2703,8 @@ namespace Editor
             so.FindProperty("noLanternGuideText").stringValue = "랜턴이 없으면 폐광산 안쪽을 천천히 더듬어 움직여야 합니다.";
             so.FindProperty("hintId").stringValue = objectName;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(zone, objectName);
+            ApplySceneActiveOverride(go, objectName);
         }
 
         private static void CreateWindGustZone(string objectName, Vector3 position, Vector2 size, Vector2 direction, float strength, float activeDuration, float inactiveDuration)
@@ -2277,6 +2715,7 @@ namespace Editor
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = size;
+            ApplySceneComponentOverride(collider, objectName);
 
             WindGustZone zone = go.AddComponent<WindGustZone>();
             SerializedObject so = new(zone);
@@ -2287,6 +2726,8 @@ namespace Editor
             so.FindProperty("startActive").boolValue = true;
             so.FindProperty("hintIdPrefix").stringValue = objectName;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(zone, objectName);
+            ApplySceneActiveOverride(go, objectName);
         }
 
         private static void CreateSpawnPoint(string objectName, Vector3 position, string spawnId)
@@ -2298,6 +2739,8 @@ namespace Editor
             SerializedObject so = new(spawnPoint);
             so.FindProperty("spawnId").stringValue = spawnId;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(spawnPoint, objectName);
+            ApplySceneActiveOverride(go, objectName);
         }
 
         /// <summary>
@@ -2307,15 +2750,20 @@ namespace Editor
         private static void CreateUiCanvas(bool isHubScene)
         {
             GameObject canvasObject = new("Canvas");
+            ApplySceneTransformOverride(canvasObject.transform, canvasObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: false);
             Canvas canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            ApplySceneComponentOverride(canvas, canvasObject.name);
 
             CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
-            canvasObject.AddComponent<GraphicRaycaster>();
+            ApplySceneComponentOverride(scaler, canvasObject.name);
+
+            GraphicRaycaster raycaster = canvasObject.AddComponent<GraphicRaycaster>();
+            ApplySceneComponentOverride(raycaster, canvasObject.name);
 
             EnsureUiEventSystem();
 
@@ -2546,6 +2994,8 @@ namespace Editor
             so.FindProperty("popupCloseButton").objectReferenceValue = popupCloseButton;
             so.FindProperty("defaultPromptText").stringValue = "\uC774\uB3D9: WASD / \uBC29\uD5A5\uD0A4   \uC0C1\uD638\uC791\uC6A9: E";
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(uiManager, canvasObject.name);
+            ApplySceneActiveOverride(canvasObject, canvasObject.name);
         }
 
         private static void EnsureUiEventSystem()
@@ -3406,10 +3856,8 @@ namespace Editor
             FontStyles? fontStyle = null,
             float? characterSpacing = null)
         {
-            bool isLargeLabel = fontSize >= 3.4f;
-            bool isPrimaryLabel = fontSize >= 2.5f;
-            TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
-
+            bool defaultLargeLabel = fontSize >= 3.4f;
+            bool defaultPrimaryLabel = fontSize >= 2.5f;
             GameObject labelObject = new(objectName);
             if (parent != null)
             {
@@ -3427,18 +3875,25 @@ namespace Editor
             text.alignment = TextAlignmentOptions.Center;
             text.color = color;
             text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.characterSpacing = characterSpacing ?? (isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f);
+            text.characterSpacing = characterSpacing ?? (defaultLargeLabel ? 0.22f : defaultPrimaryLabel ? 0.08f : 0.02f);
             text.wordSpacing = 0f;
             text.lineSpacing = 0f;
-            text.fontStyle = fontStyle ?? (isLargeLabel || isPrimaryLabel ? FontStyles.Bold : FontStyles.Normal);
+            text.fontStyle = fontStyle ?? (fontSize >= 2.5f ? FontStyles.Bold : FontStyles.Normal);
+            ApplySceneComponentOverride(text, objectName);
 
-            if (preferredFont != null)
+            bool isLargeLabel = text.fontSize >= 3.4f;
+            bool isPrimaryLabel = text.fontSize >= 2.5f;
+            TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
+            if (text.font == null)
             {
-                text.font = preferredFont;
-            }
-            else if (TMP_Settings.defaultFontAsset != null)
-            {
-                text.font = TMP_Settings.defaultFontAsset;
+                if (preferredFont != null)
+                {
+                    text.font = preferredFont;
+                }
+                else if (TMP_Settings.defaultFontAsset != null)
+                {
+                    text.font = TMP_Settings.defaultFontAsset;
+                }
             }
 
             float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
@@ -3453,6 +3908,8 @@ namespace Editor
 
             MeshRenderer meshRenderer = text.GetComponent<MeshRenderer>();
             meshRenderer.sortingOrder = sortingOrder;
+            ApplySceneComponentOverride(meshRenderer, objectName);
+            ApplySceneActiveOverride(labelObject, objectName);
             return text;
         }
 
@@ -3594,6 +4051,8 @@ namespace Editor
             renderer.sprite = sprite;
             renderer.color = color;
             renderer.sortingOrder = sortingOrder;
+            ApplySceneComponentOverride(renderer, objectName);
+            ApplySceneActiveOverride(go, objectName);
             return go;
         }
 
@@ -4100,9 +4559,12 @@ namespace Editor
         private static BoxCollider2D CreateMovementBounds(string objectName, float width, float height)
         {
             GameObject boundsObject = new(objectName);
+            ApplySceneTransformOverride(boundsObject.transform, objectName, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: false);
             BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
             bounds.isTrigger = true;
             bounds.size = new Vector2(width, height);
+            ApplySceneComponentOverride(bounds, objectName);
+            ApplySceneActiveOverride(boundsObject, objectName);
             return bounds;
         }
 
@@ -4117,6 +4579,7 @@ namespace Editor
             SerializedObject so = new(limiter);
             so.FindProperty("movementBounds").objectReferenceValue = movementBounds;
             so.ApplyModifiedPropertiesWithoutUndo();
+            ApplySceneComponentOverride(limiter, player.name);
         }
 
         /// <summary>

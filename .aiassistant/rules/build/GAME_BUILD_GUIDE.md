@@ -62,10 +62,18 @@
 - 빌더 출력물만 직접 수정하지 않는다. 먼저 원본 빌더 코드와 레이아웃 상수를 수정한다.
 - 지원 Canvas 씬을 저장하면 Canvas 자식의 `RectTransform`, 부모 그룹과 형제 순서, 삭제 상태, `Image`, `TextMeshProUGUI`, `Button` 표시 값이 공용 자산에 자동 저장된다.
 - 공용 UI 오버라이드 자산 경로는 `Assets/Resources/Generated/ui-layout-overrides.asset`다.
+- 지원 씬에서 빌더 관리 오브젝트 값을 직접 조정하면 빌더는 같은 오브젝트 이름 기준으로 `Transform`, 활성 상태, 월드 `SpriteRenderer`·`TextMeshPro`·`Collider2D`, `Camera`, 포털·지대·채집·스테이션·매니저의 안전한 직렬화 값만 다시 적용한다.
+- 씬 오브젝트 참조는 그대로 복사하지 않고 빌더가 새 씬에 맞게 다시 연결하므로, 값 동기화가 필요하면 빌더 관리 오브젝트 이름을 유지해야 한다.
 - 지원 씬 월드 계층은 `scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따른다.
 - `Prototype Build and Audit`는 먼저 `Hub` 기준을 읽고, 마지막에 현재 열려 있는 씬의 Canvas 값을 다시 적용한다.
 - 빌더가 직접 생성하지 않는 런타임 전용 팝업 리소스는 `Assets/Resources/Generated/Sprites/UI` 아래에 유지해야 한다.
 - 생성 씬 감사가 실패하면 빌드 흐름 전체를 실패로 간주하고 원인을 먼저 해결한다.
+
+### Canvas UI 복구 원칙
+
+- 과거 커밋 기준 UI 복구가 필요할 때는 전체 씬 롤백보다 `ui-layout-overrides.asset`, 필요한 TMP 폰트 자산, 지원 씬의 `Canvas` 하위와 `UIManager` 직렬화만 기준 커밋에 맞추는 방식을 우선한다.
+- `GuideHelpButton`, `ActionAccent`처럼 시점에 따라 제거된 관리 대상 UI는 `ui-layout-overrides.asset`의 `removedObjectNames`, 씬 직렬화, `UIManager` 직렬화가 함께 맞아야 하며, 빌더와 `UIManager`가 같은 제거 기준을 쓰는지 확인한다.
+- Unity 씬 YAML을 직접 편집할 때는 `%YAML 1.1`, `%TAG !u! tag:unity3d.com,2011:` 헤더를 보존하고, 복구 후에는 `Canvas` 바깥 직렬화가 바뀌지 않았는지 검토한다.
 
 ## 7. 텍스트와 폰트 메모
 

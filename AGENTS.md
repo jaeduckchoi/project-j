@@ -40,6 +40,8 @@
 - 지원하는 Canvas 씬을 저장하면 현재 씬 Canvas 아래 UI의 `RectTransform`, 부모 그룹/형제 순서, 삭제 상태, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값이 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장된다.
 - `프로토타입 빌드 및 감사`는 레이아웃과 표시 값은 `Hub` 기준을 우선 사용하고, `HUDActionGroup`, `HUDPanelButtonGroup` 이름과 해당 그룹 하위 UI 값은 현재 열려 있는 씬 기준으로 마지막에 다시 동기화한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 위 오버라이드 자산을 같은 기준으로 사용해야 한다.
+- 지원 씬에서 빌더가 관리하는 오브젝트 값을 직접 조정한 경우 빌더는 같은 오브젝트 이름 기준으로 `Transform`, 활성 상태, `SpriteRenderer`, 월드 `TextMeshPro`, `Collider2D`, `Camera`, 포털·지대·채집·스테이션·매니저의 안전한 직렬화 값만 다시 적용하고, 씬 오브젝트 참조는 빌더가 재연결해야 한다.
+- 위 오브젝트 값 동기화는 이름 기준이므로 지원 씬의 빌더 관리 오브젝트 이름을 바꾸면 빌더 코드와 감사 규칙도 함께 갱신한다.
 - 생성 구조, UI 기준, 네임스페이스를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 배치 컴파일 결과를 함께 맞춘다.
 - `Tools > Jonggu Restaurant` 아래 새 메뉴를 추가하거나 바꿀 때는 한국어 표시를 기본으로 하고, 반복 실행이 잦은 빌드 기능보다 유지보수 도구가 아래에 오도록 `MenuItem` priority를 함께 조정한다.
 - 생성 씬 감사는 별도 수동 흐름보다 `프로토타입 빌드 및 감사` 안에서 자동으로 수행하는 기본 흐름을 우선한다.
@@ -55,3 +57,6 @@
 - 파일 경로, 코드 식별자, 브랜치명처럼 번역하면 안 되는 고유 명칭을 제외하면 영문 문장을 제목이나 본문에 그대로 쓰지 않는다.
 - squash merge 커밋 메시지는 `[squash] 브랜치명` 형식을 따른다.
 - `Assets` 아래 자산 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일명은 기존 규칙대로 lower camelCase를 유지한다.
+- Canvas UI를 과거 커밋 기준으로 복구할 때는 전체 씬을 되돌리지 말고 `Assets/Resources/Generated/ui-layout-overrides.asset`, 필요한 경우 `Assets/Generated/Fonts/maplestoryLightSdf.asset`, `Assets/Generated/Fonts/maplestoryBoldSdf.asset`, 지원 씬의 `Canvas` 하위와 `UIManager` 직렬화만 기준 커밋에 맞춘다.
+- `GuideHelpButton`, `ActionAccent`처럼 시점에 따라 있고 없을 수 있는 관리 대상 UI는 코드 삭제보다 `ui-layout-overrides.asset`의 `removedObjectNames`, 씬 `Canvas` 직렬화, `UIManager` 직렬화를 함께 맞춰 복구하고, 빌더와 `UIManager`가 같은 제거 기준을 쓰는지 확인한다.
+- Unity 씬 YAML을 직접 다룰 때는 `%YAML 1.1`, `%TAG !u! tag:unity3d.com,2011:` 헤더를 반드시 보존하고, 복구 후에는 대상 씬에서 `Canvas` 바깥 직렬화가 바뀌지 않았는지 확인한다.
