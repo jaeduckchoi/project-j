@@ -39,16 +39,16 @@
 
 - 시스템은 책임 기준으로 분리한다. 예시 타입은 `PlayerController`, `InteractionDetector`, `IInteractable`, `InventoryManager`, `StorageManager`, `RestaurantManager`, `EconomyManager`, `UpgradeManager`, `ScenePortal`, `DayCycleManager`, `UIManager`가 있다.
 - 공용 작업 기준은 `.aiassistant/rules/{project|gameplay|ui|scene|build}` 아래에 두고 런타임 에셋 경로와 분리한다.
-- 런타임 코드는 `Assets/Scripts`, 에디터 전용 코드는 `Assets/Editor`, 플레이 가능한 씬은 `Assets/Scenes`, 빌더가 관리하는 생성 자산은 `Assets/Generated`, `Resources.Load`로 읽는 생성 자산은 `Assets/Resources/Generated`를 사용한다.
+- 런타임 코드는 `Assets/Scripts`, 에디터 전용 코드는 `Assets/Editor`, 플레이 가능한 씬은 `Assets/Scenes`, 생성 자산은 `Assets/Resources/Generated`를 기준으로 관리하고 `Resources.Load` 경로와 실제 폴더 구조를 일치시킨다.
 - 런타임 코드는 기능 기준으로 `Assets/Scripts/CoreLoop`, `Assets/Scripts/Exploration`, `Assets/Scripts/Management`, `Assets/Scripts/Restaurant`, `Assets/Scripts/UI`, `Assets/Scripts/Shared` 아래에 배치한다.
 - 지역 공통 로직이나 런타임 보강 로직은 `Assets/Scripts/Exploration/World` 아래에 둔다.
-- 생성 게임 데이터는 `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, `Assets/Generated/GameData/Input` 아래에 역할별로 유지한다.
+- 생성 게임 데이터는 `Assets/Resources/Generated/GameData/Resources`, `Assets/Resources/Generated/GameData/Recipes`, `Assets/Resources/Generated/GameData/Input` 아래에 역할별로 유지한다.
 - UI 역할 분리는 `UIManager`, `UI/Controllers`, `UI/Content`, `UI/Layout`, `UI/Style` 기준으로 유지한다.
 - 가능하면 `ScriptableObject` 같은 데이터 우선 구조를 선호한다.
 - Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 경로와 참조 링크를 함께 확인한다.
 - 생성된 씬 YAML, 생성 자산, 런타임 출력물만 직접 고치지 않는다. 먼저 생성 경로를 수정한다.
 - 생성 구조를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 생성 리소스 경로를 함께 맞춘다.
-- 허브 월드 아트를 교체할 때는 `Assets/Design` 원본, `Assets/Generated/Sprites/Hub`, `Assets/Resources/Generated/Sprites/Hub`, `Assets/Scripts/Exploration/World/HubRoomLayout.cs`, `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 지원 씬 직렬화를 같은 기준으로 갱신한다.
+- 허브 월드 아트를 교체할 때는 `Assets/Design` 원본, `Assets/Resources/Generated/Sprites/Hub`, `Assets/Scripts/Exploration/World/HubRoomLayout.cs`, `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 지원 씬 직렬화를 같은 기준으로 갱신한다.
 - `HubWallBackground`와 `HubFrontOutline`는 별도 생성 자산이므로 PNG만 직접 수정하기보다 `JongguMinimalPrototypeBuilder`의 생성 규칙과 리소스 연결 기준을 먼저 확인한다.
 - UI를 바꿀 때는 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 검토한다.
 
@@ -72,15 +72,18 @@
 - 명시적 요청이 없는 한 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 초기화하거나 덮어쓰지 않는다.
 - 공용 Canvas 루트 이름은 `HUDRoot`와 `PopupRoot`를 유지한다.
 - 지원하는 Canvas 씬의 공용 HUD 기준은 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장한다. 지원 씬 하나를 저장하면 같은 관리 대상 Canvas 변경이 다른 지원 씬 Canvas에도 전파되어야 한다.
-- `Tools > Jonggu Restaurant > Prototype Build and Audit`는 생성 자산 준비, 기본 씬 재생성, Canvas 동기화, 생성 씬 감사를 한 흐름으로 수행해야 한다.
+- 지원 씬에 직접 저장한 월드 Transform, SpriteRenderer, 월드 TextMeshPro, 주요 게임플레이 컴포넌트 직렬화 값은 게임 런타임의 기본 정본으로 유지한다.
+- 런타임 보강 코드는 누락된 오브젝트, 누락된 컴포넌트, 끊어진 참조만 보충하고, 씬에 이미 저장된 값은 기본적으로 덮어쓰지 않는다.
+- `Tools > Jonggu Restaurant > Prototype Build and Audit`는 생성 자산, Build Settings, Canvas 동기화, 누락된 지원 씬 복구, 생성 씬 감사를 한 흐름으로 수행해야 한다.
 - 별도 수동 씬 감사보다 빌드 흐름 안의 자동 감사를 우선한다.
 - 지원하는 Canvas 씬 저장 시 `RectTransform`, 부모 그룹과 형제 순서, 삭제 상태, `Image.sprite/type/color/preserveAspect`, `TextMeshProUGUI`, `Button` 표시 값, `HUDActionGroup` 또는 `HUDPanelButtonGroup` 이름 오버라이드가 `Assets/Resources/Generated/ui-layout-overrides.asset`에 자동 저장되어야 한다.
 - 빌더, 런타임 `UIManager`, 자동 감사 코드는 모두 같은 오버라이드 자산 기준을 사용해야 한다.
-- 지원 씬에서 빌더 관리 오브젝트 값을 직접 바꾼 경우 빌더는 같은 오브젝트 이름 기준으로 `Transform`, 활성 상태, `SpriteRenderer`, 월드 `TextMeshPro`, `Collider2D`, `Camera`, 포털·지대·채집·스테이션·매니저의 안전한 직렬화 값만 다시 반영하고, 씬 오브젝트 참조는 빌더가 새 씬에 맞게 다시 연결해야 한다.
-- 위 오브젝트 값 오버라이드는 이름 기준이므로 지원 씬의 빌더 관리 오브젝트 이름이 바뀌면 빌더 코드와 감사 규칙도 함께 갱신한다.
+- 메인 빌드는 기존 지원 씬을 재생성하지 않으므로, 지원 씬에 직접 저장한 정적 값은 씬 직렬화를 정본으로 유지한다.
+- 누락된 지원 씬을 복구할 때만 빌더가 같은 오브젝트 이름 기준의 안전한 직렬화 값과 씬 오브젝트 참조 재연결 규칙을 사용한다.
+- 위 복구 규칙은 이름 기준이므로 지원 씬의 빌더 관리 오브젝트 이름이 바뀌면 빌더 코드와 감사 규칙도 함께 갱신한다.
 - 지원 씬의 월드 계층은 `SceneWorldRoot`, `SceneGameplayRoot`, `SceneSystemRoot`, `Canvas` 구조에 맞춘다. 이 구조가 바뀌면 `PrototypeSceneHierarchyCatalog`, 정리기, 감사 로직을 함께 갱신한다.
-- `Tools > Jonggu Restaurant` 아래 메뉴를 추가하거나 바꿀 때는 기본적으로 한국어 라벨을 사용하고, 자주 쓰는 빌드 도구보다 유지보수 도구가 아래쪽에 오도록 `MenuItem` priority를 조정한다.
-- 자주 깨지는 핵심 규칙은 `Light Automation Audit`가 다루므로, day-cycle 흐름, 포탈 잠금, 팝업 일시정지 규칙을 바꾸면 해당 감사도 함께 갱신한다.
+- `Tools > Jonggu Restaurant` 메뉴는 기본적으로 `프로토타입 빌드 및 감사` 하나만 노출하고, 보조 유지보수 경로는 메뉴 대신 코드 내부 호출로 유지한다.
+- 자주 깨지는 핵심 규칙은 `GameplayAutomationAudit` 경량 감사 코드가 다루므로, day-cycle 흐름, 포탈 잠금, 팝업 일시정지 규칙을 바꾸면 해당 감사도 함께 갱신한다.
 
 ### Canvas UI 복구 원칙
 
@@ -100,11 +103,11 @@
 
 ## 8. 폰트와 에셋 규칙
 
-- `Assets` 아래 에셋 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일은 기존 lower camelCase 규칙을 유지한다.
-- 기본 TMP 본문 폰트는 `Assets/Generated/Fonts/maplestoryLightSdf.asset`, 제목 폰트는 `Assets/Generated/Fonts/maplestoryBoldSdf.asset`를 유지하고, 빌더가 재생성할 수 있도록 원본 TTF 경로도 함께 맞춘다.
+- `Assets` 아래 에셋 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Resources/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일은 기존 lower camelCase 규칙을 유지한다.
+- 기본 TMP 본문 폰트는 `Assets/Resources/Generated/Fonts/maplestoryLightSdf.asset`, 제목 폰트는 `Assets/Resources/Generated/Fonts/maplestoryBoldSdf.asset`를 유지하고, 빌더가 재생성할 수 있도록 원본 TTF 경로도 함께 맞춘다.
 - `Assets/Design`는 디자인 원본 저장소 전용이며, 게임 런타임 리소스는 `Assets/Resources` 또는 생성 경로를 통해 참조해야 한다.
-- 허브 월드 아트 원본은 `Assets/Design`에서 관리하고, 빌더가 `Assets/Generated/Sprites/Hub`와 `Assets/Resources/Generated/Sprites/Hub`를 함께 갱신하도록 유지한다.
-- `HubWallBackground`와 `HubFrontOutline`는 `Assets/Generated/Sprites/Hub`와 `Assets/Resources/Generated/Sprites/Hub`를 함께 갱신하는 생성 자산으로 유지한다.
+- 허브 월드 아트 원본은 `Assets/Design`에서 관리하고, 빌더가 `Assets/Resources/Generated/Sprites/Hub`를 기준으로 갱신하도록 유지한다.
+- `HubWallBackground`와 `HubFrontOutline`는 `Assets/Resources/Generated/Sprites/Hub`에서 관리하는 생성 자산으로 유지한다.
 - 허브 벽 아트 정렬이 어긋나면 결과 PNG만 덧그리지 말고 빌더의 타일 배치 값, 배경/전경 위치, 리소스 경로를 함께 조정한다.
 - 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 밀도를 기준으로 맞추고, 타일 교체 시 `Pixels Per Unit`, `Transform.localScale`, `SpriteRenderer.size`를 같은 단위 기준으로 검토한다.
 - 허브 카운터는 `HubBar` 루트 아래 `HubBarLeftVisual`, `HubBarRightVisual` 분리 비주얼 구조를 기준으로 관리하고, 파츠 교체 시 각 스프라이트의 소스 비율과 `spriteBorder`를 함께 조정한다.
@@ -115,7 +118,7 @@
 
 - Unity 플레이 모드나 컴파일을 직접 검증하지 못했다면 그 사실을 명시한다.
 - 자동 감사나 배치 컴파일이 있으면 결과를 함께 확인하고 보고한다.
-- 생성 구조나 UI 기준을 바꿀 때는 가능하면 `Tools > Jonggu Restaurant > Prototype Build and Audit`와 `Light Automation Audit`로 검증한다.
+- 생성 구조나 UI 기준을 바꿀 때는 가능하면 `Tools > Jonggu Restaurant > Prototype Build and Audit`로 먼저 검증하고, 필요하면 `GameplayAutomationAudit.RunLightAutomationAudit()` 같은 내부 자동 감사 경로도 함께 확인한다.
 - 런타임 검증이 불가능하다면 어떤 파일, 좌표, 참조를 확인했는지 구체적으로 남긴다.
 - 생성 구조, 네임스페이스, UI 기준을 바꿀 때는 저장된 씬, 관련 `using` 지시문, 빌더 코드, 감사 코드, 배치 컴파일 결과가 모두 서로 맞는지 확인한다.
 
@@ -171,3 +174,5 @@ footer
 ### squash merge
 
 - `[squash] branch-name`
+
+

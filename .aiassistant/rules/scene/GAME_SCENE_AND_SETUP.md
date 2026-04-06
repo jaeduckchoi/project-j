@@ -47,7 +47,7 @@
 - `DayCycleManager`
 - `UpgradeManager`
 
-일부 런타임 보강이 누락된 참조를 보완할 수는 있지만, 직접 씬에 연결해 두는 편이 유지보수와 검증에 더 유리하다.
+일부 런타임 보강이 누락된 참조를 보완할 수는 있지만, 씬에 저장한 직렬화 값이 정본이며 런타임은 누락분만 채우는 편이 유지보수와 검증에 더 유리하다.
 
 ### UIManager
 
@@ -154,13 +154,11 @@ Scene
 ## 7. 관련 에디터 메뉴
 
 - `Prototype Build and Audit`
-- `Rebuild Generated Assets and Scenes`
-- `Run Generated Scene Audit Only`
-- `Organize Active Scene Hierarchy`
-- `Light Automation Audit`
+  생성 자산, Build Settings, Canvas 오버라이드, 누락된 지원 씬 복구, 생성 씬 감사를 한 번에 동기화한다.
 
 ## 8. 현재 위험 요소
 
 - 이 환경에서는 Unity 실행과 C# 컴파일을 직접 검증하지 못했다.
 - 최종 밸런스 수치는 실제 플레이테스트 이후 추가 조정이 필요할 수 있다.
-- `PrototypeSceneRuntimeAugmenter` 안전장치는 아직 남아 있으며, 씬 직렬화가 더 안정되면 축소할 수 있다.
+- `PrototypeSceneRuntimeAugmenter`는 누락된 오브젝트, 컴포넌트, 참조를 보완하는 안전장치로만 유지하고, 기존 씬 저장값을 덮어쓰지 않는 방향을 우선한다.
+
