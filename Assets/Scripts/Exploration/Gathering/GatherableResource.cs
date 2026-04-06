@@ -46,6 +46,7 @@ namespace Exploration.Gathering
         }
 
         public Transform InteractionTransform => transform;
+        public bool HasConfiguredResource => resourceData != null;
 
         /// <summary>
         /// 채집 오브젝트의 기본 충돌체를 차단 콜라이더로 연결합니다.

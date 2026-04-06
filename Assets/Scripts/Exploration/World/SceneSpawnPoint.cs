@@ -5,84 +5,44 @@ using UnityEngine.Scripting.APIUpdating;
 namespace Exploration.World
 {
     /// <summary>
-    /// 씬 이동 후 플레이어를 배치할 위치를 식별하는 스폰 포인트다.
+    /// 씬 이동 뒤 플레이어를 배치할 위치를 식별하는 스폰 포인트입니다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "SceneSpawnPoint")]
     public class SceneSpawnPoint : MonoBehaviour
     {
-        // GameManager가 장면 진입 후 찾을 식별자다.
+        // GameManager가 씬 진입 시 찾을 식별자입니다.
         [SerializeField] private string spawnId = "SpawnPoint";
 
         public string SpawnId => spawnId;
 
         /// <summary>
-        /// 런타임 보강이나 빌더에서 스폰 식별자를 다시 지정한다.
+        /// 빌더나 런타임 보강 코드에서 기본 스폰 식별자를 다시 지정합니다.
         /// </summary>
-        public void Configure(string
-        id
-        )
+        public void Configure(string id)
         {
-        if
-        (
-        !
-        string
-        .
-        IsNullOrWhiteSpace
-        (
-        id
-        )
-        )
-        {
-        spawnId
-        =
-        id
-        ;
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                spawnId = id;
             }
         }
 
         /// <summary>
-        /// 요청된 스폰 식별자와 현재 포인트가 일치하는지 확인한다.
+        /// 요청한 스폰 식별자와 현재 포인트가 일치하는지 확인합니다.
         /// </summary>
-        public bool Matches(string
-        id
-        )
+        public bool Matches(string id)
         {
-        return
-        !
-        string
-        .
-        IsNullOrWhiteSpace
-        (
-        id
-        )
-        &&
-        spawnId == id;
+            return !string.IsNullOrWhiteSpace(id) && spawnId == id;
         }
 
         /// <summary>
-        /// 식별자가 비어 있으면 오브젝트 이름으로 자동 보정한다.
+        /// 식별자가 비어 있으면 오브젝트 이름을 기본값으로 사용합니다.
         /// </summary>
-        private void OnValidate
-        (
-        )
+        private void OnValidate()
         {
-        if
-        (
-        string
-        .
-        IsNullOrWhiteSpace
-        (
-        spawnId
-        )
-        )
-        {
-        spawnId
-        =
-        gameObject
-        .
-        name
-        ;
+            if (string.IsNullOrWhiteSpace(spawnId))
+            {
+                spawnId = gameObject.name;
             }
-       }
+        }
     }
 }

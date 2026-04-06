@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CoreLoop.Core;
 using Shared.Data;
 using Exploration.Gathering;
@@ -14,23 +15,25 @@ using UnityEngine.SceneManagement;
 namespace Exploration.World
 {
     /// <summary>
-    /// 기존 씬 직렬화에 남아 있는 보강 오브젝트를 런타임에서 정리한다.
+    /// 씬에 저장된 직렬화 값을 정본으로 두고, 누락된 오브젝트와 참조만 런타임에서 보강한다.
     /// </summary>
     public static class PrototypeSceneRuntimeAugmenter
     {
-        private const string HubFloorTileResourcePath = "Generated/Sprites/Hub/hub-floor-tile";
-        private const string HubFloorBackgroundResourcePath = "Generated/Sprites/Hub/hub-floor-background";
-        private const string HubWallBackgroundResourcePath = "Generated/Sprites/Hub/hub-wall-background";
-        private const string HubFrontOutlineResourcePath = "Generated/Sprites/Hub/hub-front-outline";
-        private const string HubBarResourcePath = "Generated/Sprites/Hub/hub-bar";
-        private const string HubBarRightResourcePath = "Generated/Sprites/Hub/hub-bar-right";
-        private const string HubTableUnlockedResourcePath = "Generated/Sprites/Hub/hub-table-unlocked";
-        private const string HubUpgradeSlotResourcePath = "Generated/Sprites/Hub/hub-upgrade-slot-center";
-        private const string HubTodayMenuBgResourcePath = "Generated/Sprites/Hub/hub-today-menu-bg";
-        private const string HubTodayMenuItem1ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-1";
-        private const string HubTodayMenuItem2ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-2";
-        private const string HubTodayMenuItem3ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-3";
-        private const string FloorSpriteResourcePath = "Generated/Sprites/World/world-floor";
+        private static readonly HashSet<int> RuntimeCreatedObjectIds = new();
+        private static Shared.PrototypeGeneratedAssetSettings AssetSettings => Shared.PrototypeGeneratedAssetSettings.GetCurrent();
+        private static string HubFloorTileResourcePath => AssetSettings.HubFloorTileResourcePath;
+        private static string HubFloorBackgroundResourcePath => AssetSettings.HubFloorBackgroundResourcePath;
+        private static string HubWallBackgroundResourcePath => AssetSettings.HubWallBackgroundResourcePath;
+        private static string HubFrontOutlineResourcePath => AssetSettings.HubFrontOutlineResourcePath;
+        private static string HubBarResourcePath => AssetSettings.HubBarResourcePath;
+        private static string HubBarRightResourcePath => AssetSettings.HubBarRightResourcePath;
+        private static string HubTableUnlockedResourcePath => AssetSettings.HubTableUnlockedResourcePath;
+        private static string HubUpgradeSlotResourcePath => AssetSettings.HubUpgradeSlotResourcePath;
+        private static string HubTodayMenuBgResourcePath => AssetSettings.HubTodayMenuBgResourcePath;
+        private static string HubTodayMenuItem1ResourcePath => AssetSettings.HubTodayMenuItem1ResourcePath;
+        private static string HubTodayMenuItem2ResourcePath => AssetSettings.HubTodayMenuItem2ResourcePath;
+        private static string HubTodayMenuItem3ResourcePath => AssetSettings.HubTodayMenuItem3ResourcePath;
+        private static string FloorSpriteResourcePath => AssetSettings.FloorSpriteResourcePath;
 
         public static void EnsureSceneReady(Scene scene)
         {
@@ -39,6 +42,7 @@ namespace Exploration.World
                 return;
             }
 
+            RuntimeCreatedObjectIds.Clear();
             CleanupLegacyObjects("PlayerLabel");
 
             switch (scene.name)
@@ -162,7 +166,11 @@ namespace Exploration.World
             if (cameraFollow != null)
             {
                 cameraFollow.SetDefaultBounds(bounds, true);
-                cameraFollow.SetDefaultOrthographicSize(HubRoomLayout.ScreenOrthographicSize, true);
+                UnityEngine.Camera sceneCamera = Object.FindFirstObjectByType<UnityEngine.Camera>();
+                float orthographicSize = sceneCamera != null && sceneCamera.orthographicSize > 0f
+                    ? sceneCamera.orthographicSize
+                    : HubRoomLayout.ScreenOrthographicSize;
+                cameraFollow.SetDefaultOrthographicSize(orthographicSize, true);
             }
         }
 
@@ -207,6 +215,7 @@ namespace Exploration.World
                 GameObject clone = Object.Instantiate(templatePortal.gameObject);
                 clone.name = "WindHillShortcut";
                 clone.transform.position = new Vector3(-6.8f, -2.8f, 0f);
+                RegisterRuntimeCreated(clone);
                 shortcutPortal = clone.GetComponent<ScenePortal>();
             }
 
@@ -217,7 +226,7 @@ namespace Exploration.World
                 "정상 지름길",
                 "정상 지름길",
                 true,
-                ToolType.None,
+                    ToolType.None,
                 6,
                 "평판 6을 모으면 바람 언덕의 지름길을 이용할 수 있습니다.",
                 new Color(0.55f, 0.77f, 0.95f));
@@ -245,8 +254,9 @@ namespace Exploration.World
                 extraGatherable.gameObject.SetActive(false);
             }
 
+            // 씬에 저장한 MineGuide 값이 런타임에 덮이지 않도록 별도 재설정은 하지 않습니다.
             GuideTriggerZone guideTrigger = FindComponentByName<GuideTriggerZone>("MineGuide");
-            if (guideTrigger != null)
+            if (guideTrigger != null && WasCreatedAtRuntime(guideTrigger.gameObject))
             {
                 guideTrigger.Configure(
                     "mine_intro",
@@ -278,6 +288,7 @@ namespace Exploration.World
                 GameObject clone = Object.Instantiate(templatePortal.gameObject);
                 clone.name = "GoToAbandonedMine";
                 clone.transform.position = new Vector3(9.55f, -0.65f, 0f);
+                RegisterRuntimeCreated(clone);
                 minePortal = clone.GetComponent<ScenePortal>();
             }
 
@@ -297,32 +308,45 @@ namespace Exploration.World
         private static void EnsureMineDarknessZone()
         {
             GameObject zone = GameObject.Find("MineDarkness");
+            bool createdZone = zone == null;
             if (zone == null)
             {
                 zone = new GameObject("MineDarkness");
+                RegisterRuntimeCreated(zone);
             }
 
-            zone.transform.position = new Vector3(4.8f, 0.6f, 0f);
+            if (createdZone)
+            {
+                zone.transform.position = new Vector3(4.8f, 0.6f, 0f);
+            }
 
             BoxCollider2D collider = zone.GetComponent<BoxCollider2D>();
+            bool addedCollider = collider == null;
             if (collider == null)
             {
                 collider = zone.AddComponent<BoxCollider2D>();
             }
 
-            collider.isTrigger = true;
-            collider.size = new Vector2(18f, 10.8f);
+            if (createdZone || addedCollider)
+            {
+                collider.isTrigger = true;
+                collider.size = new Vector2(18f, 10.8f);
+            }
 
             DarknessZone darknessZone = zone.GetComponent<DarknessZone>();
+            bool addedDarknessZone = darknessZone == null;
             if (darknessZone == null)
             {
                 darknessZone = zone.AddComponent<DarknessZone>();
             }
 
-            darknessZone.Configure(
-                0.45f,
-                "랜턴이 없으면 폐광산 안쪽을 안전하게 이동할 수 없습니다.",
-                "mine_darkness");
+            if (createdZone || addedDarknessZone)
+            {
+                darknessZone.Configure(
+                    0.45f,
+                    "랜턴이 없으면 폐광산 안쪽을 안전하게 이동할 수 없습니다.",
+                    "mine_darkness");
+            }
         }
 
         private static void ConfigureMineSlowZone()
@@ -330,7 +354,16 @@ namespace Exploration.World
             MovementModifierZone slowZone = FindComponentByName<MovementModifierZone>("MineLooseRubble");
             if (slowZone == null)
             {
-                slowZone = FindComponentByName<MovementModifierZone>("ForestSwampZone");
+                MovementModifierZone templateZone = FindComponentByName<MovementModifierZone>("ForestSwampZone");
+                if (templateZone == null)
+                {
+                    return;
+                }
+
+                GameObject clone = Object.Instantiate(templateZone.gameObject);
+                clone.name = "MineLooseRubble";
+                RegisterRuntimeCreated(clone);
+                slowZone = clone.GetComponent<MovementModifierZone>();
             }
 
             if (slowZone == null)
@@ -338,12 +371,14 @@ namespace Exploration.World
                 return;
             }
 
-            slowZone.gameObject.name = "MineLooseRubble";
-            slowZone.Configure(
-                0.68f,
-                ToolType.None,
-                "무너진 잔해가 발을 붙잡습니다. 좁은 길에서는 욕심내지 말고 천천히 움직이세요.",
-                "mine_loose_rubble");
+            if (WasCreatedAtRuntime(slowZone.gameObject))
+            {
+                slowZone.Configure(
+                    0.68f,
+                    ToolType.None,
+                    "무너진 잔해가 발을 붙잡습니다. 좁은 길에서는 욕심내지 말고 천천히 움직이세요.",
+                    "mine_loose_rubble");
+            }
         }
 
         private static void ConfigureMineGatherable(string objectName, Vector3 position)
@@ -355,8 +390,15 @@ namespace Exploration.World
                 return;
             }
 
-            gatherable.transform.position = position;
-            gatherable.Configure(glowMoss, ToolType.Lantern);
+            if (WasCreatedAtRuntime(gatherable.gameObject))
+            {
+                gatherable.transform.position = position;
+            }
+
+            if (WasCreatedAtRuntime(gatherable.gameObject) || !gatherable.HasConfiguredResource)
+            {
+                gatherable.Configure(glowMoss, ToolType.Lantern);
+            }
             UpdatePrimaryRendererColor(gatherable.gameObject, new Color(0.45f, 0.95f, 0.78f));
             UpdateWorldLabel(gatherable.gameObject, "발광 이끼");
         }
@@ -378,14 +420,17 @@ namespace Exploration.World
                 return;
             }
 
-            portal.Configure(
-                targetSceneName,
-                spawnPointId,
-                promptLabel,
-                requireMorningExplore,
-                requiredToolType,
-                requiredReputation,
-                lockedGuideText);
+            if (WasCreatedAtRuntime(portal.gameObject) || !portal.CanInteract(null))
+            {
+                portal.Configure(
+                    targetSceneName,
+                    spawnPointId,
+                    promptLabel,
+                    requireMorningExplore,
+                    requiredToolType,
+                    requiredReputation,
+                    lockedGuideText);
+            }
 
             UpdatePrimaryRendererColor(portal.gameObject, color);
             UpdateWorldLabel(portal.gameObject, string.IsNullOrWhiteSpace(worldLabel) ? promptLabel : worldLabel);
@@ -394,15 +439,24 @@ namespace Exploration.World
         private static void EnsureSpawnPoint(string objectName, string spawnId, Vector3 position)
         {
             SceneSpawnPoint spawnPoint = FindComponentByName<SceneSpawnPoint>(objectName);
+            bool createdSpawnPoint = spawnPoint == null;
             if (spawnPoint == null)
             {
                 GameObject go = new(objectName);
                 go.transform.position = position;
+                RegisterRuntimeCreated(go);
                 spawnPoint = go.AddComponent<SceneSpawnPoint>();
             }
 
-            spawnPoint.transform.position = position;
-            spawnPoint.Configure(spawnId);
+            if (createdSpawnPoint)
+            {
+                spawnPoint.transform.position = position;
+            }
+
+            if (createdSpawnPoint || string.IsNullOrWhiteSpace(spawnPoint.SpawnId))
+            {
+                spawnPoint.Configure(spawnId);
+            }
         }
 
         private static void CleanupLegacyObjects(params string[] objectNames)
@@ -445,7 +499,7 @@ namespace Exploration.World
 
         private static void UpdatePrimaryRendererColor(GameObject root, Color color)
         {
-            if (root == null)
+            if (root == null || !WasCreatedAtRuntime(root))
             {
                 return;
             }
@@ -475,6 +529,11 @@ namespace Exploration.World
                 return;
             }
 
+            if (!WasCreatedAtRuntime(root) && !string.IsNullOrWhiteSpace(label.text))
+            {
+                return;
+            }
+
             label.text = labelText;
             label.gameObject.name = root.name + "_Label";
             ApplyCompactLabelOffset(root, label);
@@ -494,7 +553,7 @@ namespace Exploration.World
             }
 
             TMPro.TextMeshPro textMesh = go.GetComponent<TMPro.TextMeshPro>();
-            if (textMesh != null)
+            if (textMesh != null && string.IsNullOrWhiteSpace(textMesh.text))
             {
                 textMesh.text = text;
             }
@@ -514,7 +573,7 @@ namespace Exploration.World
             }
 
             GameObject go = GameObject.Find(objectName);
-            if (go == null)
+            if (go == null || !WasCreatedAtRuntime(go))
             {
                 return;
             }
@@ -530,7 +589,7 @@ namespace Exploration.World
             }
 
             GameObject go = GameObject.Find(objectName);
-            if (go == null)
+            if (go == null || !WasCreatedAtRuntime(go))
             {
                 return;
             }
@@ -541,50 +600,73 @@ namespace Exploration.World
         private static void EnsureInvisibleWall(string objectName, Vector3 position, Vector3 scale, Transform parent = null)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdWall = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            if (parent != null)
+            if (createdWall)
             {
-                go.transform.SetParent(parent, false);
-                go.transform.localPosition = position;
-            }
-            else
-            {
-                go.transform.SetParent(null);
-                go.transform.position = position;
-            }
+                if (parent != null)
+                {
+                    go.transform.SetParent(parent, false);
+                    go.transform.localPosition = position;
+                }
+                else
+                {
+                    go.transform.SetParent(null);
+                    go.transform.position = position;
+                }
 
-            go.transform.localScale = scale;
+                go.transform.localScale = scale;
+            }
 
             SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
-            if (renderer != null)
+            if (renderer != null && createdWall)
             {
                 renderer.enabled = false;
             }
 
             BoxCollider2D collider = GetOrAddComponent<BoxCollider2D>(go);
-            collider.size = Vector2.one;
-            collider.isTrigger = false;
+            if (createdWall)
+            {
+                collider.size = Vector2.one;
+                collider.isTrigger = false;
+            }
         }
 
         private static BoxCollider2D EnsureBoundsCollider(string objectName, Vector3 position, Vector2 size)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdBounds = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            go.transform.SetParent(null);
-            go.transform.position = position;
-            go.transform.localScale = Vector3.one;
+            if (createdBounds)
+            {
+                go.transform.SetParent(null);
+                go.transform.position = position;
+                go.transform.localScale = Vector3.one;
+            }
 
-            BoxCollider2D collider = GetOrAddComponent<BoxCollider2D>(go);
-            collider.size = size;
-            collider.isTrigger = true;
+            BoxCollider2D collider = go.GetComponent<BoxCollider2D>();
+            bool addedCollider = collider == null;
+            if (collider == null)
+            {
+                collider = go.AddComponent<BoxCollider2D>();
+            }
+
+            if (createdBounds || addedCollider)
+            {
+                collider.size = size;
+                collider.isTrigger = true;
+            }
+
             return collider;
         }
 
@@ -641,7 +723,10 @@ namespace Exploration.World
             GameObject objectObject = EnsureRootObject("HubObjectLayer", artRoot.transform);
             GameObject foregroundObject = EnsureRootObject("HubForegroundLayer", artRoot.transform);
             GameObject tableObject = EnsureRootObject(HubRoomLayout.TableRootObjectName, objectObject.transform);
-            tableObject.transform.localPosition = HubRoomLayout.TableGroupPosition;
+            if (WasCreatedAtRuntime(tableObject))
+            {
+                tableObject.transform.localPosition = HubRoomLayout.TableGroupPosition;
+            }
 
             backgroundLayer = backgroundObject.transform;
             objectLayer = objectObject.transform;
@@ -654,7 +739,10 @@ namespace Exploration.World
             foreach (HubRoomLayout.HubTablePlacement placement in HubRoomLayout.TablePlacements)
             {
                 GameObject groupObject = EnsureRootObject(placement.GroupObjectName, tableGroup);
-                groupObject.transform.localPosition = placement.LocalPosition;
+                if (WasCreatedAtRuntime(groupObject))
+                {
+                    groupObject.transform.localPosition = placement.LocalPosition;
+                }
 
                 GameObject tableObject = EnsureSceneSpriteObject(
                     placement.TableObjectName,
@@ -735,23 +823,29 @@ namespace Exploration.World
         private static GameObject EnsureRootObject(string objectName, Transform parent)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdObject = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            if (parent != null)
+            if (createdObject)
             {
-                go.transform.SetParent(parent, false);
-                go.transform.localPosition = Vector3.zero;
-            }
-            else
-            {
-                go.transform.SetParent(null);
-                go.transform.position = Vector3.zero;
+                if (parent != null)
+                {
+                    go.transform.SetParent(parent, false);
+                    go.transform.localPosition = Vector3.zero;
+                }
+                else
+                {
+                    go.transform.SetParent(null);
+                    go.transform.position = Vector3.zero;
+                }
+
+                go.transform.localScale = Vector3.one;
             }
 
-            go.transform.localScale = Vector3.one;
             return go;
         }
 
@@ -769,61 +863,77 @@ namespace Exploration.World
             Vector3? localScale = null)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdObject = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            if (parent != null)
+            if (createdObject)
             {
-                go.transform.SetParent(parent, false);
-                go.transform.localPosition = position;
-            }
-            else
-            {
-                go.transform.SetParent(null);
-                go.transform.position = position;
-            }
+                if (parent != null)
+                {
+                    go.transform.SetParent(parent, false);
+                    go.transform.localPosition = position;
+                }
+                else
+                {
+                    go.transform.SetParent(null);
+                    go.transform.position = position;
+                }
 
-            go.transform.localScale = localScale ?? Vector3.one;
+                go.transform.localScale = localScale ?? Vector3.one;
+            }
 
             SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(go);
-            renderer.sprite = Resources.Load<Sprite>(resourcePath);
-            renderer.color = Color.white;
-            renderer.sortingOrder = sortingOrder;
-            renderer.drawMode = drawMode;
-            if (tiledSize.HasValue)
+            bool applyDefaultPresentation = createdObject || renderer.sprite == null;
+            if (applyDefaultPresentation)
             {
-                renderer.size = tiledSize.Value;
+                renderer.sprite = Resources.Load<Sprite>(resourcePath);
+                renderer.color = Color.white;
+                renderer.sortingOrder = sortingOrder;
+                renderer.drawMode = drawMode;
+                if (tiledSize.HasValue)
+                {
+                    renderer.size = tiledSize.Value;
+                }
+
+                renderer.enabled = renderer.sprite != null;
             }
-            renderer.enabled = renderer.sprite != null;
+
             return go;
         }
 
         private static void EnsureHubSplitBarVisuals(string objectName, Vector3 position, int sortingOrder, Transform parent)
         {
             GameObject root = GameObject.Find(objectName);
+            bool createdRoot = root == null;
             if (root == null)
             {
                 root = new GameObject(objectName);
+                RegisterRuntimeCreated(root);
             }
 
-            if (parent != null)
+            if (createdRoot)
             {
-                root.transform.SetParent(parent, false);
-                root.transform.localPosition = position;
-            }
-            else
-            {
-                root.transform.SetParent(null);
-                root.transform.position = position;
-            }
+                if (parent != null)
+                {
+                    root.transform.SetParent(parent, false);
+                    root.transform.localPosition = position;
+                }
+                else
+                {
+                    root.transform.SetParent(null);
+                    root.transform.position = position;
+                }
 
-            root.transform.localScale = Vector3.one;
-            root.SetActive(true);
+                root.transform.localScale = Vector3.one;
+                root.SetActive(true);
+            }
 
             SpriteRenderer rootRenderer = root.GetComponent<SpriteRenderer>();
-            if (rootRenderer != null)
+            if (rootRenderer != null && createdRoot)
             {
                 rootRenderer.enabled = false;
             }
@@ -918,7 +1028,10 @@ namespace Exploration.World
                 "HubTodayMenuEntryLabel3");
 
             GameObject boardRoot = EnsureRootObject("HubTodayMenuBoard", parent);
-            boardRoot.transform.localPosition = HubRoomLayout.TodayMenuBoardPosition;
+            if (WasCreatedAtRuntime(boardRoot))
+            {
+                boardRoot.transform.localPosition = HubRoomLayout.TodayMenuBoardPosition;
+            }
 
             EnsureWorldTextObject(
                 "HubTodayMenuHeaderShadow",
@@ -994,29 +1107,39 @@ namespace Exploration.World
             Transform parent)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdObject = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            if (parent != null)
+            if (createdObject)
             {
-                go.transform.SetParent(parent, false);
-                go.transform.localPosition = position;
-            }
-            else
-            {
-                go.transform.SetParent(null);
-                go.transform.position = position;
-            }
+                if (parent != null)
+                {
+                    go.transform.SetParent(parent, false);
+                    go.transform.localPosition = position;
+                }
+                else
+                {
+                    go.transform.SetParent(null);
+                    go.transform.position = position;
+                }
 
-            go.transform.localScale = scale;
+                go.transform.localScale = scale;
+            }
 
             SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(go);
-            renderer.sprite = Resources.Load<Sprite>(resourcePath);
-            renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            renderer.enabled = renderer.sprite != null;
+            bool applyDefaultPresentation = createdObject || renderer.sprite == null;
+            if (applyDefaultPresentation)
+            {
+                renderer.sprite = Resources.Load<Sprite>(resourcePath);
+                renderer.color = color;
+                renderer.sortingOrder = sortingOrder;
+                renderer.enabled = renderer.sprite != null;
+            }
+
             return go;
         }
 
@@ -1033,49 +1156,58 @@ namespace Exploration.World
             float? characterSpacing = null)
         {
             GameObject go = GameObject.Find(objectName);
+            bool createdObject = go == null;
             if (go == null)
             {
                 go = new GameObject(objectName);
+                RegisterRuntimeCreated(go);
             }
 
-            if (parent != null)
+            if (createdObject)
             {
-                go.transform.SetParent(parent, false);
-                go.transform.localPosition = localPosition;
-            }
-            else
-            {
-                go.transform.SetParent(null);
-                go.transform.position = localPosition;
+                if (parent != null)
+                {
+                    go.transform.SetParent(parent, false);
+                    go.transform.localPosition = localPosition;
+                }
+                else
+                {
+                    go.transform.SetParent(null);
+                    go.transform.position = localPosition;
+                }
             }
 
             bool isLargeLabel = fontSize >= 3.4f;
             bool isPrimaryLabel = fontSize >= 2.5f;
             float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
-            go.transform.localScale = Vector3.one * resolvedLabelScale;
 
             TMPro.TextMeshPro text = GetOrAddComponent<TMPro.TextMeshPro>(go);
-            text.text = content;
-            text.fontSize = fontSize;
-            text.alignment = TMPro.TextAlignmentOptions.Center;
-            text.color = color;
-            text.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
-            text.characterSpacing = characterSpacing ?? (isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f);
-            text.wordSpacing = 0f;
-            text.lineSpacing = 0f;
-            text.fontStyle = fontStyle ?? (isLargeLabel || isPrimaryLabel ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal);
-
-            if (TMPro.TMP_Settings.defaultFontAsset != null)
+            bool applyDefaultPresentation = createdObject || string.IsNullOrWhiteSpace(text.text);
+            if (applyDefaultPresentation)
             {
-                text.font = TMPro.TMP_Settings.defaultFontAsset;
-            }
+                go.transform.localScale = Vector3.one * resolvedLabelScale;
+                text.text = content;
+                text.fontSize = fontSize;
+                text.alignment = TMPro.TextAlignmentOptions.Center;
+                text.color = color;
+                text.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+                text.characterSpacing = characterSpacing ?? (isLargeLabel ? 0.22f : isPrimaryLabel ? 0.08f : 0.02f);
+                text.wordSpacing = 0f;
+                text.lineSpacing = 0f;
+                text.fontStyle = fontStyle ?? (isLargeLabel || isPrimaryLabel ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal);
 
-            ApplyWorldTextReadability(text, isLargeLabel || isPrimaryLabel);
+                if (TMPro.TMP_Settings.defaultFontAsset != null)
+                {
+                    text.font = TMPro.TMP_Settings.defaultFontAsset;
+                }
 
-            MeshRenderer renderer = text.GetComponent<MeshRenderer>();
-            if (renderer != null)
-            {
-                renderer.sortingOrder = sortingOrder;
+                ApplyWorldTextReadability(text, isLargeLabel || isPrimaryLabel);
+
+                MeshRenderer renderer = text.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                {
+                    renderer.sortingOrder = sortingOrder;
+                }
             }
 
             return text;
@@ -1194,6 +1326,21 @@ namespace Exploration.World
             Transform labelTransform = label.transform;
             Vector3 localPosition = labelTransform.localPosition;
             labelTransform.localPosition = new Vector3(localPosition.x, compactY.Value, localPosition.z);
+        }
+
+        private static void RegisterRuntimeCreated(GameObject gameObject)
+        {
+            if (gameObject == null)
+            {
+                return;
+            }
+
+            RuntimeCreatedObjectIds.Add(gameObject.GetInstanceID());
+        }
+
+        private static bool WasCreatedAtRuntime(GameObject gameObject)
+        {
+            return gameObject != null && RuntimeCreatedObjectIds.Contains(gameObject.GetInstanceID());
         }
     }
 }
