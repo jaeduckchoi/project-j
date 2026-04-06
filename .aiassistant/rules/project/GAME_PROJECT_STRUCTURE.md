@@ -119,8 +119,8 @@ Assets
   빌더, 감사, Canvas 자동 동기화, 커스텀 인스펙터 같은 에디터 전용 코드를 둔다.
 - `Assets/Scenes`
   플레이 가능한 씬을 둔다. 지원 씬은 `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`이다.
-- `Assets/Generated`
-  빌더가 생성하거나 새로 고치는 원본 출력물을 둔다.
+- `Assets/Resources/Generated`
+  생성 자산과 런타임 `Resources.Load` 경로를 함께 관리하는 출력물을 둔다.
 - `Assets/Resources/Generated`
   런타임에서 `Resources.Load`로 직접 읽는 생성 자산을 둔다.
 - `Assets/Design`
@@ -136,22 +136,22 @@ Assets
 
 ## 6. 생성 자산 구조
 
-### `Assets/Generated/GameData`
+### `Assets/Resources/Generated/GameData`
 
 - 생성 데이터는 `Resources`, `Recipes`, `Input` 역할 기준으로 묶는다.
 - 파일명은 `resource-*`, `recipe-*`, `generated-ui-*` 같은 kebab-case 패턴을 사용한다.
-- 핵심 자원은 `Assets/Generated/GameData/Resources`, 레시피는 `Assets/Generated/GameData/Recipes`, 생성 입력 자산은 `Assets/Generated/GameData/Input` 아래에 둔다.
+- 핵심 자원은 `Assets/Resources/Generated/GameData/Resources`, 레시피는 `Assets/Resources/Generated/GameData/Recipes`, 생성 입력 자산은 `Assets/Resources/Generated/GameData/Input` 아래에 둔다.
 
-### `Assets/Generated/Fonts`
+### `Assets/Resources/Generated/Fonts`
 
 - 본문 폰트 기준은 `maplestoryLightSdf.asset`, 제목 폰트 기준은 `maplestoryBoldSdf.asset`를 유지한다.
 - 원본 TTF는 `maplestoryLight.ttf`, `maplestoryBold.ttf`이며, 생성 폰트 파일명은 lower camelCase를 유지한다.
 - `malgunGothicSdf.asset`는 폴백 또는 레거시 자산으로 남아 있을 수 있지만, 현재 빌더 기본값은 메이플스토리 계열이다.
 
-### `Assets/Generated/Sprites`
+### `Assets/Resources/Generated/Sprites`
 
 - 생성 스프라이트는 `Player`, `Gather`, `World`, `Hub`, `UI` 아래로 구분한다.
-- `Assets/Design/GeneratedSources/UI`는 빌더를 통해 `Assets/Generated/Sprites/UI`와 `Assets/Resources/Generated/Sprites/UI`에 모두 반영된다.
+- `Assets/Design/GeneratedSources/UI`는 빌더를 통해 `Assets/Resources/Generated/Sprites/UI`에 반영된다.
 - UI 원본은 `Buttons`, `MessageBoxes`, `Panels` 같은 카테고리 기준으로 정리한다.
 
 ### `Assets/Resources/Generated`
@@ -201,7 +201,7 @@ Assets
 ### 새 데이터 추가
 
 - 데이터 타입 정의는 `Assets/Scripts/Shared/Data` 아래에 둔다.
-- 빌더가 생성하는 데이터 자산은 `Assets/Generated/GameData`의 대응 하위 폴더에 두고, 역할이 드러나는 kebab-case 파일명을 유지한다.
+- 빌더가 생성하는 데이터 자산은 `Assets/Resources/Generated/GameData`의 대응 하위 폴더에 두고, 역할이 드러나는 kebab-case 파일명을 유지한다.
 - 런타임이 `Resources.Load`로 데이터를 읽는다면 `Assets/Resources/Generated/generated-game-data-manifest.asset`와 관련 경로를 함께 맞춘다.
 
 ### 새 UI 추가
@@ -215,7 +215,7 @@ Assets
 ## 10. 생성 경로 규칙
 
 - 생성 씬, 생성 자산, 런타임 출력물만 직접 수정하지 않는다. 먼저 빌더 경로를 수정한다.
-- `Assets/Generated`는 빌더 원본 출력 경로이고, `Assets/Resources/Generated`는 런타임 로딩 경로다. 이 구분을 유지한다.
+- 생성 자산 경로는 `Assets/Resources/Generated` 하나를 기준으로 유지하고, 런타임 로딩 경로와 실제 폴더 구조를 일치시킨다.
 - 런타임 코드가 `Resources.Load`를 쓰면 문서 경로와 실제 폴더 구조가 정확히 일치해야 한다.
 - 지원 씬 Canvas 레이아웃은 `ui-layout-overrides.asset`를 기준으로 따라야 하며, 씬 저장 시 트리거되는 자동 동기화 흐름이 유지되어야 한다.
 
@@ -225,7 +225,7 @@ Assets
 
 - 새 코드가 올바른 책임 폴더 아래에 배치되었는가?
 - 관련 `GameManager` 또는 매니저 참조가 필요한가?
-- 새 데이터를 추가했다면 `Assets/Generated/GameData` 규칙과 문서도 함께 갱신했는가?
+- 새 데이터를 추가했다면 `Assets/Resources/Generated/GameData` 규칙과 문서도 함께 갱신했는가?
 - 월드 레이아웃을 바꿨다면 `Assets/Scripts/Exploration/World`, `Scenes`, 빌더 코드, 계층 규칙 문서를 함께 검토했는가?
 
 ### UI 변경
@@ -245,7 +245,7 @@ Assets
 ## 12. 현재 기준 메모
 
 - 공용 작업 기준 문서는 `.aiassistant/rules` 아래에 있다.
-- 생성 데이터는 `Assets/Generated/GameData/Resources`, `Assets/Generated/GameData/Recipes`, `Assets/Generated/GameData/Input` 아래에 묶여 있다.
+- 생성 데이터는 `Assets/Resources/Generated/GameData/Resources`, `Assets/Resources/Generated/GameData/Recipes`, `Assets/Resources/Generated/GameData/Input` 아래에 묶여 있다.
 - 생성 폰트 기본값은 `maplestoryLightSdf`와 `maplestoryBoldSdf`다.
 - Canvas UI 오버라이드는 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장된다.
 - 이 작업에서는 Unity 실행과 컴파일을 직접 검증하지 못했으므로, 이후 빌더/감사/플레이 모드 검증이 추가로 필요하다.

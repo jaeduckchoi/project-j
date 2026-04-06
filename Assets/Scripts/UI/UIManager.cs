@@ -40,9 +40,6 @@ namespace UI
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UIManager")]
     public class UIManager : MonoBehaviour
     {
-        private const string PopupTitleObjectName = "PopupTitle";
-        private const string PopupLeftCaptionObjectName = "PopupLeftCaption";
-        private const string PopupRightCaptionObjectName = "PopupRightCaption";
         private const string HudRootName = "HUDRoot";
         private const string PopupRootName = "PopupRoot";
         private const string HudStatusGroupName = "HUDStatusGroup";
@@ -69,12 +66,12 @@ namespace UI
             "PopupFrame",
             "PopupFrameLeft",
             "PopupFrameRight",
-            PopupTitleObjectName,
+            PrototypeUIObjectNames.PopupTitle,
             "PopupCloseButton",
             "PopupLeftBody",
             "PopupRightBody",
-            PopupLeftCaptionObjectName,
-            PopupRightCaptionObjectName,
+            PrototypeUIObjectNames.PopupLeftCaption,
+            PrototypeUIObjectNames.PopupRightCaption,
             "StorageText",
             "SelectedRecipeText",
             "UpgradeText"
@@ -1449,8 +1446,8 @@ namespace UI
             {
                 "PopupOverlay" => PopupShellGroupName,
                 "PopupFrameLeft" or "PopupFrameRight" => PopupFrameGroupName,
-                PopupTitleObjectName or PopupLeftCaptionObjectName or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
-                "PopupCloseButton" or PopupRightCaptionObjectName or "PopupRightBody"
+                PrototypeUIObjectNames.PopupTitle or PrototypeUIObjectNames.PopupLeftCaption or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
+                "PopupCloseButton" or PrototypeUIObjectNames.PopupRightCaption or "PopupRightBody"
                     or "StorageText" or "SelectedRecipeText" or "UpgradeText" => PopupFrameRightGroupName,
                 _ => null
             };
@@ -2918,9 +2915,9 @@ namespace UI
         /// </summary>
         private void EnsureHubPopupHeadings(PrototypeUIPopupDefinition popupDefinition, TMP_FontAsset font, Color color)
         {
-            EnsureUiCaption(PopupTitleObjectName, popupDefinition.Title, PrototypeUILayout.HubPopupTitle, font, color, TextAlignmentOptions.TopLeft);
-            EnsureUiCaption(PopupLeftCaptionObjectName, popupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, font, color, TextAlignmentOptions.TopLeft);
-            EnsureUiCaption(PopupRightCaptionObjectName, popupDefinition.RightCaption, PrototypeUILayout.HubPopupFrameCaption, font, color, TextAlignmentOptions.TopLeft);
+            EnsureUiCaption(PrototypeUIObjectNames.PopupTitle, popupDefinition.Title, PrototypeUILayout.HubPopupTitle, font, color, TextAlignmentOptions.TopLeft);
+            EnsureUiCaption(PrototypeUIObjectNames.PopupLeftCaption, popupDefinition.LeftCaption, PrototypeUILayout.HubPopupLeftCaption, font, color, TextAlignmentOptions.TopLeft);
+            EnsureUiCaption(PrototypeUIObjectNames.PopupRightCaption, popupDefinition.RightCaption, PrototypeUILayout.HubPopupFrameCaption, font, color, TextAlignmentOptions.TopLeft);
         }
 
         private static void ApplyPopupDetailTextStyle(TextMeshProUGUI text, TMP_FontAsset bodyFont, Color textColor)
@@ -2950,8 +2947,8 @@ namespace UI
         {
             return objectName switch
             {
-                PopupTitleObjectName => FixedPopupTitlePresentation,
-                PopupLeftCaptionObjectName or PopupRightCaptionObjectName => FixedPopupCaptionPresentation,
+                PrototypeUIObjectNames.PopupTitle => FixedPopupTitlePresentation,
+                PrototypeUIObjectNames.PopupLeftCaption or PrototypeUIObjectNames.PopupRightCaption => FixedPopupCaptionPresentation,
                 _ => DefaultCaptionPresentation
             };
         }
@@ -2988,7 +2985,7 @@ namespace UI
         {
             return objectName switch
             {
-                PopupTitleObjectName or PopupLeftCaptionObjectName or PopupRightCaptionObjectName
+                PrototypeUIObjectNames.PopupTitle or PrototypeUIObjectNames.PopupLeftCaption or PrototypeUIObjectNames.PopupRightCaption
                     => headingFontAsset != null ? headingFontAsset : font,
                 _ => font
             };
@@ -2996,7 +2993,7 @@ namespace UI
 
         private static bool IsFixedPopupHeading(string objectName)
         {
-            return objectName == PopupTitleObjectName || objectName == PopupLeftCaptionObjectName;
+            return objectName == PrototypeUIObjectNames.PopupTitle || objectName == PrototypeUIObjectNames.PopupLeftCaption;
         }
 
         private void ApplyPopupCloseButtonLayout(TMP_FontAsset headingFont)
@@ -3405,9 +3402,9 @@ namespace UI
             SetNamedObjectActive("PopupFrameRight", isActive);
             SetNamedObjectActive("PopupLeftBody", isActive);
             SetNamedObjectActive("PopupRightBody", isActive);
-            SetNamedObjectActive(PopupTitleObjectName, isActive);
-            SetNamedObjectActive(PopupLeftCaptionObjectName, isActive);
-            SetNamedObjectActive(PopupRightCaptionObjectName, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.PopupTitle, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.PopupLeftCaption, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.PopupRightCaption, isActive);
             SetButtonGameObjectActive(popupCloseButton, isActive);
         }
 

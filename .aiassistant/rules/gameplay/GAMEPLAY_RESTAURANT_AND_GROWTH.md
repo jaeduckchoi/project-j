@@ -114,7 +114,7 @@
 - `Assets/Scripts/Management/Upgrade/UpgradeManager.cs`
 - `Assets/Scripts/Management/Economy/EconomyManager.cs`
 - `Assets/Scripts/UI/UIManager.cs`
-- `Assets/Generated/GameData/Recipes/recipe-*.asset`
+- `Assets/Resources/Generated/GameData/Recipes/recipe-*.asset`
 
 ## 8. 현재 구현 상태
 

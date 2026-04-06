@@ -108,5 +108,5 @@
 
 - 네 개의 탐험 지역 `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`이 연결되어 있다.
 - 랜턴 조건, 돌풍, 감속, 어둠, 지름길 흐름이 코드와 씬 데이터로 연결되어 있다.
-- `Light Automation Audit`는 포탈 잠금 규칙과 누락 씬 안내 동작도 함께 점검한다.
+- `GameplayAutomationAudit` 경량 감사 코드는 포탈 잠금 규칙과 누락 씬 안내 동작도 함께 점검한다.
 - 남은 작업은 주로 실제 플레이테스트를 바탕으로 한 경로와 밸런스 조정이다.

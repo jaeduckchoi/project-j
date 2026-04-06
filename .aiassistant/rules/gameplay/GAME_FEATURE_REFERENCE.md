@@ -153,11 +153,9 @@
 ## 5. 에디터 지원 도구
 
 - `Prototype Build and Audit`
-  생성 자산과 기본 씬을 다시 만들고 구조 감사를 수행한다.
-- `Organize Active Scene Hierarchy`
-  현재 열려 있는 지원 씬의 월드 그룹을 공용 계층 기준에 맞춰 다시 정리한다.
-- `Light Automation Audit`
-  day-loop 흐름, 팝업 일시정지, 포탈 잠금, 누락 씬 안내 회귀를 점검한다.
+  생성 자산과 Build Settings를 다시 맞추고, 누락된 지원 씬을 복구하며 구조 감사를 수행한다.
+- `GameplayAutomationAudit`
+  내부 경량 감사 코드로 day-loop 흐름, 팝업 일시정지, 포탈 잠금, 누락 씬 안내 회귀를 점검한다.
 
 ## 6. 권장 참조 문서
 

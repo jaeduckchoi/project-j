@@ -454,7 +454,7 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: InteractionPromptBackdrop
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 6aac8c291ee1185468d2eddb9d2cf561, type: 3}
+    sprite: {fileID: 21300000, guid: ea71e76ed99b4e845b13447926aa9c99, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
@@ -466,7 +466,7 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: NextDayButton
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
@@ -580,13 +580,13 @@ MonoBehaviour:
     preserveAspect: 0
   - objectName: SkipExplorationButton
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0
   - objectName: SkipServiceButton
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 80c5b3504060d2844a7d9d0b7f5ad775, type: 3}
+    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
     type: 1
     color: {r: 1, g: 1, b: 1, a: 0.82}
     preserveAspect: 0

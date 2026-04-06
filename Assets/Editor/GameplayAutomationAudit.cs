@@ -3,47 +3,27 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using CoreLoop.Core;
-using Management.Economy;
 using CoreLoop.Flow;
+using Exploration.World;
+using Management.Economy;
 using Management.Tools;
 using UI;
-using Exploration.World;
-using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 // ProjectEditor 네임스페이스
 namespace Editor
 {
     /// <summary>
     /// 생성 씬 구조 감사에 더해 핵심 게임플레이 규칙이 크게 깨지지 않았는지 빠르게 점검합니다.
-    /// 하루 루프, 팝업 일시정지, 포털 잠금 규칙처럼 회귀가 잦은 기준을 에디터와 배치 모드에서 같이 확인합니다.
+    /// 하루 루프, 팝업 일시정지, 포털 잠금 규칙처럼 회귀가 잦은 기준을 내부 점검 경로와 배치 모드에서 같이 확인합니다.
     /// </summary>
     public static class GameplayAutomationAudit
     {
-        private const string LightAuditMenuName = "Tools/Jonggu Restaurant/경량 자동 감사 실행";
         private static readonly BindingFlags InstanceFieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
 
-        [MenuItem(LightAuditMenuName, true, 2220)]
-        private static bool ValidateLightAutomationAuditMenu()
-        {
-            return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
-        }
-
-        [MenuItem(LightAuditMenuName, false, 2220)]
-        public static void RunLightAutomationAuditMenu()
-        {
-            if (!ValidateLightAutomationAuditMenu())
-            {
-                Debug.LogWarning("경량 자동 감사 실행은 플레이 모드를 종료한 뒤 실행해 주세요.");
-                return;
-            }
-
-            RunLightAutomationAudit();
-            EditorUtility.DisplayDialog("종구의 식당", "경량 자동 감사를 완료했습니다.", "OK");
-        }
-
         /// <summary>
-        /// 배치 실행과 메뉴 실행이 같은 경로를 공유하도록 권장 자동 감사를 한 번에 실행합니다.
+        /// 배치 실행과 내부 유지보수 호출이 같은 경로를 공유하도록 권장 자동 감사를 한 번에 실행합니다.
         /// </summary>
         public static void RunLightAutomationAudit()
         {
@@ -103,7 +83,7 @@ namespace Editor
             }
             finally
             {
-                UnityEngine.Object.DestroyImmediate(root);
+                Object.DestroyImmediate(root);
             }
 
             return issues;
@@ -260,7 +240,7 @@ namespace Editor
             public void Dispose()
             {
                 SetGameManagerInstance(null);
-                UnityEngine.Object.DestroyImmediate(Root);
+                Object.DestroyImmediate(Root);
             }
         }
     }

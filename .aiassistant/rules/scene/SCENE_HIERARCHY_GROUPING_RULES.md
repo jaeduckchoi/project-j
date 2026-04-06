@@ -115,4 +115,4 @@ SceneGameplayRoot
 - 결과 씬만 직접 수정하지 않는다. 빌더와 정리기가 같은 그룹 규칙을 따르도록 함께 갱신한다.
 - 그룹 이름이 바뀌면 생성 씬 감사와 관련 문서도 함께 갱신한다.
 - UI 그룹 규칙은 `ui/UI_GROUPING_RULES.md`에서 별도로 정의한다.
-- Unity에서 최종 씬 저장을 직접 검증하지 못했다면 `Tools > Jonggu Restaurant > Prototype Build and Audit` 또는 `Organize Active Scene Hierarchy`를 통해 최종 상태를 확인한다.
+- Unity에서 최종 씬 저장을 직접 검증하지 못했다면 씬 저장 뒤 `Tools > Jonggu Restaurant > Prototype Build and Audit`로 생성 자산과 구조 감사를 함께 확인한다.

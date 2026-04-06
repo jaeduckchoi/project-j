@@ -14,11 +14,12 @@ namespace Shared.Data
     /// </summary>
     public static class GeneratedGameDataLocator
     {
-        private const string GeneratedDataRoot = "Assets/Generated/GameData";
-        private const string GeneratedResourceDataRoot = GeneratedDataRoot + "/Resources";
-        private const string GeneratedRecipeDataRoot = GeneratedDataRoot + "/Recipes";
-        private const string GeneratedInputDataRoot = GeneratedDataRoot + "/Input";
         private const string GeneratedDataManifestPath = "Generated/generated-game-data-manifest";
+        private static Shared.PrototypeGeneratedAssetSettings AssetSettings => Shared.PrototypeGeneratedAssetSettings.GetCurrent();
+        private static string GeneratedDataRoot => AssetSettings.GameDataRoot;
+        private static string GeneratedResourceDataRoot => AssetSettings.ResourceDataRoot;
+        private static string GeneratedRecipeDataRoot => AssetSettings.RecipeDataRoot;
+        private static string GeneratedInputDataRoot => AssetSettings.InputDataRoot;
 
         private static readonly Dictionary<string, ResourceData> ResourceCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, RecipeData> RecipeCache = new(StringComparer.OrdinalIgnoreCase);

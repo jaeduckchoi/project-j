@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using Shared;
 
 // Player 네임스페이스
 namespace Exploration.Player
@@ -8,10 +9,19 @@ namespace Exploration.Player
     [MovedFrom(false, sourceNamespace: "Player", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]
     public sealed class PlayerDirectionalSprite : MonoBehaviour
     {
-        private const float PlayerSpritePixelsPerUnit = 1000f;
-        private const float PlayerVisualScale = 0.76f;
-        private static readonly Vector3 DefaultPlayerVisualScale = new(PlayerVisualScale, PlayerVisualScale, 0f);
+        private static PrototypeGeneratedAssetSettings AssetSettings => PrototypeGeneratedAssetSettings.GetCurrent();
+        private static float PlayerSpritePixelsPerUnit => AssetSettings.PlayerSpritePixelsPerUnit;
         private static readonly Vector2 SpritePivot = new(0.5f, 0.08f);
+
+        private static Vector3 DefaultPlayerVisualScale
+        {
+            get
+            {
+                float scale = AssetSettings.PlayerVisualScale;
+                return new Vector3(scale, scale, 0f);
+            }
+        }
+
 
         [SerializeField] private SpriteRenderer targetRenderer;
         [SerializeField] private Sprite frontSprite;
@@ -124,9 +134,9 @@ namespace Exploration.Player
         /// </summary>
         private void EnsureSpritesLoaded()
         {
-            frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite("Generated/Sprites/Player/player-front");
-            backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite("Generated/Sprites/Player/player-back");
-            sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite("Generated/Sprites/Player/player-side");
+            frontSprite = frontSprite != null ? NormalizeSprite(frontSprite) : LoadSprite(AssetSettings.PlayerFrontSpriteResourcePath);
+            backSprite = backSprite != null ? NormalizeSprite(backSprite) : LoadSprite(AssetSettings.PlayerBackSpriteResourcePath);
+            sideSprite = sideSprite != null ? NormalizeSprite(sideSprite) : LoadSprite(AssetSettings.PlayerSideSpriteResourcePath);
 
             if (targetRenderer != null && targetRenderer.sprite == null)
             {

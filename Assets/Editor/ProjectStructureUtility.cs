@@ -9,8 +9,6 @@ namespace Editor
     /// </summary>
     public static class ProjectStructureUtility
     {
-        private const string StructureMenuName = "Tools/Jonggu Restaurant/프로젝트 구조/기능 폴더 구조 맞추기";
-
         private static readonly string[] RequiredFolders =
         {
             "Assets/Scripts/CoreLoop",
@@ -31,23 +29,13 @@ namespace Editor
             "Assets/Scripts/Restaurant",
             "Assets/Scripts/Shared",
             "Assets/Scripts/Shared/Data",
-            "Assets/Scripts/UI",
-            "Assets/Generated/GameData",
-            "Assets/Generated/GameData/Input",
-            "Assets/Generated/GameData/Resources",
-            "Assets/Generated/GameData/Recipes"
+            "Assets/Scripts/UI"
         };
 
-        [MenuItem(StructureMenuName, true, 2300)]
-        private static bool ValidateEnsureBaseProjectFoldersMenu()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0051", Justification = "숨겨진 유지보수 경로로 보존합니다.")]
+        private static void EnsureBaseProjectFoldersForMaintenance()
         {
-            return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
-        }
-
-        [MenuItem(StructureMenuName, false, 2300)]
-        public static void EnsureBaseProjectFoldersMenu()
-        {
-            if (!ValidateEnsureBaseProjectFoldersMenu())
+            if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 Debug.LogWarning("프로젝트 구조 정리는 플레이 모드가 아닐 때만 실행할 수 있습니다.");
                 return;
@@ -59,7 +47,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// 빌더와 수동 유지보수 메뉴가 같은 기준 구조를 재사용하도록 공용 폴더를 보장한다.
+        /// 빌더와 내부 유지보수 경로가 같은 기준 구조를 재사용하도록 공용 폴더를 보장한다.
         /// </summary>
         public static void EnsureBaseProjectFolders()
         {

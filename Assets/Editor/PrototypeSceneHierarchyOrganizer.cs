@@ -1,45 +1,19 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using UnityEditor;
+using Exploration.World;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Exploration.World;
 
 namespace Editor
 {
     /// <summary>
     /// 지원 씬의 월드 Hierarchy를 공통 그룹 규칙에 맞게 정렬합니다.
-    /// 빌더가 다시 만든 씬과 이미 저장된 씬이 같은 구조를 유지하도록 에디터에서만 사용합니다.
+    /// 빌더 보강과 내부 유지보수 경로가 이미 저장된 씬과 같은 구조를 유지하도록 에디터에서만 사용합니다.
     /// </summary>
     internal static class PrototypeSceneHierarchyOrganizer
     {
-        [MenuItem("Tools/Jonggu Restaurant/현재 씬 Hierarchy 그룹 정리", true, 2220)]
-        private static bool ValidateOrganizeActiveSceneHierarchy()
-        {
-            return !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode;
-        }
-
-        [MenuItem("Tools/Jonggu Restaurant/현재 씬 Hierarchy 그룹 정리", false, 2220)]
-        private static void OrganizeActiveSceneHierarchy()
-        {
-            Scene activeScene = SceneManager.GetActiveScene();
-            if (!activeScene.IsValid() || !activeScene.isLoaded)
-            {
-                Debug.LogWarning("Hierarchy 그룹을 정리할 열린 씬이 없습니다.");
-                return;
-            }
-
-            if (!OrganizeSceneHierarchy(activeScene, saveScene: true))
-            {
-                Debug.LogWarning($"'{activeScene.name}' 씬은 지원 씬 Hierarchy 정리 대상이 아닙니다.");
-                return;
-            }
-
-            Debug.Log($"현재 씬 '{activeScene.name}' Hierarchy 그룹을 정리했습니다.");
-        }
-
         internal static bool OrganizeSceneHierarchy(Scene scene, bool saveScene)
         {
             return OrganizeSceneHierarchy(scene, null, saveScene);

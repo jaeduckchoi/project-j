@@ -65,8 +65,8 @@ UI는 탐험 화면을 과하게 가리지 않으면서도 `상태 확인 -> 판
 
 ## 5. 한글 텍스트와 폰트 기준
 
-- 기본 TMP 본문 폰트: `Assets/Generated/Fonts/maplestoryLightSdf.asset`
-- 기본 TMP 제목 폰트: `Assets/Generated/Fonts/maplestoryBoldSdf.asset`
+- 기본 TMP 본문 폰트: `Assets/Resources/Generated/Fonts/maplestoryLightSdf.asset`
+- 기본 TMP 제목 폰트: `Assets/Resources/Generated/Fonts/maplestoryBoldSdf.asset`
 - TMP Settings는 한글 줄바꿈이 유지되도록 설정한다.
 - `malgunGothicSdf.asset`는 폴백 또는 레거시 자산으로 남아 있을 수 있지만, 현재 빌더 기본값은 메이플스토리 계열이다.
 
@@ -115,7 +115,7 @@ UI는 탐험 화면을 과하게 가리지 않으면서도 `상태 확인 -> 판
 ## 8. 생성 UI 리소스 기준
 
 - 생성 UI 원본 아트: `Assets/Design/GeneratedSources/UI`
-- 생성 출력 경로: `Assets/Generated/Sprites/UI`
+- 생성 출력 경로: `Assets/Resources/Generated/Sprites/UI`
 - 런타임 참조 경로: `Assets/Resources/Generated/Sprites/UI`
 
 현재 이 시스템을 사용하는 공용 오브젝트 예시는 다음과 같다.

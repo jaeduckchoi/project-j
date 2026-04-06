@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // ProjectEditor.UI 네임스페이스
@@ -37,13 +38,13 @@ namespace Editor.UI
 
                 if (JongguMinimalPrototypeBuilder.TryAutoSyncCanvasOnSceneSaved(scene, out string message))
                 {
-                    UnityEngine.Debug.Log(message);
+                    Debug.Log(message);
                     return;
                 }
 
                 if (!string.IsNullOrWhiteSpace(message))
                 {
-                    UnityEngine.Debug.LogWarning(message);
+                    Debug.LogWarning(message);
                 }
             }
             finally

@@ -947,9 +947,9 @@ namespace UI.Layout
             objectNames.Add("PopupFrameRight");
             objectNames.Add("PopupLeftBody");
             objectNames.Add("PopupRightBody");
-            objectNames.Add("PopupTitle");
-            objectNames.Add("PopupLeftCaption");
-            objectNames.Add("PopupRightCaption");
+            objectNames.Add(PrototypeUIObjectNames.PopupTitle);
+            objectNames.Add(PrototypeUIObjectNames.PopupLeftCaption);
+            objectNames.Add(PrototypeUIObjectNames.PopupRightCaption);
             objectNames.Add("PopupCloseButton");
             objectNames.Add("InventoryText");
             objectNames.Add("StorageText");

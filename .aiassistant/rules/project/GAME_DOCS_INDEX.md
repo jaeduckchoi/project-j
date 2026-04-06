@@ -51,7 +51,7 @@
 ### `build`
 
 - `GAME_BUILD_GUIDE.md`
-  `Tools > Jonggu Restaurant` 메뉴 역할과 생성 자산/감사 흐름을 다룬다.
+  `Tools > Jonggu Restaurant > Prototype Build and Audit` 메인 메뉴와 생성 자산/감사 흐름을 다룬다.
 
 ## 3. 권장 읽기 순서
 
@@ -87,3 +87,4 @@
 
 - 이 인덱스는 현재 저장소 구조와 코드 기준으로 갱신되었다.
 - Unity 플레이 모드와 배치 컴파일은 이 작업에서 직접 검증하지 못했으므로, 변경 적용 후 빌드와 감사 메뉴 검증이 추가로 필요하다.
+

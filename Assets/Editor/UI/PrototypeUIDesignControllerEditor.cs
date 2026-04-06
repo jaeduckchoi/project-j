@@ -1,9 +1,9 @@
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UI;
 using UI.Controllers;
 using UI.Layout;
 using UI.Style;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 // ProjectEditor.UI 네임스페이스
@@ -52,7 +52,7 @@ namespace Editor.UI
                 + "HUDRoot\n"
                 + "- HUDStatusGroup / HUDActionGroup / HUDBottomGroup\n"
                 + "- HUDPanelButtonGroup / HUDOverlayGroup\n"
-				+ "- InteractionPromptText stays directly under HUDRoot\n\n"
+                + "- InteractionPromptText stays directly under HUDRoot\n\n"
                 + "PopupRoot\n"
                 + "- PopupShellGroup / PopupFrame / PopupFrameHeader\n"
                 + "- PopupOverlay stays under PopupShellGroup\n"
@@ -71,11 +71,11 @@ namespace Editor.UI
                 + "- 탐험 씬 저장 시 현재 씬 Canvas 값만 공용 오버라이드 위에 자동으로 덮어씁니다.\n"
                 + "- 같은 이름 UI는 빌더와 UIManager가 저장된 값을 다시 적용합니다.\n"
                 + "- 첫 Sync 시 Assets/Resources/Generated/ui-layout-overrides.asset이 자동 생성됩니다.\n"
-                + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.\n\n"
+                + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.\n"
+                + "- 메인 빌드는 생성 자산과 Build Settings를 동기화하고, 누락된 지원 씬만 최소한으로 다시 만듭니다.\n\n"
                 + "[Tools > Jonggu Restaurant 메뉴 역할]\n"
-                + "- 프로토타입 빌드 및 감사: 생성 자산, 기본 씬, 자동 감사를 한 번에 실행합니다.\n"
-                + "- 생성 자산 및 씬 다시 만들기: 감사를 제외한 생성 단계만 다시 실행합니다.\n"
-                + "- 생성 씬 감사만 실행: 현재 저장된 생성 씬 구조만 점검합니다.",
+                + "- 프로토타입 빌드 및 감사: 생성 자산, Build Settings, Canvas 오버라이드, 생성 씬 감사를 한 번에 동기화합니다.\n"
+                + "- 정적인 씬 값은 지원 씬에 직접 저장한 직렬화를 기준으로 유지합니다.",
                 MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())

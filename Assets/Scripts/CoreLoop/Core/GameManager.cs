@@ -129,7 +129,7 @@ namespace CoreLoop.Core
             {
                 Debug.LogWarning($"LoadScene failed: scene '{sceneName}' is not available.");
                 dayCycleManager?.ShowTemporaryGuide(
-                    $"{sceneName} 씬이 아직 준비되지 않았습니다. Unity에서 Tools > Jonggu Restaurant > Build Minimal Prototype를 다시 실행해 주세요.");
+                    $"{sceneName} 씬이 아직 준비되지 않았습니다. Unity에서 Tools > Jonggu Restaurant > 프로토타입 빌드 및 감사를 다시 실행해 생성 자산과 지원 씬을 동기화해 주세요.");
                 return;
             }
 

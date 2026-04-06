@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Shared;
 
 // UI.Style 네임스페이스
 namespace UI.Style
@@ -48,10 +49,11 @@ namespace UI.Style
         private static readonly Vector4 ButtonSliceBorder = new(6f, 6f, 6f, 6f);
         private static readonly Vector4 PanelSliceBorder = new(8f, 8f, 8f, 8f);
         private const string VectorResourceRoot = "Generated/UI/Vector";
-        private const string GeneratedUiResourceRoot = "Generated/Sprites/UI";
-        private const string GeneratedUiButtonResourceRoot = "Generated/Sprites/UI/Buttons";
-        private const string GeneratedUiMessageBoxResourceRoot = "Generated/Sprites/UI/MessageBoxes";
-        private const string GeneratedUiPanelResourceRoot = "Generated/Sprites/UI/Panels";
+        private static PrototypeGeneratedAssetSettings AssetSettings => PrototypeGeneratedAssetSettings.GetCurrent();
+        private static string GeneratedUiResourceRoot => AssetSettings.GeneratedUiResourceRoot;
+        private static string GeneratedUiButtonResourceRoot => AssetSettings.GeneratedUiButtonResourceRoot;
+        private static string GeneratedUiMessageBoxResourceRoot => AssetSettings.GeneratedUiMessageBoxResourceRoot;
+        private static string GeneratedUiPanelResourceRoot => AssetSettings.GeneratedUiPanelResourceRoot;
         /// <summary>
         /// 패널 오브젝트 이름을 실제 리소스 경로로 바꾼다.
         /// </summary>
