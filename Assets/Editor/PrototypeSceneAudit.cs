@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Exploration.Player;
+using Exploration.World;
+using Shared;
 using UI;
 using UI.Layout;
-using Exploration.World;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,14 +21,8 @@ namespace Editor
     /// </summary>
     public static class PrototypeSceneAudit
     {
-        private static readonly string[] ScenePaths =
-        {
-            "Assets/Scenes/Hub.unity",
-            "Assets/Scenes/Beach.unity",
-            "Assets/Scenes/DeepForest.unity",
-            "Assets/Scenes/AbandonedMine.unity",
-            "Assets/Scenes/WindHill.unity",
-        };
+        private static PrototypeGeneratedAssetSettings AssetSettings => PrototypeGeneratedAssetSettings.GetCurrent();
+        private static string[] ScenePaths => AssetSettings.ManagedScenePaths;
 
         private static readonly string[] CommonHudNames =
         {
@@ -50,9 +46,9 @@ namespace Editor
             "PopupFrameRight",
             "PopupLeftBody",
             "PopupRightBody",
-            "PopupTitle",
-            "PopupLeftCaption",
-            "PopupRightCaption",
+            PrototypeUIObjectNames.PopupTitle,
+            PrototypeUIObjectNames.PopupLeftCaption,
+            PrototypeUIObjectNames.PopupRightCaption,
             "PopupCloseButton",
             "InventoryText",
             "StorageText",
@@ -104,6 +100,13 @@ namespace Editor
 
             foreach (string scenePath in ScenePaths)
             {
+                if (!JongguMinimalPrototypeBuilder.TryDescribeManagedSceneFileIssue(scenePath, out string sceneFileIssue))
+                {
+                    string sceneName = Path.GetFileNameWithoutExtension(scenePath);
+                    issues.Add($"[{sceneName}] {sceneFileIssue}");
+                    continue;
+                }
+
                 Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
                 issues.AddRange(AuditScene(scene, scenePath));
             }
@@ -125,7 +128,7 @@ namespace Editor
         private static IEnumerable<string> AuditScene(Scene scene, string scenePath)
         {
             List<string> issues = new();
-            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            string sceneName = Path.GetFileNameWithoutExtension(scenePath);
             bool isHubScene = string.Equals(sceneName, "Hub", StringComparison.OrdinalIgnoreCase);
             string hudActionGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDActionGroup");
             string hudPanelButtonGroupName = PrototypeUISceneLayoutCatalog.ResolveObjectName("HUDPanelButtonGroup");
@@ -145,12 +148,12 @@ namespace Editor
             ValidateChildCount(issues, sceneName, objects, "Jonggu", "PlayerVisual", 1);
             ValidateComponentOnNamedObject<PlayerDirectionalSprite>(issues, sceneName, objects, "Jonggu");
             ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDStatusGroup", 1);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudActionGroupName, 1);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDBottomGroup", 1);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudPanelButtonGroupName, isHubScene ? 1 : 0);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptBackdrop", 1);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptText", 1);
-			ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDOverlayGroup", 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudActionGroupName, 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDBottomGroup", 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", hudPanelButtonGroupName, isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptBackdrop", 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", "InteractionPromptText", 1);
+            ValidateChildCount(issues, sceneName, objects, "HUDRoot", "HUDOverlayGroup", 1);
             ValidateChildCount(issues, sceneName, objects, "HUDOverlayGroup", "GuideHelpButton", 1);
 
             foreach (string hudName in CommonHudNames)
@@ -230,12 +233,12 @@ namespace Editor
             ValidateExactCount(issues, sceneName, objects, "WorkshopFrontOccluder", 0);
             ValidateExactCount(issues, sceneName, objects, "StorageFrontOccluder", 0);
 
-			ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-			ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
-			ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
-			ValidateLayout(issues, sceneName, objects, "InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
-			ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
-			ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+            ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+            ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
+            ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
+            ValidateLayout(issues, sceneName, objects, "InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
+            ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
+            ValidateLayout(issues, sceneName, objects, "GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "GuideText", PrototypeUILayout.GuideText(isHubScene));
             ValidateLayout(issues, sceneName, objects, "GuideHelpButton", PrototypeUILayout.GuideHelpButton(isHubScene));
             ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
@@ -260,9 +263,9 @@ namespace Editor
                 ValidateLayout(issues, sceneName, objects, "PopupFrameRight", PrototypeUILayout.HubPopupFrameRight);
                 ValidateLayout(issues, sceneName, objects, "PopupLeftBody", PrototypeUILayout.HubPopupFrameBody);
                 ValidateLayout(issues, sceneName, objects, "PopupRightBody", PrototypeUILayout.HubPopupFrameBody);
-                ValidateLayout(issues, sceneName, objects, "PopupTitle", PrototypeUILayout.HubPopupTitle);
-                ValidateLayout(issues, sceneName, objects, "PopupLeftCaption", PrototypeUILayout.HubPopupLeftCaption);
-                ValidateLayout(issues, sceneName, objects, "PopupRightCaption", PrototypeUILayout.HubPopupFrameCaption);
+                ValidateLayout(issues, sceneName, objects, PrototypeUIObjectNames.PopupTitle, PrototypeUILayout.HubPopupTitle);
+                ValidateLayout(issues, sceneName, objects, PrototypeUIObjectNames.PopupLeftCaption, PrototypeUILayout.HubPopupLeftCaption);
+                ValidateLayout(issues, sceneName, objects, PrototypeUIObjectNames.PopupRightCaption, PrototypeUILayout.HubPopupFrameCaption);
                 ValidateLayout(issues, sceneName, objects, "PopupCloseButton", PrototypeUILayout.HubPopupCloseButton);
                 ValidateLayout(issues, sceneName, objects, "InventoryText", PrototypeUILayout.HubPopupFrameText);
                 ValidateLayout(issues, sceneName, objects, "StorageText", PrototypeUILayout.HubPopupRightDetailText);

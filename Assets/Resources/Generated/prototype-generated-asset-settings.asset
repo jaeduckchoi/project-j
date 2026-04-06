@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9b464117c5fe284195f67433b34c807, type: 3}
+  m_Name: prototype-generated-asset-settings
+  m_EditorClassIdentifier: Jonggu.Shared::Shared.PrototypeGeneratedAssetSettings
+  resourcesGeneratedRoot: Assets/Resources/Generated
+  sceneRoot: Assets/Scenes
+  uiGeneratedSourceRoot: Assets/Design/GeneratedSources/UI
+  hubFloorTileDesignSourcePath: Assets/Design/Tile set-20260405T131607Z-3-001/Tile
+    set/Hub Tile/Wooden tile.png
+  hubBarDesignSourcePath: Assets/Design/Object-20260405T122251Z-3-001/Object/Main
+    Hub/Counter.png
+  hubWallBackgroundHorizontalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 5.png
+  hubWallBackgroundVerticalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 11.png
+  hubWallBackgroundFillDesignSourcePath: Assets/Design/Tile set-20260405T131607Z-3-001/Tile
+    set/Stone Tile/Stone Tile 4.png
+  hubWallBackgroundBottomLeftDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 10.png
+  hubWallBackgroundBottomRightDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 12.png
+  hubFrontOutlineTopLeftDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 1.png
+  hubFrontOutlineHorizontalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 2.png
+  hubFrontOutlineBottomRightDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 9.png
+  hubFrontOutlineSideDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
+    set/Stone Wall/Stone Wall 4.png
+  closeButtonDesignSourcePath: Assets/Design/GeneratedSources/UI/Buttons/close-button.png
+  helpButtonDesignSourcePath: Assets/Design/GeneratedSources/UI/Buttons/help-button.png
+  systemTextBoxDesignSourcePath: Assets/Design/GeneratedSources/UI/MessageBoxes/system-text-box.png
+  interactionTextBoxDesignSourcePath: Assets/Design/GeneratedSources/UI/MessageBoxes/interaction-text-box.png
+  darkOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel.png
+  darkOutlinePanelAltDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel-alt.png
+  darkSolidPanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-solid-panel.png
+  darkThinOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-thin-outline-panel.png
+  lightOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/light-outline-panel.png
+  lightSolidPanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/light-solid-panel.png
+  hubBarRightLeftCapCropRect:
+    x: 0
+    y: 0
+    width: 12
+    height: 62
+  hubBarRightBodyCropRect:
+    x: 303
+    y: 0
+    width: 203
+    height: 62
+  hubBarMainSpriteBorder: {x: 4, y: 0, z: 4, w: 0}
+  hubBarRightSpriteBorder: {x: 12, y: 0, z: 4, w: 0}
+  hubWallBackgroundTextureWidth: 1524
+  hubWallBackgroundTextureHeight: 140
+  hubWallBackgroundBorderSize: 32
+  hubFrontOutlineTextureWidth: 1920
+  hubFrontOutlineTextureHeight: 1080
+  hubFrontOutlineBorderWidth: 96
+  hubFrontOutlineBorderHeight: 90
+  hubFrontOutlineTopWallStartX: 0
+  hubFrontOutlineTopWallEndX: 1606
+  hubFrontOutlineBottomWallStartX: 300
+  playerSpritePixelsPerUnit: 1000
+  playerVisualScale: 0.76
+  defaultPlayerRootScale: {x: 1.5, y: 1.5, z: 1}
+  worldTitleFontSize: 5.1
+  worldLabelFontSize: 3.3
+  worldLabelSmallFontSize: 3
