@@ -78,9 +78,9 @@ namespace Exploration.World
             UpdatePortalDisplayLabel("GoToWindHill", "\uBC14\uB78C \uC5B8\uB355");
 
             EnsureObjectPosition("RecipeSelector", HubRoomLayout.RecipeSelectorPosition);
-            EnsureObjectScale("RecipeSelector", new Vector3(1.55f, 1.55f, 1f));
+            EnsureObjectScale("RecipeSelector", HubRoomLayout.RecipeSelectorScale);
             EnsureObjectPosition("ServiceCounter", HubRoomLayout.ServiceCounterPosition);
-            EnsureObjectScale("ServiceCounter", new Vector3(1.95f, 1.55f, 1f));
+            EnsureObjectScale("ServiceCounter", HubRoomLayout.ServiceCounterScale);
             EnsureObjectPosition("StorageStation", HubRoomLayout.StorageStationPosition);
             EnsureObjectScale("StorageStation", HubRoomLayout.StorageStationScale);
             EnsureObjectPosition("UpgradeStation", HubRoomLayout.UpgradeStationPosition);
