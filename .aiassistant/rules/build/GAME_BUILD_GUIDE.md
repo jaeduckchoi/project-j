@@ -67,6 +67,10 @@
 - 지원 씬 월드 계층은 `scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따른다.
 - `Prototype Build and Audit`는 먼저 `Hub` 기준을 읽고, 마지막에 현재 열려 있는 씬의 Canvas 값을 다시 적용한다.
 - 빌더가 직접 생성하지 않는 런타임 전용 팝업 리소스는 `Assets/Resources/Generated/Sprites/UI` 아래에 유지해야 한다.
+- 허브 월드 아트를 교체할 때는 `Assets/Generated/Sprites/Hub`와 `Assets/Resources/Generated/Sprites/Hub`를 함께 갱신하고, `HubRoomLayout`, `PrototypeSceneRuntimeAugmenter`, `JongguMinimalPrototypeBuilder`의 배치 기준과 자산 경로를 같은 구조로 맞춘다.
+- `HubWallBackground`와 `HubFrontOutline`는 빌드 시 생성 PNG와 리소스 복사 경로가 함께 갱신되는지 검토한다.
+- 허브 벽 아트 정렬이 어긋나면 생성 PNG만 고치지 말고 `JongguMinimalPrototypeBuilder`의 타일 배치 값, 배경/전경 위치, 리소스 경로를 먼저 수정한 뒤 다시 빌드한다.
+- 허브 바닥 타일은 `1 월드 유닛 = 32 px` 기준을 유지하는지, 허브 카운터는 `HubBarLeftVisual`/`HubBarRightVisual` 분리 구조와 각 파츠의 `spriteBorder`가 맞는지 함께 확인한다.
 - 생성 씬 감사가 실패하면 빌드 흐름 전체를 실패로 간주하고 원인을 먼저 해결한다.
 
 ### Canvas UI 복구 원칙

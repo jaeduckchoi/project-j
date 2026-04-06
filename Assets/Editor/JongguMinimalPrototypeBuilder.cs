@@ -71,6 +71,35 @@ namespace Editor
         private const string ResourceHubSpriteRoot = ResourceSpriteRoot + "/Hub";
         private const string HubFloorBackgroundSpritePath = HubSpriteRoot + "/hub-floor-background.png";
         private const string ResourceHubFloorBackgroundSpritePath = ResourceHubSpriteRoot + "/hub-floor-background.png";
+        private const string HubFloorTileDesignSourcePath = "Assets/Design/Tile set-20260405T131607Z-3-001/Tile set/Hub Tile/Wooden tile.png";
+        private const string HubFloorTileSpritePath = HubSpriteRoot + "/hub-floor-tile.png";
+        private const string ResourceHubFloorTileSpritePath = ResourceHubSpriteRoot + "/hub-floor-tile.png";
+        private const string HubBarDesignSourcePath = "Assets/Design/Object-20260405T122251Z-3-001/Object/Main Hub/Counter.png";
+        private const string HubBarRightSpritePath = HubSpriteRoot + "/hub-bar-right.png";
+        private const string ResourceHubBarRightSpritePath = ResourceHubSpriteRoot + "/hub-bar-right.png";
+        private static readonly RectInt HubBarRightLeftCapCropRect = new(0, 0, 12, 62);
+        private static readonly RectInt HubBarRightBodyCropRect = new(303, 0, 203, 62);
+        private static readonly Vector4 HubBarMainSpriteBorder = new(4f, 0f, 4f, 0f);
+        private static readonly Vector4 HubBarRightSpriteBorder = new(12f, 0f, 4f, 0f);
+        private const string StoneWallDesignRoot = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall";
+        private const string StoneTileDesignRoot = "Assets/Design/Tile set-20260405T131607Z-3-001/Tile set/Stone Tile";
+        private const string HubWallBackgroundHorizontalWallDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 5.png";
+        private const string HubWallBackgroundVerticalWallDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 11.png";
+        private const string HubWallBackgroundFillDesignSourcePath = StoneTileDesignRoot + \        private const string HubWallBackgroundBottomLeftDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 10.png";
+        private const string HubWallBackgroundBottomRightDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 12.png";
+        private const int HubWallBackgroundTextureWidth = 1524;
+        private const int HubWallBackgroundTextureHeight = 140;
+        private const int HubWallBackgroundBorderSize = 32;        private const string HubFrontOutlineTopLeftDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 1.png";
+        private const string HubFrontOutlineHorizontalWallDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 2.png";
+        private const string HubFrontOutlineBottomRightDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 9.png";
+        private const string HubFrontOutlineSideDesignSourcePath = StoneWallDesignRoot + "/Stone Wall 4.png";
+        private const int HubFrontOutlineTextureWidth = 1920;
+        private const int HubFrontOutlineTextureHeight = 1080;
+        private const int HubFrontOutlineBorderWidth = 96;
+        private const int HubFrontOutlineBorderHeight = 90;
+        private const int HubFrontOutlineTopWallStartX = 0;
+        private const int HubFrontOutlineTopWallEndX = 1606;
+        private const int HubFrontOutlineBottomWallStartX = 300;
         private const string HubWallBackgroundSpritePath = HubSpriteRoot + "/hub-wall-background.png";
         private const string ResourceHubWallBackgroundSpritePath = ResourceHubSpriteRoot + "/hub-wall-background.png";
         private const string HubFrontOutlineSpritePath = HubSpriteRoot + "/hub-front-outline.png";
@@ -81,8 +110,8 @@ namespace Editor
         private const string ResourceHubTableUnlockedSpritePath = ResourceHubSpriteRoot + "/hub-table-unlocked.png";
         private const string HubUpgradeSlotSpritePath = HubSpriteRoot + "/hub-upgrade-slot-center.png";
         private const string ResourceHubUpgradeSlotSpritePath = ResourceHubSpriteRoot + "/hub-upgrade-slot-center.png";
-        private const string HubTodayMenuBgSpritePath = HubSpriteRoot + "/hub-today-menu-bg-1.png";
-        private const string ResourceHubTodayMenuBgSpritePath = ResourceHubSpriteRoot + "/hub-today-menu-bg-1.png";
+        private const string HubTodayMenuBgSpritePath = HubSpriteRoot + "/hub-today-menu-bg.png";
+        private const string ResourceHubTodayMenuBgSpritePath = ResourceHubSpriteRoot + "/hub-today-menu-bg.png";
         private const string HubTodayMenuItem1SpritePath = HubSpriteRoot + "/hub-today-menu-item-1.png";
         private const string ResourceHubTodayMenuItem1SpritePath = ResourceHubSpriteRoot + "/hub-today-menu-item-1.png";
         private const string HubTodayMenuItem2SpritePath = HubSpriteRoot + "/hub-today-menu-item-2.png";
@@ -307,10 +336,12 @@ namespace Editor
             public Sprite PlayerFront;
             public Sprite PlayerBack;
             public Sprite PlayerSide;
+            public Sprite HubFloorTile;
             public Sprite HubFloorBackground;
             public Sprite HubWallBackground;
             public Sprite HubFrontOutline;
             public Sprite HubBar;
+            public Sprite HubBarRight;
             public Sprite HubTableUnlocked;
             public Sprite HubUpgradeSlot;
             public Sprite HubTodayMenuBg;
@@ -2381,6 +2412,31 @@ namespace Editor
                 Transform parent = ResolveHubArtParent(placement.Anchor, backgroundLayer, objectLayer, foregroundLayer);
                 Sprite sprite = ResolveHubArtSprite(sprites, placement.SpriteId);
 
+                if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.FloorBackground && sprites.HubFloorTile != null)
+                {
+                    CreateHubTiledArtSprite(
+                        placement.ObjectName,
+                        placement.LocalPosition,
+                        new Vector2(mapWidth, mapHeight),
+                        HubRoomLayout.FloorTileScale,
+                        sprites.HubFloorTile,
+                        placement.SortingOrder,
+                        parent);
+                    continue;
+                }
+
+                if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.Bar && sprite != null)
+                {
+                    CreateHubSplitBarArt(
+                        placement.ObjectName,
+                        placement.LocalPosition,
+                        sprite,
+                        sprites.HubBarRight,
+                        placement.SortingOrder,
+                        parent);
+                    continue;
+                }
+
                 if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.FloorBackground && sprite == null)
                 {
                     GameObject fallbackFloor = CreateFloorZone(
@@ -4034,7 +4090,85 @@ namespace Editor
             return CreateDecorBlock(objectName, position, Vector3.one, sprite, Color.white, sortingOrder, parent);
         }
 
-        private static GameObject CreateDecorBlock(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder, Transform parent = null)
+        private static GameObject CreateHubTiledArtSprite(
+            string objectName,
+            Vector3 position,
+            Vector2 worldSize,
+            Vector3 localScale,
+            Sprite sprite,
+            int sortingOrder,
+            Transform parent)
+        {
+            if (sprite == null)
+            {
+                return null;
+            }
+
+            Vector2 tiledSize = new(
+                Mathf.Approximately(localScale.x, 0f) ? worldSize.x : worldSize.x / localScale.x,
+                Mathf.Approximately(localScale.y, 0f) ? worldSize.y : worldSize.y / localScale.y);
+
+            return CreateDecorBlock(objectName, position, localScale, sprite, Color.white, sortingOrder, parent, SpriteDrawMode.Tiled, tiledSize);
+        }
+
+        private static GameObject CreateHubSplitBarArt(
+            string objectName,
+            Vector3 position,
+            Sprite leftSprite,
+            Sprite rightSprite,
+            int sortingOrder,
+            Transform parent)
+        {
+            GameObject root = new(objectName);
+            if (parent != null)
+            {
+                root.transform.SetParent(parent, false);
+                ApplySceneTransformOverride(root.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: true);
+            }
+            else
+            {
+                ApplySceneTransformOverride(root.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
+            }
+
+            CreateDecorBlock(
+                HubRoomLayout.BarLeftVisualObjectName,
+                HubRoomLayout.BarLeftVisualLocalPosition,
+                Vector3.one,
+                leftSprite,
+                Color.white,
+                sortingOrder,
+                root.transform,
+                SpriteDrawMode.Sliced,
+                HubRoomLayout.BarLeftVisualSize);
+
+            if (rightSprite != null)
+            {
+                CreateDecorBlock(
+                    HubRoomLayout.BarRightVisualObjectName,
+                    HubRoomLayout.BarRightVisualLocalPosition,
+                    Vector3.one,
+                    rightSprite,
+                    Color.white,
+                    sortingOrder,
+                    root.transform,
+                    SpriteDrawMode.Sliced,
+                    HubRoomLayout.BarRightVisualSize);
+            }
+
+            ApplySceneActiveOverride(root, objectName);
+            return root;
+        }
+
+        private static GameObject CreateDecorBlock(
+            string objectName,
+            Vector3 position,
+            Vector3 scale,
+            Sprite sprite,
+            Color color,
+            int sortingOrder,
+            Transform parent = null,
+            SpriteDrawMode drawMode = SpriteDrawMode.Simple,
+            Vector2? tiledSize = null)
         {
             GameObject go = new(objectName);
             if (parent != null)
@@ -4051,6 +4185,11 @@ namespace Editor
             renderer.sprite = sprite;
             renderer.color = color;
             renderer.sortingOrder = sortingOrder;
+            renderer.drawMode = drawMode;
+            if (tiledSize.HasValue)
+            {
+                renderer.size = tiledSize.Value;
+            }
             ApplySceneComponentOverride(renderer, objectName);
             ApplySceneActiveOverride(go, objectName);
             return go;
@@ -4179,10 +4318,37 @@ namespace Editor
                 PlayerFront = CreatePlayerSprite(PlayerSpriteRoot + "/player-front.png", "image (2).png"),
                 PlayerBack = CreatePlayerSprite(PlayerSpriteRoot + "/player-back.png", "image (1).png"),
                 PlayerSide = CreatePlayerSprite(PlayerSpriteRoot + "/player-side.png", "image.png"),
+                HubFloorTile = EnsureCopiedSpriteAsset(
+                    HubFloorTileDesignSourcePath,
+                    HubFloorTileSpritePath,
+                    ResourceHubFloorTileSpritePath,
+                    HubRoomLayout.FloorTilePixelsPerUnit,
+                    new Vector2(0.5f, 0.5f),
+                    FilterMode.Point,
+                    TextureWrapMode.Repeat),
                 HubFloorBackground = LoadConfiguredSprite(HubFloorBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubFloorBackgroundSpritePath),
-                HubWallBackground = LoadConfiguredSprite(HubWallBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubWallBackgroundSpritePath),
+                HubWallBackground = EnsureHubWallBackgroundSpriteAsset(),
                 HubFrontOutline = LoadConfiguredSprite(HubFrontOutlineSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubFrontOutlineSpritePath),
-                HubBar = LoadConfiguredSprite(HubBarSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubBarSpritePath),
+                HubBar = EnsureCopiedSpriteAsset(
+                    HubBarDesignSourcePath,
+                    HubBarSpritePath,
+                    ResourceHubBarSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f),
+                    FilterMode.Bilinear,
+                    TextureWrapMode.Clamp,
+                    HubBarMainSpriteBorder),
+                HubBarRight = EnsureCompositeSpriteAsset(
+                    HubBarDesignSourcePath,
+                    HubBarRightSpritePath,
+                    ResourceHubBarRightSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f),
+                    FilterMode.Bilinear,
+                    TextureWrapMode.Clamp,
+                    HubBarRightSpriteBorder,
+                    HubBarRightLeftCapCropRect,
+                    HubBarRightBodyCropRect),
                 HubTableUnlocked = LoadConfiguredSprite(HubTableUnlockedSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTableUnlockedSpritePath),
                 HubUpgradeSlot = LoadConfiguredSprite(HubUpgradeSlotSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubUpgradeSlotSpritePath),
                 HubTodayMenuBg = LoadConfiguredSprite(HubTodayMenuBgSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubTodayMenuBgSpritePath),
@@ -4201,6 +4367,706 @@ namespace Editor
                 WindHerb = CreateColorSprite(GatherSpriteRoot + "/gather-wind-herb.png", new Color(0.79f, 0.93f, 0.61f)),
                 Floor = CreateColorSprite(WorldSpriteRoot + "/world-floor.png", Color.white)
             };
+        }
+
+        private static Sprite EnsureCopiedSpriteAsset(
+            string sourceAssetPath,
+            string generatedAssetPath,
+            string resourceAssetPath,
+            float pixelsPerUnit,
+            Vector2 pivot,
+            FilterMode filterMode = FilterMode.Bilinear,
+            TextureWrapMode wrapMode = TextureWrapMode.Clamp,
+            Vector4? borderOverride = null)
+        {
+            string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceAssetPath);
+            string generatedFullPath = Path.Combine(Directory.GetCurrentDirectory(), generatedAssetPath);
+            string resourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
+
+            if (File.Exists(sourceFullPath))
+            {
+                CopyFileIfDifferent(sourceFullPath, generatedFullPath);
+                CopyFileIfDifferent(sourceFullPath, resourceFullPath);
+                AssetDatabase.ImportAsset(generatedAssetPath, ImportAssetOptions.ForceUpdate);
+                AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+            }
+            else if (File.Exists(generatedFullPath) && !File.Exists(resourceFullPath))
+            {
+                CopyFileIfDifferent(generatedFullPath, resourceFullPath);
+                AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+            }
+
+            Vector4 border = borderOverride ?? Vector4.zero;
+
+            Sprite generatedSprite = File.Exists(generatedFullPath)
+                ? ConfigureSpriteAsset(generatedAssetPath, pixelsPerUnit, pivot, border, filterMode, wrapMode)
+                : AssetDatabase.LoadAssetAtPath<Sprite>(generatedAssetPath);
+
+            if (File.Exists(resourceFullPath))
+            {
+                ConfigureSpriteAsset(resourceAssetPath, pixelsPerUnit, pivot, border, filterMode, wrapMode);
+            }
+
+            return generatedSprite;
+        }
+
+        private static Sprite EnsureCompositeSpriteAsset(
+            string sourceAssetPath,
+            string generatedAssetPath,
+            string resourceAssetPath,
+            float pixelsPerUnit,
+            Vector2 pivot,
+            FilterMode filterMode = FilterMode.Bilinear,
+            TextureWrapMode wrapMode = TextureWrapMode.Clamp,
+            Vector4? borderOverride = null,
+            params RectInt[] segments)
+        {
+            string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceAssetPath);
+            string generatedFullPath = Path.Combine(Directory.GetCurrentDirectory(), generatedAssetPath);
+            string resourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), resourceAssetPath);
+
+            if (File.Exists(sourceFullPath))
+            {
+                byte[] compositeBytes = ComposeTextureSegmentsToPngBytes(sourceFullPath, segments);
+                if (compositeBytes != null && compositeBytes.Length > 0)
+                {
+                    WriteFileIfDifferent(generatedFullPath, compositeBytes);
+                    WriteFileIfDifferent(resourceFullPath, compositeBytes);
+                    AssetDatabase.ImportAsset(generatedAssetPath, ImportAssetOptions.ForceUpdate);
+                    AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+                }
+            }
+            else if (File.Exists(generatedFullPath) && !File.Exists(resourceFullPath))
+            {
+                CopyFileIfDifferent(generatedFullPath, resourceFullPath);
+                AssetDatabase.ImportAsset(resourceAssetPath, ImportAssetOptions.ForceUpdate);
+            }
+
+            Vector4 border = borderOverride ?? Vector4.zero;
+            Sprite generatedSprite = File.Exists(generatedFullPath)
+                ? ConfigureSpriteAsset(generatedAssetPath, pixelsPerUnit, pivot, border, filterMode, wrapMode)
+                : AssetDatabase.LoadAssetAtPath<Sprite>(generatedAssetPath);
+
+            if (File.Exists(resourceFullPath))
+            {
+                ConfigureSpriteAsset(resourceAssetPath, pixelsPerUnit, pivot, border, filterMode, wrapMode);
+            }
+
+            return generatedSprite;
+        }
+
+        private static byte[] ComposeTextureSegmentsToPngBytes(string sourceFullPath, IReadOnlyList<RectInt> segments)
+        {
+            if (segments == null || segments.Count == 0)
+            {
+                return null;
+            }
+
+            Texture2D sourceTexture = new(2, 2, TextureFormat.RGBA32, false);
+            if (!sourceTexture.LoadImage(File.ReadAllBytes(sourceFullPath)))
+            {
+                UnityEngine.Object.DestroyImmediate(sourceTexture);
+                return null;
+            }
+
+            List<RectInt> normalizedSegments = new(segments.Count);
+            int totalWidth = 0;
+            int maxHeight = 0;
+
+            foreach (RectInt segment in segments)
+            {
+                int startX = Mathf.Clamp(segment.x, 0, sourceTexture.width - 1);
+                int startY = Mathf.Clamp(segment.y, 0, sourceTexture.height - 1);
+                int width = Mathf.Clamp(segment.width, 1, sourceTexture.width - startX);
+                int height = Mathf.Clamp(segment.height, 1, sourceTexture.height - startY);
+                RectInt normalized = new(startX, startY, width, height);
+                normalizedSegments.Add(normalized);
+                totalWidth += width;
+                maxHeight = Mathf.Max(maxHeight, height);
+            }
+
+            try
+            {
+                Texture2D composedTexture = new(totalWidth, maxHeight, TextureFormat.RGBA32, false);
+                try
+                {
+                    int writeX = 0;
+                    foreach (RectInt segment in normalizedSegments)
+                    {
+                        composedTexture.SetPixels(writeX, 0, segment.width, segment.height, sourceTexture.GetPixels(segment.x, segment.y, segment.width, segment.height));
+                        writeX += segment.width;
+                    }
+
+                    composedTexture.Apply();
+                    return composedTexture.EncodeToPNG();
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(composedTexture);
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(sourceTexture);
+            }
+        }
+
+        /// <summary>
+        /// 허브 전면 프레임은 런타임 Resources 경로를 유지하면서도 디자인 원본 타일 조합으로 다시 생성한다.
+        /// 지정한 좌상단/우하단 코너, 가로 벽, 세로 벽 타일을 사용하고 반대편은 대칭 미러링으로 맞춘다.
+        /// </summary>
+        /// <summary>
+        /// 허브 전면 프레임은 이전 아웃라인 실루엣을 유지한 채 디자인 원본 타일로 다시 생성한다.
+        /// 우상단과 좌하단은 비워 두고, 좌상단 코너와 우하단 코너만 지정 타일로 배치한다.
+        /// </summary>
+        private static Sprite EnsureHubWallBackgroundSpriteAsset()
+        {
+            Texture2D horizontalWallTexture = LoadPngTexture(HubWallBackgroundHorizontalWallDesignSourcePath);
+            Texture2D verticalWallTexture = LoadPngTexture(HubWallBackgroundVerticalWallDesignSourcePath);
+            Texture2D bottomLeftCornerTexture = LoadPngTexture(HubWallBackgroundBottomLeftDesignSourcePath);
+            Texture2D bottomRightCornerTexture = LoadPngTexture(HubWallBackgroundBottomRightDesignSourcePath);
+            Texture2D fillTexture = LoadPngTexture(HubWallBackgroundFillDesignSourcePath);
+
+            if (horizontalWallTexture == null
+                || verticalWallTexture == null
+                || bottomLeftCornerTexture == null
+                || bottomRightCornerTexture == null
+                || fillTexture == null)
+            {
+                DestroyTextureIfNeeded(horizontalWallTexture);
+                DestroyTextureIfNeeded(verticalWallTexture);
+                DestroyTextureIfNeeded(bottomLeftCornerTexture);
+                DestroyTextureIfNeeded(bottomRightCornerTexture);
+                DestroyTextureIfNeeded(fillTexture);
+                return LoadConfiguredSprite(HubWallBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubWallBackgroundSpritePath);
+            }
+
+            Texture2D backgroundTexture = null;
+
+            try
+            {
+                backgroundTexture = CreateHubWallBackgroundTexture(
+                    horizontalWallTexture,
+                    verticalWallTexture,
+                    bottomLeftCornerTexture,
+                    bottomRightCornerTexture,
+                    fillTexture);
+
+                byte[] pngBytes = backgroundTexture.EncodeToPNG();
+                WriteBytesToAssetPath(HubWallBackgroundSpritePath, pngBytes);
+                WriteBytesToAssetPath(ResourceHubWallBackgroundSpritePath, pngBytes);
+            }
+            finally
+            {
+                DestroyTextureIfNeeded(backgroundTexture);
+                DestroyTextureIfNeeded(horizontalWallTexture);
+                DestroyTextureIfNeeded(verticalWallTexture);
+                DestroyTextureIfNeeded(bottomLeftCornerTexture);
+                DestroyTextureIfNeeded(bottomRightCornerTexture);
+                DestroyTextureIfNeeded(fillTexture);
+            }
+
+            AssetDatabase.ImportAsset(HubWallBackgroundSpritePath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(ResourceHubWallBackgroundSpritePath, ImportAssetOptions.ForceUpdate);
+
+            Sprite generatedSprite = ConfigureSpriteAsset(
+                HubWallBackgroundSpritePath,
+                100f,
+                new Vector2(0.5f, 0.5f),
+                Vector4.zero,
+                FilterMode.Point,
+                TextureWrapMode.Clamp);
+
+            ConfigureSpriteAsset(
+                ResourceHubWallBackgroundSpritePath,
+                100f,
+                new Vector2(0.5f, 0.5f),
+                Vector4.zero,
+                FilterMode.Point,
+                TextureWrapMode.Clamp);
+
+            return generatedSprite;
+        }
+
+        private static Texture2D CreateHubWallBackgroundTexture(
+            Texture2D horizontalWallTexture,
+            Texture2D verticalWallTexture,
+            Texture2D bottomLeftCornerTexture,
+            Texture2D bottomRightCornerTexture,
+            Texture2D fillTexture)
+        {
+            Texture2D targetTexture = new(HubWallBackgroundTextureWidth, HubWallBackgroundTextureHeight, TextureFormat.RGBA32, false);
+            Color32[] targetPixels = new Color32[HubWallBackgroundTextureWidth * HubWallBackgroundTextureHeight];
+
+            int topEdgeY = HubWallBackgroundTextureHeight - HubWallBackgroundBorderSize;
+            int rightEdgeX = HubWallBackgroundTextureWidth - HubWallBackgroundBorderSize;
+            int horizontalWallStartX = HubWallBackgroundBorderSize;
+            int horizontalWallWidth = HubWallBackgroundTextureWidth - (HubWallBackgroundBorderSize * 2);
+            int verticalWallHeight = topEdgeY;
+            int innerStartX = HubWallBackgroundBorderSize;
+            int innerWidth = HubWallBackgroundTextureWidth - (HubWallBackgroundBorderSize * 2);
+            int innerHeight = topEdgeY;
+
+            DrawTextureTiledArea(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                fillTexture,
+                innerStartX,
+                0,
+                innerWidth,
+                innerHeight);
+
+            DrawTextureRepeatedHorizontally(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                horizontalWallTexture,
+                horizontalWallStartX,
+                topEdgeY,
+                horizontalWallWidth,
+                HubWallBackgroundBorderSize,
+                HubWallBackgroundBorderSize);
+            DrawTextureRepeatedVertically(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                verticalWallTexture,
+                0,
+                0,
+                verticalWallHeight,
+                HubWallBackgroundBorderSize,
+                HubWallBackgroundBorderSize);
+            DrawTextureRepeatedVertically(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                verticalWallTexture,
+                rightEdgeX,
+                0,
+                verticalWallHeight,
+                HubWallBackgroundBorderSize,
+                HubWallBackgroundBorderSize,
+                flipX: true);
+            DrawTextureScaled(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                bottomLeftCornerTexture,
+                0,
+                topEdgeY,
+                HubWallBackgroundBorderSize,
+                HubWallBackgroundBorderSize,
+                flipY: true);
+            DrawTextureScaled(
+                targetPixels,
+                HubWallBackgroundTextureWidth,
+                HubWallBackgroundTextureHeight,
+                bottomRightCornerTexture,
+                rightEdgeX,
+                topEdgeY,
+                HubWallBackgroundBorderSize,
+                HubWallBackgroundBorderSize,
+                flipY: true);
+
+            targetTexture.SetPixels32(targetPixels);
+            targetTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+            return targetTexture;
+        }
+        private static Sprite EnsureHubFrontOutlineSpriteAsset()
+        {
+            Texture2D topLeftCornerTexture = LoadPngTexture(HubFrontOutlineTopLeftDesignSourcePath);
+            Texture2D horizontalWallTexture = LoadPngTexture(HubFrontOutlineHorizontalWallDesignSourcePath);
+            Texture2D bottomRightCornerTexture = LoadPngTexture(HubFrontOutlineBottomRightDesignSourcePath);
+            Texture2D sideWallTexture = LoadPngTexture(HubFrontOutlineSideDesignSourcePath);
+
+            if (topLeftCornerTexture == null
+                || horizontalWallTexture == null
+                || bottomRightCornerTexture == null
+                || sideWallTexture == null)
+            {
+                DestroyTextureIfNeeded(topLeftCornerTexture);
+                DestroyTextureIfNeeded(horizontalWallTexture);
+                DestroyTextureIfNeeded(bottomRightCornerTexture);
+                DestroyTextureIfNeeded(sideWallTexture);
+                return LoadConfiguredSprite(HubFrontOutlineSpritePath, 100f, new Vector2(0.5f, 0.5f), ResourceHubFrontOutlineSpritePath);
+            }
+
+            Texture2D outlineTexture = null;
+
+            try
+            {
+                outlineTexture = CreateHubFrontOutlineTexture(
+                    topLeftCornerTexture,
+                    horizontalWallTexture,
+                    bottomRightCornerTexture,
+                    sideWallTexture);
+
+                byte[] pngBytes = outlineTexture.EncodeToPNG();
+                WriteBytesToAssetPath(HubFrontOutlineSpritePath, pngBytes);
+                WriteBytesToAssetPath(ResourceHubFrontOutlineSpritePath, pngBytes);
+            }
+            finally
+            {
+                DestroyTextureIfNeeded(outlineTexture);
+                DestroyTextureIfNeeded(topLeftCornerTexture);
+                DestroyTextureIfNeeded(horizontalWallTexture);
+                DestroyTextureIfNeeded(bottomRightCornerTexture);
+                DestroyTextureIfNeeded(sideWallTexture);
+            }
+
+            AssetDatabase.ImportAsset(HubFrontOutlineSpritePath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(ResourceHubFrontOutlineSpritePath, ImportAssetOptions.ForceUpdate);
+
+            Sprite generatedSprite = ConfigureSpriteAsset(
+                HubFrontOutlineSpritePath,
+                100f,
+                new Vector2(0.5f, 0.5f),
+                Vector4.zero,
+                FilterMode.Point,
+                TextureWrapMode.Clamp);
+
+            ConfigureSpriteAsset(
+                ResourceHubFrontOutlineSpritePath,
+                100f,
+                new Vector2(0.5f, 0.5f),
+                Vector4.zero,
+                FilterMode.Point,
+                TextureWrapMode.Clamp);
+
+            return generatedSprite;
+        }
+
+        private static Texture2D CreateHubFrontOutlineTexture(
+            Texture2D topLeftCornerTexture,
+            Texture2D horizontalWallTexture,
+            Texture2D bottomRightCornerTexture,
+            Texture2D sideWallTexture)
+        {
+            Texture2D targetTexture = new(HubFrontOutlineTextureWidth, HubFrontOutlineTextureHeight, TextureFormat.RGBA32, false);
+            Color32[] targetPixels = new Color32[HubFrontOutlineTextureWidth * HubFrontOutlineTextureHeight];
+
+            int topEdgeY = HubFrontOutlineTextureHeight - HubFrontOutlineBorderHeight;
+            int rightEdgeX = HubFrontOutlineTextureWidth - HubFrontOutlineBorderWidth;
+            int topWallWidth = HubFrontOutlineTopWallEndX - HubFrontOutlineTopWallStartX;
+            int bottomWallWidth = HubFrontOutlineTextureWidth - HubFrontOutlineBottomWallStartX;
+            int leftWallHeight = topEdgeY;
+            int rightWallStartY = HubFrontOutlineBorderHeight;
+            int rightWallHeight = HubFrontOutlineTextureHeight - rightWallStartY;
+            int mirroredTopWallStartX = GetMirroredStartX(HubFrontOutlineTopWallStartX, topWallWidth, HubFrontOutlineTextureWidth);
+            int mirroredBottomWallStartX = GetMirroredStartX(HubFrontOutlineBottomWallStartX, bottomWallWidth, HubFrontOutlineTextureWidth);
+            int mirroredLeftWallStartX = GetMirroredStartX(0, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
+            int mirroredLeftWallStartY = GetMirroredStartY(0, leftWallHeight, HubFrontOutlineTextureHeight);
+            int mirroredRightWallStartX = GetMirroredStartX(rightEdgeX, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
+            int mirroredRightWallStartY = GetMirroredStartY(rightWallStartY, rightWallHeight, HubFrontOutlineTextureHeight);
+            int mirroredTopLeftCornerStartX = GetMirroredStartX(0, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
+            int mirroredTopLeftCornerStartY = GetMirroredStartY(topEdgeY, HubFrontOutlineBorderHeight, HubFrontOutlineTextureHeight);
+            int mirroredBottomRightCornerStartX = GetMirroredStartX(rightEdgeX, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
+            int mirroredBottomRightCornerStartY = GetMirroredStartY(0, HubFrontOutlineBorderHeight, HubFrontOutlineTextureHeight);
+
+            DrawTextureRepeatedHorizontally(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                horizontalWallTexture,
+                mirroredTopWallStartX,
+                0,
+                topWallWidth,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight);
+            DrawTextureRepeatedHorizontally(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                horizontalWallTexture,
+                mirroredBottomWallStartX,
+                topEdgeY,
+                bottomWallWidth,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight);
+            DrawTextureRepeatedVertically(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                sideWallTexture,
+                mirroredLeftWallStartX,
+                mirroredLeftWallStartY,
+                leftWallHeight,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight);
+            DrawTextureRepeatedVertically(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                sideWallTexture,
+                mirroredRightWallStartX,
+                mirroredRightWallStartY,
+                rightWallHeight,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight,
+                flipX: true);
+
+            DrawTextureScaled(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                topLeftCornerTexture,
+                mirroredBottomRightCornerStartX,
+                mirroredBottomRightCornerStartY,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight);
+            DrawTextureScaled(
+                targetPixels,
+                HubFrontOutlineTextureWidth,
+                HubFrontOutlineTextureHeight,
+                bottomRightCornerTexture,
+                mirroredTopLeftCornerStartX,
+                mirroredTopLeftCornerStartY,
+                HubFrontOutlineBorderWidth,
+                HubFrontOutlineBorderHeight);
+
+            targetTexture.SetPixels32(targetPixels);
+            targetTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+            return targetTexture;
+        }
+
+        private static int GetMirroredStartX(int startX, int width, int containerWidth)
+        {
+            return containerWidth - startX - width;
+        }
+
+        private static int GetMirroredStartY(int startY, int height, int containerHeight)
+        {
+            return containerHeight - startY - height;
+        }
+
+        private static void DrawTextureRepeatedHorizontally(
+            Color32[] targetPixels,
+            int targetWidth,
+            int targetHeight,
+            Texture2D sourceTexture,
+            int startX,
+            int startY,
+            int totalWidth,
+            int tileWidth,
+            int tileHeight,
+            bool flipX = false,
+            bool flipY = false)
+        {
+            if (sourceTexture == null || totalWidth <= 0 || tileWidth <= 0 || tileHeight <= 0)
+            {
+                return;
+            }
+
+            int offset = 0;
+            while (offset < totalWidth)
+            {
+                int currentTileWidth = Mathf.Min(tileWidth, totalWidth - offset);
+                DrawTextureScaled(
+                    targetPixels,
+                    targetWidth,
+                    targetHeight,
+                    sourceTexture,
+                    startX + offset,
+                    startY,
+                    currentTileWidth,
+                    tileHeight,
+                    flipX,
+                    flipY);
+                offset += tileWidth;
+            }
+        }
+
+        private static void DrawTextureRepeatedVertically(
+            Color32[] targetPixels,
+            int targetWidth,
+            int targetHeight,
+            Texture2D sourceTexture,
+            int startX,
+            int startY,
+            int totalHeight,
+            int tileWidth,
+            int tileHeight,
+            bool flipX = false,
+            bool flipY = false)
+        {
+            if (sourceTexture == null || totalHeight <= 0 || tileWidth <= 0 || tileHeight <= 0)
+            {
+                return;
+            }
+
+            int offset = 0;
+            while (offset < totalHeight)
+            {
+                int currentTileHeight = Mathf.Min(tileHeight, totalHeight - offset);
+                DrawTextureScaled(
+                    targetPixels,
+                    targetWidth,
+                    targetHeight,
+                    sourceTexture,
+                    startX,
+                    startY + offset,
+                    tileWidth,
+                    currentTileHeight,
+                    flipX,
+                    flipY);
+                offset += tileHeight;
+            }
+        }
+
+        private static void DrawTextureTiledArea(
+            Color32[] targetPixels,
+            int targetWidth,
+            int targetHeight,
+            Texture2D sourceTexture,
+            int destinationX,
+            int destinationY,
+            int destinationWidth,
+            int destinationHeight,
+            bool flipX = false,
+            bool flipY = false)
+        {
+            if (sourceTexture == null || destinationWidth <= 0 || destinationHeight <= 0)
+            {
+                return;
+            }
+
+            Color32[] sourcePixels = sourceTexture.GetPixels32();
+            int sourceWidth = sourceTexture.width;
+            int sourceHeight = sourceTexture.height;
+
+            for (int y = 0; y < destinationHeight; y++)
+            {
+                int targetY = destinationY + y;
+                if (targetY < 0 || targetY >= targetHeight)
+                {
+                    continue;
+                }
+
+                int tiledY = y % sourceHeight;
+                int sampleY = flipY ? (sourceHeight - 1 - tiledY) : tiledY;
+
+                for (int x = 0; x < destinationWidth; x++)
+                {
+                    int targetX = destinationX + x;
+                    if (targetX < 0 || targetX >= targetWidth)
+                    {
+                        continue;
+                    }
+
+                    int tiledX = x % sourceWidth;
+                    int sampleX = flipX ? (sourceWidth - 1 - tiledX) : tiledX;
+                    Color32 color = sourcePixels[(sampleY * sourceWidth) + sampleX];
+                    if (color.a == 0)
+                    {
+                        continue;
+                    }
+
+                    targetPixels[(targetY * targetWidth) + targetX] = color;
+                }
+            }
+        }
+        private static void DrawTextureScaled(
+            Color32[] targetPixels,
+            int targetWidth,
+            int targetHeight,
+            Texture2D sourceTexture,
+            int destinationX,
+            int destinationY,
+            int destinationWidth,
+            int destinationHeight,
+            bool flipX = false,
+            bool flipY = false)
+        {
+            if (sourceTexture == null || destinationWidth <= 0 || destinationHeight <= 0)
+            {
+                return;
+            }
+
+            Color32[] sourcePixels = sourceTexture.GetPixels32();
+            int sourceWidth = sourceTexture.width;
+            int sourceHeight = sourceTexture.height;
+
+            for (int y = 0; y < destinationHeight; y++)
+            {
+                int targetY = destinationY + y;
+                if (targetY < 0 || targetY >= targetHeight)
+                {
+                    continue;
+                }
+
+                int sourceY = Mathf.Min(sourceHeight - 1, Mathf.FloorToInt((float)y * sourceHeight / destinationHeight));
+                if (flipY)
+                {
+                    sourceY = (sourceHeight - 1) - sourceY;
+                }
+
+                int targetRowIndex = targetY * targetWidth;
+                int sourceRowIndex = sourceY * sourceWidth;
+
+                for (int x = 0; x < destinationWidth; x++)
+                {
+                    int targetX = destinationX + x;
+                    if (targetX < 0 || targetX >= targetWidth)
+                    {
+                        continue;
+                    }
+
+                    int sourceX = Mathf.Min(sourceWidth - 1, Mathf.FloorToInt((float)x * sourceWidth / destinationWidth));
+                    if (flipX)
+                    {
+                        sourceX = (sourceWidth - 1) - sourceX;
+                    }
+
+                    Color32 sourceColor = sourcePixels[sourceRowIndex + sourceX];
+                    if (sourceColor.a == 0)
+                    {
+                        continue;
+                    }
+
+                    targetPixels[targetRowIndex + targetX] = sourceColor;
+                }
+            }
+        }
+
+        private static Texture2D LoadPngTexture(string assetPath)
+        {
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+            if (!File.Exists(fullPath))
+            {
+                return null;
+            }
+
+            Texture2D texture = new(2, 2, TextureFormat.RGBA32, false);
+            if (!texture.LoadImage(File.ReadAllBytes(fullPath)))
+            {
+                UnityEngine.Object.DestroyImmediate(texture);
+                return null;
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.wrapMode = TextureWrapMode.Clamp;
+            return texture;
+        }
+
+        private static void WriteBytesToAssetPath(string assetPath, byte[] bytes)
+        {
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+            string directoryPath = Path.GetDirectoryName(fullPath);
+            if (!string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            File.WriteAllBytes(fullPath, bytes);
+        }
+
+        private static void DestroyTextureIfNeeded(Texture2D texture)
+        {
+            if (texture != null)
+            {
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
         }
 
         /// <summary>
@@ -4508,7 +5374,13 @@ namespace Editor
             return ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot, Vector4.zero);
         }
 
-        private static Sprite ConfigureSpriteAsset(string assetPath, float pixelsPerUnit, Vector2 pivot, Vector4 border)
+        private static Sprite ConfigureSpriteAsset(
+            string assetPath,
+            float pixelsPerUnit,
+            Vector2 pivot,
+            Vector4 border,
+            FilterMode filterMode = FilterMode.Bilinear,
+            TextureWrapMode wrapMode = TextureWrapMode.Clamp)
         {
             TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
             if (importer == null)
@@ -4518,10 +5390,10 @@ namespace Editor
 
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
-            importer.filterMode = FilterMode.Bilinear;
+            importer.filterMode = filterMode;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
-            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.wrapMode = wrapMode;
             importer.spritePixelsPerUnit = pixelsPerUnit;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.compressionQuality = 100;
@@ -4775,6 +5647,26 @@ namespace Editor
             }
 
             File.Copy(sourcePath, targetPath, true);
+        }
+
+        private static void WriteFileIfDifferent(string targetPath, byte[] content)
+        {
+            string directoryPath = Path.GetDirectoryName(targetPath);
+            if (!string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            if (File.Exists(targetPath))
+            {
+                byte[] existingContent = File.ReadAllBytes(targetPath);
+                if (existingContent.SequenceEqual(content))
+                {
+                    return;
+                }
+            }
+
+            File.WriteAllBytes(targetPath, content);
         }
 
         /// <summary>

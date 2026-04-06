@@ -148,19 +148,30 @@ namespace Exploration.World
         public const float ScreenWidth = 19.2f;
         public const float ScreenHeight = 10.8f;
 
-        // 상단 HUD 카드가 허브 표지판과 바로 겹치지 않도록 카메라에 안전 여백을 더 둔다.
-        public static readonly Vector2 CameraSafePadding = new(1.8f, 1.0f);
+        // 허브 메인 화면은 배경 원본이 화면을 꽉 채우도록 추가 여백 없이 카메라 크기를 맞춘다.
+        public static readonly Vector2 CameraSafePadding = Vector2.zero;
         public static readonly Vector3 CameraPosition = Vector3.zero;
         public static readonly Vector2 CameraSize = new(ScreenWidth + (CameraSafePadding.x * 2f), ScreenHeight + (CameraSafePadding.y * 2f));
         public static readonly float ScreenOrthographicSize = CameraSize.y * 0.5f;
 
         public static readonly Vector3 BackgroundPosition = Vector3.zero;
         public static readonly Vector3 BackgroundScale = Vector3.one;
+        public const float FloorTilePixelsPerUnit = 32f;
+        public static readonly Vector3 FloorTileScale = new(1f / 3f, 1f / 3f, 1f);
+        public static readonly Vector2 FloorTileTiledSize = new(ScreenWidth / FloorTileScale.x, ScreenHeight / FloorTileScale.y);
         public const string TableRootObjectName = "HubTableGroup";
 
         public static readonly Vector3 FloorBackgroundPosition = Vector3.zero;
         public static readonly Vector3 WallBackgroundPosition = new(-1.32f, 4.39f, 0f);
         public static readonly Vector3 BarPosition = new(-1.58f, 2.16f, 0f);
+        public const string BarLeftVisualObjectName = "HubBarLeftVisual";
+        public const string BarRightVisualObjectName = "HubBarRightVisual";
+        public const float BarVisualHeight = 1.17f;
+        public const float BarVisualGapWidth = 1.29f;
+        public static readonly Vector2 BarLeftVisualSize = new(9.81f, BarVisualHeight);
+        public static readonly Vector2 BarRightVisualSize = new(4.06f, BarVisualHeight);
+        public static readonly Vector3 BarLeftVisualLocalPosition = new(-(BarVisualGapWidth + BarRightVisualSize.x) * 0.5f, 0f, 0f);
+        public static readonly Vector3 BarRightVisualLocalPosition = new((BarVisualGapWidth + BarLeftVisualSize.x) * 0.5f, 0f, 0f);
         // 테이블 묶음은 그룹 기준 좌표와 자식 오프셋을 나눠 두어 나중에 한 번에 이동시키기 쉽게 유지한다.
         public static readonly Vector3 TableGroupPosition = new(-6.48f, -1.57f, 0f);
         public static readonly Vector3 TableTopLocalPosition = new(0f, 1.53f, 0f);

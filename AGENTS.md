@@ -19,6 +19,8 @@
 - 기본 응답 언어는 한국어를 우선한다.
 - Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 참조 경로까지 함께 확인한다.
 - UI를 바꾸면 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 확인한다.
+- 허브 월드 아트를 교체할 때는 `Assets/Design` 원본, `Assets/Generated/Sprites/Hub`, `Assets/Resources/Generated/Sprites/Hub`, `Assets/Scripts/Exploration/World/HubRoomLayout.cs`, `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 지원 씬 직렬화를 함께 확인한다.
+- `HubWallBackground`와 `HubFrontOutline`를 조정할 때는 생성 PNG, 리소스 경로, `JongguMinimalPrototypeBuilder`를 함께 확인한다.
 - 빌더가 생성하는 씬, 프리팹, 생성 에셋을 바꿀 때는 결과물만 직접 고치지 말고 생성 경로를 먼저 고친다.
 - Unity 실행 또는 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 명시한다.
 
@@ -32,6 +34,8 @@
 - 기존 `MonoBehaviour`, `ScriptableObject`, 직렬화 타입을 네임스페이스로 옮길 때는 `UnityEngine.Scripting.APIUpdating.MovedFrom`으로 직렬화 경로를 보존한다.
 - private 필드 네이밍은 `[SerializeField] private`는 lower camelCase, 일반 `private`와 `private static`은 `_camelCase`, `private static readonly`와 `private const`는 PascalCase를 기본으로 한다.
 - `.editorconfig`의 Rider/Unity 네이밍 규칙은 `Unity serialized field`가 일반 `Instance fields (private)`보다 먼저 적용되게 유지한다.
+- 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지하고, 원본 타일 크기가 달라지면 `Pixels Per Unit`, `Transform.localScale`, `SpriteRenderer.size`를 함께 조정한다.
+- 허브 카운터 비주얼은 `HubBar` 루트 아래 `HubBarLeftVisual`, `HubBarRightVisual` 분리 구조를 유지하고, 파츠 이미지를 교체할 때는 각 파츠의 소스 비율과 `spriteBorder`를 함께 맞춘다.
 - 허브 팝업 UI(`요리 메뉴`, `업그레이드`, `재료`, `창고`)가 열리면 게임 진행을 일시 정지하고, 닫히면 원래 시간 흐름을 복구한다.
 - 레거시 버튼, 오래된 도크, 사용하지 않는 카드처럼 중복 UI 경로가 남지 않게 정리한다.
 - 허브 팝업에서 씬에 직접 지정한 `Image.sprite`, `PopupTitle`, `PopupLeftCaption`의 폰트와 배치 값은 명시적 요청 없이는 초기화하거나 덮어쓰지 않는다.

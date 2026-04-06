@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8a2a14e2489445b98ac548ee3975b29e
+guid: 7a6c9f0b1df84f97a54d8c7cb390ed0a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1363205258040094485
-    second: HubTodayMenuBg2_0
+      213: -8439798479389306512
+    second: HubFloorTile_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,12 +37,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HubTodayMenuBg2_0
+      name: HubFloorTile_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 95
-        height: 107
+        width: 96
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: be053965a0ce41de0800000000000000
-      internalID: -1363205258040094485
+      spriteID: 0715e1cbfffcfda80800000000000000
+      internalID: -8439798479389306512
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      HubTodayMenuBg2_0: -1363205258040094485
+      HubFloorTile_0: -8439798479389306512
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -48,6 +48,8 @@
 - Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 경로와 참조 링크를 함께 확인한다.
 - 생성된 씬 YAML, 생성 자산, 런타임 출력물만 직접 고치지 않는다. 먼저 생성 경로를 수정한다.
 - 생성 구조를 바꿀 때는 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Editor/PrototypeSceneAudit.cs`, 관련 문서, 생성 리소스 경로를 함께 맞춘다.
+- 허브 월드 아트를 교체할 때는 `Assets/Design` 원본, `Assets/Generated/Sprites/Hub`, `Assets/Resources/Generated/Sprites/Hub`, `Assets/Scripts/Exploration/World/HubRoomLayout.cs`, `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 지원 씬 직렬화를 같은 기준으로 갱신한다.
+- `HubWallBackground`와 `HubFrontOutline`는 별도 생성 자산이므로 PNG만 직접 수정하기보다 `JongguMinimalPrototypeBuilder`의 생성 규칙과 리소스 연결 기준을 먼저 확인한다.
 - UI를 바꿀 때는 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 검토한다.
 
 ## 5. 네임스페이스와 네이밍 규칙
@@ -101,6 +103,11 @@
 - `Assets` 아래 에셋 파일명은 기본적으로 kebab-case를 사용한다. 단 `Assets/Generated/Fonts` 아래 생성 폰트 에셋과 원본 폰트 파일은 기존 lower camelCase 규칙을 유지한다.
 - 기본 TMP 본문 폰트는 `Assets/Generated/Fonts/maplestoryLightSdf.asset`, 제목 폰트는 `Assets/Generated/Fonts/maplestoryBoldSdf.asset`를 유지하고, 빌더가 재생성할 수 있도록 원본 TTF 경로도 함께 맞춘다.
 - `Assets/Design`는 디자인 원본 저장소 전용이며, 게임 런타임 리소스는 `Assets/Resources` 또는 생성 경로를 통해 참조해야 한다.
+- 허브 월드 아트 원본은 `Assets/Design`에서 관리하고, 빌더가 `Assets/Generated/Sprites/Hub`와 `Assets/Resources/Generated/Sprites/Hub`를 함께 갱신하도록 유지한다.
+- `HubWallBackground`와 `HubFrontOutline`는 `Assets/Generated/Sprites/Hub`와 `Assets/Resources/Generated/Sprites/Hub`를 함께 갱신하는 생성 자산으로 유지한다.
+- 허브 벽 아트 정렬이 어긋나면 결과 PNG만 덧그리지 말고 빌더의 타일 배치 값, 배경/전경 위치, 리소스 경로를 함께 조정한다.
+- 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 밀도를 기준으로 맞추고, 타일 교체 시 `Pixels Per Unit`, `Transform.localScale`, `SpriteRenderer.size`를 같은 단위 기준으로 검토한다.
+- 허브 카운터는 `HubBar` 루트 아래 `HubBarLeftVisual`, `HubBarRightVisual` 분리 비주얼 구조를 기준으로 관리하고, 파츠 교체 시 각 스프라이트의 소스 비율과 `spriteBorder`를 함께 조정한다.
 - 파일명이 바뀌면 빌더 코드, 문서, TMP 참조 경로를 함께 갱신한다.
 - 가능하면 에셋 네이밍 규칙은 빌더가 생성하는 이름 규칙과 일치시킨다.
 

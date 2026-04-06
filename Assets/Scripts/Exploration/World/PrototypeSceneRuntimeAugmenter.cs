@@ -18,13 +18,15 @@ namespace Exploration.World
     /// </summary>
     public static class PrototypeSceneRuntimeAugmenter
     {
+        private const string HubFloorTileResourcePath = "Generated/Sprites/Hub/hub-floor-tile";
         private const string HubFloorBackgroundResourcePath = "Generated/Sprites/Hub/hub-floor-background";
         private const string HubWallBackgroundResourcePath = "Generated/Sprites/Hub/hub-wall-background";
         private const string HubFrontOutlineResourcePath = "Generated/Sprites/Hub/hub-front-outline";
         private const string HubBarResourcePath = "Generated/Sprites/Hub/hub-bar";
+        private const string HubBarRightResourcePath = "Generated/Sprites/Hub/hub-bar-right";
         private const string HubTableUnlockedResourcePath = "Generated/Sprites/Hub/hub-table-unlocked";
         private const string HubUpgradeSlotResourcePath = "Generated/Sprites/Hub/hub-upgrade-slot-center";
-        private const string HubTodayMenuBgResourcePath = "Generated/Sprites/Hub/hub-today-menu-bg-1";
+        private const string HubTodayMenuBgResourcePath = "Generated/Sprites/Hub/hub-today-menu-bg";
         private const string HubTodayMenuItem1ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-1";
         private const string HubTodayMenuItem2ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-2";
         private const string HubTodayMenuItem3ResourcePath = "Generated/Sprites/Hub/hub-today-menu-item-3";
@@ -594,6 +596,31 @@ namespace Exploration.World
             foreach (HubRoomLayout.HubArtPlacement placement in HubRoomLayout.ArtPlacements)
             {
                 Transform parent = ResolveHubArtParent(placement.Anchor, backgroundLayer, objectLayer, foregroundLayer);
+
+                if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.FloorBackground)
+                {
+                    GameObject tiledFloor = EnsureSceneSpriteObject(
+                        placement.ObjectName,
+                        HubFloorTileResourcePath,
+                        placement.LocalPosition,
+                        placement.SortingOrder,
+                        parent,
+                        SpriteDrawMode.Tiled,
+                        HubRoomLayout.FloorTileTiledSize,
+                        HubRoomLayout.FloorTileScale);
+                    SpriteRenderer tiledRenderer = tiledFloor != null ? tiledFloor.GetComponent<SpriteRenderer>() : null;
+                    if (tiledRenderer != null && tiledRenderer.sprite != null)
+                    {
+                        continue;
+                    }
+                }
+
+                if (placement.SpriteId == HubRoomLayout.HubArtSpriteId.Bar)
+                {
+                    EnsureHubSplitBarVisuals(placement.ObjectName, placement.LocalPosition, placement.SortingOrder, parent);
+                    continue;
+                }
+
                 string resourcePath = ResolveHubArtResourcePath(placement.SpriteId);
                 EnsureSceneSpriteObject(placement.ObjectName, resourcePath, placement.LocalPosition, placement.SortingOrder, parent);
             }
@@ -731,7 +758,15 @@ namespace Exploration.World
         /// <summary>
         /// 허브 아트 조각은 Resources 스프라이트를 그대로 올리고, 정렬 순서만 고정한다.
         /// </summary>
-        private static GameObject EnsureSceneSpriteObject(string objectName, string resourcePath, Vector3 position, int sortingOrder, Transform parent)
+        private static GameObject EnsureSceneSpriteObject(
+            string objectName,
+            string resourcePath,
+            Vector3 position,
+            int sortingOrder,
+            Transform parent,
+            SpriteDrawMode drawMode = SpriteDrawMode.Simple,
+            Vector2? tiledSize = null,
+            Vector3? localScale = null)
         {
             GameObject go = GameObject.Find(objectName);
             if (go == null)
@@ -750,14 +785,66 @@ namespace Exploration.World
                 go.transform.position = position;
             }
 
-            go.transform.localScale = Vector3.one;
+            go.transform.localScale = localScale ?? Vector3.one;
 
             SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(go);
             renderer.sprite = Resources.Load<Sprite>(resourcePath);
             renderer.color = Color.white;
             renderer.sortingOrder = sortingOrder;
+            renderer.drawMode = drawMode;
+            if (tiledSize.HasValue)
+            {
+                renderer.size = tiledSize.Value;
+            }
             renderer.enabled = renderer.sprite != null;
             return go;
+        }
+
+        private static void EnsureHubSplitBarVisuals(string objectName, Vector3 position, int sortingOrder, Transform parent)
+        {
+            GameObject root = GameObject.Find(objectName);
+            if (root == null)
+            {
+                root = new GameObject(objectName);
+            }
+
+            if (parent != null)
+            {
+                root.transform.SetParent(parent, false);
+                root.transform.localPosition = position;
+            }
+            else
+            {
+                root.transform.SetParent(null);
+                root.transform.position = position;
+            }
+
+            root.transform.localScale = Vector3.one;
+            root.SetActive(true);
+
+            SpriteRenderer rootRenderer = root.GetComponent<SpriteRenderer>();
+            if (rootRenderer != null)
+            {
+                rootRenderer.enabled = false;
+            }
+
+            EnsureSceneSpriteObject(
+                HubRoomLayout.BarLeftVisualObjectName,
+                HubBarResourcePath,
+                HubRoomLayout.BarLeftVisualLocalPosition,
+                sortingOrder,
+                root.transform,
+                SpriteDrawMode.Sliced,
+                HubRoomLayout.BarLeftVisualSize);
+
+            EnsureSceneSpriteObject(
+                HubRoomLayout.BarRightVisualObjectName,
+                HubBarRightResourcePath,
+                HubRoomLayout.BarRightVisualLocalPosition,
+                sortingOrder,
+                root.transform,
+                SpriteDrawMode.Sliced,
+                HubRoomLayout.BarRightVisualSize);
         }
 
         /// <summary>

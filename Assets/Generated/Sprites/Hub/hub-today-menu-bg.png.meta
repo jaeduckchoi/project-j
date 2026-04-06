@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d4985c7c1f094a1eac7a9cb11b440682
+guid: 5af0facf0989acf45a4e0b8c76b3b445
 TextureImporter:
   internalIDToNameTable:
   - first:
       213: -1363205258040094485
-    second: HubTodayMenuBg3_0
+    second: HubTodayMenuBg_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HubTodayMenuBg3_0
+      name: HubTodayMenuBg_0
       rect:
         serializedVersion: 2
         x: 0
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      HubTodayMenuBg3_0: -1363205258040094485
+      HubTodayMenuBg_0: -1363205258040094485
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

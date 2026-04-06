@@ -10,6 +10,8 @@
 
 - 메인 허브 씬이다.
 - 월드 아트 레이어, 상호작용 지점, HUD/팝업 UI를 포함한 `16:9` 고정 카메라 기준을 사용한다.
+- 허브 바닥은 반복 타일 스프라이트 구조를 사용하며, 바닥 타일 밀도는 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지한다.
+- 허브 카운터 비주얼은 `HubBar` 루트 아래 `HubBarLeftVisual`, `HubBarRightVisual` 두 파츠로 나누어 관리하고, 오른쪽 파츠는 별도 스프라이트와 `spriteBorder`를 가질 수 있다.
 - 메뉴 선택기, 영업대, 창고, 업그레이드 작업대, 지역 포탈이 포함된다.
 
 ### Beach
@@ -113,6 +115,9 @@ Scene
 - `GoToAbandonedMine`
 - `GoToWindHill`
 - `HubArtRoot`
+- `HubBar`
+- `HubBarLeftVisual`
+- `HubBarRightVisual`
 - `HubTodayMenuBoard`
 - `CameraBounds`
 
