@@ -826,6 +826,12 @@ namespace Editor
                 return;
             }
 
+            int removedMissingScripts = RemoveMissingScriptsInScene(loadedScene);
+            if (removedMissingScripts > 0)
+            {
+                Debug.LogWarning($"'{loadedScene.name}' 열린 생성 씬에서 누락 스크립트 {removedMissingScripts}개를 저장 전에 정리했습니다.");
+            }
+
             EditorSceneManager.SaveScene(loadedScene);
         }
 
@@ -4157,6 +4163,7 @@ namespace Editor
         /// generated 씬은 빌더가 항상 전체를 다시 쓰므로,
         /// 기존 손상 본문이 남아 저장을 막지 않게 `.unity` 파일만 지운 뒤 같은 경로에 다시 저장합니다.
         /// `.meta`는 유지해서 씬 GUID와 Build Settings 참조는 바꾸지 않습니다.
+        /// 아직 저장되지 않은 새 씬도 저장 경로 이름을 기준으로 Hierarchy 그룹을 먼저 맞춥니다.
         /// </summary>
         private static void SaveGeneratedScene(string scenePath)
         {
@@ -4166,14 +4173,22 @@ namespace Editor
                 Directory.CreateDirectory(directoryPath);
             }
 
-            PrototypeSceneHierarchyOrganizer.OrganizeSceneHierarchy(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), saveScene: false);
+            UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            int removedMissingScripts = RemoveMissingScriptsInScene(activeScene);
+            if (removedMissingScripts > 0)
+            {
+                Debug.LogWarning($"'{Path.GetFileNameWithoutExtension(scenePath)}' 생성 씬에서 누락 스크립트 {removedMissingScripts}개를 저장 전에 정리했습니다.");
+            }
+
+            string managedSceneName = Path.GetFileNameWithoutExtension(scenePath);
+            PrototypeSceneHierarchyOrganizer.OrganizeSceneHierarchy(activeScene, managedSceneName, saveScene: false);
 
             if (File.Exists(scenePath))
             {
                 File.Delete(scenePath);
             }
 
-            EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), scenePath);
+            EditorSceneManager.SaveScene(activeScene, scenePath);
         }
 
         private static void UpdateBuildSettings()
@@ -4204,6 +4219,27 @@ namespace Editor
             foreach (Transform child in target.transform)
             {
                 removed += RemoveMissingScriptsRecursive(child.gameObject);
+            }
+
+            return removed;
+        }
+
+        private static int RemoveMissingScriptsInScene(UnityEngine.SceneManagement.Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return 0;
+            }
+
+            int removed = 0;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                if (root == null)
+                {
+                    continue;
+                }
+
+                removed += RemoveMissingScriptsRecursive(root);
             }
 
             return removed;

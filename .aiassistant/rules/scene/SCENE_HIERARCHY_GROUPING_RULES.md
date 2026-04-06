@@ -2,16 +2,16 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Scene Hierarchy Grouping Rules
+# 종구의 식당 씬 계층 그룹 규칙
 
-## 1. Purpose
+## 1. 목적
 
-This document defines the shared world-hierarchy grouping baseline for supported scenes (`Hub`, `Beach`, `DeepForest`, `AbandonedMine`, and `WindHill`).
-The builder, active-scene organizer, and generated-scene audit should all follow the same parent structure and group names.
+이 문서는 지원 씬(`Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`)이 공유하는 월드 계층 그룹 기준을 정의한다.
+빌더, 현재 씬 정리기, 생성 씬 감사는 모두 같은 부모 구조와 그룹 이름을 따라야 한다.
 
-## 2. Top-Level Roots
+## 2. 최상위 루트
 
-Keep supported scenes aligned to this top-level order:
+지원 씬은 다음 최상위 순서에 맞춘다.
 
 ```text
 Scene
@@ -22,15 +22,15 @@ Scene
 ```
 
 - `SceneWorldRoot`
-  Groups world visuals and world-boundary objects
+  월드 비주얼과 월드 경계 오브젝트를 그룹화한다.
 - `SceneGameplayRoot`
-  Groups the player, spawn points, portals, interactables, gatherables, and special zones
+  플레이어, 스폰 지점, 포탈, 상호작용 오브젝트, 채집 오브젝트, 특수 존을 그룹화한다.
 - `SceneSystemRoot`
-  Groups system objects such as `GameManager`, `RestaurantManager`, `Main Camera`, and `EventSystem`
+  `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` 같은 시스템 오브젝트를 그룹화한다.
 - `Canvas`
-  Keeps the UI at the root level, with `HUDRoot` and `PopupRoot` inside
+  UI는 루트 레벨에 유지하고, 내부는 `HUDRoot`, `PopupRoot`로 구성한다.
 
-## 3. Shared Child Groups
+## 3. 공용 자식 그룹
 
 ### `SceneWorldRoot`
 
@@ -41,13 +41,13 @@ SceneWorldRoot
 ```
 
 - `WorldVisualRoot`
-  Holds floors, backgrounds, props, and world-title visuals
+  바닥, 배경, 소품, 월드 제목 비주얼을 둔다.
 - `WorldBoundsRoot`
-  Holds `CameraBounds`, movement limits, and map-wall colliders
+  `CameraBounds`, 이동 한계, 맵 벽 콜라이더를 둔다.
 
 ### `SceneGameplayRoot`
 
-Only create the groups needed by the current scene.
+현재 씬에 필요한 그룹만 만든다.
 
 ```text
 SceneGameplayRoot
@@ -60,27 +60,27 @@ SceneGameplayRoot
 ```
 
 - `PlayerRoot`
-  Holds `Jonggu`
+  `Jonggu`를 둔다.
 - `SpawnRoot`
-  Holds scene-entry spawn points
+  씬 진입 스폰 지점을 둔다.
 - `PortalRoot`
-  Holds scene-travel portals
+  씬 이동 포탈을 둔다.
 - `InteractionRoot`
-  Holds hub interactables such as `RecipeSelector`, `ServiceCounter`, `StorageStation`, and `UpgradeStation`
+  `RecipeSelector`, `ServiceCounter`, `StorageStation`, `UpgradeStation` 같은 허브 상호작용 오브젝트를 둔다.
 - `ResourceRoot`
-  Holds gatherable objects
+  채집 오브젝트를 둔다.
 - `ZoneRoot`
-  Holds guide triggers, swamp zones, darkness zones, gust zones, and similar special areas
+  가이드 트리거, 늪지, 어둠 지대, 돌풍 지대 같은 특수 구역을 둔다.
 
-## 4. Object Placement Rules
+## 4. 오브젝트 배치 규칙
 
-- Place hub art under `WorldVisualRoot` through `HubArtRoot`
-- Portal pads such as `BeachPortalPad`, `ForestPortalPad`, `MinePortalPad`, and `WindPortalPad` should remain children of their matching portal objects
-- Exploration-scene gather pads such as `*_Pad` should remain children of their matching gatherable objects
-- World labels such as `*_Title` should stay aligned to the corresponding world-visual or interactable anchor
-- `CameraBounds` and movement limits such as `*MovementBounds` or `*Bounds` should remain under `WorldBoundsRoot`
+- 허브 아트는 `HubArtRoot`를 통해 `WorldVisualRoot` 아래에 둔다.
+- `BeachPortalPad`, `ForestPortalPad`, `MinePortalPad`, `WindPortalPad` 같은 포탈 패드는 대응되는 포탈 오브젝트의 자식으로 유지한다.
+- 탐험 씬의 `*_Pad` 채집 패드는 대응되는 채집 오브젝트의 자식으로 유지한다.
+- `*_Title` 같은 월드 라벨은 대응되는 월드 비주얼 또는 상호작용 앵커에 맞춰 정렬한다.
+- `CameraBounds`, `*MovementBounds`, `*Bounds` 같은 이동 제한 오브젝트는 `WorldBoundsRoot` 아래에 둔다.
 
-## 5. Scene-Specific Placement Examples
+## 5. 씬별 배치 예시
 
 ### Hub
 
@@ -91,15 +91,15 @@ SceneGameplayRoot
 - `RecipeSelector`, `ServiceCounter`, `StorageStation`, `UpgradeStation` -> `InteractionRoot`
 - `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` -> `SceneSystemRoot`
 
-### Shared Exploration Baseline
+### 공용 탐험 기준
 
-- Floors, props, and world titles -> `WorldVisualRoot`
-- `CameraBounds`, movement bounds, and map walls -> `WorldBoundsRoot`
-- Entry spawn and return portal -> `SpawnRoot`, `PortalRoot`
-- Gatherable objects -> `ResourceRoot`
-- Guide or special zones -> `ZoneRoot`
+- 바닥, 소품, 월드 타이틀 -> `WorldVisualRoot`
+- `CameraBounds`, 이동 한계, 맵 벽 -> `WorldBoundsRoot`
+- 진입 스폰과 복귀 포탈 -> `SpawnRoot`, `PortalRoot`
+- 채집 오브젝트 -> `ResourceRoot`
+- 가이드 또는 특수 존 -> `ZoneRoot`
 
-## 6. `ZoneRoot` Examples
+## 6. `ZoneRoot` 예시
 
 - `DeepForest`
   `ForestGuide`, `ForestSwampZone`
@@ -108,11 +108,11 @@ SceneGameplayRoot
 - `WindHill`
   `WindGuide`, `WindLaneZone`
 
-If extra runtime-safety-net objects appear, they should follow the same `ZoneRoot` grouping where practical.
+추가 런타임 안전장치 오브젝트가 생기더라도 가능하면 같은 `ZoneRoot` 기준을 따른다.
 
-## 7. Working Principles
+## 7. 작업 원칙
 
-- Do not fix only the result scenes. Update the builder and organizer so they follow the same grouping rule.
-- If group names change, update the generated-scene audit and related documents together.
-- UI grouping rules are defined separately in `ui/UI_GROUPING_RULES.md`.
-- If you could not verify final scene saving in Unity, confirm the end state through `Tools > Jonggu Restaurant > Prototype Build and Audit` or `Organize Active Scene Hierarchy`.
+- 결과 씬만 직접 수정하지 않는다. 빌더와 정리기가 같은 그룹 규칙을 따르도록 함께 갱신한다.
+- 그룹 이름이 바뀌면 생성 씬 감사와 관련 문서도 함께 갱신한다.
+- UI 그룹 규칙은 `ui/UI_GROUPING_RULES.md`에서 별도로 정의한다.
+- Unity에서 최종 씬 저장을 직접 검증하지 못했다면 `Tools > Jonggu Restaurant > Prototype Build and Audit` 또는 `Organize Active Scene Hierarchy`를 통해 최종 상태를 확인한다.

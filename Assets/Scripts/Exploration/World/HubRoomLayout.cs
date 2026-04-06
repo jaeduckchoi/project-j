@@ -148,9 +148,11 @@ namespace Exploration.World
         public const float ScreenWidth = 19.2f;
         public const float ScreenHeight = 10.8f;
 
-        public static readonly float ScreenOrthographicSize = ScreenHeight * 0.5f;
+        // 상단 HUD 카드가 허브 표지판과 바로 겹치지 않도록 카메라에 안전 여백을 더 둔다.
+        public static readonly Vector2 CameraSafePadding = new(1.8f, 1.0f);
         public static readonly Vector3 CameraPosition = Vector3.zero;
-        public static readonly Vector2 CameraSize = new(ScreenWidth, ScreenHeight);
+        public static readonly Vector2 CameraSize = new(ScreenWidth + (CameraSafePadding.x * 2f), ScreenHeight + (CameraSafePadding.y * 2f));
+        public static readonly float ScreenOrthographicSize = CameraSize.y * 0.5f;
 
         public static readonly Vector3 BackgroundPosition = Vector3.zero;
         public static readonly Vector3 BackgroundScale = Vector3.one;

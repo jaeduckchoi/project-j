@@ -2,89 +2,89 @@
 적용: 항상
 ---
 
-# Jonggu Restaurant Core Loop
+# 종구의 식당 코어 루프
 
-## 1. Core Play Structure
+## 1. 핵심 플레이 구조
 
-The center of the game is a day-based exploration and management loop.
-The player moves directly through the world, gathers ingredients, returns to the hub, runs service, and converts the results into progress for the next run.
+게임의 중심은 하루 단위의 탐험 및 운영 루프다.
+플레이어는 월드를 직접 이동하며 재료를 모으고, 허브로 돌아와 영업을 진행한 뒤, 그 결과를 다음 성장에 연결한다.
 
-Current baseline flow:
+현재 기준 흐름은 다음과 같다.
 
-1. Check status in the hub
-2. Enter a morning exploration region
-3. Gather resources and manage inventory
-4. Return to the hub
-5. Choose a menu
-6. Run service
-7. Review settlement results
-8. Upgrade or advance to the next day
+1. 허브에서 상태 확인
+2. 오전 탐험 지역 진입
+3. 자원 수집과 인벤토리 관리
+4. 허브 복귀
+5. 메뉴 선택
+6. 영업 진행
+7. 정산 결과 확인
+8. 업그레이드 또는 다음 날 진행
 
-## 2. Phase Names And Transition Baseline
+## 2. 단계 이름과 전이 기준
 
 - `Morning Explore`
-  The default starting phase. It begins the day and is also restored after advancing to the next day.
+  기본 시작 단계다. 하루 시작 시 진입하며, 다음 날 진행 후에도 이 단계로 돌아온다.
 - `Afternoon Service`
-  Reached automatically when the player returns from an exploration scene to the hub.
+  플레이어가 탐험 씬에서 허브로 돌아오면 자동으로 도달하는 단계다.
 - `Settlement`
-  Reached after running service or skipping service.
+  영업을 진행하거나 영업을 건너뛴 뒤 도달하는 단계다.
 
-`DayCycleManager` uses these three phases as the baseline for buttons, guide text, and the latest settlement summary.
+`DayCycleManager`는 이 세 단계를 기준으로 버튼 표시, 가이드 텍스트, 최신 정산 요약을 관리한다.
 
-## 3. Intended Player Feel
+## 3. 의도한 플레이 감각
 
-- Anticipation when choosing where to go today
-- A sense of judgment when deciding what to keep under inventory limits
-- Exploration tension when deciding whether to push deeper or return
-- Satisfaction when gathered materials become menus and gold
-- Growth when upgrades open deeper exploration
+- 오늘 어디로 갈지 정할 때의 기대감
+- 인벤토리 제한 안에서 무엇을 챙길지 판단하는 감각
+- 더 깊이 들어갈지 돌아갈지 선택할 때의 탐험 긴장감
+- 모은 재료가 메뉴와 골드로 바뀌는 만족감
+- 업그레이드로 더 깊은 탐험이 열릴 때의 성장감
 
-## 4. Role Of Each Step
+## 4. 단계별 역할
 
-### Hub Preparation
+### 허브 준비
 
-- Check current gold, reputation, and held materials
-- Organize storage
-- Check upgrade availability
-- Decide which region to visit
+- 현재 골드, 평판, 보유 재료 확인
+- 창고 정리
+- 업그레이드 가능 여부 확인
+- 방문할 지역 결정
 
-### Morning Exploration
+### 오전 탐험
 
-- Gather region-specific resources
-- Check tool requirements
-- Feel environmental hazards such as slowdown, gusts, and darkness
-- Make collection decisions within inventory limits
+- 지역 전용 자원 수집
+- 도구 요구 조건 확인
+- 감속, 돌풍, 어둠 같은 환경 위험 체감
+- 인벤토리 제한 안에서 수집 판단
 
-### Post-Return Service
+### 복귀 후 영업
 
-- Choose a menu
-- Check required ingredients
-- Calculate service results
-- Earn gold and reputation
+- 메뉴 선택
+- 필요 재료 확인
+- 영업 결과 계산
+- 골드와 평판 획득
 
-### Settlement And Next Day
+### 정산 및 다음 날
 
-- Review the result text
-- Apply upgrades if needed
-- Advance to the next day
+- 결과 텍스트 확인
+- 필요 시 업그레이드 적용
+- 다음 날 진행
 
-## 5. Code-Level Connection Points
+## 5. 코드 수준 연결 지점
 
-- Hub departure and return are handled by `DayCycleManager.HandleSceneTravel`.
-- Exploration skip uses `SkipExploration`, service skip uses `SkipService`, and day advancement uses `AdvanceToNextDay`.
-- After service completes, `RestaurantManager` builds the result string and passes it to `DayCycleManager.CompleteService`.
-- Temporary guides and one-time hints are shown through `ShowTemporaryGuide` and `ShowHintOnce`.
+- 허브 출발과 복귀는 `DayCycleManager.HandleSceneTravel`이 처리한다.
+- 탐험 건너뛰기는 `SkipExploration`, 영업 건너뛰기는 `SkipService`, 다음 날 진행은 `AdvanceToNextDay`를 사용한다.
+- 영업이 끝나면 `RestaurantManager`가 결과 문자열을 만들고 `DayCycleManager.CompleteService`에 전달한다.
+- 임시 가이드와 1회성 힌트는 `ShowTemporaryGuide`와 `ShowHintOnce`로 표시한다.
 
-## 6. Important Loop Connections
+## 6. 중요한 루프 연결
 
-- Resources gathered in exploration feed directly into menu ingredients and upgrade costs.
-- Restaurant results feed back into gold, reputation, and upgrade availability.
-- Lantern unlock and reputation both affect region access.
-- UI updates button states and guide text based on the current phase.
+- 탐험에서 모은 자원은 메뉴 재료와 업그레이드 비용으로 직접 이어진다.
+- 식당 결과는 다시 골드, 평판, 업그레이드 가능 여부에 영향을 준다.
+- 랜턴 해금과 평판은 모두 지역 접근성에 영향을 준다.
+- UI는 현재 단계에 따라 버튼 상태와 가이드 텍스트를 갱신한다.
 
-## 7. Current Implementation Status
+## 7. 현재 구현 상태
 
-- Morning exploration, afternoon service, settlement, and next-day flow are connected in code.
-- Exploration skip, service skip, and next-day buttons open and close by phase.
-- `Light Automation Audit` checks that these transitions have not regressed badly.
-- Final balance values still need real playtesting.
+- 오전 탐험, 오후 영업, 정산, 다음 날 흐름이 코드로 연결되어 있다.
+- 탐험 건너뛰기, 영업 건너뛰기, 다음 날 버튼은 단계에 따라 열리고 닫힌다.
+- `Light Automation Audit`가 이 전이 흐름이 심하게 깨지지 않았는지 점검한다.
+- 최종 밸런스 수치는 실제 플레이테스트가 더 필요하다.

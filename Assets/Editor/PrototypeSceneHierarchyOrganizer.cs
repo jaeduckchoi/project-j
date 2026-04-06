@@ -42,7 +42,13 @@ namespace Editor
 
         internal static bool OrganizeSceneHierarchy(Scene scene, bool saveScene)
         {
-            if (!scene.IsValid() || !scene.isLoaded || !PrototypeSceneHierarchyCatalog.IsSupportedScene(scene.name))
+            return OrganizeSceneHierarchy(scene, null, saveScene);
+        }
+
+        internal static bool OrganizeSceneHierarchy(Scene scene, string sceneNameOverride, bool saveScene)
+        {
+            string managedSceneName = ResolveManagedSceneName(scene, sceneNameOverride);
+            if (!scene.IsValid() || !scene.isLoaded || string.IsNullOrWhiteSpace(managedSceneName))
             {
                 return false;
             }
@@ -50,22 +56,22 @@ namespace Editor
             Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
             CollectNamedTransforms(scene, transformMap);
 
-            foreach (PrototypeSceneHierarchyEntry entry in PrototypeSceneHierarchyCatalog.EnumerateGroupEntries(scene.name))
+            foreach (PrototypeSceneHierarchyEntry entry in PrototypeSceneHierarchyCatalog.EnumerateGroupEntries(managedSceneName))
             {
-                EnsureGroupTransform(scene, entry, transformMap, new HashSet<string>(StringComparer.Ordinal));
+                EnsureGroupTransform(scene, managedSceneName, entry, transformMap, new HashSet<string>(StringComparer.Ordinal));
             }
 
             transformMap.Clear();
             CollectNamedTransforms(scene, transformMap);
 
-            foreach (PrototypeSceneHierarchyEntry entry in PrototypeSceneHierarchyCatalog.EnumerateLeafEntries(scene.name))
+            foreach (PrototypeSceneHierarchyEntry entry in PrototypeSceneHierarchyCatalog.EnumerateLeafEntries(managedSceneName))
             {
                 if (!transformMap.TryGetValue(entry.ObjectName, out Transform target) || target == null)
                 {
                     continue;
                 }
 
-                ApplyEntry(scene, entry, target, transformMap, treatAsGroup: false);
+                ApplyEntry(scene, managedSceneName, entry, target, transformMap, treatAsGroup: false);
             }
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -79,13 +85,14 @@ namespace Editor
 
         private static Transform EnsureGroupTransform(
             Scene scene,
+            string managedSceneName,
             PrototypeSceneHierarchyEntry entry,
             IDictionary<string, Transform> transformMap,
             ISet<string> visiting)
         {
             if (transformMap.TryGetValue(entry.ObjectName, out Transform existing) && existing != null)
             {
-                ApplyEntry(scene, entry, existing, transformMap, treatAsGroup: true);
+                ApplyEntry(scene, managedSceneName, entry, existing, transformMap, treatAsGroup: true);
                 return existing;
             }
 
@@ -101,13 +108,14 @@ namespace Editor
             Transform groupTransform = groupObject.transform;
             transformMap[entry.ObjectName] = groupTransform;
 
-            ApplyEntry(scene, entry, groupTransform, transformMap, treatAsGroup: true);
+            ApplyEntry(scene, managedSceneName, entry, groupTransform, transformMap, treatAsGroup: true);
             visiting.Remove(entry.ObjectName);
             return groupTransform;
         }
 
         private static void ApplyEntry(
             Scene scene,
+            string managedSceneName,
             PrototypeSceneHierarchyEntry entry,
             Transform target,
             IDictionary<string, Transform> transformMap,
@@ -118,7 +126,7 @@ namespace Editor
                 return;
             }
 
-            Transform targetParent = ResolveParent(scene, entry, transformMap);
+            Transform targetParent = ResolveParent(scene, managedSceneName, entry, transformMap);
             if (targetParent == null)
             {
                 target.SetParent(null, !treatAsGroup);
@@ -141,6 +149,7 @@ namespace Editor
 
         private static Transform ResolveParent(
             Scene scene,
+            string managedSceneName,
             PrototypeSceneHierarchyEntry entry,
             IDictionary<string, Transform> transformMap)
         {
@@ -154,13 +163,31 @@ namespace Editor
                 return parent;
             }
 
-            if (PrototypeSceneHierarchyCatalog.IsGroupObject(scene.name, entry.ParentName)
-                && PrototypeSceneHierarchyCatalog.TryGetEntry(scene.name, entry.ParentName, out PrototypeSceneHierarchyEntry parentEntry))
+            if (PrototypeSceneHierarchyCatalog.IsGroupObject(managedSceneName, entry.ParentName)
+                && PrototypeSceneHierarchyCatalog.TryGetEntry(managedSceneName, entry.ParentName, out PrototypeSceneHierarchyEntry parentEntry))
             {
-                return EnsureGroupTransform(scene, parentEntry, transformMap, new HashSet<string>(StringComparer.Ordinal));
+                return EnsureGroupTransform(scene, managedSceneName, parentEntry, transformMap, new HashSet<string>(StringComparer.Ordinal));
             }
 
             return FindNamedTransform(scene, entry.ParentName);
+        }
+
+        private static string ResolveManagedSceneName(Scene scene, string sceneNameOverride)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(sceneNameOverride)
+                && PrototypeSceneHierarchyCatalog.IsSupportedScene(sceneNameOverride))
+            {
+                return sceneNameOverride;
+            }
+
+            return PrototypeSceneHierarchyCatalog.IsSupportedScene(scene.name)
+                ? scene.name
+                : null;
         }
 
         private static void CollectNamedTransforms(Scene scene, IDictionary<string, Transform> transformMap)

@@ -55,6 +55,13 @@ namespace CoreLoop.Core
                 return;
             }
 
+            // 빌더 기준으로는 SceneSystemRoot 아래에 배치되지만,
+            // 씬 전환 유지용 객체는 런타임에서 루트로 승격한 뒤 보존해야 합니다.
+            if (transform.parent != null)
+            {
+                transform.SetParent(null, true);
+            }
+
             Instance = this;
             DontDestroyOnLoad(gameObject);
 

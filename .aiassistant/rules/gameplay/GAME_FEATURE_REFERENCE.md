@@ -161,6 +161,9 @@
 
 ## 6. 권장 참조 문서
 
+아래 세부 기준 문서는 현재 UTF-8 한국어 본문을 정본으로 유지한다.
+후속 요약이나 검토 문서에서는 영어 제목이 아니라 파일 경로와 코드 식별자를 기준으로 참조를 유지한다.
+
 1. `project/GAME_DOCS_INDEX.md`
 2. `gameplay/GAMEPLAY_CORE_LOOP.md`
 3. `gameplay/GAMEPLAY_EXPLORATION.md`
