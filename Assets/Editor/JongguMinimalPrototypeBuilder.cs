@@ -101,6 +101,7 @@ namespace Editor
         private const string LightSolidPanelDesignSourcePath = UiGeneratedSourcePanelRoot + "/light-solid-panel.png";
         private const float PlayerSpritePixelsPerUnit = 1000f;
         private const float PlayerVisualScale = 0.76f;
+        private static readonly Vector3 DefaultPlayerRootScale = new(1.5f, 1.5f, 1f);
         private const float WorldTitleFontSize = 5.1f;
         private const float WorldLabelFontSize = 3.3f;
         private const float WorldLabelSmallFontSize = 3.0f;
@@ -108,6 +109,7 @@ namespace Editor
         private static TMP_FontAsset _generatedKoreanFont;
         private static TMP_FontAsset _generatedHeadingFont;
         private static readonly Dictionary<string, Material> CachedWorldTextMaterials = new(StringComparer.Ordinal);
+        private static readonly Dictionary<string, SceneTransformSnapshot> CachedSceneTransforms = new(StringComparer.Ordinal);
 
         private static readonly string[] HubPopupSceneImageNames =
         {
@@ -144,6 +146,24 @@ namespace Editor
             public Image.Type Type { get; }
             public Color Color { get; }
             public bool PreserveAspect { get; }
+        }
+
+        private readonly struct SceneTransformSnapshot
+        {
+            public SceneTransformSnapshot(Vector3 position, Quaternion rotation, Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
+            {
+                Position = position;
+                Rotation = rotation;
+                LocalPosition = localPosition;
+                LocalRotation = localRotation;
+                LocalScale = localScale;
+            }
+
+            public Vector3 Position { get; }
+            public Quaternion Rotation { get; }
+            public Vector3 LocalPosition { get; }
+            public Quaternion LocalRotation { get; }
+            public Vector3 LocalScale { get; }
         }
 
         private sealed class ResourceLibrary
@@ -645,6 +665,7 @@ namespace Editor
 
         private static void BuildHubScene(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
         {
+            LoadSceneObjectScaleOverrides(SceneRoot + "/Hub.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/Hub.unity");
             CacheHubPopupSceneImages(SceneRoot + "/Hub.unity");
             try
@@ -655,7 +676,7 @@ namespace Editor
                 const float mapHeight = HubRoomLayout.ScreenHeight;
 
                 GameObject gameManagerObject = CreateGameManager("Hub", "Beach", resources);
-                GameObject player = CreatePlayer(HubRoomLayout.PlayerStartPosition, sprites);
+                GameObject player = CreatePlayer(HubRoomLayout.PlayerStartPosition, sprites, DefaultPlayerRootScale);
                 BoxCollider2D cameraBounds = CreateCamera(
                     player.transform,
                     mapWidth,
@@ -718,12 +739,14 @@ namespace Editor
             }
             finally
             {
+                CachedSceneTransforms.Clear();
                 CachedHubPopupSceneImages.Clear();
             }
         }
 
         private static void BuildBeachScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            LoadSceneObjectScaleOverrides(SceneRoot + "/Beach.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/Beach.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -731,7 +754,7 @@ namespace Editor
             const float mapHeight = 18f;
 
             CreateGameManager("Hub", "Beach", resources);
-            GameObject player = CreatePlayer(new Vector3(-8.25f, -2.25f, 0f), sprites);
+            GameObject player = CreatePlayer(new Vector3(-8.25f, -2.25f, 0f), sprites, DefaultPlayerRootScale);
             CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.67f, 0.86f, 0.96f), 6.8f);
             BoxCollider2D movementBounds = CreateMovementBounds("BeachMovementBounds", mapWidth - 2.2f, mapHeight - 2.2f);
             AttachPlayerBoundsLimiter(player, movementBounds);
@@ -760,6 +783,7 @@ namespace Editor
             CreateUiCanvas(false);
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/Beach.unity");
+            CachedSceneTransforms.Clear();
         }
 
         /// <summary>
@@ -1360,6 +1384,7 @@ namespace Editor
 
         private static void BuildDeepForestScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            LoadSceneObjectScaleOverrides(SceneRoot + "/DeepForest.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/DeepForest.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1367,7 +1392,7 @@ namespace Editor
             const float mapHeight = 20f;
 
             CreateGameManager("Hub", "Beach", resources);
-            GameObject player = CreatePlayer(new Vector3(-10.3f, -6.1f, 0f), sprites);
+            GameObject player = CreatePlayer(new Vector3(-10.3f, -6.1f, 0f), sprites, DefaultPlayerRootScale);
             CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.63f, 0.74f, 0.56f), 7.2f);
 
             BoxCollider2D movementBounds = CreateMovementBounds("ForestMovementBounds", mapWidth - 2.4f, mapHeight - 2.4f);
@@ -1397,10 +1422,12 @@ namespace Editor
             CreateUiCanvas(false);
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/DeepForest.unity");
+            CachedSceneTransforms.Clear();
         }
 
         private static void BuildAbandonedMineScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            LoadSceneObjectScaleOverrides(SceneRoot + "/AbandonedMine.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/AbandonedMine.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1408,7 +1435,7 @@ namespace Editor
             const float mapHeight = 20f;
 
             CreateGameManager("Hub", "Beach", resources);
-            GameObject player = CreatePlayer(new Vector3(-10.7f, -5.95f, 0f), sprites);
+            GameObject player = CreatePlayer(new Vector3(-10.7f, -5.95f, 0f), sprites, DefaultPlayerRootScale);
             CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.18f, 0.19f, 0.22f), 7.2f);
 
             BoxCollider2D movementBounds = CreateMovementBounds("MineBounds", mapWidth - 2.4f, mapHeight - 2.4f);
@@ -1437,10 +1464,12 @@ namespace Editor
             CreateUiCanvas(false);
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/AbandonedMine.unity");
+            CachedSceneTransforms.Clear();
         }
 
         private static void BuildWindHillScene(ResourceLibrary resources, SpriteLibrary sprites)
         {
+            LoadSceneObjectScaleOverrides(SceneRoot + "/WindHill.unity");
             SaveSceneIfLoadedAndDirty(SceneRoot + "/WindHill.unity");
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -1448,7 +1477,7 @@ namespace Editor
             const float mapHeight = 18f;
 
             CreateGameManager("Hub", "Beach", resources);
-            GameObject player = CreatePlayer(new Vector3(-10.7f, -5.3f, 0f), sprites);
+            GameObject player = CreatePlayer(new Vector3(-10.7f, -5.3f, 0f), sprites, DefaultPlayerRootScale);
             CreateCamera(player.transform, mapWidth, mapHeight, new Color(0.85f, 0.92f, 0.98f), 6.8f);
 
             BoxCollider2D movementBounds = CreateMovementBounds("WindHillBounds", mapWidth - 2.2f, mapHeight - 2.2f);
@@ -1490,6 +1519,7 @@ namespace Editor
 
             EnsureUiEventSystem();
             SaveGeneratedScene(SceneRoot + "/WindHill.unity");
+            CachedSceneTransforms.Clear();
         }
 
         private static GameObject CreateGameManager(string hubSceneName, string explorationSceneName, ResourceLibrary resources)
@@ -1548,10 +1578,135 @@ namespace Editor
             return go;
         }
 
-        private static GameObject CreatePlayer(Vector3 position, SpriteLibrary sprites)
+        private static void LoadSceneObjectScaleOverrides(string scenePath)
+        {
+            CachedSceneTransforms.Clear();
+
+            if (string.IsNullOrWhiteSpace(scenePath) || !File.Exists(scenePath))
+            {
+                return;
+            }
+
+            UnityEngine.SceneManagement.Scene sourceScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scenePath);
+            bool openedTemporarily = false;
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                sourceScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                openedTemporarily = sourceScene.IsValid() && sourceScene.isLoaded;
+            }
+
+            if (!sourceScene.IsValid() || !sourceScene.isLoaded)
+            {
+                return;
+            }
+
+            try
+            {
+                foreach (GameObject root in sourceScene.GetRootGameObjects())
+                {
+                    if (root == null)
+                    {
+                        continue;
+                    }
+
+                    CacheTransformScaleRecursive(root.transform);
+                }
+            }
+            finally
+            {
+                if (openedTemporarily)
+                {
+                    EditorSceneManager.CloseScene(sourceScene, true);
+                }
+            }
+        }
+
+        private static void CacheTransformScaleRecursive(Transform current)
+        {
+            if (current == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(current.name))
+            {
+                CachedSceneTransforms[current.name] = new SceneTransformSnapshot(
+                    current.position,
+                    current.rotation,
+                    current.localPosition,
+                    current.localRotation,
+                    current.localScale);
+            }
+
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CacheTransformScaleRecursive(current.GetChild(index));
+            }
+        }
+
+        private static Vector3 ResolveSceneObjectScale(string objectName, Vector3 fallbackScale)
+        {
+            if (string.IsNullOrWhiteSpace(objectName)
+                || !CachedSceneTransforms.TryGetValue(objectName, out SceneTransformSnapshot snapshot)
+                || Mathf.Approximately(snapshot.LocalScale.x, 0f)
+                || Mathf.Approximately(snapshot.LocalScale.y, 0f))
+            {
+                return fallbackScale;
+            }
+
+            return snapshot.LocalScale;
+        }
+
+        private static void ApplySceneTransformOverride(
+            Transform target,
+            string objectName,
+            Vector3 fallbackPosition,
+            Quaternion fallbackRotation,
+            Vector3 fallbackScale,
+            bool useLocalSpace)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(objectName)
+                && CachedSceneTransforms.TryGetValue(objectName, out SceneTransformSnapshot snapshot))
+            {
+                if (useLocalSpace)
+                {
+                    target.localPosition = snapshot.LocalPosition;
+                    target.localRotation = snapshot.LocalRotation;
+                }
+                else
+                {
+                    target.position = snapshot.Position;
+                    target.rotation = snapshot.Rotation;
+                }
+
+                target.localScale = ResolveSceneObjectScale(objectName, fallbackScale);
+                return;
+            }
+
+            if (useLocalSpace)
+            {
+                target.localPosition = fallbackPosition;
+                target.localRotation = fallbackRotation;
+            }
+            else
+            {
+                target.position = fallbackPosition;
+                target.rotation = fallbackRotation;
+            }
+
+            target.localScale = fallbackScale;
+        }
+
+        private static GameObject CreatePlayer(Vector3 position, SpriteLibrary sprites, Vector3 rootScale)
         {
             GameObject player = new("Jonggu");
-            player.transform.position = position;
+            ApplySceneTransformOverride(player.transform, player.name, position, Quaternion.identity, rootScale, useLocalSpace: false);
 
             Sprite frontSprite = sprites.PlayerFront != null ? sprites.PlayerFront : sprites.PlayerSide;
             GameObject shadow = CreateDecorBlock("Shadow", Vector3.zero, new Vector3(0.46f, 0.14f, 1f), sprites.Floor, new Color(0f, 0f, 0f, 0.20f), 9, player.transform);
@@ -1560,8 +1715,7 @@ namespace Editor
             // 물리는 루트에 유지하고, 맵 크기 보정은 비주얼 자식만 스케일해서 처리합니다.
             GameObject visualRoot = new("PlayerVisual");
             visualRoot.transform.SetParent(player.transform, false);
-            visualRoot.transform.localPosition = Vector3.zero;
-            visualRoot.transform.localScale = Vector3.one * PlayerVisualScale;
+            ApplySceneTransformOverride(visualRoot.transform, visualRoot.name, Vector3.zero, Quaternion.identity, Vector3.one * PlayerVisualScale, useLocalSpace: true);
 
             SpriteRenderer renderer = visualRoot.GetComponent<SpriteRenderer>();
             if (renderer == null)
@@ -1624,7 +1778,7 @@ namespace Editor
         {
             GameObject cameraObject = new("Main Camera");
             cameraObject.tag = "MainCamera";
-            cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+            ApplySceneTransformOverride(cameraObject.transform, cameraObject.name, new Vector3(0f, 0f, -10f), Quaternion.identity, Vector3.one, useLocalSpace: false);
 
             Camera camera = cameraObject.AddComponent<Camera>();
             camera.orthographic = true;
@@ -1634,6 +1788,7 @@ namespace Editor
             cameraObject.AddComponent<AudioListener>();
 
             GameObject boundsObject = new("CameraBounds");
+            ApplySceneTransformOverride(boundsObject.transform, boundsObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: false);
             BoxCollider2D bounds = boundsObject.AddComponent<BoxCollider2D>();
             bounds.isTrigger = true;
             bounds.size = new Vector2(mapWidth, mapHeight);
@@ -1669,14 +1824,12 @@ namespace Editor
             if (parent != null)
             {
                 wall.transform.SetParent(parent, false);
-                wall.transform.localPosition = position;
+                ApplySceneTransformOverride(wall.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: true);
             }
             else
             {
-                wall.transform.position = position;
+                ApplySceneTransformOverride(wall.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: false);
             }
-
-            wall.transform.localScale = scale;
 
             BoxCollider2D collider = wall.AddComponent<BoxCollider2D>();
             collider.size = Vector2.one;
@@ -1783,7 +1936,11 @@ namespace Editor
             foregroundObject.transform.SetParent(hubArtRoot.transform, false);
             GameObject tableObject = new(HubRoomLayout.TableRootObjectName);
             tableObject.transform.SetParent(objectObject.transform, false);
-            tableObject.transform.localPosition = HubRoomLayout.TableGroupPosition;
+            ApplySceneTransformOverride(hubArtRoot.transform, hubArtRoot.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: false);
+            ApplySceneTransformOverride(backgroundObject.transform, backgroundObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
+            ApplySceneTransformOverride(objectObject.transform, objectObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
+            ApplySceneTransformOverride(foregroundObject.transform, foregroundObject.name, Vector3.zero, Quaternion.identity, Vector3.one, useLocalSpace: true);
+            ApplySceneTransformOverride(tableObject.transform, tableObject.name, HubRoomLayout.TableGroupPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
 
             backgroundLayer = backgroundObject.transform;
             objectLayer = objectObject.transform;
@@ -1838,7 +1995,7 @@ namespace Editor
             {
                 GameObject groupObject = new(placement.GroupObjectName);
                 groupObject.transform.SetParent(tableGroup, false);
-                groupObject.transform.localPosition = placement.LocalPosition;
+                ApplySceneTransformOverride(groupObject.transform, groupObject.name, placement.LocalPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
 
                 GameObject tableObject = CreateHubArtSprite(placement.TableObjectName, Vector3.zero, sprites.HubTableUnlocked, HubRoomLayout.ObjectSortingOrder, groupObject.transform);
                 Transform colliderParent = tableObject != null ? tableObject.transform : groupObject.transform;
@@ -1922,11 +2079,11 @@ namespace Editor
             if (parent != null)
             {
                 boardRoot.transform.SetParent(parent, false);
-                boardRoot.transform.localPosition = position;
+                ApplySceneTransformOverride(boardRoot.transform, boardRoot.name, position, Quaternion.identity, Vector3.one, useLocalSpace: true);
             }
             else
             {
-                boardRoot.transform.position = position;
+                ApplySceneTransformOverride(boardRoot.transform, boardRoot.name, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
             }
 
             CreateWorldTextObject(
@@ -2063,7 +2220,7 @@ namespace Editor
         private static void CreateGuideTriggerZone(string objectName, Vector3 position, Vector2 size, string hintId, string guideText)
         {
             GameObject go = new(objectName);
-            go.transform.position = position;
+            ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
 
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -2081,7 +2238,7 @@ namespace Editor
         private static void CreateMovementModifierZone(string objectName, Vector3 position, Vector2 size, float multiplier, string guideText)
         {
             GameObject go = new(objectName);
-            go.transform.position = position;
+            ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
 
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -2098,7 +2255,7 @@ namespace Editor
         private static void CreateDarknessZone(string objectName, Vector3 position, Vector2 size)
         {
             GameObject go = new(objectName);
-            go.transform.position = position;
+            ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
 
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -2115,7 +2272,7 @@ namespace Editor
         private static void CreateWindGustZone(string objectName, Vector3 position, Vector2 size, Vector2 direction, float strength, float activeDuration, float inactiveDuration)
         {
             GameObject go = new(objectName);
-            go.transform.position = position;
+            ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
 
             BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -2135,7 +2292,7 @@ namespace Editor
         private static void CreateSpawnPoint(string objectName, Vector3 position, string spawnId)
         {
             GameObject go = new(objectName);
-            go.transform.position = position;
+            ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
             SceneSpawnPoint spawnPoint = go.AddComponent<SceneSpawnPoint>();
 
             SerializedObject so = new(spawnPoint);
@@ -3257,11 +3414,11 @@ namespace Editor
             if (parent != null)
             {
                 labelObject.transform.SetParent(parent, false);
-                labelObject.transform.localPosition = localPosition;
+                ApplySceneTransformOverride(labelObject.transform, objectName, localPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
             }
             else
             {
-                labelObject.transform.position = localPosition;
+                ApplySceneTransformOverride(labelObject.transform, objectName, localPosition, Quaternion.identity, Vector3.one, useLocalSpace: false);
             }
 
             TextMeshPro text = labelObject.AddComponent<TextMeshPro>();
@@ -3285,7 +3442,7 @@ namespace Editor
             }
 
             float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
-            labelObject.transform.localScale = Vector3.one * resolvedLabelScale;
+            labelObject.transform.localScale = ResolveSceneObjectScale(objectName, Vector3.one * resolvedLabelScale);
             Material worldTextMaterial = EnsureWorldTextSharedMaterial(text.font, isLargeLabel || isPrimaryLabel);
             if (worldTextMaterial != null)
             {
@@ -3426,14 +3583,12 @@ namespace Editor
             if (parent != null)
             {
                 go.transform.SetParent(parent, false);
-                go.transform.localPosition = position;
+                ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: true);
             }
             else
             {
-                go.transform.position = position;
+                ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: false);
             }
-
-            go.transform.localScale = scale;
 
             SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;

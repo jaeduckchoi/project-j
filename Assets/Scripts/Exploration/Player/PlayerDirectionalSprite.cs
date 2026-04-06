@@ -10,6 +10,7 @@ namespace Exploration.Player
     {
         private const float PlayerSpritePixelsPerUnit = 1000f;
         private const float PlayerVisualScale = 0.76f;
+        private static readonly Vector3 DefaultPlayerVisualScale = new(PlayerVisualScale, PlayerVisualScale, 0f);
         private static readonly Vector2 SpritePivot = new(0.5f, 0.08f);
 
         [SerializeField] private SpriteRenderer targetRenderer;
@@ -147,10 +148,10 @@ namespace Exploration.Player
                 GameObject visualObject = new("PlayerVisual");
                 visualRoot = visualObject.transform;
                 visualRoot.SetParent(transform, false);
+                visualRoot.localScale = DefaultPlayerVisualScale;
             }
 
             visualRoot.localPosition = Vector3.zero;
-            visualRoot.localScale = Vector3.one * PlayerVisualScale;
 
             if (visualRenderer == null)
             {
