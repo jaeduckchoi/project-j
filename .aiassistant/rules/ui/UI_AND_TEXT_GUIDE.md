@@ -9,9 +9,9 @@
 UI는 탐험 화면을 과하게 가리지 않으면서도 `상태 확인 -> 판단 -> 행동` 흐름이 한눈에 읽히도록 유지해야 한다.
 의도하는 시각 방향은 `갈색/회색 벡터 패널 + 더 어두운 액션 도크 + 역할별 포인트 색상`이다.
 
-- 기본 디자인 원본: `Assets/Design/UIDesign/Vector`
-- 목업과 검토 보드: `Assets/Design/UIDesign/Mockups`
-- 생성 UI 원본 아트: `Assets/Design/GeneratedSources/UI`
+- 공용 UI 원본 아트: `Assets/Design/GeneratedSources/UI`
+- 허브와 월드 원본 아트는 `Assets/Design` 아래 보관 폴더에서 관리한다.
+- 실제 게임은 생성 경로와 런타임 리소스 경로를 참조해야 한다.
 
 `Assets/Design`는 디자인 원본 저장소 전용이다. 실제 게임은 생성 경로와 런타임 리소스 경로를 참조해야 한다.
 

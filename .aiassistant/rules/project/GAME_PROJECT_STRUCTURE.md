@@ -25,7 +25,6 @@
 │  ├─ Design
 │  ├─ Editor
 │  │  └─ UI
-│  ├─ Generated
 │  ├─ Resources
 │  │  └─ Generated
 │  ├─ Scenes
@@ -34,13 +33,14 @@
 │  ├─ TextMesh Pro
 │  ├─ UI Toolkit
 │  └─ _Recovery
-└─ Tools
+├─ AGENTS.md
+└─ CLAUDE.md
 ```
 
 ## 3. `.aiassistant/rules`의 역할
 
 - `project`
-  공용 작업 규칙, 문서 인덱스, 저장소 구조 기준을 둔다.
+  공용 작업 규칙, 문서 인덱스, 저장소 구조 기준, 훅 가이드를 둔다.
 - `gameplay`
   코어 루프, 탐험, 식당/성장, 통합 게임플레이 기준을 둔다.
 - `ui`
@@ -50,37 +50,24 @@
 - `build`
   빌더 흐름, 생성 자산 복구, 감사 흐름 문서를 둔다.
 - `local`
-  개인 PC 메모나 로컬 실행 규칙을 둔다.
+  개인 PC 메모나 로컬 실행 규칙을 둔다. 기본적으로는 `README.md`만 공유하고, 실제 개인 메모는 각자 로컬에서만 유지한다.
 
 ## 4. 현재 `Assets` 구조
 
 ```text
 Assets
 ├─ Design
-│  ├─ Archive
-│  ├─ GeneratedSources
-│  │  ├─ Data
-│  │  ├─ Fonts
-│  │  ├─ Sprites
-│  │  └─ UI
-│  ├─ References
-│  └─ UIDesign
-│     ├─ Exports
-│     ├─ Mockups
-│     └─ Vector
+│  └─ GeneratedSources
+│     └─ UI
 ├─ Editor
 │  └─ UI
-├─ Generated
-│  ├─ Fonts
-│  ├─ GameData
-│  └─ Sprites
-│     ├─ Gather
-│     ├─ Hub
-│     ├─ Player
-│     ├─ UI
-│     └─ World
 ├─ Resources
 │  └─ Generated
+│     ├─ Fonts
+│     ├─ GameData
+│     │  ├─ Input
+│     │  ├─ Recipes
+│     │  └─ Resources
 │     └─ Sprites
 │        ├─ Gather
 │        ├─ Hub
@@ -89,21 +76,29 @@ Assets
 │        └─ World
 ├─ Scenes
 ├─ Scripts
-│  ├─ Camera
-│  ├─ Core
-│  ├─ Data
-│  ├─ Economy
-│  ├─ Flow
-│  ├─ Gathering
-│  ├─ Interaction
-│  ├─ Inventory
-│  ├─ Player
+│  ├─ CoreLoop
+│  │  ├─ Core
+│  │  └─ Flow
+│  ├─ Exploration
+│  │  ├─ Camera
+│  │  ├─ Gathering
+│  │  ├─ Interaction
+│  │  ├─ Player
+│  │  └─ World
+│  ├─ Management
+│  │  ├─ Economy
+│  │  ├─ Inventory
+│  │  ├─ Storage
+│  │  ├─ Tools
+│  │  └─ Upgrade
 │  ├─ Restaurant
-│  ├─ Storage
-│  ├─ Tools
-│  ├─ UI
-│  ├─ Upgrade
-│  └─ World
+│  ├─ Shared
+│  │  └─ Data
+│  └─ UI
+│     ├─ Content
+│     ├─ Controllers
+│     ├─ Layout
+│     └─ Style
 ├─ Settings
 │  └─ Scenes
 ├─ TextMesh Pro
@@ -121,10 +116,8 @@ Assets
   플레이 가능한 씬을 둔다. 지원 씬은 `Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`이다.
 - `Assets/Resources/Generated`
   생성 자산과 런타임 `Resources.Load` 경로를 함께 관리하는 출력물을 둔다.
-- `Assets/Resources/Generated`
-  런타임에서 `Resources.Load`로 직접 읽는 생성 자산을 둔다.
 - `Assets/Design`
-  디자인 원본과 검토 자료 전용이다. 런타임이 이 경로를 직접 참조하면 안 된다.
+  디자인 원본과 검토 자료 전용이다. 공용 UI 원본은 `Assets/Design/GeneratedSources/UI` 아래에 두고, 허브/타일/벽 원본은 `Assets/Design` 아래의 원본 보관 폴더에서 관리한다. 런타임이 이 경로를 직접 참조하면 안 된다.
 - `Assets/Settings/Scenes`
   Build Settings와 씬 설정 관련 프로젝트 설정을 둔다.
 - `Assets/TextMesh Pro`
@@ -152,7 +145,7 @@ Assets
 
 - 생성 스프라이트는 `Player`, `Gather`, `World`, `Hub`, `UI` 아래로 구분한다.
 - `Assets/Design/GeneratedSources/UI`는 빌더를 통해 `Assets/Resources/Generated/Sprites/UI`에 반영된다.
-- UI 원본은 `Buttons`, `MessageBoxes`, `Panels` 같은 카테고리 기준으로 정리한다.
+- UI 원본은 `Buttons`, `MessageBoxes`, `PanelVariants` 같은 카테고리 기준으로 정리한다.
 
 ### `Assets/Resources/Generated`
 
@@ -164,18 +157,18 @@ Assets
 
 ## 7. 런타임 코드 구조
 
-- Assets/Scripts/CoreLoop
-  GameManager, DayCycleManager 같은 전역 조합과 하루 루프 진입점을 둔다.
-- Assets/Scripts/Exploration
+- `Assets/Scripts/CoreLoop`
+  `GameManager`, `DayCycleManager` 같은 전역 조합과 하루 루프 진입점을 둔다.
+- `Assets/Scripts/Exploration`
   플레이어 이동, 카메라, 채집, 상호작용, 포탈, 위험 지대, 씬 보강을 둔다.
-- Assets/Scripts/Management
+- `Assets/Scripts/Management`
   경제, 인벤토리, 창고, 도구, 업그레이드 진행을 둔다.
-- Assets/Scripts/Restaurant
+- `Assets/Scripts/Restaurant`
   메뉴 선택, 영업 실행, 허브 상호작용 로직을 둔다.
-- Assets/Scripts/Shared
-  ResourceData, RecipeData, 생성 데이터 로케이터, 매니페스트 타입 같은 공용 정의를 둔다.
-- Assets/Scripts/UI
-  UIManager, 팝업 일시정지 로직, 레이아웃, 스타일, 콘텐츠 카탈로그를 둔다.
+- `Assets/Scripts/Shared`
+  `ResourceData`, `RecipeData`, 생성 데이터 로케이터, 매니페스트 타입 같은 공용 정의를 둔다.
+- `Assets/Scripts/UI`
+  `UIManager`, 팝업 일시정지 로직, 레이아웃, 스타일, 콘텐츠 카탈로그를 둔다.
 
 ## 8. 에디터 코드 구조
 
@@ -187,6 +180,8 @@ Assets
   day-loop 흐름, 팝업 일시정지, 포탈 잠금, 누락 씬 안내를 점검한다.
 - `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`
   지원 씬 계층을 공용 루트 구조로 다시 정리한다.
+- `Assets/Editor/ProjectStructureUtility.cs`
+  기능 기반 기본 폴더 구조를 보장한다.
 - `Assets/Editor/UI/*`
   Canvas 자동 동기화, UI 프리뷰 도구, 생성 스프라이트 보조 에디터를 둔다.
 
@@ -245,7 +240,10 @@ Assets
 ## 12. 현재 기준 메모
 
 - 공용 작업 기준 문서는 `.aiassistant/rules` 아래에 있다.
+- 루트 엔트리 문서는 `AGENTS.md`, `CLAUDE.md`다.
+- 공유 훅과 설치 보조 스크립트는 `.githooks` 아래에 둔다.
 - 생성 데이터는 `Assets/Resources/Generated/GameData/Resources`, `Assets/Resources/Generated/GameData/Recipes`, `Assets/Resources/Generated/GameData/Input` 아래에 묶여 있다.
 - 생성 폰트 기본값은 `maplestoryLightSdf`와 `maplestoryBoldSdf`다.
 - Canvas UI 오버라이드는 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장된다.
+- 반복 검증과 공유 훅 기준은 `project/GAME_HOOK_GUIDE.md`에서 따로 관리한다.
 - 이 작업에서는 Unity 실행과 컴파일을 직접 검증하지 못했으므로, 이후 빌더/감사/플레이 모드 검증이 추가로 필요하다.

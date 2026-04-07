@@ -6,7 +6,7 @@
 
 ## 1. 목적
 
-이 문서는 `Assets/Docs`에서 `.aiassistant/rules` 아래 카테고리별 폴더로 재정리된 기준 문서들의 인덱스다.
+이 문서는 `.aiassistant/rules` 아래 카테고리별 폴더로 정리된 기준 문서들의 인덱스다.
 목적은 런타임 에셋과 작업 기준 문서를 분리해, 사람 협업자와 AI 도우미가 필요한 규칙 문서를 빠르게 찾을 수 있도록 하는 것이다.
 현재 세부 기준 문서는 UTF-8 한국어 본문을 정본으로 유지하며, 파일 경로와 코드 식별자를 기준으로 후속 문서 연결을 유지한다.
 
@@ -24,7 +24,6 @@
 ### `gameplay`
 
 - 이 카테고리의 세부 기준 문서는 현재 한국어 정본 기준으로 유지한다.
-
 - `GAME_FEATURE_REFERENCE.md`
   게임 시스템, 지역, 데이터, 성장 축을 통합해서 요약한다.
 - `GAMEPLAY_CORE_LOOP.md`
@@ -74,6 +73,8 @@
   `ui/UI_AND_TEXT_GUIDE.md`, `ui/UI_GROUPING_RULES.md`, `scene/GAME_SCENE_AND_SETUP.md`
 - 빌더 또는 감사 변경
   `build/GAME_BUILD_GUIDE.md`, `scene/SCENE_HIERARCHY_GROUPING_RULES.md`, `project/GAME_ASSISTANT_RULES.md`
+- AI 워크플로우 또는 커밋 규칙 변경
+  `project/GAME_ASSISTANT_RULES.md`, `project/GIT_COMMIT_TEMPLATE.md`, `build/GAME_BUILD_GUIDE.md`
 
 ## 5. 현재 프로젝트 요약
 
@@ -87,4 +88,3 @@
 
 - 이 인덱스는 현재 저장소 구조와 코드 기준으로 갱신되었다.
 - Unity 플레이 모드와 배치 컴파일은 이 작업에서 직접 검증하지 못했으므로, 변경 적용 후 빌드와 감사 메뉴 검증이 추가로 필요하다.
-

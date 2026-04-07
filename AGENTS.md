@@ -18,6 +18,7 @@
 
 - 기본 응답 언어는 한국어를 우선한다.
 - Unity 직렬화 파일과 에셋 참조는 영향 범위가 크므로 참조 경로까지 함께 확인한다.
+- AI 코드 작업을 마무리할 때는 필요하면 로컬 메모 후보와 공유 규칙 업데이트 후보를 짧게 제안한다.
 - UI를 바꾸면 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 확인한다.
 - 허브 월드 아트를 교체할 때는 `Assets/Design` 원본, `Assets/Resources/Generated/Sprites/Hub`, `Assets/Scripts/Exploration/World/HubRoomLayout.cs`, `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, 지원 씬 직렬화를 함께 확인한다.
 - `HubWallBackground`와 `HubFrontOutline`를 조정할 때는 생성 PNG, 리소스 경로, `JongguMinimalPrototypeBuilder`를 함께 확인한다.
@@ -58,7 +59,8 @@
 - Git 커밋 메시지는 한국어로 작성하고 `type : subject` 형식을 따른다.
 - 제목은 50자 이내로 작성하고, 끝에 마침표를 붙이지 않는다.
 - 제목은 변경 대상과 결과가 드러나게 쓰고, 제목만으로 충분하면 본문은 생략한다.
-- 본문은 필요할 때만 변경 이유와 핵심 내용을 짧게 적고, footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 사용한다.
+- 제목만으로 충분하면 AI가 자동으로 붙인 영문 bullet 요약이나 changelog 본문은 삭제한다.
+- 본문은 꼭 필요할 때만 제목 다음 빈 줄 아래에 한국어 짧은 문장 1~2줄로 적고, bullet 목록은 쓰지 않는다. footer는 이슈 번호, 후속 작업, 브레이킹 변경이 있을 때만 사용한다.
 - `type` 선택 기준과 템플릿은 `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`, `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`를 따른다.
 - 규칙을 바꾸면 `AGENTS.md`, project rules 문서, 템플릿을 함께 갱신한다.
 - 영어 diff 요약, PR 제목, 자동 생성 커밋 초안이 들어와도 최종 커밋 메시지는 자연스러운 한글로 다시 작성한다.

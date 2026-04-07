@@ -143,7 +143,7 @@
 
 ### 레시피
 
-- `Fish Platter`
+- `Sushi Set`
 - `Seafood Soup`
 - `Herb Fish Soup`
 - `Forest Basket`

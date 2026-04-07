@@ -16,7 +16,7 @@
 - 메뉴는 `RecipeData`로 관리한다.
 - 각 레시피는 표시 이름, 설명, 필요 재료, 판매가, 평판 변화를 정의한다.
 - 현재 생성된 레시피는 다음과 같다.
-  - `Fish Platter`
+  - `Sushi Set`
   - `Seafood Soup`
   - `Herb Fish Soup`
   - `Forest Basket`
