@@ -83,10 +83,6 @@ ExportedObj/
 InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
-# AI assistant 로컬 전용 규칙
-/.aiassistant/rules/local/*
-!/.aiassistant/rules/local/README.md
-
 # Unity 복구/임시 저장 폴더
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
