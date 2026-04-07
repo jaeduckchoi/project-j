@@ -1,7 +1,3 @@
----
-적용: 항상
----
-
 # 규칙 문서 인덱스
 
 이 문서는 `.aiassistant` 문서의 작업 기반 인덱스다.
@@ -11,7 +7,7 @@
 
 1. 루트 엔트리 파일 `AGENTS.md` 또는 `CLAUDE.md`
 2. `.aiassistant/rules/README.md`
-3. `project/GAME_ASSISTANT_RULES.md`
+3. `Docs/project/GAME_ASSISTANT_RULES.md`
 4. 현재 작업에 맞는 정본 문서 1~2개
 
 ## 2. `project` 문서
@@ -41,15 +37,15 @@
 ## 5. 작업별 빠른 진입점
 
 - UI 수정:
-  `project/AGENT_WORKFLOW.md`, `project/SOURCE_OF_TRUTH.md`, `ui/UI_AND_TEXT_GUIDE.md`, `ui/UI_GROUPING_RULES.md`
+  `Docs/project/AGENT_WORKFLOW.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - 씬 배치나 월드 오브젝트 수정:
-  `project/SOURCE_OF_TRUTH.md`, `scene/GAME_SCENE_AND_SETUP.md`, `scene/SCENE_HIERARCHY_GROUPING_RULES.md`
+  `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - generated 자산, 폰트, 빌더 경로 수정:
-  `project/GAME_PROJECT_STRUCTURE.md`, `project/SOURCE_OF_TRUTH.md`, `build/GAME_BUILD_GUIDE.md`
+  `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 - 문서/규칙 체계 정리:
-  `project/GAME_ASSISTANT_RULES.md`, `project/AGENT_WORKFLOW.md`, 이 인덱스
+  `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, 이 인덱스
 - 게임 의도 확인:
-  `gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
+  `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 
 ## 6. 인덱스 유지 규칙
 

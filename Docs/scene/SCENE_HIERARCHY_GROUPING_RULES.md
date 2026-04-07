@@ -1,9 +1,13 @@
+---
+적용: 항상
+---
+
 # 씬 계층 구조 규칙
 
 ## 목적
 
 이 문서는 지원 씬의 월드 계층 이름과 부모 규칙만 정의합니다.
-정본 판단은 `project/SOURCE_OF_TRUTH.md`, 작업 절차는 `project/AGENT_WORKFLOW.md`를 먼저 따릅니다.
+정본 판단은 `Docs/project/SOURCE_OF_TRUTH.md`, 작업 절차는 `Docs/project/AGENT_WORKFLOW.md`를 먼저 따릅니다.
 
 ## 최상위 루트
 
@@ -18,7 +22,7 @@ Scene
 - `SceneWorldRoot`: 월드 비주얼과 월드 경계
 - `SceneGameplayRoot`: 플레이어, 포털, 상호작용, 채집, 특수 구역
 - `SceneSystemRoot`: `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem`
-- `Canvas`: UI 루트. 내부 구조는 `ui/UI_GROUPING_RULES.md`를 따릅니다.
+- `Canvas`: UI 루트. 내부 구조는 `Docs/ui/UI_GROUPING_RULES.md`를 따릅니다.
 
 ## 공용 하위 그룹
 

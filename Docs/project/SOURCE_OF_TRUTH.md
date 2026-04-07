@@ -1,7 +1,3 @@
----
-적용: 항상
----
-
 # 정본 관계 가이드
 
 이 문서는 현재 프로젝트에서 무엇을 정본으로 삼아야 하는지, 그리고 어떤 파일들을 함께 수정해야 하는지를 설명하는 정본이다.
@@ -10,11 +6,11 @@
 
 - 작업 시작 맵: `AGENTS.md`, `CLAUDE.md`
 - 문서 허브: `.aiassistant/rules/README.md`
-- 전역 규칙: `project/GAME_ASSISTANT_RULES.md`
-- 작업 흐름: `project/AGENT_WORKFLOW.md`
-- 구조와 경로: `project/GAME_PROJECT_STRUCTURE.md`
-- 커밋 메시지 규칙: `project/GIT_COMMIT_TEMPLATE.md`
-- 게임 의도: `gameplay/*`
+- 전역 규칙: `Docs/project/GAME_ASSISTANT_RULES.md`
+- 작업 흐름: `Docs/project/AGENT_WORKFLOW.md`
+- 구조와 경로: `Docs/project/GAME_PROJECT_STRUCTURE.md`
+- 커밋 메시지 규칙: `Docs/project/GIT_COMMIT_TEMPLATE.md`
+- 게임 의도: `Docs/gameplay/*`
 
 ## 2. 코드와 자산의 정본
 
@@ -63,21 +59,21 @@
 - `Assets/Scripts/UI/UIManager.cs`
 - `Assets/Editor/JongguMinimalPrototypeBuilder.cs`
 - `Assets/Resources/Generated/ui-layout-overrides.asset`
-- `ui/UI_AND_TEXT_GUIDE.md`, 필요 시 `ui/UI_GROUPING_RULES.md`
+- `Docs/ui/UI_AND_TEXT_GUIDE.md`, 필요 시 `Docs/ui/UI_GROUPING_RULES.md`
 
 ### 씬 루트 구조 변경
 
 - `Assets/Scripts/Exploration/World/PrototypeSceneHierarchyCatalog.cs`
 - `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`
 - `Assets/Editor/PrototypeSceneAudit.cs`
-- `scene/SCENE_HIERARCHY_GROUPING_RULES.md`, `scene/GAME_SCENE_AND_SETUP.md`
+- `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`
 
 ### generated 자산 경로 변경
 
 - `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - `Assets/Resources/Generated/prototype-generated-asset-settings.asset`
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`
-- `project/GAME_PROJECT_STRUCTURE.md`, `build/GAME_BUILD_GUIDE.md`
+- `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 
 ### 허브 월드 아트 변경
 

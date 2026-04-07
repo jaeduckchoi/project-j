@@ -14,7 +14,7 @@
 | `AbandonedMine` | 등불 요구, 어둠 구역, `Glow Moss` 검증 |
 | `WindHill` | 바람 구역과 평판 기반 지름길 검증 |
 
-게임플레이 의도와 밸런스 맥락은 `gameplay/GAME_DESIGN_OVERVIEW.md`, 탐험 세부 내용은 `gameplay/GAMEPLAY_EXPLORATION.md`를 봅니다.
+게임플레이 의도와 밸런스 맥락은 `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`, 탐험 세부 내용은 `Docs/gameplay/GAMEPLAY_EXPLORATION.md`를 봅니다.
 
 ## 씬 정본 규칙
 
@@ -52,8 +52,8 @@
 
 ## 씬 계층 기준
 
-월드 계층의 정본 이름과 부모 규칙은 `scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따릅니다.
-Canvas 내부 계층은 `ui/UI_GROUPING_RULES.md`를 따릅니다.
+월드 계층의 정본 이름과 부모 규칙은 `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따릅니다.
+Canvas 내부 계층은 `Docs/ui/UI_GROUPING_RULES.md`를 따릅니다.
 
 ## 씬별 고위험 지점
 

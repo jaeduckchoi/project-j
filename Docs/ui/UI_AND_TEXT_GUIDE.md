@@ -1,13 +1,9 @@
----
-적용: 항상
----
-
 # UI 및 텍스트 기준
 
 ## 역할
 
 이 문서는 현재 프로젝트의 Canvas UI 정본 관계와 관리 대상 구조만 다룹니다.
-작업 절차와 검증 순서는 `project/AGENT_WORKFLOW.md`, 전체 정본 관계는 `project/SOURCE_OF_TRUTH.md`를 먼저 확인합니다.
+작업 절차와 검증 순서는 `Docs/project/AGENT_WORKFLOW.md`, 전체 정본 관계는 `Docs/project/SOURCE_OF_TRUTH.md`를 먼저 확인합니다.
 
 ## 현재 UI 기준
 

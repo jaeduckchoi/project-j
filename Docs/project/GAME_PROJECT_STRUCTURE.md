@@ -1,7 +1,3 @@
----
-적용: 항상
----
-
 # 프로젝트 구조 가이드
 
 이 문서는 현재 저장소의 실제 구조와 책임 경계를 정리한 정본이다.
@@ -168,7 +164,7 @@ Assets
 ## 9. 변경 시 함께 맞출 항목
 
 - 프로젝트 구조나 generated 경로 변경:
-  `PrototypeGeneratedAssetSettings`, 빌더 코드, 이 문서, `build/GAME_BUILD_GUIDE.md`
+  `PrototypeGeneratedAssetSettings`, 빌더 코드, 이 문서, `Docs/build/GAME_BUILD_GUIDE.md`
 - UI 기준 변경:
   `UIManager`, 빌더 UI 코드, `ui-layout-overrides.asset`, UI 문서
 - 씬 루트 구조 변경:

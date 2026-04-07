@@ -3,7 +3,7 @@
 ## 목적
 
 이 문서는 `Canvas` 하위 구조의 정본 이름과 부모 규칙만 정의합니다.
-실제 정본 관계는 `project/SOURCE_OF_TRUTH.md`, 작업 절차는 `project/AGENT_WORKFLOW.md`를 따릅니다.
+실제 정본 관계는 `Docs/project/SOURCE_OF_TRUTH.md`, 작업 절차는 `Docs/project/AGENT_WORKFLOW.md`를 따릅니다.
 
 ## 최상위 루트
 

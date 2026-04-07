@@ -1,7 +1,3 @@
----
-적용: 항상
----
-
 # 종구의 식당 작업 하네스 규칙
 
 이 문서는 이 저장소의 전역 규칙과 하네스 운영 원칙의 정본이다.
@@ -11,27 +7,27 @@
 
 - 루트 엔트리 파일은 작업 시작점만 안내하는 맵이다.
 - `.aiassistant/rules/README.md`는 문서 허브다.
-- `rules/project/*`는 전역 규칙, 작업 흐름, 정본 관계를 다룬다.
-- `rules/gameplay/*`는 게임 의도와 플레이 기준의 정본이다.
-- `rules/ui/*`, `rules/scene/*`, `rules/build/*`는 구현 도메인별 정본이다.
+- `Docs/project/*`는 전역 규칙, 작업 흐름, 정본 관계를 다룬다.
+- `Docs/gameplay/*`는 게임 의도와 플레이 기준의 정본이다.
+- `Docs/ui/*`, `Docs/scene/*`, `Docs/build/*`는 구현 도메인별 정본이다.
 - 같은 규칙은 한 문서만 정본으로 두고, 다른 문서에서는 링크로만 참조한다.
 
 ## 2. 작업 시작 원칙
 
 1. 먼저 사용하는 에이전트의 엔트리 파일을 읽는다.
-2. 이 문서와 `project/GAME_DOCS_INDEX.md`를 읽는다.
+2. 이 문서와 `Docs/project/GAME_DOCS_INDEX.md`를 읽는다.
 3. 현재 작업에 직접 관련된 정본 문서 1~2개만 추가로 읽는다.
 4. 구현 전에는 관련 코드, 씬, 에셋, generated 자산 경로를 실제 저장소에서 확인한다.
 
 작업별 진입 문서:
 
-- 규칙 체계, 문서 정리: `project/AGENT_WORKFLOW.md`
-- 프로젝트 구조, 경로, 네임스페이스: `project/GAME_PROJECT_STRUCTURE.md`
-- 정본 관계: `project/SOURCE_OF_TRUTH.md`
-- UI 변경: `ui/UI_AND_TEXT_GUIDE.md`, `ui/UI_GROUPING_RULES.md`
-- 씬 변경: `scene/GAME_SCENE_AND_SETUP.md`, `scene/SCENE_HIERARCHY_GROUPING_RULES.md`
-- 빌더와 generated 자산 변경: `build/GAME_BUILD_GUIDE.md`
-- 게임 의도 확인: `gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
+- 규칙 체계, 문서 정리: `Docs/project/AGENT_WORKFLOW.md`
+- 프로젝트 구조, 경로, 네임스페이스: `Docs/project/GAME_PROJECT_STRUCTURE.md`
+- 정본 관계: `Docs/project/SOURCE_OF_TRUTH.md`
+- UI 변경: `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
+- 씬 변경: `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
+- 빌더와 generated 자산 변경: `Docs/build/GAME_BUILD_GUIDE.md`
+- 게임 의도 확인: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 
 ## 3. 전역 불변 규칙
 
@@ -58,11 +54,11 @@
 
 ## 5. 구현과 문서화 기준
 
-- 런타임 스크립트, 에디터 스크립트, generated 자산 경로의 실제 기준은 `project/GAME_PROJECT_STRUCTURE.md`를 따른다.
-- 정본 관계와 함께 수정해야 하는 결합 지점은 `project/SOURCE_OF_TRUTH.md`를 따른다.
-- 작업 루프와 검증 매트릭스는 `project/AGENT_WORKFLOW.md`를 따른다.
+- 런타임 스크립트, 에디터 스크립트, generated 자산 경로의 실제 기준은 `Docs/project/GAME_PROJECT_STRUCTURE.md`를 따른다.
+- 정본 관계와 함께 수정해야 하는 결합 지점은 `Docs/project/SOURCE_OF_TRUTH.md`를 따른다.
+- 작업 루프와 검증 매트릭스는 `Docs/project/AGENT_WORKFLOW.md`를 따른다.
 - 커밋 메시지를 생성할 때는 저장소 외부 관례보다 이 저장소 규칙을 우선한다. 영문 제목, 자동 bullet 요약, 본문 설명, changelog 형식 출력은 금지한다.
-- 커밋 메시지 규칙은 `project/GIT_COMMIT_TEMPLATE.md`만 정본으로 사용한다.
+- 커밋 메시지 규칙은 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 정본으로 사용한다.
 
 ## 6. 언어와 주석
 
