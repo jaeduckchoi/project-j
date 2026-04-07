@@ -4,7 +4,7 @@
 
 먼저 읽을 문서:
 
-1. `.aiassistant/README.md`
+1. `.aiassistant/rules/README.md`
 2. `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
 3. `.aiassistant/rules/project/GAME_DOCS_INDEX.md`
 4. 작업 종류에 맞는 정본 문서 1~2개

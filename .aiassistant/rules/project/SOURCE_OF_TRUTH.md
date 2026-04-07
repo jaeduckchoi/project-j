@@ -9,7 +9,7 @@
 ## 1. 문서 정본
 
 - 작업 시작 맵: `AGENTS.md`, `CLAUDE.md`
-- 문서 허브: `.aiassistant/README.md`
+- 문서 허브: `.aiassistant/rules/README.md`
 - 전역 규칙: `project/GAME_ASSISTANT_RULES.md`
 - 작업 흐름: `project/AGENT_WORKFLOW.md`
 - 구조와 경로: `project/GAME_PROJECT_STRUCTURE.md`

@@ -10,7 +10,7 @@
 
 1. 맵 읽기
 - `AGENTS.md` 또는 `CLAUDE.md`
-- `.aiassistant/README.md`
+- `.aiassistant/rules/README.md`
 
 2. 정본 문서 찾기
 - `GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 문서를 고른다.

@@ -1,6 +1,10 @@
+---
+적용: 항상
+---
+
 # AI Assistant Rules
 
-`.aiassistant`는 이 저장소의 작업 하네스다. 엔트리 파일은 짧은 맵 역할만 하고, 실제 규칙과 정본 관계는 이 디렉터리 아래 문서에 기록한다.
+`.aiassistant`는 이 저장소의 작업 하네스다. 엔트리 파일은 짧은 맵 역할만 하고, 실제 규칙과 정본 관계는 `.aiassistant/rules` 아래 문서에 기록한다.
 
 ## 1. 문서 계층
 
@@ -8,7 +12,6 @@
 - 전역 규칙과 작업 흐름: `.aiassistant/rules/project/*`
 - 게임 의도와 플레이 기준: `.aiassistant/rules/gameplay/*`
 - UI, 씬, 빌더 정본: `.aiassistant/rules/ui/*`, `.aiassistant/rules/scene/*`, `.aiassistant/rules/build/*`
-- 로컬 메모: `.aiassistant/rules/local/`
 
 ## 2. 최소 읽기 순서
 
@@ -37,6 +40,6 @@
 
 ## 5. 언어 정책
 
-- `AGENTS.md`, `CLAUDE.md`, `.aiassistant/README.md`, `rules/project/*`, `rules/gameplay/*`는 한국어를 기본으로 유지한다.
+- `AGENTS.md`, `CLAUDE.md`, `.aiassistant/rules/README.md`, `rules/project/*`, `rules/gameplay/*`는 한국어를 기본으로 유지한다.
 - 코드 식별자, 경로, 씬 이름, 메뉴 이름처럼 번역하면 안 되는 고유 명칭은 원문 그대로 적는다.
 - 커밋 메시지 규칙은 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`만 정본으로 사용한다.

@@ -10,7 +10,7 @@
 ## 1. 하네스 모델
 
 - 루트 엔트리 파일은 작업 시작점만 안내하는 맵이다.
-- `.aiassistant/README.md`는 문서 허브다.
+- `.aiassistant/rules/README.md`는 문서 허브다.
 - `rules/project/*`는 전역 규칙, 작업 흐름, 정본 관계를 다룬다.
 - `rules/gameplay/*`는 게임 의도와 플레이 기준의 정본이다.
 - `rules/ui/*`, `rules/scene/*`, `rules/build/*`는 구현 도메인별 정본이다.

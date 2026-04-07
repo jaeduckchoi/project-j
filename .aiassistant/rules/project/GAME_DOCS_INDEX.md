@@ -10,7 +10,7 @@
 ## 1. 최소 읽기 순서
 
 1. 루트 엔트리 파일 `AGENTS.md` 또는 `CLAUDE.md`
-2. `.aiassistant/README.md`
+2. `.aiassistant/rules/README.md`
 3. `project/GAME_ASSISTANT_RULES.md`
 4. 현재 작업에 맞는 정본 문서 1~2개
 
