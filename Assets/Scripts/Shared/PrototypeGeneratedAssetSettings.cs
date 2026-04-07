@@ -187,7 +187,7 @@ namespace Shared
         public string HubWallBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub-wall-background.png");
         public string HubFrontOutlineSpritePath => CombineAssetPath(HubSpriteRoot, "hub-front-outline.png");
         public string HubTableUnlockedSpritePath => CombineAssetPath(HubSpriteRoot, "hub-table-unlocked.png");
-        public string HubUpgradeSlotSpritePath => CombineAssetPath(HubSpriteRoot, "hub-upgrade-slot-center.png");
+        public string HubUpgradeSlotSpritePath => CombineAssetPath(HubSpriteRoot, "hub-upgrade-slot.png");
         public string HubTodayMenuBgSpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-bg.png");
         public string HubTodayMenuItem1SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-1.png");
         public string HubTodayMenuItem2SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-2.png");

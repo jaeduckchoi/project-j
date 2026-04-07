@@ -4,7 +4,7 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 9004520054319610835
-    second: HubUpgradeSlotCenter_0
+    second: HubUpgradeSlot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HubUpgradeSlotCenter_0
+      name: HubUpgradeSlot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      HubUpgradeSlotCenter_0: 9004520054319610835
+      HubUpgradeSlot_0: 9004520054319610835
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
