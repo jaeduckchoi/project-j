@@ -241,9 +241,7 @@ Assets
 
 - 공용 작업 기준 문서는 `.aiassistant/rules` 아래에 있다.
 - 루트 엔트리 문서는 `AGENTS.md`, `CLAUDE.md`다.
-- 공유 훅과 설치 보조 스크립트는 `.githooks` 아래에 둔다.
 - 생성 데이터는 `Assets/Resources/Generated/GameData/Resources`, `Assets/Resources/Generated/GameData/Recipes`, `Assets/Resources/Generated/GameData/Input` 아래에 묶여 있다.
 - 생성 폰트 기본값은 `maplestoryLightSdf`와 `maplestoryBoldSdf`다.
 - Canvas UI 오버라이드는 `Assets/Resources/Generated/ui-layout-overrides.asset`에 저장된다.
-- 반복 검증과 공유 훅 기준은 `project/GAME_HOOK_GUIDE.md`에서 따로 관리한다.
 - 이 작업에서는 Unity 실행과 컴파일을 직접 검증하지 못했으므로, 이후 빌더/감사/플레이 모드 검증이 추가로 필요하다.
