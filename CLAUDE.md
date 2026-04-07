@@ -1,25 +1,21 @@
 # Claude Entry
 
-이 저장소의 공통 AI 작업 규칙은 아래 문서를 기준으로 한다.
+이 파일은 Claude용 작업 맵이다. 세부 규칙의 정본은 `.aiassistant` 아래 문서를 따른다.
 
-- `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
+먼저 읽을 문서:
 
-작업 전 우선 읽을 문서:
+1. `.aiassistant/README.md`
+2. `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
+3. `.aiassistant/rules/project/GAME_DOCS_INDEX.md`
+4. 작업 종류에 맞는 정본 문서 1~2개
 
-1. `.aiassistant/rules/project/GAME_ASSISTANT_RULES.md`
-2. `.aiassistant/rules/project/GAME_DOCS_INDEX.md`
-3. `.aiassistant/rules/project/GAME_PROJECT_STRUCTURE.md`
-4. `.aiassistant/rules/gameplay/GAME_FEATURE_REFERENCE.md`
-5. `.aiassistant/rules/ui/UI_AND_TEXT_GUIDE.md`
-6. `.aiassistant/rules/scene/GAME_SCENE_AND_SETUP.md`
-7. `.aiassistant/rules/build/GAME_BUILD_GUIDE.md`
+절대 가드레일:
 
-핵심 규칙 요약:
-
-- 기본 응답 언어는 한국어
-- Unity 직렬화 필드명과 씬 참조는 신중하게 수정
-- UI 변경 시 `Assets/Scripts/UI/UIManager.cs`와 `Assets/Editor/JongguMinimalPrototypeBuilder.cs`를 함께 확인
-- 빌더가 생성하는 씬, 프리팹, 생성 에셋은 결과물만 직접 고치지 말고 생성 경로를 먼저 수정
-- AI 코드 작업 마무리 응답에서는 필요하면 로컬 메모 후보와 공유 규칙 업데이트 후보를 짧게 제안
-- 커밋 메시지는 한국어 `type : subject` 제목을 우선하고, 영문 bullet 요약 본문은 붙이지 않음
-- Unity 실행 / 컴파일을 못 했으면 결과에 명시
+- 기본 응답 언어는 한국어다.
+- `CLAUDE.md`는 맵이고, 세부 규칙은 `.aiassistant/rules/*` 문서가 정본이다.
+- generated 씬, generated 에셋, 런타임 출력물은 결과물만 직접 고치지 말고 생성 경로부터 수정한다.
+- 지원 씬에 저장된 월드 직렬화 값은 정본이며, 런타임 보강 코드는 누락된 오브젝트·컴포넌트·참조만 보충해야 한다.
+- UI를 바꾸면 `Assets/Scripts/UI/UIManager.cs`, `Assets/Editor/JongguMinimalPrototypeBuilder.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset` 기준을 함께 확인한다.
+- Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 그 사실과 남은 검증 단계를 적는다.
+- 커밋 메시지를 만들 때는 이 저장소 규칙만 따르고, 한국어 한 줄만 출력하며, 본문·불릿·설명은 금지하고, 형식은 `타입 : 내용`만 허용하며, 전체는 50자 이내로 제한한다.
+- 커밋 메시지의 상세 타입 표와 예시는 `.aiassistant/rules/project/GIT_COMMIT_TEMPLATE.md`만 따른다.

@@ -1,17 +1,11 @@
----
-적용: 항상
----
+# 씬 계층 구조 규칙
 
-# 종구의 식당 씬 계층 그룹 규칙
+## 목적
 
-## 1. 목적
+이 문서는 지원 씬의 월드 계층 이름과 부모 규칙만 정의합니다.
+정본 판단은 `project/SOURCE_OF_TRUTH.md`, 작업 절차는 `project/AGENT_WORKFLOW.md`를 먼저 따릅니다.
 
-이 문서는 지원 씬(`Hub`, `Beach`, `DeepForest`, `AbandonedMine`, `WindHill`)이 공유하는 월드 계층 그룹 기준을 정의한다.
-빌더, 현재 씬 정리기, 생성 씬 감사는 모두 같은 부모 구조와 그룹 이름을 따라야 한다.
-
-## 2. 최상위 루트
-
-지원 씬은 다음 최상위 순서에 맞춘다.
+## 최상위 루트
 
 ```text
 Scene
@@ -21,16 +15,12 @@ Scene
 └─ Canvas
 ```
 
-- `SceneWorldRoot`
-  월드 비주얼과 월드 경계 오브젝트를 그룹화한다.
-- `SceneGameplayRoot`
-  플레이어, 스폰 지점, 포탈, 상호작용 오브젝트, 채집 오브젝트, 특수 존을 그룹화한다.
-- `SceneSystemRoot`
-  `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` 같은 시스템 오브젝트를 그룹화한다.
-- `Canvas`
-  UI는 루트 레벨에 유지하고, 내부는 `HUDRoot`, `PopupRoot`로 구성한다.
+- `SceneWorldRoot`: 월드 비주얼과 월드 경계
+- `SceneGameplayRoot`: 플레이어, 포털, 상호작용, 채집, 특수 구역
+- `SceneSystemRoot`: `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem`
+- `Canvas`: UI 루트. 내부 구조는 `ui/UI_GROUPING_RULES.md`를 따릅니다.
 
-## 3. 공용 자식 그룹
+## 공용 하위 그룹
 
 ### `SceneWorldRoot`
 
@@ -40,79 +30,45 @@ SceneWorldRoot
 └─ WorldBoundsRoot
 ```
 
-- `WorldVisualRoot`
-  바닥, 배경, 소품, 월드 제목 비주얼을 둔다.
-- `WorldBoundsRoot`
-  `CameraBounds`, 이동 한계, 맵 벽 콜라이더를 둔다.
+- `WorldVisualRoot`: 바닥, 배경, 소품, 월드 타이틀
+- `WorldBoundsRoot`: `CameraBounds`, 이동 제한, 월드 벽 콜라이더
 
 ### `SceneGameplayRoot`
 
-현재 씬에 필요한 그룹만 만든다.
+현재 씬에 필요한 그룹만 만듭니다.
 
 ```text
 SceneGameplayRoot
 ├─ PlayerRoot
 ├─ SpawnRoot
 ├─ PortalRoot
-├─ InteractionRoot   (hub)
-├─ ResourceRoot      (exploration scenes)
-└─ ZoneRoot          (scenes with special zones)
+├─ InteractionRoot
+├─ ResourceRoot
+└─ ZoneRoot
 ```
 
-- `PlayerRoot`
-  `Jonggu`를 둔다.
-- `SpawnRoot`
-  씬 진입 스폰 지점을 둔다.
-- `PortalRoot`
-  씬 이동 포탈을 둔다.
-- `InteractionRoot`
-  `RecipeSelector`, `ServiceCounter`, `StorageStation`, `UpgradeStation` 같은 허브 상호작용 오브젝트를 둔다.
-- `ResourceRoot`
-  채집 오브젝트를 둔다.
-- `ZoneRoot`
-  가이드 트리거, 늪지, 어둠 지대, 돌풍 지대 같은 특수 구역을 둔다.
+- `PlayerRoot`: `Jonggu`
+- `SpawnRoot`: 씬 진입 스폰 지점
+- `PortalRoot`: 지역 이동 포털
+- `InteractionRoot`: 허브 상호작용 오브젝트
+- `ResourceRoot`: 채집 오브젝트
+- `ZoneRoot`: 가이드, 감속, 어둠, 돌풍 같은 특수 구역
 
-## 4. 오브젝트 배치 규칙
+## 배치 규칙
 
-- 허브 아트는 `HubArtRoot`를 통해 `WorldVisualRoot` 아래에 둔다.
-- `BeachPortalPad`, `ForestPortalPad`, `MinePortalPad`, `WindPortalPad` 같은 포탈 패드는 대응되는 포탈 오브젝트의 자식으로 유지한다.
-- 탐험 씬의 `*_Pad` 채집 패드는 대응되는 채집 오브젝트의 자식으로 유지한다.
-- `*_Title` 같은 월드 라벨은 대응되는 월드 비주얼 또는 상호작용 앵커에 맞춰 정렬한다.
-- `CameraBounds`, `*MovementBounds`, `*Bounds` 같은 이동 제한 오브젝트는 `WorldBoundsRoot` 아래에 둔다.
+- 허브 월드 아트는 `WorldVisualRoot/HubArtRoot` 기준으로 둡니다.
+- `CameraBounds`, `*MovementBounds`, `*Bounds`는 `WorldBoundsRoot`에 둡니다.
+- 포털 패드와 채집 패드는 해당 오브젝트의 자식으로 둡니다.
+- 월드 라벨과 타이틀은 대응하는 비주얼 또는 상호작용 앵커와 함께 이동하도록 둡니다.
 
-## 5. 씬별 배치 예시
+## 함께 수정할 항목
 
-### Hub
+- 그룹 이름 변경: `PrototypeSceneHierarchyOrganizer`, `PrototypeSceneAudit`, 빌더, 관련 문서
+- 허브 아트 루트 변경: `HubRoomLayout`, runtime augmenter, 빌더, generated 허브 스프라이트 경로
+- Canvas 루트 변경: `UI_GROUPING_RULES.md`, `UIManager`, 빌더, UI 오버라이드 자산 처리 코드
 
-- `HubArtRoot` -> `WorldVisualRoot`
-- `HubMovementBounds`, `CameraBounds` -> `WorldBoundsRoot`
-- `HubEntry` -> `SpawnRoot`
-- `GoToBeach`, `GoToDeepForest`, `GoToAbandonedMine`, `GoToWindHill` -> `PortalRoot`
-- `RecipeSelector`, `ServiceCounter`, `StorageStation`, `UpgradeStation` -> `InteractionRoot`
-- `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` -> `SceneSystemRoot`
+## 검증 경로
 
-### 공용 탐험 기준
-
-- 바닥, 소품, 월드 타이틀 -> `WorldVisualRoot`
-- `CameraBounds`, 이동 한계, 맵 벽 -> `WorldBoundsRoot`
-- 진입 스폰과 복귀 포탈 -> `SpawnRoot`, `PortalRoot`
-- 채집 오브젝트 -> `ResourceRoot`
-- 가이드 또는 특수 존 -> `ZoneRoot`
-
-## 6. `ZoneRoot` 예시
-
-- `DeepForest`
-  `ForestGuide`, `ForestSwampZone`
-- `AbandonedMine`
-  `MineGuide`, `MineDarkness`
-- `WindHill`
-  `WindGuide`, `WindLaneZone`
-
-추가 런타임 안전장치 오브젝트가 생기더라도 가능하면 같은 `ZoneRoot` 기준을 따른다.
-
-## 7. 작업 원칙
-
-- 결과 씬만 직접 수정하지 않는다. 빌더와 정리기가 같은 그룹 규칙을 따르도록 함께 갱신한다.
-- 그룹 이름이 바뀌면 생성 씬 감사와 관련 문서도 함께 갱신한다.
-- UI 그룹 규칙은 `ui/UI_GROUPING_RULES.md`에서 별도로 정의한다.
-- Unity에서 최종 씬 저장을 직접 검증하지 못했다면 씬 저장 뒤 `Tools > Jonggu Restaurant > Prototype Build and Audit`로 생성 자산과 구조 감사를 함께 확인한다.
+- 구조와 생성 경로 검증은 `Tools > Jonggu Restaurant > Prototype Build and Audit`
+- 플레이 흐름 검증은 `GameplayAutomationAudit`
+- Unity에서 직접 저장 결과를 확인하지 못했다면 결과 보고에 미검증 사실을 남깁니다.

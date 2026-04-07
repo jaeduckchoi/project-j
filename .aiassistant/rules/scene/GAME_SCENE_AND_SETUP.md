@@ -1,44 +1,27 @@
----
-적용: 항상
----
+# 씬 설정 기준
 
-# 종구의 식당 씬 구성 및 설정 가이드
+## 지원 씬
 
-## 1. 지원 씬 구성
+| 씬 | 역할 |
+| --- | --- |
+| `Hub` | 허브, 메뉴 선택, 정산, 창고, 업그레이드, 지역 이동 |
+| `Beach` | 기본 채집과 복귀 흐름 검증 |
+| `DeepForest` | 버섯/허브 채집과 이동 감속 구역 검증 |
+| `AbandonedMine` | 등불 요구, 어둠 구역, `Glow Moss` 검증 |
+| `WindHill` | 바람 구역과 평판 기반 지름길 검증 |
 
-### Hub
+게임플레이 의도와 밸런스 맥락은 `gameplay/GAME_DESIGN_OVERVIEW.md`, 탐험 세부 내용은 `gameplay/GAMEPLAY_EXPLORATION.md`를 봅니다.
 
-- 메인 허브 씬이다.
-- 월드 아트 레이어, 상호작용 지점, HUD/팝업 UI를 포함한 `16:9` 고정 카메라 기준을 사용한다.
-- 허브 바닥은 반복 타일 스프라이트 구조를 사용하며, 바닥 타일 밀도는 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지한다.
-- 허브 카운터 비주얼은 `HubBar` 루트 아래 `HubBarLeftVisual`, `HubBarRightVisual` 두 파츠로 나누어 관리하고, 오른쪽 파츠는 별도 스프라이트와 `spriteBorder`를 가질 수 있다.
-- 메뉴 선택기, 영업대, 창고, 업그레이드 작업대, 지역 포탈이 포함된다.
+## 씬 정본 규칙
 
-### Beach
+- 지원 씬에 직접 저장된 `Transform`, 컴포넌트 직렬화 값, `SpriteRenderer`, 월드 `TextMeshPro` 값은 기본 정본입니다.
+- `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`는 누락된 오브젝트, 누락된 컴포넌트, 끊어진 참조만 보강합니다.
+- 빌더는 기존 지원 씬을 재생성하거나 기존 월드 직렬화 값을 강제로 덮어쓰는 용도로 쓰지 않습니다.
+- 지원 Canvas 씬의 관리 대상 UI 값은 `Assets/Resources/Generated/ui-layout-overrides.asset`을 통해 공용 기준으로 유지됩니다.
 
-- 입문용 탐험 씬이다.
-- 기본 채집 루프와 허브 복귀 흐름 검증에 사용한다.
+## 현재 점검할 핵심 연결
 
-### DeepForest
-
-- 중반 탐험 씬이다.
-- 버섯/약초 채집과 감속 지대 검증에 사용한다.
-
-### AbandonedMine
-
-- 후반 탐험 씬이다.
-- 랜턴 조건, `Glow Moss`, 어둠 흐름 검증에 사용한다.
-
-### WindHill
-
-- 최종 탐험 씬이다.
-- 돌풍 지대와 평판 기반 지름길 검증에 사용한다.
-
-## 2. 공용 런타임 설정
-
-### GameManager
-
-핵심 연결 참조는 다음과 같다.
+### `GameManager`
 
 - `InventoryManager`
 - `StorageManager`
@@ -47,118 +30,51 @@
 - `DayCycleManager`
 - `UpgradeManager`
 
-일부 런타임 보강이 누락된 참조를 보완할 수는 있지만, 씬에 저장한 직렬화 값이 정본이며 런타임은 누락분만 채우는 편이 유지보수와 검증에 더 유리하다.
+### `UIManager`
 
-### UIManager
+현재 문서와 함께 맞춰야 하는 핵심 직렬화 필드는 아래입니다.
 
-주요 연결 필드는 다음과 같다.
-
-- `interactionPromptText`
-- `inventoryText`
-- `storageText`
-- `upgradeText`
-- `goldText`
-- `selectedRecipeText`
-- `dayPhaseText`
-- `bodyFontAsset`
-- `headingFontAsset`
-- `skipExplorationButton`
-- `skipServiceButton`
-- `nextDayButton`
-- `recipePanelButton`
-- `upgradePanelButton`
-- `materialPanelButton`
+- `guideText`
+- `resultText`
+- `guideHelpButton`
 - `popupCloseButton`
+- 허브 하단 패널 버튼과 진행 버튼
 
-현재 UI 기준 동작은 다음과 같다.
+현재 UI 기준 동작은 아래와 같습니다.
 
-- 허브에서 하단 버튼은 `Cooking Menu`, `Upgrade`, `Materials` 팝업을 연다.
-- 허브 팝업이 열리면 게임 진행이 멈춘다. `Esc` 또는 `PopupCloseButton`으로 닫으면 원래 시간 흐름을 복구한다.
-- 창고는 자동 근접 UI가 아니라 `StorageStation`에서 `E` 상호작용으로 열린다.
-- 주요 패널과 버튼 이미지는 `PrototypeUISkinCatalog`가 정의한 생성 UI 리소스 경로를 공유한다.
+- 허브 팝업은 열릴 때 게임 시간을 멈추고 닫힐 때 복구합니다.
+- `StorageStation`은 허브 상호작용으로 창고를 엽니다.
+- Canvas 공용 루트 이름은 `HUDRoot`, `PopupRoot`를 유지합니다.
 
-### PrototypeUIDesignController
+## 씬 계층 기준
 
-- 경로: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
-- `Apply Preview`, `Canvas Grouping`, `Open Scene Builder Preview`, `Refresh SVG Cache`, `Reset Canvas UI Layouts` 같은 에디터 보조 기능을 지원한다.
-- Canvas 오브젝트를 `HUDRoot`, `PopupRoot` 아래에 그룹화하며, 빌더와 런타임도 같은 구조를 따른다.
+월드 계층의 정본 이름과 부모 규칙은 `scene/SCENE_HIERARCHY_GROUPING_RULES.md`를 따릅니다.
+Canvas 내부 계층은 `ui/UI_GROUPING_RULES.md`를 따릅니다.
 
-## 3. 월드 계층 기준
+## 씬별 고위험 지점
 
-지원 씬은 다음 최상위 구조에 맞춰 정렬한다.
+### `Hub`
 
-```text
-Scene
-├─ SceneWorldRoot
-├─ SceneGameplayRoot
-├─ SceneSystemRoot
-└─ Canvas
-```
-
-- `SceneWorldRoot`
-  월드 비주얼과 경계 오브젝트를 그룹화한다.
-- `SceneGameplayRoot`
-  플레이어, 스폰 지점, 포탈, 상호작용 오브젝트, 채집 오브젝트, 위험 지대를 그룹화한다.
-- `SceneSystemRoot`
-  `GameManager`, `RestaurantManager`, `Main Camera`, `EventSystem` 같은 시스템 오브젝트를 그룹화한다.
-- `Canvas`
-  UI 루트이며 내부는 `HUDRoot`, `PopupRoot` 기준으로 구성한다.
-
-## 4. 허브 체크포인트
-
-- `RecipeSelector`
-- `ServiceCounter`
-- `StorageStation`
-- `UpgradeStation`
-- `GoToBeach`
-- `GoToDeepForest`
-- `GoToAbandonedMine`
-- `GoToWindHill`
-- `HubArtRoot`
-- `HubBar`
-- `HubBarLeftVisual`
-- `HubBarRightVisual`
-- `HubTodayMenuBoard`
+- `HubArtRoot`, `HubBar`, `HubBarLeftVisual`, `HubBarRightVisual`
+- `RecipeSelector`, `ServiceCounter`, `StorageStation`, `UpgradeStation`
+- `GoToBeach`, `GoToDeepForest`, `GoToAbandonedMine`, `GoToWindHill`
 - `CameraBounds`
 
-기대하는 허브 흐름은 다음과 같다.
+허브 아트나 카운터 구조를 바꾸면 generated 허브 스프라이트, `HubRoomLayout`, runtime augmenter, 빌더, 지원 씬 직렬화를 함께 확인합니다.
 
-1. 메뉴 선택
-2. 창고 품목 선택
-3. 맡기기 또는 꺼내기
-4. 업그레이드 확인
-5. 지역 이동
-6. 영업 진행
-
-## 5. 탐험 씬 체크포인트
+### 탐험 씬 공통
 
 - `GatherableResource.resourceData`
 - `GatherableResource.requiredToolType`
-- 복귀용 `ScenePortal`
+- 복귀 `ScenePortal`
 - `MovementModifierZone`
 - `DarknessZone`
 - `WindGustZone`
 
-핵심은 상호작용 가능 여부, 차단 이유 안내, 복귀 포탈 동작, 위험 지대 체감이 제대로 동작하는지 확인하는 것이다.
+## 확인용 도구
 
-## 6. 권장 플레이테스트 순서
+- 구조 감사: `Assets/Editor/PrototypeSceneAudit.cs`
+- 경량 게임플레이 감사: `Assets/Editor/GameplayAutomationAudit.cs`
+- 통합 메뉴: `Tools > Jonggu Restaurant > Prototype Build and Audit`
 
-1. `Hub`에서 텍스트 가독성, 창고 `E` 팝업 동작, 메뉴 선택 UI를 확인한다.
-2. `Beach`에서 기본 자원을 채집하고 허브로 돌아온다.
-3. `DeepForest`에서 버섯/약초 채집과 감속 지대를 확인한다.
-4. 허브 작업대에서 인벤토리 확장이나 랜턴 해금 비용을 확인한다.
-5. `AbandonedMine`에서 `Glow Moss`와 어둠 이동을 확인한다.
-6. 평판을 올리고 `WindHillShortcut`을 확인한다.
-7. 허브에서 메뉴 선택, 영업, 정산, 다음 날 흐름을 확인한다.
-
-## 7. 관련 에디터 메뉴
-
-- `Prototype Build and Audit`
-  생성 자산, Build Settings, Canvas 오버라이드, 누락된 지원 씬 복구, 생성 씬 감사를 한 번에 동기화한다.
-
-## 8. 현재 위험 요소
-
-- 이 환경에서는 Unity 실행과 C# 컴파일을 직접 검증하지 못했다.
-- 최종 밸런스 수치는 실제 플레이테스트 이후 추가 조정이 필요할 수 있다.
-- `PrototypeSceneRuntimeAugmenter`는 누락된 오브젝트, 컴포넌트, 참조를 보완하는 안전장치로만 유지하고, 기존 씬 저장값을 덮어쓰지 않는 방향을 우선한다.
-
+Unity 재생이나 컴파일을 직접 확인하지 못한 작업이라면 결과 보고에 그 사실을 함께 남깁니다.
