@@ -78,6 +78,17 @@ namespace Restaurant
 
             int currentIndex = GetCurrentRecipeIndex();
             int nextIndex = (currentIndex + 1) % restaurantManager.AvailableRecipes.Count;
+
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TrySelectRecipe(restaurantManager, nextIndex))
+            {
+                GameManager.Instance?.DayCycle?.ShowHintOnce(
+                    "first_recipe_select",
+                    "메뉴를 바꾸면 오른쪽 패널에서 필요 재료와 가능한 수량을 바로 확인할 수 있습니다.");
+                return;
+            }
+
             restaurantManager.SelectRecipeByIndex(nextIndex);
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_recipe_select",

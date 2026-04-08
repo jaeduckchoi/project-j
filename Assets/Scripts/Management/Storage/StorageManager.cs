@@ -304,6 +304,40 @@ namespace Management.Storage
         }
 
         /// <summary>
+        /// 원격 스냅샷 기준으로 창고 목록과 마지막 작업 메시지를 동기화한다.
+        /// </summary>
+        public void ApplyRemoteState(IEnumerable<InventoryEntry> entries, string message = null)
+        {
+            initialized = true;
+            itemAmounts.Clear();
+
+            if (entries != null)
+            {
+                foreach (InventoryEntry entry in entries)
+                {
+                    if (entry == null || entry.resource == null || entry.amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    AddAmountInternal(entry.resource, entry.amount);
+                }
+            }
+
+            RefreshRuntimeItems();
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                LastOperationMessage = message;
+            }
+            else if (runtimeItems.Count == 0)
+            {
+                LastOperationMessage = "창고가 비어 있습니다.";
+            }
+
+            RaiseChanged();
+        }
+
+        /// <summary>
         /// 현재 인벤토리 상태를 선택용 스냅샷 목록으로 만듭니다.
         /// </summary>
         private List<InventoryEntry> GetInventorySnapshot(InventoryManager inventory)

@@ -35,6 +35,8 @@ namespace Exploration.World
         }
 
         public Transform InteractionTransform => transform;
+        public string TargetSceneName => targetSceneName;
+        public string TargetSpawnPointId => targetSpawnPointId;
 
         /// <summary>
         /// 런타임 또는 빌더에서 포탈 목적지와 잠금 조건을 다시 설정합니다.
@@ -80,6 +82,13 @@ namespace Exploration.World
             {
                 string guideText = !string.IsNullOrWhiteSpace(lockedGuideText) ? lockedGuideText : blockingReason;
                 GameManager.Instance?.DayCycle?.ShowTemporaryGuide(guideText);
+                return;
+            }
+
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TryTravel(this))
+            {
                 return;
             }
 

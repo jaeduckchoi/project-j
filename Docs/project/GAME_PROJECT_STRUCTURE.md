@@ -27,6 +27,7 @@
 
 - `Library`, `Logs`, `obj`, `.idea`, `.vscode` 같은 로컬/캐시 폴더는 공유 구조의 정본이 아니다.
 - `.claude/` 같은 에디터별 로컬 설정 폴더도 규칙 문서 구조의 일부로 취급하지 않는다.
+- 인접 API 서버 저장소 `D:\project-j-api`는 이 트리 안에 포함되지 않지만, Unity API 연동 작업에서는 함께 확인해야 하는 외부 결합 저장소다.
 
 ## 2. `.aiassistant` 구조
 
@@ -99,7 +100,7 @@ Assets
 
 ## 5. 런타임 코드 기준
 
-- `Assets/Scripts/CoreLoop`: `GameManager`, `DayCycleManager` 같은 전역 루프와 진입점
+- `Assets/Scripts/CoreLoop`: `GameManager`, `DayCycleManager`, `JongguApiSession` 같은 전역 루프와 원격 세션 진입점
 - `Assets/Scripts/Exploration`: 플레이어 이동, 상호작용, 채집, 포털, 지대, 런타임 보강
 - `Assets/Scripts/Management`: 경제, 인벤토리, 창고, 도구, 업그레이드
 - `Assets/Scripts/Restaurant`: 메뉴 선택과 영업 로직

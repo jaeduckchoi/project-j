@@ -28,6 +28,7 @@
 - UI 변경: `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - 씬/월드 변경: `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - 빌더/생성 자산 변경: `Docs/build/GAME_BUILD_GUIDE.md`
+- Unity API 연동: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 플레이 의도 확인: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 
 ## 4. 하네스 운영 원칙
@@ -35,6 +36,7 @@
 - 엔트리 파일은 백과사전이 아니라 맵이다.
 - 규칙은 한 문서만 정본으로 두고 나머지는 링크로 연결한다.
 - generated 결과물보다 생성 경로와 정본 관계를 먼저 수정한다.
+- Windows에서 큰 신규 파일을 만들 때는 한 번의 긴 패치 대신, 파일 뼈대를 먼저 만든 뒤 여러 번의 작은 패치로 나눠 추가한다.
 - 작업이 끝나면 관련 문서와 오래된 경로, 중복 규칙, 드리프트를 함께 정리한다.
 - Unity 실행이나 컴파일을 확인하지 못했다면 그 사실을 결과에 명시한다.
 

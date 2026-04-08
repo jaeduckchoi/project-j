@@ -206,6 +206,32 @@ namespace Management.Inventory
         }
 
         /// <summary>
+        /// 원격 스냅샷에서 받은 슬롯 수와 자원 목록으로 현재 인벤토리 상태를 덮어쓴다.
+        /// </summary>
+        public void ApplyRemoteState(int slotLimit, IEnumerable<InventoryEntry> entries)
+        {
+            initialized = true;
+            capacityLevel = ResolveCapacityLevel(slotLimit);
+            itemAmounts.Clear();
+
+            if (entries != null)
+            {
+                foreach (InventoryEntry entry in entries)
+                {
+                    if (entry == null || entry.resource == null || entry.amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    AddAmountInternal(entry.resource, entry.amount);
+                }
+            }
+
+            RefreshRuntimeItems();
+            RaiseChanged();
+        }
+
+        /// <summary>
         /// 사전 내부 수량만 갱신한다.
         /// </summary>
         private void AddAmountInternal(ResourceData resource, int amount)
@@ -217,6 +243,28 @@ namespace Management.Inventory
             }
 
             itemAmounts.Add(resource, amount);
+        }
+
+        /// <summary>
+        /// 슬롯 제한 값과 가장 잘 맞는 단계 인덱스를 찾는다.
+        /// </summary>
+        private int ResolveCapacityLevel(int slotLimit)
+        {
+            if (slotCapacities == null || slotCapacities.Count == 0)
+            {
+                return 0;
+            }
+
+            int normalizedLimit = Mathf.Max(1, slotLimit);
+            for (int index = 0; index < slotCapacities.Count; index++)
+            {
+                if (slotCapacities[index] >= normalizedLimit)
+                {
+                    return index;
+                }
+            }
+
+            return slotCapacities.Count - 1;
         }
 
         /// <summary>

@@ -46,6 +46,12 @@
 - `PrototypeSceneAudit`는 generated 씬 구조, UI 그룹, 레이아웃 기준의 정본 검증기다.
 - `GameplayAutomationAudit`는 day cycle, popup pause, portal 규칙 같은 회귀 위험 로직의 정본 검증기다.
 
+### 인접 API 계약
+
+- Unity API 연동 계약의 외부 정본은 `D:\project-j-api\docs\rules\API.md`, 관련 controller/dto, `src/main/resources/db/migration/V2__seed_catalog.sql`이다.
+- Unity 쪽 연결 구현의 정본은 `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`와 `Assets/Scripts/CoreLoop/Core/GameManager.cs`다.
+- 씬 이름, resource/recipe/tool/upgrade code는 Unity와 API가 같은 문자열 계약을 유지해야 한다.
+
 ## 3. 정본이 아닌 것
 
 - generated PNG, generated 씬 출력물, 런타임 출력은 정본이 아니다.
@@ -75,6 +81,13 @@
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`
 - `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 
+### Unity API 연동 변경
+
+- `Assets/Scripts/CoreLoop/Core/GameManager.cs`
+- `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`
+- 원격 스냅샷을 적용하는 각 매니저의 `ApplyRemoteState` 계열 메서드
+- `D:\project-j-api\docs\rules\API.md`, 관련 DTO/controller, `src/main/resources/db/migration/V2__seed_catalog.sql`
+
 ### 허브 월드 아트 변경
 
 - `Assets/Design` 원본
@@ -89,6 +102,6 @@
 2. 관리 대상 Canvas 값이라면 `ui-layout-overrides.asset` 기준인가?
 3. generated 경로나 design source 경로라면 `PrototypeGeneratedAssetSettings` 기준인가?
 4. 값이 실제로 missing recovery용인가, 아니면 기존 씬 값을 덮어쓰는가?
-5. 관련 감사 코드와 문서가 같은 기준을 설명하고 있는가?
+5. 인접 API 계약까지 포함해 관련 코드와 문서가 같은 기준을 설명하고 있는가?
 
 이 질문에 답하지 못하면 구현 전에 관련 코드와 문서를 다시 확인한다.

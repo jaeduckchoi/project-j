@@ -86,6 +86,16 @@ namespace Restaurant
                 return;
             }
 
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TryRunService(restaurantManager))
+            {
+                GameManager.Instance?.DayCycle?.ShowHintOnce(
+                    "first_service_start",
+                    "영업이 끝나면 정산 패널에서 결과를 확인하고 다음 날로 넘어갈 수 있습니다.");
+                return;
+            }
+
             restaurantManager.RunServiceForSelectedRecipe();
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_service_start",

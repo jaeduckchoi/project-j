@@ -170,6 +170,34 @@ namespace CoreLoop.Flow
         }
 
         /// <summary>
+        /// API 스냅샷으로 현재 날짜, 단계, 정산 요약을 동기화한다.
+        /// </summary>
+        public void ApplyRemoteState(int currentDay, string currentPhaseCode, string settlementSummary = null)
+        {
+            initialized = true;
+            CurrentDay = Mathf.Max(1, currentDay);
+            CurrentPhase = ParsePhaseCode(currentPhaseCode);
+            baseGuideText = GetDefaultGuide(CurrentPhase);
+            temporaryGuideText = string.Empty;
+            temporaryGuideExpireTime = 0f;
+
+            if (!string.IsNullOrWhiteSpace(settlementSummary))
+            {
+                LastSettlementSummary = settlementSummary;
+            }
+            else if (CurrentPhase == DayPhase.Settlement)
+            {
+                LastSettlementSummary = "결과를 확인하고 다음 날로 넘어가세요.";
+            }
+            else if (CurrentPhase == DayPhase.MorningExplore)
+            {
+                LastSettlementSummary = "새로운 하루가 시작되었습니다.";
+            }
+
+            RaiseStateChanged();
+        }
+
+        /// <summary>
         /// 일정 시간 동안만 보이는 임시 안내 문구를 설정합니다.
         /// </summary>
         public void ShowTemporaryGuide(string guideText, float duration = -1f)
@@ -256,6 +284,17 @@ namespace CoreLoop.Flow
                 "AbandonedMine" => "폐광산은 어두운 지역입니다. 랜턴 준비 여부와 귀환 동선을 먼저 확인하세요.",
                 "WindHill" => "바람 언덕은 강풍 주기에 맞춰 움직여야 안전합니다. 바람이 멎는 순간을 노리세요.",
                 _ => string.Empty
+            };
+        }
+
+        private static DayPhase ParsePhaseCode(string phaseCode)
+        {
+            return phaseCode switch
+            {
+                "morning_explore" => DayPhase.MorningExplore,
+                "afternoon_service" => DayPhase.AfternoonService,
+                "settlement" => DayPhase.Settlement,
+                _ => DayPhase.MorningExplore
             };
         }
 

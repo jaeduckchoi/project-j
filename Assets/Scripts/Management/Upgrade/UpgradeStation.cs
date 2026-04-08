@@ -74,6 +74,13 @@ namespace Management.Upgrade
                 return;
             }
 
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TryPerformPreferredUpgrade(currentUpgradeManager))
+            {
+                return;
+            }
+
             bool upgraded = currentUpgradeManager.TryPerformPreferredUpgrade(out UpgradeWorkbenchAction action, out ToolType unlockedToolType);
             if (!upgraded)
             {

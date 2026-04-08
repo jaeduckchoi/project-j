@@ -27,6 +27,7 @@
 - UI 변경: `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - 씬 변경: `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - 빌더와 generated 자산 변경: `Docs/build/GAME_BUILD_GUIDE.md`
+- Unity API 연동: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 게임 의도 확인: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 
 ## 3. 전역 불변 규칙
@@ -37,6 +38,8 @@
 - 지원 씬에 저장된 월드 직렬화 값은 정본이다.
 - 런타임 보강 코드는 누락된 오브젝트, 누락된 컴포넌트, 끊어진 참조만 보충하고 기존 씬 저장값은 덮어쓰지 않는다.
 - UI 변경은 `UIManager`, `JongguMinimalPrototypeBuilder`, `ui-layout-overrides.asset` 기준을 함께 확인한다.
+- `D:\project-j-api`와 맞물리는 scene/resource/recipe/tool/upgrade code를 바꾸면 API 계약, Unity 코드, 관련 문서를 같은 변경에서 함께 맞춘다.
+- Windows 환경에서 큰 신규 파일을 만들 때는 한 번의 대형 패치로 통째로 추가하지 말고, 파일 뼈대를 먼저 만든 뒤 여러 번의 작은 `apply_patch` 업데이트로 나눠 작성한다.
 - 하이어라키 규칙이나 빌더 관리 오브젝트 이름을 바꾸면 관련 감사 코드와 문서를 함께 갱신한다.
 - 문서와 코드가 어긋나는 상태를 남기지 않는다. 동작을 바꾸면 같은 변경 안에서 관련 문서를 함께 갱신한다.
 

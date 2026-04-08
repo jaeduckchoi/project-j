@@ -254,6 +254,29 @@ namespace Restaurant
         }
 
         /// <summary>
+        /// API 스냅샷 기준으로 선택 메뉴와 영업 가능 인분을 다시 맞춘다.
+        /// </summary>
+        public void ApplyRemoteState(string selectedRecipeCode, int capacity, string serviceResult = null)
+        {
+            EnsureRecipeList();
+
+            serviceCapacity = Mathf.Max(1, capacity);
+            SelectedRecipe = FindRecipeByCode(selectedRecipeCode);
+            selectedRecipeIndex = SelectedRecipe != null ? Mathf.Max(availableRecipes.IndexOf(SelectedRecipe), 0) : 0;
+
+            if (!string.IsNullOrWhiteSpace(serviceResult))
+            {
+                LastServiceResult = serviceResult;
+            }
+            else if (SelectedRecipe == null)
+            {
+                LastServiceResult = "메뉴를 고르고 영업을 시작하세요.";
+            }
+
+            BroadcastState();
+        }
+
+        /// <summary>
         /// 현재 인덱스와 레시피 목록을 기준으로 선택 메뉴를 다시 맞춥니다.
         /// </summary>
         private void RefreshSelectedRecipe()
@@ -269,6 +292,30 @@ namespace Restaurant
 
             selectedRecipeIndex = Mathf.Clamp(selectedRecipeIndex, 0, availableRecipes.Count - 1);
             SelectedRecipe = availableRecipes[selectedRecipeIndex];
+        }
+
+        private RecipeData FindRecipeByCode(string recipeCode)
+        {
+            if (string.IsNullOrWhiteSpace(recipeCode))
+            {
+                return null;
+            }
+
+            foreach (RecipeData recipe in availableRecipes)
+            {
+                if (recipe == null)
+                {
+                    continue;
+                }
+
+                if (string.Equals(recipe.RecipeId, recipeCode, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(recipe.name, recipeCode, StringComparison.OrdinalIgnoreCase))
+                {
+                    return recipe;
+                }
+            }
+
+            return GeneratedGameDataLocator.FindGeneratedRecipe(recipeCode);
         }
 
         /// <summary>

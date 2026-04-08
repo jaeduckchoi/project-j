@@ -71,6 +71,41 @@ namespace Exploration.Gathering
         }
 
         /// <summary>
+        /// API 연동 시에도 동일한 채집 수량 규칙을 재사용할 수 있도록 시도 정보를 돌려준다.
+        /// </summary>
+        public bool TryCreateGatherAttempt(out ResourceData resource, out int amount)
+        {
+            resource = resourceData;
+            amount = 0;
+
+            if (!isAvailable || resourceData == null)
+            {
+                return false;
+            }
+
+            amount = Random.Range(minAmount, maxAmount + 1);
+            return amount > 0;
+        }
+
+        /// <summary>
+        /// 원격 채집 성공 후에도 로컬과 동일하게 오브젝트를 비활성화하고 리스폰 규칙을 적용한다.
+        /// </summary>
+        public void ApplyRemoteGatherSuccess()
+        {
+            SetAvailable(false);
+
+            if (respawnAfterGathering)
+            {
+                if (respawnRoutine != null)
+                {
+                    StopCoroutine(respawnRoutine);
+                }
+
+                respawnRoutine = StartCoroutine(RespawnRoutine());
+            }
+        }
+
+        /// <summary>
         /// Inspector 에서 최소 / 최대 수량이 뒤집히지 않도록 보정합니다.
         /// </summary>
         private void OnValidate()
@@ -98,6 +133,13 @@ namespace Exploration.Gathering
             if (!string.IsNullOrWhiteSpace(blockingReason))
             {
                 GameManager.Instance?.DayCycle?.ShowTemporaryGuide(blockingReason);
+                return;
+            }
+
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TryGather(this))
+            {
                 return;
             }
 

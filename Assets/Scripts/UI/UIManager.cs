@@ -995,6 +995,13 @@ namespace UI
         /// </summary>
         private void HandleSkipExplorationClicked()
         {
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TrySkipExploration())
+            {
+                return;
+            }
+
             cachedDayCycle?.SkipExploration();
             RefreshAll();
         }
@@ -1004,6 +1011,13 @@ namespace UI
         /// </summary>
         private void HandleSkipServiceClicked()
         {
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TrySkipService(cachedRestaurant))
+            {
+                return;
+            }
+
             if (cachedRestaurant != null)
             {
                 cachedRestaurant.SkipService();
@@ -1021,6 +1035,13 @@ namespace UI
         /// </summary>
         private void HandleNextDayClicked()
         {
+            if (GameManager.Instance != null
+                && GameManager.Instance.RemoteSession != null
+                && GameManager.Instance.RemoteSession.TryAdvanceToNextDay())
+            {
+                return;
+            }
+
             cachedDayCycle?.AdvanceToNextDay();
             RefreshAll();
         }
@@ -1136,7 +1157,16 @@ namespace UI
 
             if (ReadPopupActionPressed(KeyCode.W, keyboard => keyboard.wKey))
             {
-                changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
+                if (GameManager.Instance != null
+                    && GameManager.Instance.RemoteSession != null
+                    && GameManager.Instance.RemoteSession.TryStoreSelected(cachedStorage, inventory))
+                {
+                    changed = true;
+                }
+                else
+                {
+                    changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
+                }
             }
 
             if (ReadPopupActionPressed(KeyCode.A, keyboard => keyboard.aKey))
@@ -1149,7 +1179,16 @@ namespace UI
 
             if (ReadPopupActionPressed(KeyCode.S, keyboard => keyboard.sKey))
             {
-                changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
+                if (GameManager.Instance != null
+                    && GameManager.Instance.RemoteSession != null
+                    && GameManager.Instance.RemoteSession.TryWithdrawSelected(cachedStorage, inventory))
+                {
+                    changed = true;
+                }
+                else
+                {
+                    changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
+                }
             }
 
             if (changed)
@@ -3516,6 +3555,13 @@ namespace UI
                     {
                         if (cachedRestaurant != null)
                         {
+                            if (GameManager.Instance != null
+                                && GameManager.Instance.RemoteSession != null
+                                && GameManager.Instance.RemoteSession.TrySelectRecipe(cachedRestaurant, recipeIndex))
+                            {
+                                return;
+                            }
+
                             cachedRestaurant.SelectRecipeByIndex(recipeIndex);
                         }
                     }));
