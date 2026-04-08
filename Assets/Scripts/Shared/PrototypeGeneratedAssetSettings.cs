@@ -165,6 +165,7 @@ namespace Shared
         public string UiMessageBoxSpriteRoot => CombineAssetPath(UiSpriteRoot, "MessageBoxes");
         public string UiPanelSpriteRoot => CombineAssetPath(UiSpriteRoot, "Panels");
         public string WorldSpriteRoot => CombineAssetPath(SpriteRoot, "World");
+        public string RecipeSpriteRoot => CombineAssetPath(SpriteRoot, "Recipes");
         public string HubSpriteRoot => CombineAssetPath(SpriteRoot, "Hub");
         public string FontRoot => CombineAssetPath(ResourcesGeneratedRoot, "Fonts");
 
@@ -213,6 +214,7 @@ namespace Shared
         public string HubTodayMenuItem1ResourcePath => ToResourcesLoadPath(HubTodayMenuItem1SpritePath);
         public string HubTodayMenuItem2ResourcePath => ToResourcesLoadPath(HubTodayMenuItem2SpritePath);
         public string HubTodayMenuItem3ResourcePath => ToResourcesLoadPath(HubTodayMenuItem3SpritePath);
+        public string RecipeSpriteResourceRoot => ToResourcesLoadPath(RecipeSpriteRoot);
         public string GeneratedUiResourceRoot => ToResourcesLoadPath(UiSpriteRoot);
         public string GeneratedUiButtonResourceRoot => ToResourcesLoadPath(UiButtonSpriteRoot);
         public string GeneratedUiMessageBoxResourceRoot => ToResourcesLoadPath(UiMessageBoxSpriteRoot);

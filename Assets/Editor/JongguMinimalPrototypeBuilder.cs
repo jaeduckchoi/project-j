@@ -48,6 +48,7 @@ namespace Editor
         private static string UiMessageBoxSpriteRoot => AssetSettings.UiMessageBoxSpriteRoot;
         private static string UiPanelSpriteRoot => AssetSettings.UiPanelSpriteRoot;
         private static string WorldSpriteRoot => AssetSettings.WorldSpriteRoot;
+        private static string RecipeSpriteRoot => AssetSettings.RecipeSpriteRoot;
         private static string SceneRoot => AssetSettings.SceneRoot;
         private static string SharedExplorationHudSourceScene => AssetSettings.SharedExplorationHudSourceScene;
         private static string FontRoot => AssetSettings.FontRoot;
@@ -368,8 +369,8 @@ namespace Editor
                 BuildHubCollisionLayout();
 
                 CreateSpawnPoint("HubEntry", HubRoomLayout.HubEntryPosition, "HubEntry");
-                CreatePortal("GoToBeach", HubRoomLayout.GoToBeachPosition, sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
-                CreatePortal("GoToDeepForest", HubRoomLayout.GoToDeepForestPosition, sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
+                CreatePortal("GoToBeach", HubRoomLayout.GoToBeachPosition, sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로", ToolType.None, 0, "", HubRoomLayout.PortalScale);
+                CreatePortal("GoToDeepForest", HubRoomLayout.GoToDeepForestPosition, sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲", ToolType.None, 0, "", HubRoomLayout.PortalScale);
                 CreatePortal(
                     "GoToAbandonedMine",
                     HubRoomLayout.GoToAbandonedMinePosition,
@@ -378,12 +379,11 @@ namespace Editor
                     "MineEntry",
                     "폐광산으로 이동",
                     "폐광산",
-                    true,
                     ToolType.Lantern,
                     0,
                     "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.",
                     HubRoomLayout.PortalScale);
-                CreatePortal("GoToWindHill", HubRoomLayout.GoToWindHillPosition, sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕", true, ToolType.None, 0, "", HubRoomLayout.PortalScale);
+                CreatePortal("GoToWindHill", HubRoomLayout.GoToWindHillPosition, sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕", ToolType.None, 0, "", HubRoomLayout.PortalScale);
                 CreateFeaturePad("BeachPortalPad", HubRoomLayout.BeachPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.98f, 0.83f, 0.51f));
                 CreateFeaturePad("ForestPortalPad", HubRoomLayout.ForestPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.70f, 0.86f, 0.44f));
                 CreateFeaturePad("MinePortalPad", HubRoomLayout.MinePortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.74f, 0.74f, 0.78f));
@@ -635,7 +635,6 @@ namespace Editor
                 "WindHillShortcutEntry",
                 "정상 지름길",
                 "정상 지름길",
-                true,
                 ToolType.None,
                 6,
                 "평판 6을 모으면 바람 언덕의 지름길을 이용할 수 있습니다.");
@@ -1249,7 +1248,6 @@ namespace Editor
             string targetSpawnPointId,
             string promptLabel,
             string worldLabel = null,
-            bool requireMorningExplore = true,
             ToolType requiredToolType = ToolType.None,
             int requiredReputation = 0,
             string lockedGuideText = "",
@@ -1267,7 +1265,6 @@ namespace Editor
             so.FindProperty("targetSceneName").stringValue = targetSceneName;
             so.FindProperty("targetSpawnPointId").stringValue = targetSpawnPointId;
             so.FindProperty("promptLabel").stringValue = promptLabel;
-            so.FindProperty("requireMorningExplore").boolValue = requireMorningExplore;
             so.FindProperty("requiredToolType").enumValueIndex = (int)requiredToolType;
             so.FindProperty("requiredReputation").intValue = requiredReputation;
             so.FindProperty("lockedGuideText").stringValue = lockedGuideText;

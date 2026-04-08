@@ -117,6 +117,8 @@ namespace Editor
 
         private static SpriteLibrary CreateSprites()
         {
+            CreateDefaultRecipeSprites();
+
             return new SpriteLibrary
             {
                 PlayerFront = CreatePlayerSprite(PlayerSpriteRoot + "/player-front.png", "image (2).png"),
@@ -168,6 +170,13 @@ namespace Editor
                 WindHerb = CreateColorSprite(GatherSpriteRoot + "/gather-wind-herb.png", new Color(0.79f, 0.93f, 0.61f)),
                 Floor = CreateColorSprite(WorldSpriteRoot + "/world-floor.png", Color.white)
             };
+        }
+
+        private static void CreateDefaultRecipeSprites()
+        {
+            CreateColorSprite(RecipeSpriteRoot + "/food_001.png", new Color(0.91f, 0.42f, 0.26f));
+            CreateColorSprite(RecipeSpriteRoot + "/food_041.png", new Color(0.98f, 0.70f, 0.30f));
+            CreateColorSprite(RecipeSpriteRoot + "/food_069.png", new Color(0.38f, 0.72f, 0.56f));
         }
 
         private static Sprite EnsureCopiedSpriteAsset(

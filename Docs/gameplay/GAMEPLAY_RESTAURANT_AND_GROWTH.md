@@ -2,22 +2,17 @@
 
 ## 1. 허브의 역할
 
-허브는 영업, 정리, 성장, 다음 탐험 결정이 모두 이뤄지는 공간이다.
+허브는 영업, 정리, 성장, 탐험 지역 결정이 모두 이뤄지는 공간이다.
 플레이어는 허브를 직접 걸어 다니며 메뉴를 고르고, 창고를 정리하고, 업그레이드를 진행하고, 새로운 지역으로 이동한다.
 
 ## 2. 식당 영업
 
 ### 메뉴 데이터
 
-- 메뉴는 `RecipeData`로 정의된다.
-- 각 레시피는 표시 이름, 설명, 필요 재료, 판매가, 평판 변화를 가진다.
-- 현재 등록된 메뉴 :
-  - `Sushi Set`
-  - `Seafood Soup`
-  - `Herb Fish Soup`
-  - `Forest Basket`
-  - `Glow Moss Stew`
-  - `Wind Herb Salad`
+- 서버 bootstrap의 `recipes`가 메뉴 정본이다.
+- 각 레시피는 `recipeId`, 표시 이름, 공급처, 난이도, 조리법, 필요 재료, 판매가, 메모를 가진다.
+- `recipeId`는 서버 응답 문자열을 그대로 사용하며 행 순서나 숫자로 재계산하지 않는다.
+- 필요 재료는 `ingredientId`, `ingredientName`, `quantity` 구조를 사용한다.
 
 ### 영업 흐름
 
@@ -36,9 +31,10 @@
 
 ### 영업 규칙
 
-- 기본 일일 영업 상한 : `serviceCapacity = 3`
+- 기본 영업 상한 : `serviceCapacity = 3`
 - 보유 재료와 상한 중 작은 값이 실제 조리 수량이 된다.
-- 결과 문자열은 정산 단계로 전달된다.
+- 결과 문자열은 영업 결과 패널과 안내 텍스트에 바로 반영된다.
+- 영업과 메뉴 선택은 phase 제한 없이 가능하지만 UX상 Hub에서만 실행한다.
 
 ## 3. 인벤토리
 
@@ -100,4 +96,5 @@
 - `Assets/Scripts/Management/Upgrade/UpgradeManager.cs`
 - `Assets/Scripts/Management/Economy/EconomyManager.cs`
 - `Assets/Scripts/UI/UIManager.cs`
-- 레시피 데이터 : `Assets/Resources/Generated/GameData/Recipes/recipe-*.asset`
+- 레시피 데이터 : 서버 bootstrap `recipes`
+- 재료 데이터 : 서버 bootstrap `ingredients`

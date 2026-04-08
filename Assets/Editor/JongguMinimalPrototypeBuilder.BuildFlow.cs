@@ -144,6 +144,7 @@ namespace Editor
             EnsureFolder(GameDataRoot, "Recipes");
             EnsureFolder(GeneratedRoot, "Sprites");
             EnsureFolder(SpriteRoot, "UI");
+            EnsureFolder(SpriteRoot, "Recipes");
             EnsureFolder(UiSpriteRoot, "Buttons");
             EnsureFolder(UiSpriteRoot, "MessageBoxes");
             EnsureFolder(UiSpriteRoot, "Panels");
@@ -758,12 +759,8 @@ namespace Editor
             so.FindProperty("upgradeText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "UpgradeText");
             so.FindProperty("goldText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "GoldText");
             so.FindProperty("selectedRecipeText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "SelectedRecipeText");
-            so.FindProperty("dayPhaseText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "DayPhaseText");
             so.FindProperty("guideText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "GuideText");
             so.FindProperty("resultText").objectReferenceValue = FindNamedComponent<TextMeshProUGUI>(canvasObject.transform, "RestaurantResultText");
-            so.FindProperty("skipExplorationButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "SkipExplorationButton");
-            so.FindProperty("skipServiceButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "SkipServiceButton");
-            so.FindProperty("nextDayButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "NextDayButton");
             so.FindProperty("recipePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "RecipePanelButton");
             so.FindProperty("upgradePanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "UpgradePanelButton");
             so.FindProperty("materialPanelButton").objectReferenceValue = FindNamedComponent<Button>(canvasObject.transform, "MaterialPanelButton");

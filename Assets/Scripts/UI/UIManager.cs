@@ -80,7 +80,6 @@ namespace UI
 		private static IEnumerable<string> EnumerateHudCanvasObjectNames()
 		{
 			yield return "TopLeftPanel";
-			yield return "PhaseBadge";
             yield return "InteractionPromptBackdrop";
 			yield return "GuideBackdrop";
 			yield return "ResultBackdrop";
@@ -88,15 +87,11 @@ namespace UI
             yield return "InteractionPromptText";
             yield return "GuideText";
             yield return "RestaurantResultText";
-            yield return "DayPhaseText";
             yield return "GuideHelpButton";
             yield return HudPanelButtonGroupObjectName;
             yield return "ActionDock";
             yield return "ActionAccent";
             yield return "ActionCaption";
-            yield return "SkipExplorationButton";
-            yield return "SkipServiceButton";
-            yield return "NextDayButton";
             yield return "RecipePanelButton";
             yield return "UpgradePanelButton";
             yield return "MaterialPanelButton";
@@ -117,14 +112,10 @@ namespace UI
         [SerializeField] private TextMeshProUGUI upgradeText;
         [SerializeField] private TextMeshProUGUI goldText;
         [SerializeField] private TextMeshProUGUI selectedRecipeText;
-        [SerializeField] private TextMeshProUGUI dayPhaseText;
         [SerializeField] private TextMeshProUGUI guideText;
         [SerializeField] private TextMeshProUGUI resultText;
         [SerializeField] private TMP_FontAsset bodyFontAsset;
         [SerializeField] private TMP_FontAsset headingFontAsset;
-        [SerializeField] private Button skipExplorationButton;
-        [SerializeField] private Button skipServiceButton;
-        [SerializeField] private Button nextDayButton;
         [SerializeField] private Button recipePanelButton;
         [SerializeField] private Button upgradePanelButton;
         [SerializeField] private Button materialPanelButton;
@@ -330,11 +321,6 @@ namespace UI
                 goldText.text = "골드 120 · 평판 4";
             }
 
-            if (dayPhaseText != null && string.IsNullOrWhiteSpace(dayPhaseText.text))
-            {
-                dayPhaseText.text = "3일차 · 탐험 준비";
-            }
-
             if (interactionPromptText != null && string.IsNullOrWhiteSpace(interactionPromptText.text))
             {
                 interactionPromptText.text = defaultPromptText;
@@ -357,7 +343,7 @@ namespace UI
             if (resultText != null)
             {
                 bool showResultPreview = !IsHubScene() && activeHubPanel == HubPopupPanel.None;
-                resultText.text = showResultPreview ? "탐험 결과와 정산 문구가 이 위치에 표시됩니다." : string.Empty;
+                resultText.text = showResultPreview ? "탐험 및 영업 결과 문구가 이 위치에 표시됩니다." : string.Empty;
                 resultText.gameObject.SetActive(showResultPreview);
                 SetNamedObjectActive("ResultBackdrop", showResultPreview);
             }
@@ -764,45 +750,6 @@ namespace UI
 
         private void ResolveOptionalUiReferences()
         {
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("SkipExplorationButton"))
-            {
-                skipExplorationButton = null;
-            }
-            else if (skipExplorationButton == null)
-            {
-                Transform skipExplorationTransform = FindNamedUiTransform("SkipExplorationButton");
-                if (skipExplorationTransform != null)
-                {
-                    skipExplorationButton = skipExplorationTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("SkipServiceButton"))
-            {
-                skipServiceButton = null;
-            }
-            else if (skipServiceButton == null)
-            {
-                Transform skipServiceTransform = FindNamedUiTransform("SkipServiceButton");
-                if (skipServiceTransform != null)
-                {
-                    skipServiceButton = skipServiceTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("NextDayButton"))
-            {
-                nextDayButton = null;
-            }
-            else if (nextDayButton == null)
-            {
-                Transform nextDayTransform = FindNamedUiTransform("NextDayButton");
-                if (nextDayTransform != null)
-                {
-                    nextDayButton = nextDayTransform.GetComponent<Button>();
-                }
-            }
-
             if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("RecipePanelButton"))
             {
                 recipePanelButton = null;
@@ -896,27 +843,12 @@ namespace UI
         }
 
         /// <summary>
-        /// 스킵 버튼과 허브 팝업 버튼에 현재 씬 기준 클릭 리스너를 연결합니다.
+        /// 허브 팝업 버튼에 현재 씬 기준 클릭 리스너를 연결합니다.
         /// </summary>
         private void BindButtons()
         {
             UnbindButtons();
             ResolveOptionalUiReferences();
-
-            if (skipExplorationButton != null)
-            {
-                skipExplorationButton.onClick.AddListener(HandleSkipExplorationClicked);
-            }
-
-            if (skipServiceButton != null)
-            {
-                skipServiceButton.onClick.AddListener(HandleSkipServiceClicked);
-            }
-
-            if (nextDayButton != null)
-            {
-                nextDayButton.onClick.AddListener(HandleNextDayClicked);
-            }
 
             if (recipePanelButton != null)
             {
@@ -949,21 +881,6 @@ namespace UI
         /// </summary>
         private void UnbindButtons()
         {
-            if (skipExplorationButton != null)
-            {
-                skipExplorationButton.onClick.RemoveListener(HandleSkipExplorationClicked);
-            }
-
-            if (skipServiceButton != null)
-            {
-                skipServiceButton.onClick.RemoveListener(HandleSkipServiceClicked);
-            }
-
-            if (nextDayButton != null)
-            {
-                nextDayButton.onClick.RemoveListener(HandleNextDayClicked);
-            }
-
             if (recipePanelButton != null)
             {
                 recipePanelButton.onClick.RemoveListener(HandleRecipePanelClicked);
@@ -988,62 +905,6 @@ namespace UI
             {
                 guideHelpButton.onClick.RemoveListener(HandleGuideHelpButtonClicked);
             }
-        }
-
-        /// <summary>
-        /// 오전 탐험 단계를 즉시 넘기고 HUD를 다시 맞춥니다.
-        /// </summary>
-        private void HandleSkipExplorationClicked()
-        {
-            if (GameManager.Instance != null
-                && GameManager.Instance.RemoteSession != null
-                && GameManager.Instance.RemoteSession.TrySkipExploration())
-            {
-                return;
-            }
-
-            cachedDayCycle?.SkipExploration();
-            RefreshAll();
-        }
-
-        /// <summary>
-        /// 허브 영업 단계를 즉시 넘기고, 식당 매니저가 있으면 그 경로를 우선 사용합니다.
-        /// </summary>
-        private void HandleSkipServiceClicked()
-        {
-            if (GameManager.Instance != null
-                && GameManager.Instance.RemoteSession != null
-                && GameManager.Instance.RemoteSession.TrySkipService(cachedRestaurant))
-            {
-                return;
-            }
-
-            if (cachedRestaurant != null)
-            {
-                cachedRestaurant.SkipService();
-            }
-            else
-            {
-                cachedDayCycle?.SkipService();
-            }
-
-            RefreshAll();
-        }
-
-        /// <summary>
-        /// 정산 이후 다음 날로 넘기고 관련 HUD를 다시 갱신합니다.
-        /// </summary>
-        private void HandleNextDayClicked()
-        {
-            if (GameManager.Instance != null
-                && GameManager.Instance.RemoteSession != null
-                && GameManager.Instance.RemoteSession.TryAdvanceToNextDay())
-            {
-                return;
-            }
-
-            cachedDayCycle?.AdvanceToNextDay();
-            RefreshAll();
         }
 
         private void HandleRecipePanelClicked()
@@ -1470,9 +1331,8 @@ namespace UI
         {
             return objectName switch
             {
-                "TopLeftPanel" or "PhaseBadge" or "GoldText" or "DayPhaseText" => HudStatusGroupName,
+                "TopLeftPanel" or "GoldText" => HudStatusGroupName,
                 "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
-                "SkipExplorationButton" or "SkipServiceButton" or "NextDayButton" => HudBottomGroupName,
                 "RecipePanelButton" or "UpgradePanelButton" or "MaterialPanelButton" => HudPanelButtonGroupObjectName,
                 "GuideBackdrop" or "GuideText" or "ResultBackdrop" or "RestaurantResultText" or "GuideHelpButton" => HudOverlayGroupName,
                 _ => null
@@ -2025,7 +1885,7 @@ namespace UI
         /// <summary>
         /// 허브와 탐험 씬이 공통으로 쓰는 HUD 바탕과 캡션을 생성합니다.
         /// </summary>
-        private void EnsureCommonHudChrome(
+		private void EnsureCommonHudChrome(
             bool isHubScene,
             TMP_FontAsset preferredFont,
             Color parchment,
@@ -2033,7 +1893,6 @@ namespace UI
             Color glass)
         {
 			EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
-			EnsureUiBackdrop("PhaseBadge", PrototypeUILayout.PhaseBadge, glass);
             EnsureUiBackdrop("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene), Color.white);
 			EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
 			EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
@@ -2830,7 +2689,6 @@ namespace UI
             bool isHubScene = IsHubScene();
 
 			ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-			ApplyNamedRectLayout("PhaseBadge", PrototypeUILayout.PhaseBadge);
             ApplyNamedRectLayout("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
 			ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
 			ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
@@ -2845,27 +2703,24 @@ namespace UI
 
             SetNamedObjectActive(HudPanelButtonGroupObjectName, isHubScene);
             SetNamedObjectActive("PopupOverlay", false);
-            SetNamedObjectActive("ActionDock", isHubScene);
-            SetNamedObjectActive("ActionAccent", isHubScene);
-            SetNamedObjectActive("ActionCaption", isHubScene);
+            SetNamedObjectActive("ActionDock", false);
+            SetNamedObjectActive("ActionAccent", false);
+            SetNamedObjectActive("ActionCaption", false);
 
             ApplyRectLayout(goldText != null ? goldText.rectTransform : null, PrototypeUILayout.GoldText);
-            ApplyRectLayout(dayPhaseText != null ? dayPhaseText.rectTransform : null, PrototypeUILayout.DayPhaseText);
             ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, PrototypeUILayout.PromptText(isHubScene));
             ApplyRectLayout(guideText != null ? guideText.rectTransform : null, PrototypeUILayout.GuideText(isHubScene));
             ApplyRectLayout(resultText != null ? resultText.rectTransform : null, PrototypeUILayout.ResultText(isHubScene));
             ApplyScreenTextStyle(goldText, headingFont, 20f, textColor, TextAlignmentOptions.TopLeft, false, 0f, new Vector4(6f, 2f, 6f, 2f), true);
-            ApplyScreenTextStyle(dayPhaseText, headingFont, 20f, textColor, TextAlignmentOptions.Center, false, 0f, new Vector4(8f, 2f, 8f, 2f), true);
             ApplyScreenTextStyle(interactionPromptText, headingFont, 21f, textColor, TextAlignmentOptions.Center, false, 0f, new Vector4(12f, 8f, 12f, 8f), true);
             ApplyScreenTextStyle(guideText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, !isHubScene, 4f, new Vector4(14f, 8f, 14f, 10f), false);
             ApplyScreenTextStyle(resultText, bodyFont, 18f, textColor, TextAlignmentOptions.Center, true, 4f, new Vector4(14f, 10f, 14f, 10f), false);
             ApplySceneTextOverride(goldText);
-            ApplySceneTextOverride(dayPhaseText);
             ApplySceneTextOverride(interactionPromptText);
             ApplySceneTextOverride(guideText);
             ApplySceneTextOverride(resultText);
 
-            ApplyHubActionButtonsLayout(isHubScene, headingFont, oceanAccent, coralAccent, goldAccent);
+            HideLegacyDayRoutineObjects();
 
             if (isHubScene)
             {
@@ -2879,28 +2734,6 @@ namespace UI
             SetButtonGameObjectActive(recipePanelButton, isHubScene);
             SetButtonGameObjectActive(upgradePanelButton, isHubScene);
             SetButtonGameObjectActive(materialPanelButton, isHubScene);
-        }
-
-        /// <summary>
-        /// 허브 우측 진행 버튼은 같은 색상/위치 규칙을 쓰므로 한 메서드에서 정리합니다.
-        /// </summary>
-        private void ApplyHubActionButtonsLayout(
-            bool isHubScene,
-            TMP_FontAsset headingFont,
-            Color oceanAccent,
-            Color coralAccent,
-            Color goldAccent)
-        {
-            ApplyButtonLayout(skipExplorationButton, PrototypeUILayout.HubSkipExplorationButton);
-            ApplyButtonLayout(skipServiceButton, PrototypeUILayout.HubSkipServiceButton);
-            ApplyButtonLayout(nextDayButton, PrototypeUILayout.HubNextDayButton);
-            ApplyButtonPresentation(skipExplorationButton, headingFont, oceanAccent);
-            ApplyButtonPresentation(skipServiceButton, headingFont, coralAccent);
-            ApplyButtonPresentation(nextDayButton, headingFont, goldAccent);
-
-            SetButtonGameObjectActive(skipExplorationButton, isHubScene);
-            SetButtonGameObjectActive(skipServiceButton, isHubScene);
-            SetButtonGameObjectActive(nextDayButton, isHubScene);
         }
 
         /// <summary>
@@ -3450,20 +3283,15 @@ namespace UI
         private void SetHubHudVisible(bool isVisible)
         {
             SetNamedObjectActive("TopLeftPanel", isVisible);
-            SetNamedObjectActive("PhaseBadge", isVisible && dayPhaseText != null && !string.IsNullOrWhiteSpace(dayPhaseText.text));
 			SetNamedObjectActive(HudPanelButtonGroupObjectName, isVisible);
-			SetNamedObjectActive("ActionDock", isVisible);
-			SetNamedObjectActive("ActionAccent", isVisible);
-			SetNamedObjectActive("ActionCaption", isVisible);
+			SetNamedObjectActive("ActionDock", false);
+			SetNamedObjectActive("ActionAccent", false);
+			SetNamedObjectActive("ActionCaption", false);
+            HideLegacyDayRoutineObjects();
 
 			if (goldText != null)
             {
                 goldText.gameObject.SetActive(isVisible);
-            }
-
-            if (dayPhaseText != null)
-            {
-                dayPhaseText.gameObject.SetActive(isVisible && !string.IsNullOrWhiteSpace(dayPhaseText.text));
             }
 
             if (interactionPromptText != null)
@@ -3805,7 +3633,18 @@ namespace UI
 
         private Sprite ResolveRecipePopupIcon(RecipeData recipe)
         {
-            if (recipe == null || recipe.Ingredients == null)
+            if (recipe == null)
+            {
+                return null;
+            }
+
+            Sprite recipeSprite = LoadRecipeSpriteById(recipe.RecipeId);
+            if (recipeSprite != null)
+            {
+                return recipeSprite;
+            }
+
+            if (recipe.Ingredients == null)
             {
                 return null;
             }
@@ -3820,6 +3659,18 @@ namespace UI
             }
 
             return null;
+        }
+
+        private static Sprite LoadRecipeSpriteById(string recipeId)
+        {
+            if (string.IsNullOrWhiteSpace(recipeId))
+            {
+                return null;
+            }
+
+            string normalizedRecipeId = recipeId.Trim();
+            return Resources.Load<Sprite>($"Generated/Sprites/Recipes/{normalizedRecipeId}")
+                ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{normalizedRecipeId}");
         }
 
         private static Sprite ResolveUpgradePopupIcon(ResourceData requiredResource)
@@ -3855,22 +3706,55 @@ namespace UI
             }
 
             builder.AppendLine($"- 판매가: {recipe.SellPrice}");
-            builder.AppendLine($"- 평판: +{Mathf.Max(0, recipe.ReputationDelta)}");
+            if (!string.IsNullOrWhiteSpace(recipe.SupplySource))
+            {
+                builder.AppendLine($"- 공급처: {recipe.SupplySource}");
+            }
+
+            if (recipe.Difficulty > 0)
+            {
+                builder.AppendLine($"- 난이도: {recipe.Difficulty}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(recipe.CookingMethod))
+            {
+                builder.AppendLine($"- 조리법: {recipe.CookingMethod}");
+            }
+
             builder.AppendLine($"- 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
             builder.AppendLine();
             builder.AppendLine("- 필요 재료");
 
             foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
+                if (ingredient == null)
+                {
+                    continue;
+                }
+
+                string ingredientName = string.IsNullOrWhiteSpace(ingredient.IngredientName)
+                    ? ingredient.IngredientId
+                    : ingredient.IngredientName;
+                if (string.IsNullOrWhiteSpace(ingredientName))
+                {
+                    continue;
+                }
+
+                string catalogSummary = ingredient.BuildCatalogSummary();
+                string displayName = string.IsNullOrWhiteSpace(catalogSummary)
+                    ? ingredientName
+                    : $"{ingredientName} ({catalogSummary})";
+
                 if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
+                    builder.AppendLine($"  {displayName} x{ingredient.Quantity}");
                     continue;
                 }
 
                 int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
                     ? GameManager.Instance.Inventory.GetAmount(resource)
                     : 0;
-                builder.AppendLine($"  {resource.DisplayName} {ownedAmount}/{ingredientAmount}");
+                builder.AppendLine($"  {displayName} {ownedAmount}/{ingredientAmount}");
             }
 
             return builder.ToString().TrimEnd();
@@ -4144,16 +4028,8 @@ namespace UI
 
             string message = cachedDayCycle != null ? cachedDayCycle.CurrentGuideText : string.Empty;
 
-            if (cachedDayCycle != null
-                && cachedDayCycle.CurrentPhase == DayPhase.Settlement
-                && !string.IsNullOrWhiteSpace(cachedDayCycle.LastSettlementSummary))
-            {
-                message = cachedDayCycle.LastSettlementSummary;
-            }
-            else if (cachedDayCycle != null
-                     && cachedDayCycle.CurrentPhase == DayPhase.AfternoonService
-                     && cachedRestaurant != null
-                     && !string.IsNullOrWhiteSpace(cachedRestaurant.LastServiceResult))
+            if (cachedRestaurant != null
+                && !string.IsNullOrWhiteSpace(cachedRestaurant.LastServiceResult))
             {
                 message = cachedRestaurant.LastServiceResult;
             }
@@ -4381,6 +4257,29 @@ namespace UI
             {
                 target.gameObject.SetActive(isActive);
             }
+        }
+
+        private void SetNamedObjectActiveRaw(string objectName, bool isActive)
+        {
+            if (transform == null || string.IsNullOrWhiteSpace(objectName))
+            {
+                return;
+            }
+
+            Transform target = FindNamedUiTransform(objectName);
+            if (target != null)
+            {
+                target.gameObject.SetActive(isActive);
+            }
+        }
+
+        private void HideLegacyDayRoutineObjects()
+        {
+            SetNamedObjectActiveRaw("PhaseBadge", false);
+            SetNamedObjectActiveRaw("DayPhaseText", false);
+            SetNamedObjectActiveRaw("SkipExplorationButton", false);
+            SetNamedObjectActiveRaw("SkipServiceButton", false);
+            SetNamedObjectActiveRaw("NextDayButton", false);
         }
 
         /// <summary>
@@ -4658,24 +4557,11 @@ namespace UI
         }
 
         /// <summary>
-        /// 현재 날짜와 단계 문구, 단계별 버튼 노출 상태를 함께 맞춥니다.
+        /// 현재 안내 문구와 허브 패널 버튼 상태를 함께 맞춥니다.
         /// </summary>
         private void RefreshDayCycleState()
         {
-            if (dayPhaseText != null)
-            {
-                if (cachedDayCycle == null)
-                {
-                    dayPhaseText.text = string.Empty;
-                }
-                else
-                {
-                    dayPhaseText.text = $"{cachedDayCycle.CurrentDay}일차 · {DayCycleManager.GetPhaseDisplayName(cachedDayCycle.CurrentPhase)}";
-                }
-
-                SetNamedObjectActive("PhaseBadge", !string.IsNullOrWhiteSpace(dayPhaseText.text));
-            }
-
+            HideLegacyDayRoutineObjects();
             RefreshGuideText();
             RefreshRestaurantResultText(cachedRestaurant != null ? cachedRestaurant.LastServiceResult : string.Empty);
             RefreshButtonStates();
@@ -4686,29 +4572,9 @@ namespace UI
             }
         }
 
-        /// <summary>
-        /// 현재 허브 단계에 맞춰 스킵/다음 날 버튼 표시 여부를 결정합니다.
-        /// </summary>
         private void RefreshButtonStates()
         {
-            bool isHubScene = SceneManager.GetActiveScene().name == "Hub";
-            DayPhase currentPhase = cachedDayCycle != null ? cachedDayCycle.CurrentPhase : DayPhase.MorningExplore;
-            bool showButtons = isHubScene && activeHubPanel == HubPopupPanel.None;
-
-            if (skipExplorationButton != null)
-            {
-                skipExplorationButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.MorningExplore);
-            }
-
-            if (skipServiceButton != null)
-            {
-                skipServiceButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.AfternoonService);
-            }
-
-            if (nextDayButton != null)
-            {
-                nextDayButton.gameObject.SetActive(showButtons && currentPhase == DayPhase.Settlement);
-            }
+            HideLegacyDayRoutineObjects();
         }
     }
 }

@@ -1,5 +1,4 @@
 using CoreLoop.Core;
-using CoreLoop.Flow;
 using Exploration.Interaction;
 using Management.Tools;
 using UnityEngine;
@@ -18,7 +17,6 @@ namespace Exploration.World
         [SerializeField] private string targetSceneName;
         [SerializeField] private string targetSpawnPointId;
         [SerializeField] private string promptLabel = "이동하기";
-        [SerializeField] private bool requireMorningExplore = true;
         [SerializeField] private ToolType requiredToolType = ToolType.None;
         [SerializeField, Min(0)] private int requiredReputation;
         [SerializeField, TextArea] private string lockedGuideText = string.Empty;
@@ -45,7 +43,6 @@ namespace Exploration.World
             string sceneName,
             string spawnPointId,
             string label,
-            bool morningOnly = true,
             ToolType toolType = ToolType.None,
             int reputation = 0,
             string guideText = "")
@@ -58,7 +55,6 @@ namespace Exploration.World
                 promptLabel = label;
             }
 
-            requireMorningExplore = morningOnly;
             requiredToolType = toolType;
             requiredReputation = Mathf.Max(0, reputation);
             lockedGuideText = guideText;
@@ -108,16 +104,6 @@ namespace Exploration.World
             if (string.IsNullOrWhiteSpace(targetSceneName))
             {
                 return "이동 대상 없음";
-            }
-
-            // 허브 복귀는 오후 이후에도 허용해야 하루 루프가 자연스럽게 닫힙니다.
-            bool isReturningToHub = targetSceneName == GameManager.Instance.HubSceneName;
-            if (!isReturningToHub
-                && requireMorningExplore
-                && GameManager.Instance.DayCycle != null
-                && GameManager.Instance.DayCycle.CurrentPhase != DayPhase.MorningExplore)
-            {
-                return "오늘 탐험은 이미 마감되었습니다.";
             }
 
             if (requiredToolType != ToolType.None

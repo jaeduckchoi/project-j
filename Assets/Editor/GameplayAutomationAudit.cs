@@ -16,7 +16,7 @@ namespace Editor
 {
     /// <summary>
     /// 생성 씬 구조 감사에 더해 핵심 게임플레이 규칙이 크게 깨지지 않았는지 빠르게 점검합니다.
-    /// 하루 루프, 팝업 일시정지, 포털 잠금 규칙처럼 회귀가 잦은 기준을 내부 점검 경로와 배치 모드에서 같이 확인합니다.
+    /// 안내 문구, 팝업 일시정지, 포털 잠금 규칙처럼 회귀가 잦은 기준을 내부 점검 경로와 배치 모드에서 같이 확인합니다.
     /// </summary>
     public static class GameplayAutomationAudit
     {
@@ -38,7 +38,7 @@ namespace Editor
                 issues.Add($"생성 씬 감사 실패: {exception.Message}");
             }
 
-            issues.AddRange(ValidateDayCycleFlow());
+            issues.AddRange(ValidateGuideFlow());
             issues.AddRange(ValidatePopupPauseStateUtility());
             issues.AddRange(ValidateScenePortalRules());
             issues.AddRange(ValidateUnavailableSceneLoadGuide());
@@ -57,29 +57,32 @@ namespace Editor
             throw new InvalidOperationException($"경량 자동 감사가 {issues.Count}개 문제로 실패했습니다.");
         }
 
-        private static IEnumerable<string> ValidateDayCycleFlow()
+        private static IEnumerable<string> ValidateGuideFlow()
         {
             List<string> issues = new();
-            GameObject root = new("GameplayAutomationAudit_DayCycle");
+            GameObject root = new("GameplayAutomationAudit_Guide");
 
             try
             {
                 DayCycleManager dayCycle = root.AddComponent<DayCycleManager>();
                 dayCycle.InitializeIfNeeded();
 
-                AssertCondition(issues, dayCycle.CurrentDay == 1, "DayCycle 초기 일차가 1일차가 아닙니다.");
-                AssertCondition(issues, dayCycle.CurrentPhase == DayPhase.MorningExplore, "DayCycle 초기 단계가 오전 탐험이 아닙니다.");
+                AssertCondition(
+                    issues,
+                    dayCycle.CurrentGuideText.Contains("식당", StringComparison.Ordinal),
+                    "초기 안내 문구가 준비되지 않았습니다.");
 
-                dayCycle.SkipExploration();
-                AssertCondition(issues, dayCycle.CurrentPhase == DayPhase.AfternoonService, "탐험 스킵 뒤 오후 장사 단계로 전환되지 않았습니다.");
+                dayCycle.HandleSceneEntered("Beach");
+                AssertCondition(
+                    issues,
+                    dayCycle.CurrentGuideText.Contains("바닷가", StringComparison.Ordinal),
+                    "지역 진입 안내 문구가 갱신되지 않았습니다.");
 
-                dayCycle.SkipService();
-                AssertCondition(issues, dayCycle.CurrentPhase == DayPhase.Settlement, "장사 스킵 뒤 결과 정산 단계로 전환되지 않았습니다.");
-                AssertCondition(issues, dayCycle.LastSettlementSummary.Contains("장사를 건너뛰었습니다.", StringComparison.Ordinal), "장사 스킵 정산 문구가 예상과 다릅니다.");
-
-                dayCycle.AdvanceToNextDay();
-                AssertCondition(issues, dayCycle.CurrentDay == 2, "다음 날 전환 뒤 일차가 2일차가 되지 않았습니다.");
-                AssertCondition(issues, dayCycle.CurrentPhase == DayPhase.MorningExplore, "다음 날 전환 뒤 오전 탐험 단계로 복귀하지 않았습니다.");
+                dayCycle.ShowTemporaryGuide("임시 안내", 5f);
+                AssertCondition(
+                    issues,
+                    dayCycle.CurrentGuideText == "임시 안내",
+                    "임시 안내 문구가 우선 표시되지 않았습니다.");
             }
             finally
             {
@@ -126,30 +129,27 @@ namespace Editor
             using TemporaryGameManagerScope gameManagerScope = new();
             ScenePortal portal = gameManagerScope.Root.AddComponent<ScenePortal>();
 
-            gameManagerScope.DayCycle.SkipExploration();
-            portal.Configure("DeepForest", string.Empty, "숲 이동", morningOnly: true);
+            portal.Configure("DeepForest", string.Empty, "숲 이동");
 
-            AssertCondition(
-                issues,
-                !portal.InteractionPrompt.StartsWith("[E]", StringComparison.Ordinal),
-                "오후 장사 단계인데 오전 전용 포털이 열려 있습니다.");
-
-            portal.Configure(gameManagerScope.GameManager.HubSceneName, string.Empty, "허브 복귀", morningOnly: true);
             AssertCondition(
                 issues,
                 portal.InteractionPrompt.StartsWith("[E]", StringComparison.Ordinal),
-                "허브 복귀 포털은 오후 장사 단계에도 열려 있어야 합니다.");
+                "day/phase 제거 후 일반 탐험 포털이 열리지 않았습니다.");
 
-            portal.Configure("AbandonedMine", string.Empty, "폐광산 이동", morningOnly: true, toolType: ToolType.Lantern);
+            portal.Configure(gameManagerScope.GameManager.HubSceneName, string.Empty, "허브 복귀");
+            AssertCondition(
+                issues,
+                portal.InteractionPrompt.StartsWith("[E]", StringComparison.Ordinal),
+                "허브 복귀 포털이 열려 있지 않습니다.");
+
+            portal.Configure("AbandonedMine", string.Empty, "폐광산 이동", toolType: ToolType.Lantern);
             AssertCondition(
                 issues,
                 !portal.InteractionPrompt.StartsWith("[E]", StringComparison.Ordinal),
                 "랜턴 없이 폐광산 포털이 열려 있습니다.");
 
             gameManagerScope.ToolManager.UnlockTool(ToolType.Lantern);
-            gameManagerScope.DayCycle.SkipService();
-            gameManagerScope.DayCycle.AdvanceToNextDay();
-            portal.Configure("AbandonedMine", string.Empty, "폐광산 이동", morningOnly: true, toolType: ToolType.Lantern, reputation: 1);
+            portal.Configure("AbandonedMine", string.Empty, "폐광산 이동", toolType: ToolType.Lantern, reputation: 1);
             AssertCondition(
                 issues,
                 !portal.InteractionPrompt.StartsWith("[E]", StringComparison.Ordinal),

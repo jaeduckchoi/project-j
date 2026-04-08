@@ -325,10 +325,7 @@ namespace UI.Layout
         [SerializeField] private List<PrototypeUISceneNameEntry> nameEntries = new();
         private static readonly HashSet<string> ProtectedRemovedObjectNames = new(StringComparer.Ordinal)
         {
-            "HUDBottomGroup",
-            "SkipExplorationButton",
-            "SkipServiceButton",
-            "NextDayButton"
+            "HUDBottomGroup"
         };
 
         internal static bool IsProtectedManagedObject(string objectName)
@@ -923,9 +920,7 @@ namespace UI.Layout
                 "PopupShellGroup",
                 "PopupFrameHeader",
                 "TopLeftPanel",
-                "PhaseBadge",
                 "GoldText",
-                "DayPhaseText",
                 "InteractionPromptBackdrop",
                 "InteractionPromptText",
                 "GuideBackdrop",
@@ -958,9 +953,6 @@ namespace UI.Layout
             objectNames.Add("ActionDock");
             objectNames.Add("ActionAccent");
             objectNames.Add("ActionCaption");
-            objectNames.Add("SkipExplorationButton");
-            objectNames.Add("SkipServiceButton");
-            objectNames.Add("NextDayButton");
             objectNames.Add("RecipePanelButton");
             objectNames.Add("UpgradePanelButton");
             objectNames.Add("MaterialPanelButton");

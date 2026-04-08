@@ -27,7 +27,6 @@ namespace Editor
         private static readonly string[] CommonHudNames =
         {
             "TopLeftPanel",
-            "PhaseBadge",
             "InteractionPromptBackdrop",
             "GoldText",
             "InteractionPromptText",
@@ -57,9 +56,6 @@ namespace Editor
             "ActionAccent",
             "ActionDock",
             "ActionCaption",
-            "SkipExplorationButton",
-            "SkipServiceButton",
-            "NextDayButton",
             "RecipePanelButton",
             "UpgradePanelButton",
             "MaterialPanelButton",
@@ -79,6 +75,15 @@ namespace Editor
             "UpgradeAccent",
             "UpgradeCard",
             "UpgradeCaption",
+        };
+
+        private static readonly string[] RemovedDayRoutineNames =
+        {
+            "PhaseBadge",
+            "DayPhaseText",
+            "SkipExplorationButton",
+            "SkipServiceButton",
+            "NextDayButton",
         };
 
         private static readonly string[] LegacyLabelNames =
@@ -173,6 +178,11 @@ namespace Editor
                 ValidateExactCount(issues, sceneName, objects, removedName, 0);
             }
 
+            foreach (string removedName in RemovedDayRoutineNames)
+            {
+                ValidateExactCount(issues, sceneName, objects, removedName, 0);
+            }
+
             foreach (string legacyLabel in LegacyLabelNames)
             {
                 ValidateExactCount(issues, sceneName, objects, legacyLabel, 0);
@@ -234,7 +244,6 @@ namespace Editor
             ValidateExactCount(issues, sceneName, objects, "StorageFrontOccluder", 0);
 
             ValidateLayout(issues, sceneName, objects, "TopLeftPanel", PrototypeUILayout.TopLeftPanel);
-            ValidateLayout(issues, sceneName, objects, "PhaseBadge", PrototypeUILayout.PhaseBadge);
             ValidateLayout(issues, sceneName, objects, "GoldText", PrototypeUILayout.GoldText);
             ValidateLayout(issues, sceneName, objects, "InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
@@ -243,16 +252,12 @@ namespace Editor
             ValidateLayout(issues, sceneName, objects, "GuideHelpButton", PrototypeUILayout.GuideHelpButton(isHubScene));
             ValidateLayout(issues, sceneName, objects, "ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
             ValidateLayout(issues, sceneName, objects, "RestaurantResultText", PrototypeUILayout.ResultText(isHubScene));
-            ValidateLayout(issues, sceneName, objects, "DayPhaseText", PrototypeUILayout.DayPhaseText);
 
             if (isHubScene)
             {
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionDock", 1);
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionAccent", 1);
                 ValidateChildCount(issues, sceneName, objects, hudActionGroupName, "ActionCaption", 1);
-                ValidateChildCount(issues, sceneName, objects, "ActionDock", "SkipExplorationButton", 1);
-                ValidateChildCount(issues, sceneName, objects, "ActionDock", "SkipServiceButton", 1);
-                ValidateChildCount(issues, sceneName, objects, "ActionDock", "NextDayButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "RecipePanelButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "UpgradePanelButton", 1);
                 ValidateChildCount(issues, sceneName, objects, hudPanelButtonGroupName, "MaterialPanelButton", 1);
@@ -274,9 +279,6 @@ namespace Editor
                 ValidateLayout(issues, sceneName, objects, "ActionDock", PrototypeUILayout.HubActionDock);
                 ValidateLayout(issues, sceneName, objects, "ActionAccent", PrototypeUILayout.HubActionAccent);
                 ValidateLayout(issues, sceneName, objects, "ActionCaption", PrototypeUILayout.HubActionCaption);
-                ValidateLayout(issues, sceneName, objects, "SkipExplorationButton", PrototypeUILayout.HubSkipExplorationButton);
-                ValidateLayout(issues, sceneName, objects, "SkipServiceButton", PrototypeUILayout.HubSkipServiceButton);
-                ValidateLayout(issues, sceneName, objects, "NextDayButton", PrototypeUILayout.HubNextDayButton);
                 ValidateLayout(issues, sceneName, objects, "RecipePanelButton", PrototypeUILayout.HubRecipePanelButton);
                 ValidateLayout(issues, sceneName, objects, "UpgradePanelButton", PrototypeUILayout.HubUpgradePanelButton);
                 ValidateLayout(issues, sceneName, objects, "MaterialPanelButton", PrototypeUILayout.HubMaterialPanelButton);

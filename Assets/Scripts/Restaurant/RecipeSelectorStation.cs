@@ -1,5 +1,4 @@
 using CoreLoop.Core;
-using CoreLoop.Flow;
 using Exploration.Interaction;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -9,7 +8,6 @@ namespace Restaurant
 {
     /// <summary>
     /// 허브에서 상호작용 시 다음 메뉴로 전환하는 최소 메뉴 선택 오브젝트다.
-    /// 막힌 시간대에서도 상호작용 이유를 안내한다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeSelectorStation")]
     public class RecipeSelectorStation : MonoBehaviour, IInteractable
@@ -24,13 +22,6 @@ namespace Restaurant
                 if (restaurantManager == null || restaurantManager.AvailableRecipes.Count == 0)
                 {
                     return "등록된 메뉴 없음";
-                }
-
-                if (GameManager.Instance != null
-                    && GameManager.Instance.DayCycle != null
-                    && GameManager.Instance.DayCycle.CurrentPhase != DayPhase.AfternoonService)
-                {
-                    return "오후 장사 시간에 메뉴를 고를 수 있습니다";
                 }
 
                 return $"[E] {promptLabel}";
@@ -65,14 +56,6 @@ namespace Restaurant
         {
             if (restaurantManager == null || restaurantManager.AvailableRecipes.Count == 0)
             {
-                return;
-            }
-
-            if (GameManager.Instance != null
-                && GameManager.Instance.DayCycle != null
-                && GameManager.Instance.DayCycle.CurrentPhase != DayPhase.AfternoonService)
-            {
-                GameManager.Instance.DayCycle.ShowTemporaryGuide("메뉴 선택은 오후 장사 준비 시간에 진행할 수 있습니다.");
                 return;
             }
 

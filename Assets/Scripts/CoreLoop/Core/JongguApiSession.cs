@@ -89,13 +89,7 @@ namespace CoreLoop.Core
                 return true;
             }
 
-            bool shouldSkipExplorationAfterReturn =
-                string.Equals(toRegionCode, GameManager.Instance != null ? GameManager.Instance.HubSceneName : "Hub", StringComparison.Ordinal)
-                && currentSnapshot != null
-                && string.Equals(currentSnapshot.currentPhase, "morning_explore", StringComparison.Ordinal)
-                && !string.Equals(fromRegionCode, toRegionCode, StringComparison.Ordinal);
-
-            RunExclusive(TravelRoutine(portalCode, portal.TargetSceneName, portal.TargetSpawnPointId, shouldSkipExplorationAfterReturn));
+            RunExclusive(TravelRoutine(portalCode, portal.TargetSceneName, portal.TargetSpawnPointId));
             return true;
         }
 
@@ -123,17 +117,6 @@ namespace CoreLoop.Core
             return true;
         }
 
-        public bool TrySkipExploration()
-        {
-            if (!TryBeginRemoteAction("오전 탐험 종료를 API와 동기화하는 중입니다."))
-            {
-                return false;
-            }
-
-            RunExclusive(SkipExplorationRoutine());
-            return true;
-        }
-
         public bool TrySelectRecipe(RestaurantManager restaurantManager, int recipeIndex)
         {
             if (!TryBeginRemoteAction("메뉴 선택을 API와 동기화하는 중입니다."))
@@ -155,14 +138,14 @@ namespace CoreLoop.Core
             }
 
             RecipeData recipe = recipes[recipeIndex];
-            string recipeCode = ResolveRecipeCode(recipe);
-            if (string.IsNullOrWhiteSpace(recipeCode))
+            string recipeId = ResolveRecipeId(recipe);
+            if (string.IsNullOrWhiteSpace(recipeId))
             {
-                ShowGuide("메뉴 코드가 비어 있습니다.");
+                ShowGuide("메뉴 ID가 비어 있습니다.");
                 return true;
             }
 
-            RunExclusive(SelectRecipeRoutine(recipe, recipeCode));
+            RunExclusive(SelectRecipeRoutine(recipe, recipeId));
             return true;
         }
 
@@ -180,28 +163,6 @@ namespace CoreLoop.Core
             }
 
             RunExclusive(RunServiceRoutine());
-            return true;
-        }
-
-        public bool TrySkipService(RestaurantManager restaurantManager)
-        {
-            if (!TryBeginRemoteAction("영업 건너뛰기를 API와 동기화하는 중입니다."))
-            {
-                return false;
-            }
-
-            RunExclusive(SkipServiceRoutine());
-            return true;
-        }
-
-        public bool TryAdvanceToNextDay()
-        {
-            if (!TryBeginRemoteAction("다음 날 전환을 API와 동기화하는 중입니다."))
-            {
-                return false;
-            }
-
-            RunExclusive(AdvanceToNextDayRoutine());
             return true;
         }
 
@@ -309,6 +270,8 @@ namespace CoreLoop.Core
                 yield break;
             }
 
+            ApplyRemoteCatalogToRestaurants();
+
             bool snapshotLoaded = false;
             if (!string.IsNullOrWhiteSpace(savedPlayerId))
             {
@@ -377,7 +340,7 @@ namespace CoreLoop.Core
             sessionReady = true;
         }
 
-        private IEnumerator TravelRoutine(string portalCode, string targetSceneName, string spawnPointId, bool shouldSkipExplorationAfterReturn)
+        private IEnumerator TravelRoutine(string portalCode, string targetSceneName, string spawnPointId)
         {
             string travelBody = JsonUtility.ToJson(new JongguApiTravelRequest { portalCode = portalCode });
             bool travelSucceeded = false;
@@ -401,25 +364,6 @@ namespace CoreLoop.Core
             if (!travelSucceeded)
             {
                 yield break;
-            }
-
-            if (shouldSkipExplorationAfterReturn)
-            {
-                yield return SendRequest(
-                    UnityWebRequest.kHttpVerbPOST,
-                    $"/api/v1/players/{currentPlayerId}/exploration/skip",
-                    null,
-                    responseText =>
-                    {
-                        JongguApiPlayerSnapshotEnvelope envelope = JsonUtility.FromJson<JongguApiPlayerSnapshotEnvelope>(responseText);
-                        if (envelope == null || envelope.data == null)
-                        {
-                            return;
-                        }
-
-                        ApplySnapshot(envelope.data, syncScene: false);
-                    },
-                    (_, message) => ShowGuide(message));
             }
 
             GameManager.Instance?.LoadSceneFromRemoteState(targetSceneName, spawnPointId);
@@ -465,28 +409,9 @@ namespace CoreLoop.Core
                 (_, message) => ShowGuide(message));
         }
 
-        private IEnumerator SkipExplorationRoutine()
+        private IEnumerator SelectRecipeRoutine(RecipeData recipe, string recipeId)
         {
-            yield return SendRequest(
-                UnityWebRequest.kHttpVerbPOST,
-                $"/api/v1/players/{currentPlayerId}/exploration/skip",
-                null,
-                responseText =>
-                {
-                    JongguApiPlayerSnapshotEnvelope envelope = JsonUtility.FromJson<JongguApiPlayerSnapshotEnvelope>(responseText);
-                    if (envelope == null || envelope.data == null)
-                    {
-                        return;
-                    }
-
-                    ApplySnapshot(envelope.data, syncScene: true);
-                },
-                (_, message) => ShowGuide(message));
-        }
-
-        private IEnumerator SelectRecipeRoutine(RecipeData recipe, string recipeCode)
-        {
-            string requestBody = JsonUtility.ToJson(new JongguApiSelectRecipeRequest { recipeCode = recipeCode });
+            string requestBody = JsonUtility.ToJson(new JongguApiSelectRecipeRequest { recipeId = recipeId });
             yield return SendRequest(
                 UnityWebRequest.kHttpVerbPOST,
                 $"/api/v1/players/{currentPlayerId}/recipes/select",
@@ -519,44 +444,6 @@ namespace CoreLoop.Core
                     }
 
                     ApplySnapshot(envelope.data.snapshot, syncScene: false, serviceResult: BuildServiceResultText(envelope.data));
-                },
-                (_, message) => ShowGuide(message));
-        }
-
-        private IEnumerator SkipServiceRoutine()
-        {
-            yield return SendRequest(
-                UnityWebRequest.kHttpVerbPOST,
-                $"/api/v1/players/{currentPlayerId}/service/skip",
-                null,
-                responseText =>
-                {
-                    JongguApiServiceRunEnvelope envelope = JsonUtility.FromJson<JongguApiServiceRunEnvelope>(responseText);
-                    if (envelope == null || envelope.data == null || envelope.data.snapshot == null)
-                    {
-                        return;
-                    }
-
-                    ApplySnapshot(envelope.data.snapshot, syncScene: false, serviceResult: BuildServiceResultText(envelope.data));
-                },
-                (_, message) => ShowGuide(message));
-        }
-
-        private IEnumerator AdvanceToNextDayRoutine()
-        {
-            yield return SendRequest(
-                UnityWebRequest.kHttpVerbPOST,
-                $"/api/v1/players/{currentPlayerId}/day/next",
-                null,
-                responseText =>
-                {
-                    JongguApiPlayerSnapshotEnvelope envelope = JsonUtility.FromJson<JongguApiPlayerSnapshotEnvelope>(responseText);
-                    if (envelope == null || envelope.data == null)
-                    {
-                        return;
-                    }
-
-                    ApplySnapshot(envelope.data, syncScene: true);
                 },
                 (_, message) => ShowGuide(message));
         }
@@ -646,21 +533,16 @@ namespace CoreLoop.Core
             gameManager.Storage?.ApplyRemoteState(ResolveInventoryEntries(snapshot.storageResources), storageMessage);
             gameManager.Economy?.ApplyRemoteState(snapshot.gold, snapshot.reputation);
             gameManager.Tools?.ApplyRemoteState(ResolveUnlockedTools(snapshot.unlockedTools));
-
-            string settlementSummary = BuildSettlementSummary(snapshot.lastSettlementSummary);
-            if (string.IsNullOrWhiteSpace(settlementSummary)
-                && string.Equals(snapshot.currentPhase, "settlement", StringComparison.Ordinal)
-                && !string.IsNullOrWhiteSpace(serviceResult))
+            if (!string.IsNullOrWhiteSpace(serviceResult))
             {
-                settlementSummary = serviceResult;
+                gameManager.DayCycle?.ShowTemporaryGuide(serviceResult, 5f);
             }
-
-            gameManager.DayCycle?.ApplyRemoteState(snapshot.currentDay, snapshot.currentPhase, settlementSummary);
 
             RestaurantManager restaurantManager = FindFirstObjectByType<RestaurantManager>();
             if (restaurantManager != null)
             {
-                restaurantManager.ApplyRemoteState(snapshot.selectedRecipe, snapshot.serviceCapacity, serviceResult);
+                ApplyRemoteCatalog(restaurantManager);
+                restaurantManager.ApplyRemoteState(snapshot.selectedRecipeId, snapshot.serviceCapacity, serviceResult);
             }
 
             if (syncScene)
@@ -682,6 +564,29 @@ namespace CoreLoop.Core
             }
 
             GameManager.Instance?.LoadSceneFromRemoteState(regionCode, GetDefaultSpawnPointId(regionCode));
+        }
+
+        private void ApplyRemoteCatalogToRestaurants()
+        {
+            if (bootstrap?.recipes == null || bootstrap.recipes.Count == 0)
+            {
+                return;
+            }
+
+            foreach (RestaurantManager restaurantManager in FindObjectsByType<RestaurantManager>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                ApplyRemoteCatalog(restaurantManager);
+            }
+        }
+
+        private void ApplyRemoteCatalog(RestaurantManager restaurantManager)
+        {
+            if (restaurantManager == null || bootstrap?.recipes == null || bootstrap.recipes.Count == 0)
+            {
+                return;
+            }
+
+            restaurantManager.ApplyRemoteCatalog(bootstrap.recipes, bootstrap.ingredients);
         }
 
         private IEnumerable<InventoryEntry> ResolveInventoryEntries(List<JongguApiResourceAmount> amounts)
@@ -907,6 +812,8 @@ namespace CoreLoop.Core
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            ApplyRemoteCatalogToRestaurants();
+
             if (!sessionReady || currentSnapshot == null)
             {
                 return;
@@ -953,7 +860,7 @@ namespace CoreLoop.Core
             return !string.IsNullOrWhiteSpace(resource.ResourceId) ? resource.ResourceId : resource.name;
         }
 
-        private static string ResolveRecipeCode(RecipeData recipe)
+        private static string ResolveRecipeId(RecipeData recipe)
         {
             if (recipe == null)
             {
@@ -961,6 +868,34 @@ namespace CoreLoop.Core
             }
 
             return !string.IsNullOrWhiteSpace(recipe.RecipeId) ? recipe.RecipeId : recipe.name;
+        }
+
+        private string ResolveRecipeDisplayName(string recipeId)
+        {
+            if (string.IsNullOrWhiteSpace(recipeId))
+            {
+                return string.Empty;
+            }
+
+            if (bootstrap?.recipes != null)
+            {
+                foreach (JongguApiRecipeDefinition recipe in bootstrap.recipes)
+                {
+                    if (recipe == null)
+                    {
+                        continue;
+                    }
+
+                    if (string.Equals(recipe.recipeId, recipeId, StringComparison.Ordinal)
+                        && !string.IsNullOrWhiteSpace(recipe.recipeName))
+                    {
+                        return recipe.recipeName;
+                    }
+                }
+            }
+
+            RecipeData generatedRecipe = GeneratedGameDataLocator.FindGeneratedRecipe(recipeId);
+            return generatedRecipe != null ? generatedRecipe.DisplayName : recipeId;
         }
 
         private static ToolType ResolveToolType(string toolCode)
@@ -1011,54 +946,17 @@ namespace CoreLoop.Core
             return $"{apiBaseUrl.TrimEnd('/')}{path}";
         }
 
-        private static string BuildSettlementSummary(JongguApiDayRunSummary summary)
-        {
-            if (summary == null)
-            {
-                return string.Empty;
-            }
-
-            if (summary.serviceSkipped)
-            {
-                return "오늘 영업 결과\n- 장사를 건너뛰었습니다.";
-            }
-
-            StringBuilder builder = new();
-            builder.AppendLine("오늘 영업 결과");
-            if (!string.IsNullOrWhiteSpace(summary.selectedRecipeCode))
-            {
-                RecipeData recipe = GeneratedGameDataLocator.FindGeneratedRecipe(summary.selectedRecipeCode);
-                string recipeLabel = recipe != null ? recipe.DisplayName : summary.selectedRecipeCode;
-                builder.AppendLine($"- 선택 메뉴: {recipeLabel}");
-            }
-
-            builder.AppendLine($"- 판매 수량: {summary.soldCount}");
-            builder.AppendLine($"- 획득 골드: +{summary.earnedGold}");
-            builder.Append($"- 평판 변화: +{summary.earnedReputation}");
-            return builder.ToString();
-        }
-
         private string BuildServiceResultText(JongguApiServiceRunResponse response)
         {
             if (response == null)
             {
-                return "오늘 영업 결과\n- 결과를 불러오지 못했습니다.";
+                return "영업 결과\n- 결과를 불러오지 못했습니다.";
             }
 
-            if (response.skipped)
-            {
-                return "오늘 영업 결과\n- 장사를 건너뛰었습니다.";
-            }
-
-            string recipeLabel = response.recipeCode;
-            RecipeData recipe = GeneratedGameDataLocator.FindGeneratedRecipe(response.recipeCode);
-            if (recipe != null)
-            {
-                recipeLabel = recipe.DisplayName;
-            }
+            string recipeLabel = ResolveRecipeDisplayName(response.recipeId);
 
             StringBuilder builder = new();
-            builder.AppendLine("오늘 영업 결과");
+            builder.AppendLine("영업 결과");
             builder.AppendLine($"- 판매 메뉴: {recipeLabel} x{response.soldCount}");
             builder.AppendLine($"- 준비 가능 인분: {response.cookableCount}/{response.requestedCapacity}");
             builder.AppendLine($"- 획득 골드: +{response.earnedGold}");
@@ -1160,7 +1058,7 @@ namespace CoreLoop.Core
     [Serializable]
     public sealed class JongguApiSelectRecipeRequest
     {
-        public string recipeCode;
+        public string recipeId;
     }
 
     [Serializable]
@@ -1242,16 +1140,92 @@ namespace CoreLoop.Core
     [Serializable]
     public sealed class JongguApiBootstrap
     {
+        public List<JongguApiResourceDefinition> resources;
+        public List<JongguApiIngredientDefinition> ingredients;
+        public List<JongguApiToolDefinition> tools;
+        public List<JongguApiRegionDefinition> regions;
         public List<JongguApiPortalRule> portalRules;
+        public List<JongguApiRecipeDefinition> recipes;
         public List<JongguApiUpgradeDefinition> upgrades;
+        public JongguApiGameSettings settings;
+    }
+
+    [Serializable]
+    public sealed class JongguApiResourceDefinition
+    {
+        public string code;
+        public string name;
+    }
+
+    [Serializable]
+    public sealed class JongguApiIngredientDefinition
+    {
+        public string ingredientId;
+        public string ingredientName;
+        public int difficulty;
+        public string supplySource;
+        public string acquisitionSource;
+        public string acquisitionMethod;
+        public string acquisitionTool;
+        public int buyPrice;
+        public int sellPrice;
+        public string memo;
+    }
+
+    [Serializable]
+    public sealed class JongguApiToolDefinition
+    {
+        public string code;
+        public string name;
+    }
+
+    [Serializable]
+    public sealed class JongguApiRegionDefinition
+    {
+        public string code;
+        public string name;
+    }
+
+    [Serializable]
+    public sealed class JongguApiRecipeDefinition
+    {
+        public string recipeId;
+        public string recipeName;
+        public string supplySource;
+        public int difficulty;
+        public string cookingMethod;
+        public List<JongguApiRecipeIngredientDefinition> ingredients;
+        public int price;
+        public string memo;
+    }
+
+    [Serializable]
+    public sealed class JongguApiRecipeIngredientDefinition
+    {
+        public string ingredientId;
+        public string ingredientName;
+        public int quantity;
+    }
+
+    [Serializable]
+    public sealed class JongguApiGameSettings
+    {
+        public string startRegionCode;
+        public int startGold;
+        public int startReputation;
+        public int defaultServiceCapacity;
+        public int defaultInventorySlotLimit;
     }
 
     [Serializable]
     public sealed class JongguApiPortalRule
     {
         public string code;
+        public string name;
         public string fromRegionCode;
         public string toRegionCode;
+        public string requiredToolCode;
+        public int requiredReputation;
     }
 
     [Serializable]
@@ -1267,19 +1241,16 @@ namespace CoreLoop.Core
     public sealed class JongguApiPlayerSnapshot
     {
         public string playerId;
-        public int currentDay;
-        public string currentPhase;
+        public string displayName;
         public string currentRegion;
         public int gold;
         public int reputation;
         public int serviceCapacity;
         public int inventorySlotLimit;
-        public string selectedRecipe;
+        public string selectedRecipeId;
         public List<JongguApiResourceAmount> inventoryResources;
         public List<JongguApiResourceAmount> storageResources;
         public List<string> unlockedTools;
-        public JongguApiDayRunSummary currentDayRun;
-        public JongguApiDayRunSummary lastSettlementSummary;
     }
 
     [Serializable]
@@ -1287,17 +1258,6 @@ namespace CoreLoop.Core
     {
         public string resourceCode;
         public int quantity;
-    }
-
-    [Serializable]
-    public sealed class JongguApiDayRunSummary
-    {
-        public int dayNumber;
-        public string selectedRecipeCode;
-        public bool serviceSkipped;
-        public int soldCount;
-        public int earnedGold;
-        public int earnedReputation;
     }
 
     [Serializable]
@@ -1315,13 +1275,12 @@ namespace CoreLoop.Core
     [Serializable]
     public sealed class JongguApiServiceRunResponse
     {
-        public string recipeCode;
+        public string recipeId;
         public int requestedCapacity;
         public int cookableCount;
         public int soldCount;
         public int earnedGold;
         public int earnedReputation;
-        public bool skipped;
         public JongguApiPlayerSnapshot snapshot;
     }
 

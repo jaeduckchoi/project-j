@@ -23,7 +23,6 @@ namespace UI.Style
             {
                 case "TopLeftPanel":
                     return BuildGeneratedUiPanelSpec("light-outline-panel");
-                case "PhaseBadge":
                 case "ActionDock":
                 case "HUDPanelButtonGroup":
                     return BuildGeneratedUiPanelSpec("dark-solid-panel");

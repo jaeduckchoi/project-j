@@ -67,7 +67,6 @@ namespace Editor
             RectTransform hudPanelButtonGroup = null;
 
             CreatePanel("TopLeftPanel", hudStatusGroup, PrototypeUILayout.TopLeftPanel, chromeDark);
-            CreatePanel("PhaseBadge", hudStatusGroup, PrototypeUILayout.PhaseBadge, chromeGlass);
             CreatePanel("InteractionPromptBackdrop", hudRoot, PrototypeUILayout.PromptBackdrop(isHubScene), Color.white);
             CreatePanel("GuideBackdrop", hudOverlayGroup, PrototypeUILayout.GuideBackdrop(isHubScene), chromeSurface);
             CreatePanel("ResultBackdrop", hudOverlayGroup, PrototypeUILayout.ResultBackdrop(isHubScene), chromeSurface);
@@ -146,17 +145,11 @@ namespace Editor
             TextMeshProUGUI upgradeText = isHubScene
                 ? CreateScreenText("UpgradeText", popupFrameRightGroup != null ? popupFrameRightGroup : popupRoot, PrototypeUILayout.HubPopupRightDetailText, 18, TextAlignmentOptions.TopLeft, chromeText)
                 : null;
-            TextMeshProUGUI dayPhaseText = CreateScreenText("DayPhaseText", hudStatusGroup, PrototypeUILayout.DayPhaseText, 20, TextAlignmentOptions.Center, chromeText);
-
             ApplyPopupInventoryTextPresentation(inventoryText);
             ApplyPopupDetailTextPresentation(storageText);
             ApplyPopupDetailTextPresentation(selectedRecipeText);
             ApplyPopupDetailTextPresentation(upgradeText);
 
-            // 허브 진행 버튼은 ActionDock 안에서 phase별로 교체 표시한다.
-            Button skipExplorationButton = isHubScene ? CreateUiButton("SkipExplorationButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubSkipExplorationButton, "\uD0D0\uD5D8 \uC2A4\uD0B5") : null;
-            Button skipServiceButton = isHubScene ? CreateUiButton("SkipServiceButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubSkipServiceButton, "\uC601\uC5C5 \uC2A4\uD0B5") : null;
-            Button nextDayButton = isHubScene ? CreateUiButton("NextDayButton", actionDock != null ? actionDock : hudBottomGroup, PrototypeUILayout.HubNextDayButton, "\uB2E4\uC74C \uB0A0") : null;
             Button recipePanelButton = isHubScene ? CreateUiButton("RecipePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubRecipePanelButton, "\uC694\uB9AC \uBA54\uB274") : null;
             Button upgradePanelButton = isHubScene ? CreateUiButton("UpgradePanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubUpgradePanelButton, "\uC5C5\uADF8\uB808\uC774\uB4DC") : null;
             Button materialPanelButton = isHubScene ? CreateUiButton("MaterialPanelButton", hudPanelButtonGroup != null ? hudPanelButtonGroup : hudRoot, PrototypeUILayout.HubMaterialPanelButton, "\uC7AC\uB8CC") : null;
@@ -183,7 +176,6 @@ namespace Editor
             if (upgradeCaption != null) upgradeCaption.margin = Vector4.zero;
             if (actionCaption != null) actionCaption.margin = Vector4.zero;
 
-            if (dayPhaseText != null) dayPhaseText.fontStyle = FontStyles.Bold;
             if (inventoryText != null) inventoryText.textWrappingMode = TextWrappingModes.Normal;
             if (inventoryText != null) inventoryText.overflowMode = TextOverflowModes.Masking;
             if (storageText != null) storageText.textWrappingMode = TextWrappingModes.Normal;
@@ -201,7 +193,6 @@ namespace Editor
             if (resultText != null) resultText.text = string.Empty;
             if (selectedRecipeText != null) selectedRecipeText.text = "\uC120\uD0DD \uBA54\uB274: \uC5C6\uC74C";
             if (upgradeText != null) upgradeText.text = "- \uC778\uBCA4\uD1A0\uB9AC 8\uCE78 -> 12\uCE78";
-            if (dayPhaseText != null) dayPhaseText.text = "1\uC77C\uCC28 \u00B7 \uC624\uC804 \uD0D0\uD5D8";
 
             ApplySceneOverridesToHierarchy(canvasObject.transform);
 
@@ -239,9 +230,6 @@ namespace Editor
             if (resultText != null) resultText.gameObject.SetActive(false);
             if (selectedRecipeText != null) selectedRecipeText.gameObject.SetActive(false);
             if (upgradeText != null) upgradeText.gameObject.SetActive(false);
-            if (skipExplorationButton != null) skipExplorationButton.gameObject.SetActive(false);
-            if (skipServiceButton != null) skipServiceButton.gameObject.SetActive(false);
-            if (nextDayButton != null) nextDayButton.gameObject.SetActive(false);
             if (recipePanelButton != null) recipePanelButton.gameObject.SetActive(false);
             if (upgradePanelButton != null) upgradePanelButton.gameObject.SetActive(false);
             if (materialPanelButton != null) materialPanelButton.gameObject.SetActive(false);
@@ -254,14 +242,10 @@ namespace Editor
             so.FindProperty("upgradeText").objectReferenceValue = upgradeText;
             so.FindProperty("goldText").objectReferenceValue = goldText;
             so.FindProperty("selectedRecipeText").objectReferenceValue = selectedRecipeText;
-            so.FindProperty("dayPhaseText").objectReferenceValue = dayPhaseText;
             so.FindProperty("guideText").objectReferenceValue = guideText;
             so.FindProperty("resultText").objectReferenceValue = resultText;
             so.FindProperty("bodyFontAsset").objectReferenceValue = _generatedKoreanFont;
             so.FindProperty("headingFontAsset").objectReferenceValue = _generatedHeadingFont;
-            so.FindProperty("skipExplorationButton").objectReferenceValue = skipExplorationButton;
-            so.FindProperty("skipServiceButton").objectReferenceValue = skipServiceButton;
-            so.FindProperty("nextDayButton").objectReferenceValue = nextDayButton;
             so.FindProperty("recipePanelButton").objectReferenceValue = recipePanelButton;
             so.FindProperty("upgradePanelButton").objectReferenceValue = upgradePanelButton;
             so.FindProperty("materialPanelButton").objectReferenceValue = materialPanelButton;

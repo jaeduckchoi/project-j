@@ -7,13 +7,11 @@ using UnityEngine.Scripting.APIUpdating;
 namespace CoreLoop.Flow
 {
     /// <summary>
-    /// 오전 탐험, 오후 장사, 결과 정산, 다음 날 전환과 안내 문구를 관리한다.
+    /// 날짜/단계 루틴 없이 현재 플레이 상황에 맞는 안내 문구와 1회성 힌트만 관리한다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "Flow", sourceAssembly: "Assembly-CSharp", sourceClassName: "DayCycleManager")]
     public class DayCycleManager : MonoBehaviour
     {
-        [SerializeField, Min(1)] private int startingDay = 1;
-        [SerializeField] private DayPhase startingPhase = DayPhase.MorningExplore;
         [SerializeField, Min(1f)] private float defaultHintDuration = 5f;
 
         private readonly HashSet<string> shownHintIds = new();
@@ -24,10 +22,7 @@ namespace CoreLoop.Flow
 
         public event Action StateChanged;
 
-        public int CurrentDay { get; private set; }
-        public DayPhase CurrentPhase { get; private set; }
         public string CurrentGuideText => HasTemporaryGuide ? temporaryGuideText : baseGuideText;
-        public string LastSettlementSummary { get; private set; } = string.Empty;
 
         private bool HasTemporaryGuide =>
             !string.IsNullOrWhiteSpace(temporaryGuideText) && Time.unscaledTime < temporaryGuideExpireTime;
@@ -45,7 +40,7 @@ namespace CoreLoop.Flow
         }
 
         /// <summary>
-        /// 하루 상태와 기본 안내 문구를 한 번만 초기화합니다.
+        /// 기본 안내 문구를 한 번만 초기화합니다.
         /// </summary>
         public void InitializeIfNeeded()
         {
@@ -55,10 +50,7 @@ namespace CoreLoop.Flow
             }
 
             initialized = true;
-            CurrentDay = Mathf.Max(1, startingDay);
-            CurrentPhase = startingPhase;
-            baseGuideText = GetDefaultGuide(CurrentPhase);
-            LastSettlementSummary = "오늘 하루를 시작하세요.";
+            baseGuideText = "식당과 탐험 지역을 자유롭게 오가며 재료를 모으고 메뉴를 판매하세요.";
             RaiseStateChanged();
         }
 
@@ -75,11 +67,12 @@ namespace CoreLoop.Flow
                 return;
             }
 
+            SetBaseGuide(sceneGuide);
             ShowHintOnce($"scene_enter_{sceneName}", sceneGuide, 6f);
         }
 
         /// <summary>
-        /// 허브 출발과 허브 복귀에 맞춰 하루 단계를 전환합니다.
+        /// 씬 이동에 맞춰 단계 전환 없이 현재 위치 안내만 갱신합니다.
         /// </summary>
         public void HandleSceneTravel(string currentSceneName, string targetSceneName, string hubSceneName)
         {
@@ -90,111 +83,20 @@ namespace CoreLoop.Flow
                 return;
             }
 
-            bool isTravelingToHub = targetSceneName == hubSceneName;
-            bool isLeavingHub = currentSceneName == hubSceneName && !isTravelingToHub;
-            bool isReturningToHub = currentSceneName != hubSceneName && isTravelingToHub;
+            bool isTravelingToHub = string.Equals(targetSceneName, hubSceneName, StringComparison.Ordinal);
+            bool isLeavingHub = string.Equals(currentSceneName, hubSceneName, StringComparison.Ordinal) && !isTravelingToHub;
+            bool isReturningToHub = !string.Equals(currentSceneName, hubSceneName, StringComparison.Ordinal) && isTravelingToHub;
 
-            if (isLeavingHub && CurrentPhase == DayPhase.MorningExplore)
+            if (isLeavingHub)
             {
-                SetBaseGuide("오전 탐험 중입니다. 재료를 모으고 식당으로 돌아가세요.");
+                SetBaseGuide("탐험 지역으로 이동합니다. 재료를 모은 뒤 언제든 식당으로 돌아올 수 있습니다.");
                 return;
             }
 
-            if (isReturningToHub && CurrentPhase == DayPhase.MorningExplore)
+            if (isReturningToHub)
             {
-                CurrentPhase = DayPhase.AfternoonService;
-                SetBaseGuide("오후 장사 준비 시간입니다. 메뉴를 고르고 영업을 시작하세요.");
+                SetBaseGuide("식당으로 돌아왔습니다. 메뉴 선택, 창고, 영업은 Hub에서 진행할 수 있습니다.");
             }
-        }
-
-        /// <summary>
-        /// 오전 탐험 단계를 건너뛰고 바로 오후 장사 준비로 넘깁니다.
-        /// </summary>
-        public void SkipExploration()
-        {
-            InitializeIfNeeded();
-
-            if (CurrentPhase != DayPhase.MorningExplore)
-            {
-                return;
-            }
-
-            CurrentPhase = DayPhase.AfternoonService;
-            SetBaseGuide("탐험을 건너뛰었습니다. 바로 장사를 준비할 수 있습니다.");
-        }
-
-        /// <summary>
-        /// 장사 결과를 정산 단계로 넘기고 결과 문자열을 저장합니다.
-        /// </summary>
-        public void CompleteService(string settlementSummary)
-        {
-            InitializeIfNeeded();
-
-            if (CurrentPhase != DayPhase.AfternoonService)
-            {
-                return;
-            }
-
-            LastSettlementSummary = string.IsNullOrWhiteSpace(settlementSummary)
-                ? "오늘 장사 결과가 정산되었습니다."
-                : settlementSummary;
-
-            CurrentPhase = DayPhase.Settlement;
-            SetBaseGuide("결과를 확인하고 다음 날로 넘어가세요.");
-        }
-
-        /// <summary>
-        /// 장사 결과를 스킵 처리용 기본 문구로 정산합니다.
-        /// </summary>
-        public void SkipService()
-        {
-            CompleteService("오늘 영업 결과\n- 장사를 건너뛰었습니다.");
-        }
-
-        /// <summary>
-        /// 정산이 끝난 뒤 날짜를 하루 넘기고 오전 탐험 단계로 되돌립니다.
-        /// </summary>
-        public void AdvanceToNextDay()
-        {
-            InitializeIfNeeded();
-
-            if (CurrentPhase != DayPhase.Settlement)
-            {
-                return;
-            }
-
-            CurrentDay += 1;
-            CurrentPhase = DayPhase.MorningExplore;
-            LastSettlementSummary = "새로운 하루가 시작되었습니다.";
-            SetBaseGuide("오전 탐험 준비 시간입니다. 오늘 갈 지역을 정하고 출발하세요.");
-        }
-
-        /// <summary>
-        /// API 스냅샷으로 현재 날짜, 단계, 정산 요약을 동기화한다.
-        /// </summary>
-        public void ApplyRemoteState(int currentDay, string currentPhaseCode, string settlementSummary = null)
-        {
-            initialized = true;
-            CurrentDay = Mathf.Max(1, currentDay);
-            CurrentPhase = ParsePhaseCode(currentPhaseCode);
-            baseGuideText = GetDefaultGuide(CurrentPhase);
-            temporaryGuideText = string.Empty;
-            temporaryGuideExpireTime = 0f;
-
-            if (!string.IsNullOrWhiteSpace(settlementSummary))
-            {
-                LastSettlementSummary = settlementSummary;
-            }
-            else if (CurrentPhase == DayPhase.Settlement)
-            {
-                LastSettlementSummary = "결과를 확인하고 다음 날로 넘어가세요.";
-            }
-            else if (CurrentPhase == DayPhase.MorningExplore)
-            {
-                LastSettlementSummary = "새로운 하루가 시작되었습니다.";
-            }
-
-            RaiseStateChanged();
         }
 
         /// <summary>
@@ -235,40 +137,12 @@ namespace CoreLoop.Flow
         }
 
         /// <summary>
-        /// UI 에 표시할 하루 단계 이름을 반환합니다.
-        /// </summary>
-        public static string GetPhaseDisplayName(DayPhase phase)
-        {
-            return phase switch
-            {
-                DayPhase.MorningExplore => "오전 탐험",
-                DayPhase.AfternoonService => "오후 장사",
-                DayPhase.Settlement => "결과 정산",
-                _ => "상태 없음"
-            };
-        }
-
-        /// <summary>
-        /// 현재 단계에서 기본으로 유지할 안내 문구를 갱신합니다.
+        /// 현재 위치의 기본 안내 문구를 갱신합니다.
         /// </summary>
         private void SetBaseGuide(string guideText)
         {
-            baseGuideText = guideText;
+            baseGuideText = string.IsNullOrWhiteSpace(guideText) ? string.Empty : guideText;
             RaiseStateChanged();
-        }
-
-        /// <summary>
-        /// 단계별 기본 안내 문구를 반환합니다.
-        /// </summary>
-        private static string GetDefaultGuide(DayPhase phase)
-        {
-            return phase switch
-            {
-                DayPhase.MorningExplore => "오전 탐험 준비 시간입니다. 오늘 갈 지역을 정하고 출발하세요.",
-                DayPhase.AfternoonService => "오후 장사 준비 시간입니다. 메뉴를 고르고 영업을 시작하세요.",
-                DayPhase.Settlement => "결과를 확인하고 다음 날로 넘어가세요.",
-                _ => string.Empty
-            };
         }
 
         /// <summary>
@@ -278,23 +152,12 @@ namespace CoreLoop.Flow
         {
             return sceneName switch
             {
-                "Hub" => "여기는 종구의 식당입니다. 메뉴판, 창고, 작업대를 돌며 오늘 일과를 준비하세요.",
-                "Beach" => "바닷가는 입문 지역입니다. E로 채집하고 배를 통해 식당으로 돌아가면 오전 탐험이 끝납니다.",
-                "DeepForest" => "깊은 숲은 갈림길과 늪지대가 있는 지역입니다. 욕심내기보다 귀환 타이밍을 보세요.",
+                "Hub" => "여기는 종구의 식당입니다. 메뉴판, 창고, 작업대를 돌며 준비하고 바로 영업할 수 있습니다.",
+                "Beach" => "바닷가는 입문 지역입니다. E로 채집하고 배를 통해 식당으로 돌아갈 수 있습니다.",
+                "DeepForest" => "깊은 숲은 갈림길과 늪지대가 있는 지역입니다. 귀환 동선을 보며 재료를 모으세요.",
                 "AbandonedMine" => "폐광산은 어두운 지역입니다. 랜턴 준비 여부와 귀환 동선을 먼저 확인하세요.",
                 "WindHill" => "바람 언덕은 강풍 주기에 맞춰 움직여야 안전합니다. 바람이 멎는 순간을 노리세요.",
                 _ => string.Empty
-            };
-        }
-
-        private static DayPhase ParsePhaseCode(string phaseCode)
-        {
-            return phaseCode switch
-            {
-                "morning_explore" => DayPhase.MorningExplore,
-                "afternoon_service" => DayPhase.AfternoonService,
-                "settlement" => DayPhase.Settlement,
-                _ => DayPhase.MorningExplore
             };
         }
 
@@ -305,12 +168,5 @@ namespace CoreLoop.Flow
         {
             StateChanged?.Invoke();
         }
-    }
-
-    public enum DayPhase
-    {
-        MorningExplore,
-        AfternoonService,
-        Settlement
     }
 }

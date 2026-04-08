@@ -225,8 +225,7 @@ namespace Exploration.World
                 "WindHillShortcutEntry",
                 "정상 지름길",
                 "정상 지름길",
-                true,
-                    ToolType.None,
+                ToolType.None,
                 6,
                 "평판 6을 모으면 바람 언덕의 지름길을 이용할 수 있습니다.",
                 new Color(0.55f, 0.77f, 0.95f));
@@ -298,7 +297,6 @@ namespace Exploration.World
                 "MineEntry",
                 "폐광산으로 이동",
                 "폐광산",
-                true,
                 ToolType.Lantern,
                 0,
                 "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.",
@@ -409,7 +407,6 @@ namespace Exploration.World
             string spawnPointId,
             string promptLabel,
             string worldLabel,
-            bool requireMorningExplore,
             ToolType requiredToolType,
             int requiredReputation,
             string lockedGuideText,
@@ -426,7 +423,6 @@ namespace Exploration.World
                     targetSceneName,
                     spawnPointId,
                     promptLabel,
-                    requireMorningExplore,
                     requiredToolType,
                     requiredReputation,
                     lockedGuideText);

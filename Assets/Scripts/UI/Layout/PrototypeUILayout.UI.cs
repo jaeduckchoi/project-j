@@ -8,12 +8,10 @@ namespace UI.Layout
     /// </summary>
     public static partial class PrototypeUILayout
     {
-        // 상단 상태 카드와 단계 표시 배치다.
+        // 상단 상태 카드 배치다.
         public static readonly PrototypeUIRect TopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(320f, 72f));
         public static readonly PrototypeUIRect TopLeftAccent = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 6f));
-        public static readonly PrototypeUIRect PhaseBadge = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(320f, 72f));
         public static readonly PrototypeUIRect GoldText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(26f, -28f), new Vector2(286f, 30f));
-        public static readonly PrototypeUIRect DayPhaseText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(210f, 24f));
 
         // 허브와 탐험 씬 공용 프롬프트, 안내, 결과 카드 배치다.
         public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
@@ -59,10 +57,7 @@ namespace UI.Layout
         public static readonly PrototypeUIRect HubRecipeText = HubInventoryText;
         public static readonly PrototypeUIRect HubUpgradeText = HubInventoryText;
 
-        // 허브 하단 액션 버튼과 패널 버튼 배치다.
-        public static readonly PrototypeUIRect HubSkipExplorationButton = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 18f), new Vector2(156f, 40f));
-        public static readonly PrototypeUIRect HubSkipServiceButton = HubSkipExplorationButton;
-        public static readonly PrototypeUIRect HubNextDayButton = HubSkipExplorationButton;
+        // 허브 하단 패널 버튼 배치다.
         public static readonly PrototypeUIRect HubRecipePanelButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-184f, 18f), new Vector2(164f, 44f));
         public static readonly PrototypeUIRect HubUpgradePanelButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(164f, 44f));
         public static readonly PrototypeUIRect HubMaterialPanelButton = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(184f, 18f), new Vector2(164f, 44f));
