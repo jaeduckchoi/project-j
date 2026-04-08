@@ -65,7 +65,7 @@ namespace UI.Layout
         /// <summary>
         /// 허브/탐험 구분에 따라 맞는 좌표 묶음을 고르는 선택자다.
         /// </summary>
-		public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
+        public static PrototypeUIRect GuideBackdrop(bool isHubScene) => isHubScene ? HubGuideBackdrop : ExploreGuideBackdrop;
         public static PrototypeUIRect ResultBackdrop(bool isHubScene) => isHubScene ? HubResultBackdrop : ExploreResultBackdrop;
         public static PrototypeUIRect PromptBackdrop(bool isHubScene) => isHubScene ? HubPromptBackdrop : ExplorePromptBackdrop;
         public static PrototypeUIRect PromptText(bool isHubScene) => isHubScene ? HubPromptText : ExplorePromptText;

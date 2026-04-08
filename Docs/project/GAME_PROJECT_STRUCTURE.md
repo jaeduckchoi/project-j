@@ -100,7 +100,7 @@ Assets
 
 ## 5. 런타임 코드 기준
 
-- `Assets/Scripts/CoreLoop`: `GameManager`, `DayCycleManager`, `JongguApiSession` 같은 전역 루프와 원격 세션 진입점
+- `Assets/Scripts/CoreLoop`: `GameManager`, `DayCycleManager`, `JongguApiSession` 같은 전역 상태, 안내 흐름, 원격 세션 진입점
 - `Assets/Scripts/Exploration`: 플레이어 이동, 상호작용, 채집, 포털, 지대, 런타임 보강
 - `Assets/Scripts/Management`: 경제, 인벤토리, 창고, 도구, 업그레이드
 - `Assets/Scripts/Restaurant`: 메뉴 선택과 영업 로직
@@ -111,7 +111,7 @@ Assets
 
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`: generated 자산, 씬 구성, Build Settings, UI 베이스라인
 - `Assets/Editor/PrototypeSceneAudit.cs`: generated 씬과 UI 구조 감사
-- `Assets/Editor/GameplayAutomationAudit.cs`: day cycle, popup pause, portal 규칙 경량 감사
+- `Assets/Editor/GameplayAutomationAudit.cs`: 안내 흐름, popup pause, portal 규칙 경량 감사
 - `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`: 지원 씬 루트 구조 정리
 - `Assets/Editor/ProjectStructureUtility.cs`: 기본 폴더 구조 보장
 - `Assets/Editor/UI/*`: UI 프리뷰, Canvas auto-sync, generated 이미지 보조 도구

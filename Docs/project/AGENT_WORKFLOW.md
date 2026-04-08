@@ -73,13 +73,13 @@
 ### 게임플레이 규칙 변경
 
 - gameplay 문서와 실제 코드가 같은 의도를 설명하는지 확인한다.
-- day cycle, portal, popup pause 같은 회귀 위험 항목은 `GameplayAutomationAudit` 연관성을 점검한다.
+- 안내 흐름, portal, popup pause 같은 회귀 위험 항목은 `GameplayAutomationAudit` 연관성을 점검한다.
 
 ### Unity API 연동 변경
 
 - `JongguApiSession`, `GameManager`, 원격 스냅샷 적용 매니저가 같은 계약을 쓰는지 확인한다.
 - 씬 이름, resource/recipe/tool/upgrade code가 API와 같은 문자열인지 확인한다.
-- 가능하면 `D:\project-j-api` 서버를 실행한 뒤 세션 생성, 이동, 채집, 창고, 메뉴 선택, 영업, 다음 날, 업그레이드를 순서대로 확인한다.
+- 가능하면 `D:\project-j-api` 서버를 실행한 뒤 세션 생성, 이동, 채집, 창고, 메뉴 선택, 영업, 업그레이드를 순서대로 확인한다.
 - Unity나 API 서버를 직접 띄우지 못했으면 어떤 계약 문서를 기준으로 연결했는지와 남은 통합 검증 단계를 결과에 적는다.
 
 ## 3. 드리프트 정리 기준

@@ -77,12 +77,12 @@ namespace UI
             "UpgradeText"
         };
 
-		private static IEnumerable<string> EnumerateHudCanvasObjectNames()
-		{
-			yield return "TopLeftPanel";
+        private static IEnumerable<string> EnumerateHudCanvasObjectNames()
+        {
+            yield return "TopLeftPanel";
             yield return "InteractionPromptBackdrop";
-			yield return "GuideBackdrop";
-			yield return "ResultBackdrop";
+            yield return "GuideBackdrop";
+            yield return "ResultBackdrop";
             yield return "GoldText";
             yield return "InteractionPromptText";
             yield return "GuideText";
@@ -1885,17 +1885,17 @@ namespace UI
         /// <summary>
         /// 허브와 탐험 씬이 공통으로 쓰는 HUD 바탕과 캡션을 생성합니다.
         /// </summary>
-		private void EnsureCommonHudChrome(
+        private void EnsureCommonHudChrome(
             bool isHubScene,
             TMP_FontAsset preferredFont,
             Color parchment,
             Color paper,
             Color glass)
         {
-			EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
+            EnsureUiBackdrop("TopLeftPanel", PrototypeUILayout.TopLeftPanel, parchment);
             EnsureUiBackdrop("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene), Color.white);
-			EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
-			EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
+            EnsureUiBackdrop("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene), paper);
+            EnsureUiBackdrop("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene), paper);
             EnsureGuideHelpButton(preferredFont, isHubScene);
         }
 
@@ -2688,10 +2688,10 @@ namespace UI
         {
             bool isHubScene = IsHubScene();
 
-			ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
+            ApplyNamedRectLayout("TopLeftPanel", PrototypeUILayout.TopLeftPanel);
             ApplyNamedRectLayout("InteractionPromptBackdrop", PrototypeUILayout.PromptBackdrop(isHubScene));
-			ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
-			ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
+            ApplyNamedRectLayout("GuideBackdrop", PrototypeUILayout.GuideBackdrop(isHubScene));
+            ApplyNamedRectLayout("ResultBackdrop", PrototypeUILayout.ResultBackdrop(isHubScene));
             ApplyButtonLayout(guideHelpButton, PrototypeUILayout.GuideHelpButton(isHubScene));
             ApplyButtonPresentation(guideHelpButton, headingFont, Color.white);
             if (isHubScene)
@@ -3283,13 +3283,13 @@ namespace UI
         private void SetHubHudVisible(bool isVisible)
         {
             SetNamedObjectActive("TopLeftPanel", isVisible);
-			SetNamedObjectActive(HudPanelButtonGroupObjectName, isVisible);
-			SetNamedObjectActive("ActionDock", false);
-			SetNamedObjectActive("ActionAccent", false);
-			SetNamedObjectActive("ActionCaption", false);
+            SetNamedObjectActive(HudPanelButtonGroupObjectName, isVisible);
+            SetNamedObjectActive("ActionDock", false);
+            SetNamedObjectActive("ActionAccent", false);
+            SetNamedObjectActive("ActionCaption", false);
             HideLegacyDayRoutineObjects();
 
-			if (goldText != null)
+            if (goldText != null)
             {
                 goldText.gameObject.SetActive(isVisible);
             }
@@ -3732,18 +3732,11 @@ namespace UI
                     continue;
                 }
 
-                string ingredientName = string.IsNullOrWhiteSpace(ingredient.IngredientName)
-                    ? ingredient.IngredientId
-                    : ingredient.IngredientName;
-                if (string.IsNullOrWhiteSpace(ingredientName))
+                string displayName = ingredient.BuildDisplayNameWithCatalogSummary();
+                if (string.IsNullOrWhiteSpace(displayName))
                 {
                     continue;
                 }
-
-                string catalogSummary = ingredient.BuildCatalogSummary();
-                string displayName = string.IsNullOrWhiteSpace(catalogSummary)
-                    ? ingredientName
-                    : $"{ingredientName} ({catalogSummary})";
 
                 if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
                 {
@@ -4329,13 +4322,13 @@ namespace UI
                 prompt = defaultPromptText;
             }
 
-			bool shouldShowPrompt = activeHubPanel == HubPopupPanel.None;
+            bool shouldShowPrompt = activeHubPanel == HubPopupPanel.None;
 
-			interactionPromptText.text = prompt;
-			interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
+            interactionPromptText.text = prompt;
+            interactionPromptText.gameObject.SetActive(shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
             SetNamedObjectActive("InteractionPromptBackdrop", shouldShowPrompt && !string.IsNullOrWhiteSpace(prompt));
-			RefreshStoragePanelVisibility();
-		}
+            RefreshStoragePanelVisibility();
+        }
 
         /// <summary>
         /// 현재 보유 재료와 가방 사용량을 카드 본문용 문자열로 정리합니다.

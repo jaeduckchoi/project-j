@@ -141,6 +141,35 @@ namespace Exploration.World
             public float CharacterSpacing { get; }
         }
 
+        public readonly struct HubDecorBlockPlacement
+        {
+            public HubDecorBlockPlacement(
+                string rootObjectName,
+                Vector3 rootPosition,
+                string objectName,
+                Vector3 localPosition,
+                Vector3 scale,
+                Color color,
+                int sortingOrder)
+            {
+                RootObjectName = rootObjectName;
+                RootPosition = rootPosition;
+                ObjectName = objectName;
+                LocalPosition = localPosition;
+                Scale = scale;
+                Color = color;
+                SortingOrder = sortingOrder;
+            }
+
+            public string RootObjectName { get; }
+            public Vector3 RootPosition { get; }
+            public string ObjectName { get; }
+            public Vector3 LocalPosition { get; }
+            public Vector3 Scale { get; }
+            public Color Color { get; }
+            public int SortingOrder { get; }
+        }
+
         public const float TargetAspectWidth = 16f;
         public const float TargetAspectHeight = 9f;
         public const float TargetAspectRatio = TargetAspectWidth / TargetAspectHeight;
@@ -192,6 +221,12 @@ namespace Exploration.World
         public static readonly Vector3 WarehouseSignPosition = new(7.55f, 4.98f, 0f);
         public static readonly Vector3 WarehouseSignBackdropScale = new(2.78f, 0.82f, 1f);
         public static readonly Vector3 SignTextLocalOffset = new(0f, 0.03f, 0f);
+        public const string StorageVisualRootObjectName = "HubStorageStationVisual";
+        public const string UpgradeWorkbenchVisualRootObjectName = "HubUpgradeWorkbenchVisual";
+        public const string PortalZoneVisualRootObjectName = "HubPortalZoneVisual";
+        public static readonly Vector3 StorageVisualPosition = new(7.54f, 3.76f, 0f);
+        public static readonly Vector3 UpgradeWorkbenchVisualPosition = new(1.86f, -3.22f, 0f);
+        public static readonly Vector3 PortalZoneVisualPosition = new(-6.38f, -4.42f, 0f);
         public static readonly Vector3 FrontOutlinePosition = Vector3.zero;
         public static readonly Vector3 TodayMenuBoardPosition = new(-0.82f, 4.06f, 0f);
         public static readonly Vector3 TodayMenuHeaderLabelLocalPosition = new(-1.96f, 0.04f, 0f);
@@ -209,6 +244,10 @@ namespace Exploration.World
         public const int SignSortingOrder = 6;
         public const int SignTextSortingOrder = 7;
         public const int ForegroundSortingOrder = 18;
+        public const int StationShadowSortingOrder = 2;
+        public const int StationBackSortingOrder = 3;
+        public const int StationFrontSortingOrder = 5;
+        public const int StationAccentSortingOrder = 6;
         public const int TodayMenuBackdropSortingOrder = 7;
         public const int TodayMenuItemSortingOrder = 8;
         public const int TodayMenuTextSortingOrder = 9;
@@ -233,6 +272,18 @@ namespace Exploration.World
         public static readonly Color TodayMenuEmptyBackdropColor = new(0.84f, 0.84f, 0.84f, 0.72f);
         public static readonly Color TodayMenuIconColor = Color.white;
         public static readonly Color TodayMenuEmptyIconColor = new(1f, 1f, 1f, 0.24f);
+        public static readonly Color HubDecorOutlineColor = new(0.14f, 0.09f, 0.07f, 1f);
+        public static readonly Color HubDecorShadowColor = new(0f, 0f, 0f, 0.18f);
+        public static readonly Color StorageBodyColor = new(0.62f, 0.66f, 0.64f, 1f);
+        public static readonly Color StorageDoorColor = new(0.78f, 0.82f, 0.80f, 1f);
+        public static readonly Color StorageShelfColor = new(0.45f, 0.33f, 0.25f, 1f);
+        public static readonly Color StorageCrateColor = new(0.62f, 0.38f, 0.22f, 1f);
+        public static readonly Color StorageSignPanelColor = new(0.94f, 0.86f, 0.68f, 1f);
+        public static readonly Color UpgradeWorkbenchTopColor = new(0.56f, 0.36f, 0.24f, 1f);
+        public static readonly Color UpgradeWorkbenchFrontColor = new(0.38f, 0.24f, 0.17f, 1f);
+        public static readonly Color UpgradeToolAccentColor = new(0.74f, 0.78f, 0.80f, 1f);
+        public static readonly Color UpgradeToolGoldColor = new(0.94f, 0.66f, 0.25f, 1f);
+        public static readonly Color PortalZoneBaseColor = new(0.25f, 0.22f, 0.20f, 0.72f);
 
         // 하단 전경선 앞까지 자연스럽게 접근할 수 있도록 아래쪽 이동 여유를 조금 더 둔다.
         public static readonly Vector3 MovementBoundsPosition = new(0f, -0.15f, 0f);
@@ -369,11 +420,43 @@ namespace Exploration.World
                 SignCharacterSpacing)
         };
 
+        private static readonly HubDecorBlockPlacement[] DecorBlockPlacementList =
+        {
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageStationShadow", new Vector3(0.08f, -0.10f, 0f), new Vector3(2.56f, 1.48f, 1f), HubDecorShadowColor, StationBackSortingOrder),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageStationOutline", Vector3.zero, new Vector3(2.48f, 1.48f, 1f), HubDecorOutlineColor, StationFrontSortingOrder),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageStationBody", Vector3.zero, new Vector3(2.30f, 1.30f, 1f), StorageBodyColor, StationAccentSortingOrder),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageFridgeDoor", new Vector3(-0.72f, -0.02f, 0f), new Vector3(0.72f, 1.14f, 1f), StorageDoorColor, StationAccentSortingOrder + 1),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageShelfTop", new Vector3(0.38f, 0.30f, 0f), new Vector3(1.08f, 0.26f, 1f), StorageShelfColor, StationAccentSortingOrder + 1),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageShelfBottom", new Vector3(0.38f, -0.30f, 0f), new Vector3(1.08f, 0.26f, 1f), StorageShelfColor, StationAccentSortingOrder + 1),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageCrate", new Vector3(0.17f, -0.31f, 0f), new Vector3(0.42f, 0.40f, 1f), StorageCrateColor, StationAccentSortingOrder + 2),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageJar", new Vector3(0.76f, -0.31f, 0f), new Vector3(0.30f, 0.40f, 1f), UpgradeToolGoldColor, StationAccentSortingOrder + 2),
+            new(StorageVisualRootObjectName, StorageVisualPosition, "HubStorageBlankSign", new Vector3(0f, 0.90f, 0f), new Vector3(1.36f, 0.34f, 1f), StorageSignPanelColor, StationAccentSortingOrder + 2),
+
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeWorkbenchShadow", new Vector3(0.10f, -0.10f, 0f), new Vector3(5.30f, 1.34f, 1f), HubDecorShadowColor, StationShadowSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeWorkbenchOutline", Vector3.zero, new Vector3(5.14f, 1.22f, 1f), HubDecorOutlineColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeWorkbenchTop", new Vector3(0f, 0.16f, 0f), new Vector3(4.88f, 0.58f, 1f), UpgradeWorkbenchTopColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeWorkbenchFront", new Vector3(0f, -0.28f, 0f), new Vector3(4.88f, 0.38f, 1f), UpgradeWorkbenchFrontColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeBlankSignLeft", new Vector3(-1.55f, 0.24f, 0f), new Vector3(0.86f, 0.30f, 1f), StorageSignPanelColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeBlankSignCenter", new Vector3(0f, 0.24f, 0f), new Vector3(0.86f, 0.30f, 1f), StorageSignPanelColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeBlankSignRight", new Vector3(1.55f, 0.24f, 0f), new Vector3(0.86f, 0.30f, 1f), StorageSignPanelColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeToolHandle", new Vector3(-0.62f, -0.18f, 0f), new Vector3(0.18f, 0.52f, 1f), StorageShelfColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeToolHead", new Vector3(-0.42f, 0.02f, 0f), new Vector3(0.44f, 0.18f, 1f), UpgradeToolAccentColor, StationBackSortingOrder),
+            new(UpgradeWorkbenchVisualRootObjectName, UpgradeWorkbenchVisualPosition, "HubUpgradeGearCore", new Vector3(0.70f, -0.08f, 0f), new Vector3(0.34f, 0.34f, 1f), UpgradeToolGoldColor, StationBackSortingOrder),
+
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneShadow", new Vector3(0.08f, -0.08f, 0f), new Vector3(3.92f, 0.64f, 1f), HubDecorShadowColor, StationShadowSortingOrder),
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneBase", Vector3.zero, new Vector3(3.78f, 0.52f, 1f), PortalZoneBaseColor, StationShadowSortingOrder),
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneLeftCap", new Vector3(-1.70f, 0f, 0f), new Vector3(0.32f, 0.40f, 1f), new Color(0.98f, 0.83f, 0.51f, 1f), StationBackSortingOrder),
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneForestCap", new Vector3(-0.57f, 0f, 0f), new Vector3(0.32f, 0.40f, 1f), new Color(0.70f, 0.86f, 0.44f, 1f), StationBackSortingOrder),
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneMineCap", new Vector3(0.57f, 0f, 0f), new Vector3(0.32f, 0.40f, 1f), new Color(0.74f, 0.74f, 0.78f, 1f), StationBackSortingOrder),
+            new(PortalZoneVisualRootObjectName, PortalZoneVisualPosition, "HubPortalZoneWindCap", new Vector3(1.70f, 0f, 0f), new Vector3(0.32f, 0.40f, 1f), new Color(0.82f, 0.92f, 0.98f, 1f), StationBackSortingOrder)
+        };
+
         public static IReadOnlyList<HubArtPlacement> ArtPlacements => ArtPlacementList;
         public static IReadOnlyList<HubColliderPlacement> ColliderPlacements => ColliderPlacementList;
         public static IReadOnlyList<HubTablePlacement> TablePlacements => TablePlacementList;
         public static IReadOnlyList<HubUpgradeSlotPlacement> UpgradeSlotPlacements => UpgradeSlotPlacementList;
         public static IReadOnlyList<HubFloorSignPlacement> FloorSignPlacements => FloorSignPlacementList;
+        public static IReadOnlyList<HubDecorBlockPlacement> DecorBlockPlacements => DecorBlockPlacementList;
 
         // 기존 방 전환 허브 보강 코드와의 컴파일 호환용 상수들이다.
         // 현재 허브는 고정 화면 레이어 구조를 사용하므로 실제 배치는 위 좌표를 기준으로 맞춘다.

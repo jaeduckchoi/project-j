@@ -1428,6 +1428,8 @@ namespace Editor
             {
                 CreateHubFloorSign(placement, sprites.Floor, objectLayer);
             }
+
+            BuildHubDecorBlockLayout(sprites.Floor, objectLayer);
         }
 
         /// <summary>
@@ -1461,6 +1463,33 @@ namespace Editor
                 GameObject slotObject = CreateHubArtSprite(placement.SlotObjectName, placement.Position, sprite, HubRoomLayout.ObjectSortingOrder, objectLayer);
                 Transform priceParent = slotObject != null ? slotObject.transform : objectLayer;
                 CreateHubUpgradePriceText(placement.PriceObjectName, priceParent, HubRoomLayout.UpgradePriceTextLocalOffset, placement.GoldCostLabel);
+            }
+        }
+
+        private static void BuildHubDecorBlockLayout(Sprite floorSprite, Transform objectLayer)
+        {
+            Dictionary<string, Transform> roots = new();
+
+            foreach (HubRoomLayout.HubDecorBlockPlacement placement in HubRoomLayout.DecorBlockPlacements)
+            {
+                if (!roots.TryGetValue(placement.RootObjectName, out Transform root))
+                {
+                    GameObject rootObject = new(placement.RootObjectName);
+                    rootObject.transform.SetParent(objectLayer, false);
+                    ApplySceneTransformOverride(rootObject.transform, placement.RootObjectName, placement.RootPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
+                    ApplySceneActiveOverride(rootObject, placement.RootObjectName);
+                    root = rootObject.transform;
+                    roots.Add(placement.RootObjectName, root);
+                }
+
+                CreateDecorBlock(
+                    placement.ObjectName,
+                    placement.LocalPosition,
+                    placement.Scale,
+                    floorSprite,
+                    placement.Color,
+                    placement.SortingOrder,
+                    root);
             }
         }
 

@@ -11,7 +11,7 @@ namespace Management.Economy
     [MovedFrom(false, sourceNamespace: "Economy", sourceAssembly: "Assembly-CSharp", sourceClassName: "EconomyManager")]
     public class EconomyManager : MonoBehaviour
     {
-        // 하루 루프에서 누적할 시작 재화 값이다.
+        // 런타임 상태에 처음 적용할 시작 재화 값이다.
         [SerializeField, Min(0)] private int startingGold;
         [SerializeField] private int startingReputation;
 

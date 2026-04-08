@@ -18,8 +18,32 @@ MonoBehaviour:
     \uD5A5\uC744 \uC0B4\uB9B0 \uBA54\uB274\uC785\uB2C8\uB2E4."
   sellPrice: 42
   reputationDelta: 2
+  supplySource: 
+  difficulty: 0
+  cookingMethod: 
+  memo: 
   ingredients:
-  - resource: {fileID: 11400000, guid: 17b6240e79f034245a131c2073160e5e, type: 2}
+  - ingredientId: 
+    ingredientName: 
+    difficulty: 0
+    supplySource: 
+    acquisitionSource: 
+    acquisitionMethod: 
+    acquisitionTool: 
+    buyPrice: 0
+    sellPrice: 0
+    memo: 
+    resource: {fileID: 11400000, guid: 17b6240e79f034245a131c2073160e5e, type: 2}
     amount: 1
-  - resource: {fileID: 11400000, guid: f8ce9b80a66cfa04a80512e4cfce48e4, type: 2}
+  - ingredientId: 
+    ingredientName: 
+    difficulty: 0
+    supplySource: 
+    acquisitionSource: 
+    acquisitionMethod: 
+    acquisitionTool: 
+    buyPrice: 0
+    sellPrice: 0
+    memo: 
+    resource: {fileID: 11400000, guid: f8ce9b80a66cfa04a80512e4cfce48e4, type: 2}
     amount: 1

@@ -709,6 +709,7 @@ namespace Exploration.World
             {
                 EnsureHubFloorSign(placement, objectLayer);
             }
+            EnsureHubDecorBlockLayout(objectLayer);
             EnsureHubTodayMenuBoard(objectLayer);
         }
 
@@ -770,6 +771,35 @@ namespace Exploration.World
                     priceParent,
                     HubRoomLayout.UpgradePriceTextLocalOffset,
                     placement.GoldCostLabel);
+            }
+        }
+
+        private static void EnsureHubDecorBlockLayout(Transform objectLayer)
+        {
+            Dictionary<string, Transform> roots = new();
+
+            foreach (HubRoomLayout.HubDecorBlockPlacement placement in HubRoomLayout.DecorBlockPlacements)
+            {
+                if (!roots.TryGetValue(placement.RootObjectName, out Transform root))
+                {
+                    GameObject rootObject = EnsureRootObject(placement.RootObjectName, objectLayer);
+                    if (WasCreatedAtRuntime(rootObject))
+                    {
+                        rootObject.transform.localPosition = placement.RootPosition;
+                    }
+
+                    root = rootObject.transform;
+                    roots.Add(placement.RootObjectName, root);
+                }
+
+                EnsureDecorSpriteObject(
+                    placement.ObjectName,
+                    FloorSpriteResourcePath,
+                    placement.LocalPosition,
+                    placement.Scale,
+                    placement.Color,
+                    placement.SortingOrder,
+                    root);
             }
         }
 

@@ -201,6 +201,20 @@ namespace Shared.Data
             return string.Join(", ", parts);
         }
 
+        public string BuildDisplayNameWithCatalogSummary()
+        {
+            string baseName = IngredientName;
+            if (string.IsNullOrWhiteSpace(baseName))
+            {
+                return string.Empty;
+            }
+
+            string catalogSummary = BuildCatalogSummary();
+            return string.IsNullOrWhiteSpace(catalogSummary)
+                ? baseName
+                : $"{baseName} ({catalogSummary})";
+        }
+
         /// <summary>
         /// 직렬화 데이터가 비정상이더라도 재료 참조와 수량을 안전하게 꺼낸다.
         /// </summary>

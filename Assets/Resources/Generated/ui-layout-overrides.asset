@@ -1375,11 +1375,7 @@ MonoBehaviour:
     siblingIndex: 4
   removedObjectNames:
   - ActionAccent
-  - DayPhaseText
   - GuideHelpButton
-  - NextDayButton
-  - NextDayButton_Label
-  - PhaseBadge
   - PopupRightItemBox01
   - PopupRightItemBox02
   - PopupRightItemBox03
@@ -1392,10 +1388,6 @@ MonoBehaviour:
   - PopupRightItemText02
   - PopupRightItemText03
   - PopupRightItemText04
-  - SkipExplorationButton
-  - SkipExplorationButton_Label
-  - SkipServiceButton
-  - SkipServiceButton_Label
   nameEntries:
   - canonicalName: HUDActionGroup
     sceneName: HUDActionGroup

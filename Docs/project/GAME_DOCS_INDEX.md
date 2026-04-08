@@ -22,7 +22,7 @@
 ## 3. `gameplay` 문서
 
 - `GAME_DESIGN_OVERVIEW.md`: 게임 콘셉트, 핵심 루프, 장기 의도
-- `GAMEPLAY_CORE_LOOP.md`: 일과 진행 단계와 전환 기준
+- `GAMEPLAY_CORE_LOOP.md`: 자유 이동형 코어 루프와 서버 데이터 계약
 - `GAMEPLAY_EXPLORATION.md`: 지역, 포털, 위험 지대, 탐험 의도
 - `GAMEPLAY_RESTAURANT_AND_GROWTH.md`: 영업, 업그레이드, 자원 소비와 성장 축
 

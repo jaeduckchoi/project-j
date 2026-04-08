@@ -14,7 +14,7 @@ using Exploration.World;
 namespace CoreLoop.Core
 {
     /// <summary>
-    /// 인벤토리, 창고, 업그레이드, 도구, 하루 흐름, 경제, 씬 이동 상태를 유지하는 전역 게임 진입점이다.
+    /// 인벤토리, 창고, 업그레이드, 도구, 안내 흐름, 경제, 씬 이동 상태를 유지하는 전역 게임 진입점이다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "Core", sourceAssembly: "Assembly-CSharp", sourceClassName: "GameManager")]
     public class GameManager : MonoBehaviour
@@ -122,18 +122,18 @@ namespace CoreLoop.Core
         /// </summary>
         public void LoadScene(string sceneName, string spawnPointId = "")
         {
-            LoadSceneInternal(sceneName, spawnPointId, updateDayCycle: true);
+            LoadSceneInternal(sceneName, spawnPointId, updateGuideState: true);
         }
 
         /// <summary>
-        /// 원격 스냅샷으로 상태를 맞춘 뒤에는 씬만 이동하고 하루 단계는 다시 계산하지 않는다.
+        /// 원격 스냅샷으로 상태를 맞춘 뒤에는 씬만 이동하고 안내 상태는 서버 응답 표시를 우선한다.
         /// </summary>
         public void LoadSceneFromRemoteState(string sceneName, string spawnPointId = "")
         {
-            LoadSceneInternal(sceneName, spawnPointId, updateDayCycle: false);
+            LoadSceneInternal(sceneName, spawnPointId, updateGuideState: false);
         }
 
-        private void LoadSceneInternal(string sceneName, string spawnPointId, bool updateDayCycle)
+        private void LoadSceneInternal(string sceneName, string spawnPointId, bool updateGuideState)
         {
             if (string.IsNullOrWhiteSpace(sceneName))
             {
@@ -149,8 +149,8 @@ namespace CoreLoop.Core
                 return;
             }
 
-            // 하루 단계는 이동 직전에 바뀌어야 허브 복귀 / 출발 상태가 꼬이지 않습니다.
-            if (updateDayCycle)
+            // 위치 안내는 이동 직전에 바뀌어야 허브 복귀 / 출발 상태가 꼬이지 않습니다.
+            if (updateGuideState)
             {
                 dayCycleManager?.HandleSceneTravel(SceneManager.GetActiveScene().name, sceneName, hubSceneName);
             }

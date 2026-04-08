@@ -65,6 +65,7 @@ namespace Restaurant
 
             Dictionary<string, JongguApiIngredientDefinition> ingredientsById = BuildIngredientCatalog(ingredientCatalog);
             ClearRemoteRecipes();
+            remoteCatalogApplied = false;
 
             foreach (JongguApiRecipeDefinition definition in recipes)
             {
@@ -129,6 +130,9 @@ namespace Restaurant
 
             if (remoteRecipes.Count == 0)
             {
+                EnsureRecipeList();
+                RefreshSelectedRecipe();
+                BroadcastState();
                 return;
             }
 
@@ -461,12 +465,16 @@ namespace Restaurant
 
         private void ClearRemoteRecipes()
         {
+            availableRecipes ??= new List<RecipeData>();
+
             foreach (RecipeData recipe in remoteRecipes)
             {
                 if (recipe == null)
                 {
                     continue;
                 }
+
+                availableRecipes.Remove(recipe);
 
                 if (Application.isPlaying)
                 {
@@ -514,18 +522,11 @@ namespace Restaurant
                 return string.Empty;
             }
 
-            string ingredientName = string.IsNullOrWhiteSpace(ingredient.IngredientName)
-                ? ingredient.IngredientId
-                : ingredient.IngredientName;
-            if (string.IsNullOrWhiteSpace(ingredientName))
+            string displayName = ingredient.BuildDisplayNameWithCatalogSummary();
+            if (string.IsNullOrWhiteSpace(displayName))
             {
                 return string.Empty;
             }
-
-            string catalogSummary = ingredient.BuildCatalogSummary();
-            string displayName = string.IsNullOrWhiteSpace(catalogSummary)
-                ? ingredientName
-                : $"{ingredientName} ({catalogSummary})";
 
             if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
             {

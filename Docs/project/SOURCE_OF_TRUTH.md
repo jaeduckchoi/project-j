@@ -44,7 +44,7 @@
 ### 감사 코드
 
 - `PrototypeSceneAudit`는 generated 씬 구조, UI 그룹, 레이아웃 기준의 정본 검증기다.
-- `GameplayAutomationAudit`는 day cycle, popup pause, portal 규칙 같은 회귀 위험 로직의 정본 검증기다.
+- `GameplayAutomationAudit`는 안내 흐름, popup pause, portal 규칙 같은 회귀 위험 로직의 정본 검증기다.
 
 ### 인접 API 계약
 
