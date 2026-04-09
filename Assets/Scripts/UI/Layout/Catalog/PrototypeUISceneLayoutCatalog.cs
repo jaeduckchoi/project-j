@@ -15,6 +15,7 @@ namespace UI.Layout
     /// </summary>
     public static partial class PrototypeUISceneLayoutCatalog
     {
+        // 런타임은 이 파일을 읽기 API로만 사용하고, 에디터 저장/캡처는 sibling partial이 맡습니다.
         private static PrototypeUISceneLayoutSettings _cachedSettings;
 
         /// <summary>

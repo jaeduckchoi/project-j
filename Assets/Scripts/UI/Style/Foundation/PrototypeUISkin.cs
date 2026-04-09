@@ -14,6 +14,7 @@ namespace UI.Style
     /// </summary>
     public static class PrototypeUISkin
     {
+        // Foundation은 실제 sprite 생성/캐시만 맡고, 선택 규칙은 Catalog family에서 가져옵니다.
         private const string LegacyResourceRoot = "Generated/UI/Kenney";
         private const float SpritePixelsPerUnit = 100f;
         private static readonly Dictionary<string, Sprite> CachedSprites = new();

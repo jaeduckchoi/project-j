@@ -19,6 +19,7 @@ namespace UI
 {
     public partial class UIManager
     {
+        // 동적 텍스트, 상세 설명, 팝업 리스트 구성은 Refresh partial에서만 조립합니다.
         private void RefreshHubPopupContent()
         {
             if (!IsHubScene())

@@ -38,6 +38,8 @@
 
 - UI 수정:
   `Docs/project/AGENT_WORKFLOW.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
+- UI 구조/탐색성 리팩토링:
+  `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - 씬 배치나 월드 오브젝트 수정:
   `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - generated 자산, 폰트, 빌더 경로 수정:
@@ -46,6 +48,8 @@
   `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 문서/규칙 체계 정리:
   `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, 이 인덱스
+- 주석/코드 가독성 정리:
+  `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, `Docs/project/GAME_PROJECT_STRUCTURE.md`
 - 게임 의도 확인:
   `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 

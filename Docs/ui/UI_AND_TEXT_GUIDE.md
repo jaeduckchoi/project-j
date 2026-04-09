@@ -3,14 +3,15 @@
 ## 현재 UI 기준
 
 - Canvas 최상위 공용 루트는 `HUDRoot`, `PopupRoot`
-- 런타임 UI 동작의 중심은 `Assets/Scripts/UI/UIManager.cs`(엔트리)와 `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- 레이아웃 catalog 정본은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`이며, 에디터 sync/overlay/capture는 `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 맡는다.
+- UI 코드는 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `UIManager`, `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `Content/Catalog` 아래에 둔다.
+- 런타임 UI 동작의 중심은 `Assets/Scripts/UI/UIManager.cs`(엔트리)와 `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- 레이아웃 catalog 정본은 `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs`이며, 에디터 sync/overlay/capture는 `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 맡는다.
 - 레이아웃 정본은 `Assets/Resources/Generated/ui-layout-overrides.asset`
-- 레이아웃 설정 타입은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
-- 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
-- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
-- 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `PrototypeUISkin.cs`, `PrototypeUITheme.cs`
-- 팝업 콘텐츠 catalog: `Assets/Scripts/UI/Content/PrototypeUIPopupCatalog.cs`
+- 레이아웃 설정 타입은 `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`
+- 레이아웃 partial: `Assets/Scripts/UI/Layout/Definitions/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
+- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/Definitions/PrototypeUIObjectNames.cs`
+- 스타일 catalog: `Assets/Scripts/UI/Style/Catalog/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- 팝업 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - TMP 폰트 해석/한글 fallback: `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
 
 ## 관리 대상 이름
@@ -36,13 +37,13 @@
 
 ## 함께 확인할 코드
 
-- `Assets/Scripts/UI/UIManager.cs`, `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` 및 `.Editor.cs`, `.Editor.Capture.cs`
+- `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs` 및 `.Editor.cs`, `.Editor.Capture.cs`
 - `Assets/Scripts/UI/PopupPauseStateUtility.cs`
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
-- `Assets/Scripts/UI/Layout/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
-- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUISkin.cs`, `PrototypeUITheme.cs`
-- `Assets/Scripts/UI/Content/PrototypeUIPopupCatalog.cs`
+- `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`
+- `Assets/Scripts/UI/Layout/Definitions/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
+- `Assets/Scripts/UI/Style/Catalog/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
 - `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
 - `Assets/Editor/UI/UIManagerEditor.cs`

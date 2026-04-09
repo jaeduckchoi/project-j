@@ -21,7 +21,7 @@
 
 ## 검증
 
-- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
+- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
 - generated 경로 변경: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - API 연동 변경: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`, `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `D:\project-j-api` 계약 문서
 

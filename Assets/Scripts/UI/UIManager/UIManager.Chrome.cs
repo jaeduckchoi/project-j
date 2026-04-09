@@ -18,6 +18,7 @@ namespace UI
 {
     public partial class UIManager
     {
+        // HUD/Popup 시각 요소 생성과 테마 적용은 Chrome partial에 모아 탐색 경로를 고정합니다.
 
         /// <summary>
         /// 현재 UI 구조에 맞춰 패널, 강조선, 텍스트, 버튼 스타일을 한 번에 다시 적용합니다.

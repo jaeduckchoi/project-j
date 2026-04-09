@@ -32,5 +32,6 @@ namespace UI.Layout
     /// </summary>
     public static partial class PrototypeUILayout
     {
+        // 공용 타입 진입점만 두고, 실제 좌표 상수는 Definitions family의 sibling partial에서 유지합니다.
     }
 }

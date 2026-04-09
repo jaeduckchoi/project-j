@@ -46,6 +46,7 @@ namespace UI.Style
     /// </summary>
     public static partial class PrototypeUISkinCatalog
     {
+        // 오브젝트 이름 -> 스프라이트 규칙 매핑은 Catalog family에만 두고, 실제 렌더링은 Foundation에 위임합니다.
         private static readonly Vector4 ButtonSliceBorder = new(6f, 6f, 6f, 6f);
         private static readonly Vector4 PanelSliceBorder = new(8f, 8f, 8f, 8f);
         private const string VectorResourceRoot = "Generated/UI/Vector";

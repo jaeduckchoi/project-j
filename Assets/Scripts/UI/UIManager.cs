@@ -25,6 +25,7 @@ namespace UI
     /// <summary>
     /// 현재 HUD, 허브 팝업, 창고 패널을 한곳에서 갱신하는 최소 UI 관리자입니다.
     /// 코인/평판, 재료, 업그레이드, 상호작용 문구, 단계 표시를 모두 여기서 동기화합니다.
+    /// 엔트리 파일은 shared state와 공용 타입만 두고, 세부 동작은 UIManager 폴더의 partial로 분리합니다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "UIManager")]
     public partial class UIManager : MonoBehaviour
@@ -72,6 +73,7 @@ namespace UI
             "UpgradeText"
         };
 
+        // HUD/Popup에 남겨야 하는 managed object 이름은 엔트리에서 한 번만 선언해 partial 간 기준을 공유합니다.
         private static IEnumerable<string> EnumerateHudCanvasObjectNames()
         {
             yield return "TopLeftPanel";

@@ -46,6 +46,7 @@ namespace UI.Content
     /// </summary>
     public static class PrototypeUIPopupCatalog
     {
+        // 실제 런타임 데이터가 아니라 고정 헤더/프리뷰 문구만 이 catalog에 유지합니다.
         /// <summary>
         /// 패널 종류에 따라 팝업 제목과 좌우 캡션을 반환한다.
         /// </summary>
