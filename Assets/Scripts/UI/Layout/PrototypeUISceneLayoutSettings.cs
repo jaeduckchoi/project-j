@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 #endif
 
 // UI.Layout 네임스페이스
