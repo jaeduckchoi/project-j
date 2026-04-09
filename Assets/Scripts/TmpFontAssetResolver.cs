@@ -11,6 +11,7 @@ namespace Shared
     /// </summary>
     public static class TmpFontAssetResolver
     {
+        private const string KoreanGlyphValidationSample = "메뉴를 고르고 영업을 시작하세요";
         private static readonly string[] KoreanOsFontNames =
         {
             "Malgun Gothic",
@@ -116,13 +117,36 @@ namespace Shared
                 return cachedKoreanFont;
             }
 
-            Font osFont = Font.CreateDynamicFontFromOSFont(KoreanOsFontNames, 16);
+            foreach (string fontName in KoreanOsFontNames)
+            {
+                TMP_FontAsset runtimeFont = TryCreateKoreanFontAsset(fontName);
+                if (runtimeFont == null)
+                {
+                    continue;
+                }
+
+                cachedKoreanFont = runtimeFont;
+                return cachedKoreanFont;
+            }
+
+            Debug.LogWarning("Shared.TmpFontAssetResolver: 사용할 수 있는 한국어 OS 폰트를 찾지 못했습니다. 한글 표시가 필요하면 프로젝트에 TMP 폰트 에셋을 지정해야 합니다.");
+            return null;
+        }
+
+        private static TMP_FontAsset TryCreateKoreanFontAsset(string fontName)
+        {
+            if (string.IsNullOrWhiteSpace(fontName))
+            {
+                return null;
+            }
+
+            Font osFont = Font.CreateDynamicFontFromOSFont(fontName, 16);
             if (osFont == null)
             {
                 return null;
             }
 
-            cachedKoreanFont = TMP_FontAsset.CreateFontAsset(
+            TMP_FontAsset fontAsset = TMP_FontAsset.CreateFontAsset(
                 osFont,
                 90,
                 9,
@@ -132,16 +156,23 @@ namespace Shared
                 AtlasPopulationMode.Dynamic,
                 true);
 
-            if (cachedKoreanFont == null)
+            if (fontAsset == null)
             {
                 return null;
             }
 
-            cachedKoreanFont.name = "Runtime Korean TMP Font";
-            cachedKoreanFont.hideFlags = HideFlags.HideAndDontSave;
-            cachedKoreanFont.atlasPopulationMode = AtlasPopulationMode.Dynamic;
-            cachedKoreanFont.isMultiAtlasTexturesEnabled = true;
-            return cachedKoreanFont;
+            if (!fontAsset.TryAddCharacters(KoreanGlyphValidationSample, out string missingCharacters)
+                || !string.IsNullOrEmpty(missingCharacters))
+            {
+                Object.Destroy(fontAsset);
+                return null;
+            }
+
+            fontAsset.name = $"Runtime Korean TMP Font ({fontName})";
+            fontAsset.hideFlags = HideFlags.HideAndDontSave;
+            fontAsset.atlasPopulationMode = AtlasPopulationMode.Dynamic;
+            fontAsset.isMultiAtlasTexturesEnabled = true;
+            return fontAsset;
         }
 
         private static void AddFallbackFont(TMP_FontAsset primary, TMP_FontAsset fallback)

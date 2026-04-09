@@ -61,6 +61,7 @@ Assets
 - 경로 정본: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - UI 리소스: `Assets/Resources/Generated/Sprites/UI`
 - 플레이어 리소스: `Assets/Resources/Generated/Sprites/Player`
+  기본 프레임은 `base`, idle 보조 프레임은 `idle/front`, `idle/back`, `idle/side`에 둔다.
 - 게임 데이터: `Assets/Resources/Generated/GameData`
 
 ## 런타임 기준 파일

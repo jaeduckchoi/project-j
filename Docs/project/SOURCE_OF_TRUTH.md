@@ -27,6 +27,7 @@
 - generated 자산 루트와 리소스 로드 경로의 정본은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - generated UI 리소스는 `Assets/Resources/Generated/Sprites/UI`
 - generated 플레이어 리소스는 `Assets/Resources/Generated/Sprites/Player`
+  기본 프레임 정본은 `base`, idle 보조 프레임 정본은 `idle/<direction>` 구조를 따른다.
 - generated 게임 데이터는 `Assets/Resources/Generated/GameData`
 
 ### 에디터 코드

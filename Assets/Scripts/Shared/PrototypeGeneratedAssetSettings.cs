@@ -55,12 +55,18 @@ namespace Shared
         public string UiPanelSpriteRoot => CombineAssetPath(UiSpriteRoot, "Panels");
         public string RecipeSpriteRoot => CombineAssetPath(SpriteRoot, "Recipes");
 
-        public string PlayerFrontSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-front.png");
-        public string PlayerBackSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-back.png");
-        public string PlayerSideSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-side.png");
-        public string PlayerFrontIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-front-idle-2.png");
-        public string PlayerBackIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-back-idle-2.png");
-        public string PlayerSideIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-side-idle-2.png");
+        public string PlayerBaseSpriteRoot => CombineAssetPath(PlayerSpriteRoot, "base");
+        public string PlayerIdleSpriteRoot => CombineAssetPath(PlayerSpriteRoot, "idle");
+        public string PlayerIdleFrontSpriteRoot => CombineAssetPath(PlayerIdleSpriteRoot, "front");
+        public string PlayerIdleBackSpriteRoot => CombineAssetPath(PlayerIdleSpriteRoot, "back");
+        public string PlayerIdleSideSpriteRoot => CombineAssetPath(PlayerIdleSpriteRoot, "side");
+
+        public string PlayerFrontSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "front.png");
+        public string PlayerBackSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "back.png");
+        public string PlayerSideSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "side.png");
+        public string PlayerFrontIdleFrame2SpritePath => CombineAssetPath(PlayerIdleFrontSpriteRoot, "frame-2.png");
+        public string PlayerBackIdleFrame2SpritePath => CombineAssetPath(PlayerIdleBackSpriteRoot, "frame-2.png");
+        public string PlayerSideIdleFrame2SpritePath => CombineAssetPath(PlayerIdleSideSpriteRoot, "frame-2.png");
 
         public string PlayerFrontSpriteResourcePath => ToResourcesLoadPath(PlayerFrontSpritePath);
         public string PlayerBackSpriteResourcePath => ToResourcesLoadPath(PlayerBackSpritePath);
