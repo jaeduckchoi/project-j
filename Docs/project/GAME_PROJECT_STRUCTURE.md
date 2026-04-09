@@ -15,7 +15,6 @@
 │     ├─ local
 │     ├─ project
 │     ├─ scene
-│     └─ ui
 ├─ Assets
 ├─ Packages
 ├─ ProjectSettings
@@ -53,9 +52,6 @@
 
 ```text
 Assets
-├─ Design
-│  └─ GeneratedSources
-│     └─ UI
 ├─ Editor
 │  └─ UI
 ├─ Resources
@@ -95,7 +91,7 @@ Assets
 - `Assets/Editor`: 빌더, 감사, 자동 동기화, 커스텀 에디터
 - `Assets/Scenes`: 지원 씬과 플레이 가능 씬
 - `Assets/Resources/Generated`: generated 자산과 런타임 로드 경로
-- `Assets/Design`: 디자인 원본 저장소. 런타임 코드가 직접 참조하지 않는다.
+- 저장소 안에는 더 이상 `Assets/Design` 원본 저장소를 두지 않는다. 필요하면 `PrototypeGeneratedAssetSettings`에 외부 원본 경로를 선택적으로 연결한다.
 - `Packages`, `ProjectSettings`: Unity 패키지와 프로젝트 설정의 정본
 
 ## 5. 런타임 코드 기준
@@ -136,11 +132,10 @@ Assets
 
 ### 7-4. UI 스프라이트
 
-- source 입력 루트: `Assets/Design/GeneratedSources/UI`
-- source 하위 카테고리: `Buttons`, `MessageBoxes`, `PanelVariants`
-- output 루트: `Assets/Resources/Generated/Sprites/UI`
-- output 하위 카테고리: `Buttons`, `MessageBoxes`, `Panels`
-- 즉 source의 `PanelVariants`가 output에서 `Panels`로 정리된다.
+- 저장소 안의 작업 기준 루트는 `Assets/Resources/Generated/Sprites/UI`
+- 하위 카테고리는 `Buttons`, `MessageBoxes`, `Panels`
+- 선택적 외부 원본 경로는 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`와 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`에 비워 두거나 연결한다.
+- 외부 원본이 연결돼 있으면 기존 `Buttons`, `MessageBoxes`, `PanelVariants` 입력 구조를 그대로 쓸 수 있고, output에서는 `Panels`로 정리된다.
 
 ## 8. 네임스페이스와 어셈블리 기준
 

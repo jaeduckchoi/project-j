@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,8 +9,8 @@ using UnityEditor;
 namespace Shared
 {
     /// <summary>
-    /// 생성 자산 경로와 허브 아트 원본, 플레이어/월드 텍스트 기본값을 한 곳에서 관리합니다.
-    /// 빌더를 최소화하더라도 런타임, 에디터 감사, 보조 도구가 같은 경로 기준을 공유하도록 맞춥니다.
+    /// 생성 자산 경로와 선택적 외부 원본, 플레이어/월드 텍스트 기본값을 한 곳에서 관리합니다.
+    /// 외부 원본 경로가 비어 있으면 빌더는 현재 generated 출력물을 그대로 유지합니다.
     /// </summary>
     [CreateAssetMenu(fileName = DefaultAssetFileName, menuName = "Jonggu Restaurant/Shared/Generated Asset Settings")]
     public sealed class PrototypeGeneratedAssetSettings : ScriptableObject
@@ -23,37 +24,37 @@ namespace Shared
 
         private const string DefaultResourcesGeneratedRoot = "Assets/Resources/Generated";
         private const string DefaultSceneRoot = "Assets/Scenes";
-        private const string DefaultUiGeneratedSourceRoot = "Assets/Design/GeneratedSources/UI";
-        private const string DefaultHubFloorTileDesignSourcePath = "Assets/Design/Tile set-20260405T131607Z-3-001/Tile set/Hub Tile/Wooden tile.png";
-        private const string DefaultHubBarDesignSourcePath = "Assets/Design/Object-20260405T122251Z-3-001/Object/Main Hub/Counter.png";
-        private const string DefaultHubWallBackgroundHorizontalWallDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 5.png";
-        private const string DefaultHubWallBackgroundVerticalWallDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 11.png";
-        private const string DefaultHubWallBackgroundFillDesignSourcePath = "Assets/Design/Tile set-20260405T131607Z-3-001/Tile set/Stone Tile/Stone Tile 4.png";
-        private const string DefaultHubWallBackgroundBottomLeftDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 10.png";
-        private const string DefaultHubWallBackgroundBottomRightDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 12.png";
-        private const string DefaultHubFrontOutlineTopLeftDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 1.png";
-        private const string DefaultHubFrontOutlineHorizontalWallDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 2.png";
-        private const string DefaultHubFrontOutlineBottomRightDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 9.png";
-        private const string DefaultHubFrontOutlineSideDesignSourcePath = "Assets/Design/Wall set-20260405T131612Z-3-001/Wall set/Stone Wall/Stone Wall 4.png";
-        private const string DefaultCloseButtonDesignSourcePath = "Assets/Design/GeneratedSources/UI/Buttons/close-button.png";
-        private const string DefaultHelpButtonDesignSourcePath = "Assets/Design/GeneratedSources/UI/Buttons/help-button.png";
-        private const string DefaultSystemTextBoxDesignSourcePath = "Assets/Design/GeneratedSources/UI/MessageBoxes/system-text-box.png";
-        private const string DefaultInteractionTextBoxDesignSourcePath = "Assets/Design/GeneratedSources/UI/MessageBoxes/interaction-text-box.png";
-        private const string DefaultDarkOutlinePanelDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel.png";
-        private const string DefaultDarkOutlinePanelAltDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel-alt.png";
-        private const string DefaultDarkSolidPanelDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/dark-solid-panel.png";
-        private const string DefaultDarkThinOutlinePanelDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/dark-thin-outline-panel.png";
-        private const string DefaultLightOutlinePanelDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/light-outline-panel.png";
-        private const string DefaultLightSolidPanelDesignSourcePath = "Assets/Design/GeneratedSources/UI/PanelVariants/light-solid-panel.png";
+        private const string DefaultUiGeneratedSourceRoot = "";
+        private const string DefaultHubFloorTileDesignSourcePath = "";
+        private const string DefaultHubBarDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundHorizontalWallDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundVerticalWallDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundFillDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundBottomLeftDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundBottomRightDesignSourcePath = "";
+        private const string DefaultHubFrontOutlineTopLeftDesignSourcePath = "";
+        private const string DefaultHubFrontOutlineHorizontalWallDesignSourcePath = "";
+        private const string DefaultHubFrontOutlineBottomRightDesignSourcePath = "";
+        private const string DefaultHubFrontOutlineSideDesignSourcePath = "";
+        private const string DefaultCloseButtonDesignSourcePath = "";
+        private const string DefaultHelpButtonDesignSourcePath = "";
+        private const string DefaultSystemTextBoxDesignSourcePath = "";
+        private const string DefaultInteractionTextBoxDesignSourcePath = "";
+        private const string DefaultDarkOutlinePanelDesignSourcePath = "";
+        private const string DefaultDarkOutlinePanelAltDesignSourcePath = "";
+        private const string DefaultDarkSolidPanelDesignSourcePath = "";
+        private const string DefaultDarkThinOutlinePanelDesignSourcePath = "";
+        private const string DefaultLightOutlinePanelDesignSourcePath = "";
+        private const string DefaultLightSolidPanelDesignSourcePath = "";
 
         [Header("출력 루트")]
         [SerializeField] private string resourcesGeneratedRoot = DefaultResourcesGeneratedRoot;
         [SerializeField] private string sceneRoot = DefaultSceneRoot;
 
-        [Header("UI 원본 루트")]
+        [Header("UI 외부 원본 루트(선택)")]
         [SerializeField] private string uiGeneratedSourceRoot = DefaultUiGeneratedSourceRoot;
 
-        [Header("허브 원본 경로")]
+        [Header("허브 외부 원본 경로(선택)")]
         [SerializeField] private string hubFloorTileDesignSourcePath = DefaultHubFloorTileDesignSourcePath;
         [SerializeField] private string hubBarDesignSourcePath = DefaultHubBarDesignSourcePath;
         [SerializeField] private string hubWallBackgroundHorizontalWallDesignSourcePath = DefaultHubWallBackgroundHorizontalWallDesignSourcePath;
@@ -66,7 +67,7 @@ namespace Shared
         [SerializeField] private string hubFrontOutlineBottomRightDesignSourcePath = DefaultHubFrontOutlineBottomRightDesignSourcePath;
         [SerializeField] private string hubFrontOutlineSideDesignSourcePath = DefaultHubFrontOutlineSideDesignSourcePath;
 
-        [Header("UI 원본 경로")]
+        [Header("UI 외부 원본 경로(선택)")]
         [SerializeField] private string closeButtonDesignSourcePath = DefaultCloseButtonDesignSourcePath;
         [SerializeField] private string helpButtonDesignSourcePath = DefaultHelpButtonDesignSourcePath;
         [SerializeField] private string systemTextBoxDesignSourcePath = DefaultSystemTextBoxDesignSourcePath;
@@ -175,11 +176,25 @@ namespace Shared
         public string AbandonedMineScenePath => CombineAssetPath(SceneRoot, "AbandonedMine.unity");
         public string WindHillScenePath => CombineAssetPath(SceneRoot, "WindHill.unity");
 
-        public string[] SharedExplorationHudTargetScenes =>
+        public string[] CanonicalExplorationScenePaths =>
             new[] { BeachScenePath, DeepForestScenePath, AbandonedMineScenePath, WindHillScenePath };
 
-        public string[] ManagedScenePaths =>
+        public string[] CanonicalManagedScenePaths =>
             new[] { SharedExplorationHudSourceScene, BeachScenePath, DeepForestScenePath, AbandonedMineScenePath, WindHillScenePath };
+
+        public string[] SharedExplorationHudTargetScenes =>
+#if UNITY_EDITOR
+            FilterExistingScenePaths(CanonicalExplorationScenePaths);
+#else
+            CanonicalExplorationScenePaths;
+#endif
+
+        public string[] ManagedScenePaths =>
+#if UNITY_EDITOR
+            FilterExistingScenePaths(CanonicalManagedScenePaths);
+#else
+            CanonicalManagedScenePaths;
+#endif
 
         public string HubFloorBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub-floor-background.png");
         public string HubFloorTileSpritePath => CombineAssetPath(HubSpriteRoot, "hub-floor-tile.png");
@@ -243,6 +258,36 @@ namespace Shared
             return _cachedSettings;
         }
 
+        private static string[] FilterExistingScenePaths(string[] scenePaths)
+        {
+            if (scenePaths == null || scenePaths.Length == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            string[] existingScenePaths = new string[scenePaths.Length];
+            int existingCount = 0;
+
+            for (int index = 0; index < scenePaths.Length; index++)
+            {
+                string scenePath = scenePaths[index];
+                if (string.IsNullOrWhiteSpace(scenePath) || !File.Exists(scenePath))
+                {
+                    continue;
+                }
+
+                existingScenePaths[existingCount++] = scenePath;
+            }
+
+            if (existingCount == existingScenePaths.Length)
+            {
+                return existingScenePaths;
+            }
+
+            Array.Resize(ref existingScenePaths, existingCount);
+            return existingScenePaths;
+        }
+
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
         private static void EnsureSettingsAssetExistsOnEditorLoad()
@@ -304,30 +349,40 @@ namespace Shared
             }
 
             sceneRoot = NormalizeAssetPath(sceneRoot, DefaultSceneRoot);
-            uiGeneratedSourceRoot = NormalizeAssetPath(uiGeneratedSourceRoot, DefaultUiGeneratedSourceRoot);
+            uiGeneratedSourceRoot = NormalizeOptionalAssetPath(uiGeneratedSourceRoot);
 
-            hubFloorTileDesignSourcePath = NormalizeAssetPath(hubFloorTileDesignSourcePath, DefaultHubFloorTileDesignSourcePath);
-            hubBarDesignSourcePath = NormalizeAssetPath(hubBarDesignSourcePath, DefaultHubBarDesignSourcePath);
-            hubWallBackgroundHorizontalWallDesignSourcePath = NormalizeAssetPath(hubWallBackgroundHorizontalWallDesignSourcePath, DefaultHubWallBackgroundHorizontalWallDesignSourcePath);
-            hubWallBackgroundVerticalWallDesignSourcePath = NormalizeAssetPath(hubWallBackgroundVerticalWallDesignSourcePath, DefaultHubWallBackgroundVerticalWallDesignSourcePath);
-            hubWallBackgroundFillDesignSourcePath = NormalizeAssetPath(hubWallBackgroundFillDesignSourcePath, DefaultHubWallBackgroundFillDesignSourcePath);
-            hubWallBackgroundBottomLeftDesignSourcePath = NormalizeAssetPath(hubWallBackgroundBottomLeftDesignSourcePath, DefaultHubWallBackgroundBottomLeftDesignSourcePath);
-            hubWallBackgroundBottomRightDesignSourcePath = NormalizeAssetPath(hubWallBackgroundBottomRightDesignSourcePath, DefaultHubWallBackgroundBottomRightDesignSourcePath);
-            hubFrontOutlineTopLeftDesignSourcePath = NormalizeAssetPath(hubFrontOutlineTopLeftDesignSourcePath, DefaultHubFrontOutlineTopLeftDesignSourcePath);
-            hubFrontOutlineHorizontalWallDesignSourcePath = NormalizeAssetPath(hubFrontOutlineHorizontalWallDesignSourcePath, DefaultHubFrontOutlineHorizontalWallDesignSourcePath);
-            hubFrontOutlineBottomRightDesignSourcePath = NormalizeAssetPath(hubFrontOutlineBottomRightDesignSourcePath, DefaultHubFrontOutlineBottomRightDesignSourcePath);
-            hubFrontOutlineSideDesignSourcePath = NormalizeAssetPath(hubFrontOutlineSideDesignSourcePath, DefaultHubFrontOutlineSideDesignSourcePath);
+            hubFloorTileDesignSourcePath = NormalizeOptionalAssetPath(hubFloorTileDesignSourcePath);
+            hubBarDesignSourcePath = NormalizeOptionalAssetPath(hubBarDesignSourcePath);
+            hubWallBackgroundHorizontalWallDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundHorizontalWallDesignSourcePath);
+            hubWallBackgroundVerticalWallDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundVerticalWallDesignSourcePath);
+            hubWallBackgroundFillDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundFillDesignSourcePath);
+            hubWallBackgroundBottomLeftDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundBottomLeftDesignSourcePath);
+            hubWallBackgroundBottomRightDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundBottomRightDesignSourcePath);
+            hubFrontOutlineTopLeftDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineTopLeftDesignSourcePath);
+            hubFrontOutlineHorizontalWallDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineHorizontalWallDesignSourcePath);
+            hubFrontOutlineBottomRightDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineBottomRightDesignSourcePath);
+            hubFrontOutlineSideDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineSideDesignSourcePath);
 
-            closeButtonDesignSourcePath = NormalizeAssetPath(closeButtonDesignSourcePath, DefaultCloseButtonDesignSourcePath);
-            helpButtonDesignSourcePath = NormalizeAssetPath(helpButtonDesignSourcePath, DefaultHelpButtonDesignSourcePath);
-            systemTextBoxDesignSourcePath = NormalizeAssetPath(systemTextBoxDesignSourcePath, DefaultSystemTextBoxDesignSourcePath);
-            interactionTextBoxDesignSourcePath = NormalizeAssetPath(interactionTextBoxDesignSourcePath, DefaultInteractionTextBoxDesignSourcePath);
-            darkOutlinePanelDesignSourcePath = NormalizeAssetPath(darkOutlinePanelDesignSourcePath, DefaultDarkOutlinePanelDesignSourcePath);
-            darkOutlinePanelAltDesignSourcePath = NormalizeAssetPath(darkOutlinePanelAltDesignSourcePath, DefaultDarkOutlinePanelAltDesignSourcePath);
-            darkSolidPanelDesignSourcePath = NormalizeAssetPath(darkSolidPanelDesignSourcePath, DefaultDarkSolidPanelDesignSourcePath);
-            darkThinOutlinePanelDesignSourcePath = NormalizeAssetPath(darkThinOutlinePanelDesignSourcePath, DefaultDarkThinOutlinePanelDesignSourcePath);
-            lightOutlinePanelDesignSourcePath = NormalizeAssetPath(lightOutlinePanelDesignSourcePath, DefaultLightOutlinePanelDesignSourcePath);
-            lightSolidPanelDesignSourcePath = NormalizeAssetPath(lightSolidPanelDesignSourcePath, DefaultLightSolidPanelDesignSourcePath);
+            closeButtonDesignSourcePath = NormalizeOptionalAssetPath(closeButtonDesignSourcePath);
+            helpButtonDesignSourcePath = NormalizeOptionalAssetPath(helpButtonDesignSourcePath);
+            systemTextBoxDesignSourcePath = NormalizeOptionalAssetPath(systemTextBoxDesignSourcePath);
+            interactionTextBoxDesignSourcePath = NormalizeOptionalAssetPath(interactionTextBoxDesignSourcePath);
+            darkOutlinePanelDesignSourcePath = NormalizeOptionalAssetPath(darkOutlinePanelDesignSourcePath);
+            darkOutlinePanelAltDesignSourcePath = NormalizeOptionalAssetPath(darkOutlinePanelAltDesignSourcePath);
+            darkSolidPanelDesignSourcePath = NormalizeOptionalAssetPath(darkSolidPanelDesignSourcePath);
+            darkThinOutlinePanelDesignSourcePath = NormalizeOptionalAssetPath(darkThinOutlinePanelDesignSourcePath);
+            lightOutlinePanelDesignSourcePath = NormalizeOptionalAssetPath(lightOutlinePanelDesignSourcePath);
+            lightSolidPanelDesignSourcePath = NormalizeOptionalAssetPath(lightSolidPanelDesignSourcePath);
+        }
+
+        private static string NormalizeOptionalAssetPath(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            return NormalizeAssetPath(value, string.Empty);
         }
 
         private static string NormalizeAssetPath(string value, string fallback)

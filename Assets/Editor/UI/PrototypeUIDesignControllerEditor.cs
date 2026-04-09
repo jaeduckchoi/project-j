@@ -72,7 +72,7 @@ namespace Editor.UI
                 + "- 같은 이름 UI는 빌더와 UIManager가 저장된 값을 다시 적용합니다.\n"
                 + "- 첫 Sync 시 Assets/Resources/Generated/ui-layout-overrides.asset이 자동 생성됩니다.\n"
                 + "- 프로토타입 빌드 및 감사는 먼저 Hub Canvas 값을 읽고, 마지막에 현재 열려 있는 씬 Canvas 값을 다시 덮어씁니다.\n"
-                + "- 메인 빌드는 생성 자산과 Build Settings를 동기화하고, 누락된 지원 씬만 최소한으로 다시 만듭니다.\n\n"
+                + "- 메인 빌드는 생성 자산과 Build Settings를 동기화하고, 현재 프로젝트에 남아 있는 관리 씬만 유지합니다.\n\n"
                 + "[Tools > Jonggu Restaurant 메뉴 역할]\n"
                 + "- 프로토타입 빌드 및 감사: 생성 자산, Build Settings, Canvas 오버라이드, 생성 씬 감사를 한 번에 동기화합니다.\n"
                 + "- 정적인 씬 값은 지원 씬에 직접 저장한 직렬화를 기준으로 유지합니다.",

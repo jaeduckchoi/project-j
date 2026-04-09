@@ -290,12 +290,8 @@ namespace Editor
         }
 
         /// <summary>
-        /// 허브 전면 프레임은 런타임 Resources 경로를 유지하면서도 디자인 원본 타일 조합으로 다시 생성한다.
-        /// 지정한 좌상단/우하단 코너, 가로 벽, 세로 벽 타일을 사용하고 반대편은 대칭 미러링으로 맞춘다.
-        /// </summary>
-        /// <summary>
-        /// 허브 전면 프레임은 이전 아웃라인 실루엣을 유지한 채 디자인 원본 타일로 다시 생성한다.
-        /// 우상단과 좌하단은 비워 두고, 좌상단 코너와 우하단 코너만 지정 타일로 배치한다.
+        /// 허브 벽 배경은 런타임 Resources 경로를 유지하면서도 선택적 외부 타일 조합으로 다시 생성한다.
+        /// 외부 타일이 없으면 현재 generated 스프라이트를 그대로 사용한다.
         /// </summary>
         private static Sprite EnsureHubWallBackgroundSpriteAsset()
         {
@@ -822,7 +818,8 @@ namespace Editor
         }
 
         /// <summary>
-        /// 디자인 원본 UI PNG를 generated 스프라이트 경로로 복사하고 런타임 Resources 경로에도 같은 구조로 미러링한다.
+        /// 선택적 외부 UI PNG를 generated 스프라이트 경로로 복사한다.
+        /// 외부 PNG가 없으면 현재 generated 출력물을 그대로 유지한다.
         /// </summary>
         private static void CreateUiDesignSprites()
         {
@@ -1385,14 +1382,9 @@ namespace Editor
 
         private static void UpdateBuildSettings()
         {
-            EditorBuildSettings.scenes = new[]
-            {
-                new EditorBuildSettingsScene(SceneRoot + "/Hub.unity", true),
-                new EditorBuildSettingsScene(SceneRoot + "/Beach.unity", true),
-                new EditorBuildSettingsScene(SceneRoot + "/DeepForest.unity", true),
-                new EditorBuildSettingsScene(SceneRoot + "/AbandonedMine.unity", true),
-                new EditorBuildSettingsScene(SceneRoot + "/WindHill.unity", true)
-            };
+            EditorBuildSettings.scenes = ManagedScenePaths
+                .Select(scenePath => new EditorBuildSettingsScene(scenePath, true))
+                .ToArray();
         }
 
         private static void EnsureFolder(string parent, string child)

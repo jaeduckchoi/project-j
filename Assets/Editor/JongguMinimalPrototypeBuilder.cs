@@ -366,25 +366,6 @@ namespace Editor
                 BuildHubCollisionLayout();
 
                 CreateSpawnPoint("HubEntry", HubRoomLayout.HubEntryPosition, "HubEntry");
-                CreatePortal("GoToBeach", HubRoomLayout.GoToBeachPosition, sprites.Portal, "Beach", "BeachEntry", "바닷가로 이동", "바닷가로", ToolType.None, 0, "", HubRoomLayout.PortalScale);
-                CreatePortal("GoToDeepForest", HubRoomLayout.GoToDeepForestPosition, sprites.Portal, "DeepForest", "ForestEntry", "깊은 숲으로 이동", "깊은 숲", ToolType.None, 0, "", HubRoomLayout.PortalScale);
-                CreatePortal(
-                    "GoToAbandonedMine",
-                    HubRoomLayout.GoToAbandonedMinePosition,
-                    sprites.Portal,
-                    "AbandonedMine",
-                    "MineEntry",
-                    "폐광산으로 이동",
-                    "폐광산",
-                    ToolType.Lantern,
-                    0,
-                    "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.",
-                    HubRoomLayout.PortalScale);
-                CreatePortal("GoToWindHill", HubRoomLayout.GoToWindHillPosition, sprites.Portal, "WindHill", "WindHillEntry", "바람 언덕으로 이동", "바람 언덕", ToolType.None, 0, "", HubRoomLayout.PortalScale);
-                CreateFeaturePad("BeachPortalPad", HubRoomLayout.BeachPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.98f, 0.83f, 0.51f));
-                CreateFeaturePad("ForestPortalPad", HubRoomLayout.ForestPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.70f, 0.86f, 0.44f));
-                CreateFeaturePad("MinePortalPad", HubRoomLayout.MinePortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.74f, 0.74f, 0.78f));
-                CreateFeaturePad("WindPortalPad", HubRoomLayout.WindPortalPadPosition, HubRoomLayout.PortalPadScale, sprites.Floor, new Color(0.82f, 0.92f, 0.98f));
 
                 RestaurantManager restaurantManager = CreateRestaurantManager(recipes);
                 CreateRecipeSelector(HubRoomLayout.RecipeSelectorPosition, sprites.Selector, restaurantManager);

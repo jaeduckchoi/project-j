@@ -26,12 +26,12 @@
 
 ## generated UI 경로
 
-- 디자인 원본 루트: `Assets/Design/GeneratedSources/UI`
-- 입력 분류: `Buttons`, `MessageBoxes`, `PanelVariants`
 - 런타임 출력 루트: `Assets/Resources/Generated/Sprites/UI`
 - 출력 분류: `Buttons`, `MessageBoxes`, `Panels`
 - 위 경로의 실제 기준은 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`과 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`입니다.
-- `Assets/Design`는 디자인 원본 보관소이며, 런타임 코드가 직접 참조하지 않습니다.
+- 저장소 안에는 더 이상 `Assets/Design` 원본을 두지 않습니다.
+- 필요하면 설정 asset에 외부 UI 원본 경로를 선택적으로 연결하고, 비워 두면 현재 generated UI PNG를 그대로 유지합니다.
+- 외부 UI 원본을 연결할 때는 입력 분류 `Buttons`, `MessageBoxes`, `PanelVariants`를 그대로 쓸 수 있습니다.
 
 ## 폰트와 텍스트
 

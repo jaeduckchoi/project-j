@@ -69,7 +69,7 @@ namespace Editor
             ExecutePrototypeBuild(runAudit: true);
             EditorUtility.DisplayDialog(
                 "종구의 식당",
-                "생성 자산 동기화와 생성 씬 감사를 완료했습니다. 기존 지원 씬에 저장한 정적 값은 유지되며, 누락된 지원 씬만 자동으로 다시 만듭니다.",
+                "생성 자산 동기화와 생성 씬 감사를 완료했습니다. 기존 관리 씬에 저장한 정적 값은 유지되며, 현재 프로젝트에 남아 있는 씬만 관리 대상으로 유지합니다.",
                 "OK");
         }
 
@@ -111,7 +111,7 @@ namespace Editor
 
         /// <summary>
         /// 메인 빌드는 생성 자산과 빌드 설정만 비파괴로 동기화하고,
-        /// 누락된 지원 씬이 있을 때만 최소한으로 다시 만들어 에디터 씬에 저장한 정적 값을 보존합니다.
+        /// 현재 프로젝트에 남아 있는 관리 씬만 최소한으로 다시 정리해 에디터 씬에 저장한 정적 값을 보존합니다.
         /// </summary>
         private static void ExecutePrototypeBuild(bool runAudit)
         {
@@ -184,16 +184,16 @@ namespace Editor
         }
 
         /// <summary>
-        /// 기존 지원 씬은 덮어쓰지 않고, 누락된 씬만 최소한으로 다시 만들어 Build Settings를 맞춥니다.
-        /// 씬의 정적 값은 에디터에서 직접 저장한 직렬화를 정본으로 사용합니다.
+        /// 기존 관리 씬은 덮어쓰지 않고, 현재 프로젝트에 남아 있는 씬만 최소한으로 다시 정리해 Build Settings를 맞춥니다.
+        /// 의도적으로 제거한 탐험 씬은 자동으로 복구하지 않으며, 씬의 정적 값은 에디터에서 직접 저장한 직렬화를 정본으로 사용합니다.
         /// </summary>
         private static void BuildMissingPrototypeScenes(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
         {
             EnsureManagedSceneExists(SharedExplorationHudSourceScene, () => BuildHubScene(resources, recipes, sprites));
-            EnsureManagedSceneExists(SceneRoot + "/Beach.unity", () => BuildBeachScene(resources, sprites));
-            EnsureManagedSceneExists(SceneRoot + "/DeepForest.unity", () => BuildDeepForestScene(resources, sprites));
-            EnsureManagedSceneExists(SceneRoot + "/AbandonedMine.unity", () => BuildAbandonedMineScene(resources, sprites));
-            EnsureManagedSceneExists(SceneRoot + "/WindHill.unity", () => BuildWindHillScene(resources, sprites));
+            EnsureTrackedExplorationSceneExists(SceneRoot + "/Beach.unity", () => BuildBeachScene(resources, sprites));
+            EnsureTrackedExplorationSceneExists(SceneRoot + "/DeepForest.unity", () => BuildDeepForestScene(resources, sprites));
+            EnsureTrackedExplorationSceneExists(SceneRoot + "/AbandonedMine.unity", () => BuildAbandonedMineScene(resources, sprites));
+            EnsureTrackedExplorationSceneExists(SceneRoot + "/WindHill.unity", () => BuildWindHillScene(resources, sprites));
             UpdateBuildSettings();
         }
 
@@ -402,6 +402,28 @@ namespace Editor
             return Array.Exists(
                 SharedExplorationHudTargetScenes,
                 targetScenePath => string.Equals(scenePath, targetScenePath, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static void EnsureTrackedExplorationSceneExists(string scenePath, Action buildAction)
+        {
+            if (!IsManagedScenePath(scenePath))
+            {
+                return;
+            }
+
+            EnsureManagedSceneExists(scenePath, buildAction);
+        }
+
+        private static bool IsManagedScenePath(string scenePath)
+        {
+            if (string.IsNullOrWhiteSpace(scenePath))
+            {
+                return false;
+            }
+
+            return Array.Exists(
+                ManagedScenePaths,
+                managedScenePath => string.Equals(managedScenePath, scenePath, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

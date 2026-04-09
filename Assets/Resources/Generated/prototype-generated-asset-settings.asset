@@ -14,39 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Jonggu.Shared::Shared.PrototypeGeneratedAssetSettings
   resourcesGeneratedRoot: Assets/Resources/Generated
   sceneRoot: Assets/Scenes
-  uiGeneratedSourceRoot: Assets/Design/GeneratedSources/UI
-  hubFloorTileDesignSourcePath: Assets/Design/Tile set-20260405T131607Z-3-001/Tile
-    set/Hub Tile/Wooden tile.png
-  hubBarDesignSourcePath: Assets/Design/Object-20260405T122251Z-3-001/Object/Main
-    Hub/Counter.png
-  hubWallBackgroundHorizontalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 5.png
-  hubWallBackgroundVerticalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 11.png
-  hubWallBackgroundFillDesignSourcePath: Assets/Design/Tile set-20260405T131607Z-3-001/Tile
-    set/Stone Tile/Stone Tile 4.png
-  hubWallBackgroundBottomLeftDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 10.png
-  hubWallBackgroundBottomRightDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 12.png
-  hubFrontOutlineTopLeftDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 1.png
-  hubFrontOutlineHorizontalWallDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 2.png
-  hubFrontOutlineBottomRightDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 9.png
-  hubFrontOutlineSideDesignSourcePath: Assets/Design/Wall set-20260405T131612Z-3-001/Wall
-    set/Stone Wall/Stone Wall 4.png
-  closeButtonDesignSourcePath: Assets/Design/GeneratedSources/UI/Buttons/close-button.png
-  helpButtonDesignSourcePath: Assets/Design/GeneratedSources/UI/Buttons/help-button.png
-  systemTextBoxDesignSourcePath: Assets/Design/GeneratedSources/UI/MessageBoxes/system-text-box.png
-  interactionTextBoxDesignSourcePath: Assets/Design/GeneratedSources/UI/MessageBoxes/interaction-text-box.png
-  darkOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel.png
-  darkOutlinePanelAltDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-outline-panel-alt.png
-  darkSolidPanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-solid-panel.png
-  darkThinOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/dark-thin-outline-panel.png
-  lightOutlinePanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/light-outline-panel.png
-  lightSolidPanelDesignSourcePath: Assets/Design/GeneratedSources/UI/PanelVariants/light-solid-panel.png
+  uiGeneratedSourceRoot: ""
+  hubFloorTileDesignSourcePath: ""
+  hubBarDesignSourcePath: ""
+  hubWallBackgroundHorizontalWallDesignSourcePath: ""
+  hubWallBackgroundVerticalWallDesignSourcePath: ""
+  hubWallBackgroundFillDesignSourcePath: ""
+  hubWallBackgroundBottomLeftDesignSourcePath: ""
+  hubWallBackgroundBottomRightDesignSourcePath: ""
+  hubFrontOutlineTopLeftDesignSourcePath: ""
+  hubFrontOutlineHorizontalWallDesignSourcePath: ""
+  hubFrontOutlineBottomRightDesignSourcePath: ""
+  hubFrontOutlineSideDesignSourcePath: ""
+  closeButtonDesignSourcePath: ""
+  helpButtonDesignSourcePath: ""
+  systemTextBoxDesignSourcePath: ""
+  interactionTextBoxDesignSourcePath: ""
+  darkOutlinePanelDesignSourcePath: ""
+  darkOutlinePanelAltDesignSourcePath: ""
+  darkSolidPanelDesignSourcePath: ""
+  darkThinOutlinePanelDesignSourcePath: ""
+  lightOutlinePanelDesignSourcePath: ""
+  lightSolidPanelDesignSourcePath: ""
   hubBarRightLeftCapCropRect:
     x: 0
     y: 0

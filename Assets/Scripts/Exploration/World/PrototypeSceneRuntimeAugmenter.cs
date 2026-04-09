@@ -111,8 +111,6 @@ namespace Exploration.World
             EnsureSpawnPoint("HubEntry", "HubEntry", HubRoomLayout.HubEntryPosition);
 
             HideHubInteractionPresentations();
-
-            EnsureMinePortal();
         }
 
         /// <summary>
@@ -262,44 +260,6 @@ namespace Exploration.World
             }
 
             UpdateTextByObjectName("MineTitle", "폐광산");
-        }
-
-        /// <summary>
-        /// 허브에 폐광산 포털이 빠져 있으면 기존 포털을 복제해 채운다.
-        /// </summary>
-        private static void EnsureMinePortal()
-        {
-            ScenePortal templatePortal = FindComponentByName<ScenePortal>("GoToWindHill");
-            if (templatePortal == null)
-            {
-                templatePortal = FindComponentByName<ScenePortal>("GoToDeepForest");
-            }
-
-            if (templatePortal == null)
-            {
-                return;
-            }
-
-            ScenePortal minePortal = FindComponentByName<ScenePortal>("GoToAbandonedMine");
-            if (minePortal == null)
-            {
-                GameObject clone = Object.Instantiate(templatePortal.gameObject);
-                clone.name = "GoToAbandonedMine";
-                clone.transform.position = new Vector3(9.55f, -0.65f, 0f);
-                RegisterRuntimeCreated(clone);
-                minePortal = clone.GetComponent<ScenePortal>();
-            }
-
-            ConfigurePortal(
-                minePortal,
-                "AbandonedMine",
-                "MineEntry",
-                "폐광산으로 이동",
-                "폐광산",
-                ToolType.Lantern,
-                0,
-                "작업대에서 랜턴을 준비해야 폐광산 안쪽을 안전하게 탐험할 수 있습니다.",
-                new Color(0.72f, 0.74f, 0.78f));
         }
 
         private static void EnsureMineDarknessZone()

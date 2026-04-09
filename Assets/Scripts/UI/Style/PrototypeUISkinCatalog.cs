@@ -71,7 +71,7 @@ namespace UI.Style
         }
 
         /// <summary>
-        /// 패널이 디자인 원본에서 생성한 UI 스프라이트를 직접 쓰는지 판별합니다.
+        /// 패널이 generated UI 스프라이트를 직접 쓰는지 판별합니다.
         /// 빌더와 런타임이 같은 기준을 공유하도록 카탈로그에 모읍니다.
         /// </summary>
         public static bool UsesGeneratedUiDesignPanel(string objectName)
@@ -80,7 +80,7 @@ namespace UI.Style
         }
 
         /// <summary>
-        /// 버튼이 디자인 원본에서 생성한 UI 스프라이트를 직접 쓰는지 판별합니다.
+        /// 버튼이 generated UI 스프라이트를 직접 쓰는지 판별합니다.
         /// 빌더와 런타임이 같은 기준을 공유하도록 카탈로그에 모읍니다.
         /// </summary>
         public static bool UsesGeneratedUiDesignButton(string objectName)
