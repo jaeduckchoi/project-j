@@ -137,6 +137,11 @@ Assets
 - 선택적 외부 원본 경로는 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`와 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`에 비워 두거나 연결한다.
 - 외부 원본이 연결돼 있으면 기존 `Buttons`, `MessageBoxes`, `PanelVariants` 입력 구조를 그대로 쓸 수 있고, output에서는 `Panels`로 정리된다.
 
+### 7-5. 플레이어 스프라이트
+
+- 작업 기준 루트는 `Assets/Resources/Generated/Sprites/Player`다.
+- 빌더는 이 폴더의 플레이어 PNG를 재import만 하고, 별도 분해나 합성은 하지 않는다.
+
 ## 8. 네임스페이스와 어셈블리 기준
 
 현재 코드 기준 네임스페이스:

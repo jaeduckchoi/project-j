@@ -26,6 +26,7 @@
 - generated 자산 루트의 실제 기준은 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`입니다.
 - 코드 기준은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`입니다.
 - UI 출력 경로는 `Assets/Resources/Generated/Sprites/UI/{Buttons,MessageBoxes,Panels}`입니다.
+- 플레이어 작업 경로는 `Assets/Resources/Generated/Sprites/Player`이며, 빌더는 여기의 PNG를 재사용만 하고 분해/합성하지 않습니다.
 - 저장소는 더 이상 `Assets/Design`를 보관하지 않으며, 필요하면 설정 asset에 외부 원본 경로를 선택적으로 연결합니다.
 - 외부 원본 경로가 비어 있으면 빌더는 현재 generated PNG를 유지하고 import 설정만 다시 맞춥니다.
 - 글꼴과 데이터 출력도 같은 설정 자산 기준으로 정렬합니다.
@@ -52,7 +53,7 @@
 ## 고위험 변경
 
 - 허브 아트 교체 시 `prototype-generated-asset-settings.asset`의 외부 원본 경로, `Assets/Resources/Generated/Sprites/Hub`, `HubRoomLayout`, `PrototypeSceneRuntimeAugmenter`, `JongguMinimalPrototypeBuilder`, 지원 씬 직렬화를 함께 확인합니다.
-- `HubWallBackground`, `HubFrontOutline`를 조정할 때는 생성 PNG와 리소스 복사 경로를 같이 확인합니다.
+- `HubWallBackground`, `HubFrontOutline`, 플레이어 스프라이트는 빌더에서 합성하지 않고 단일 PNG 복사나 기존 generated 파일 재사용만 허용합니다.
 - 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지합니다.
 - 허브 카운터 비주얼은 `HubBarLeftVisual`, `HubBarRightVisual` 분리 구조와 각 파츠 `spriteBorder`를 함께 맞춥니다.
 

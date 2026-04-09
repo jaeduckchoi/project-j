@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b149cd32e1d8dab4aa0e030ce0125579
+guid: 75f2a42a5b970604abfdc0f50d1dd2e3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1428670397636999168
-    second: food_001_0
+      213: -1363205258040094485
+    second: Table Chair2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -50,7 +50,7 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 9
-  spritePivot: {x: 0.5, y: 0.08}
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: food_001_0
+      name: Table Chair2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 32
+        width: 146
+        height: 61
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 008f4404828a3d310800000000000000
-      internalID: 1428670397636999168
+      spriteID: be053965a0ce41de0800000000000000
+      internalID: -1363205258040094485
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      food_001_0: 1428670397636999168
+      Table Chair2_0: -1363205258040094485
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

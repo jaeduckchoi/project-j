@@ -200,41 +200,78 @@ namespace Editor
             ValidateExactCount(issues, sceneName, objects, "HubForegroundLayer", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, isHubScene ? 1 : 0);
 
-            foreach (HubRoomLayout.HubArtPlacement placement in HubRoomLayout.ArtPlacements)
-            {
-                ValidateExactCount(issues, sceneName, objects, placement.ObjectName, isHubScene ? 1 : 0);
-            }
+            ValidateExactCount(issues, sceneName, objects, "HubFloorBackground", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubWallBackground", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Mosaic Tile Wall", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Back Counter", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Mosaic Tile Floor", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Front Counter", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Front Counter Collider", isHubScene ? 1 : 0);
 
-            foreach (HubRoomLayout.HubTablePlacement placement in HubRoomLayout.TablePlacements)
-            {
-                ValidateExactCount(issues, sceneName, objects, placement.GroupObjectName, isHubScene ? 1 : 0);
-                ValidateExactCount(issues, sceneName, objects, placement.TableObjectName, isHubScene ? 1 : 0);
-                ValidateExactCount(issues, sceneName, objects, placement.ColliderObjectName, isHubScene ? 1 : 0);
-                ValidateChildCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, placement.GroupObjectName, isHubScene ? 1 : 0);
-                ValidateChildCount(issues, sceneName, objects, placement.GroupObjectName, placement.TableObjectName, isHubScene ? 1 : 0);
-                ValidateChildCount(issues, sceneName, objects, placement.TableObjectName, placement.ColliderObjectName, isHubScene ? 1 : 0);
-            }
+            ValidateExactCount(issues, sceneName, objects, "HubTableTopGroup", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableMiddleGroup", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableBottomGroup", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Table Chair2 Top", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Table Chair2 Middle", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Table Chair2 Bottom", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableTopCollider", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableMiddleCollider", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableBottomCollider", isHubScene ? 1 : 0);
 
-            ValidateExactCount(issues, sceneName, objects, "HubExploreSign", isHubScene ? 1 : 0);
-            ValidateExactCount(issues, sceneName, objects, "HubWarehouseSign", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubBackgroundLayer", "HubFloorBackground", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubBackgroundLayer", "HubWallBackground", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubBackgroundLayer", "Mosaic Tile Wall", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubObjectLayer", HubRoomLayout.TableRootObjectName, isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubObjectLayer", "Back Counter", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubObjectLayer", "Mosaic Tile Floor", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubObjectLayer", "Front Counter", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubObjectLayer", "HubTodayMenuBoard", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubForegroundLayer", "HubFrontOutline", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "Front Counter", "Front Counter Collider", isHubScene ? 1 : 0);
+
+            ValidateChildCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, "HubTableTopGroup", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, "HubTableMiddleGroup", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, HubRoomLayout.TableRootObjectName, "HubTableBottomGroup", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTableTopGroup", "Table Chair2 Top", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTableMiddleGroup", "Table Chair2 Middle", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTableBottomGroup", "Table Chair2 Bottom", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "Table Chair2 Top", "HubTableTopCollider", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "Table Chair2 Middle", "HubTableMiddleCollider", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "Table Chair2 Bottom", "HubTableBottomCollider", isHubScene ? 1 : 0);
+
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuBoard", isHubScene ? 1 : 0);
-            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderShadow", isHubScene ? 1 : 0);
-            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderLabel", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "Account Board", isHubScene ? 1 : 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderShadow", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTodayMenuHeaderLabel", 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop1", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop2", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop3", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem1", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem2", isHubScene ? 1 : 0);
             ValidateExactCount(issues, sceneName, objects, "HubTodayMenuEntryItem3", isHubScene ? 1 : 0);
-
-            foreach (HubRoomLayout.HubColliderPlacement placement in HubRoomLayout.ColliderPlacements)
-            {
-                ValidateExactCount(issues, sceneName, objects, placement.ObjectName, isHubScene ? 1 : 0);
-                ValidateChildCount(issues, sceneName, objects, placement.ParentObjectName, placement.ObjectName, isHubScene ? 1 : 0);
-            }
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuBoard", "Account Board", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuBoard", "HubTodayMenuEntryBackdrop1", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuBoard", "HubTodayMenuEntryBackdrop2", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuBoard", "HubTodayMenuEntryBackdrop3", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop1", "HubTodayMenuEntryItem1", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop2", "HubTodayMenuEntryItem2", isHubScene ? 1 : 0);
+            ValidateChildCount(issues, sceneName, objects, "HubTodayMenuEntryBackdrop3", "HubTodayMenuEntryItem3", isHubScene ? 1 : 0);
 
             ValidateExactCount(issues, sceneName, objects, "HubSingleScreenBackground", 0);
             ValidateExactCount(issues, sceneName, objects, "HubBarCollider", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBar", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBarLeftVisual", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBarRightVisual", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBarLeftCollider", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubBarRightCollider", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableTop", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableMiddle", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubTableBottom", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubExploreSign", 0);
+            ValidateExactCount(issues, sceneName, objects, "HubWarehouseSign", 0);
+            ValidateExactCount(issues, sceneName, objects, HubRoomLayout.StorageVisualRootObjectName, 0);
+            ValidateExactCount(issues, sceneName, objects, HubRoomLayout.UpgradeWorkbenchVisualRootObjectName, 0);
+            ValidateExactCount(issues, sceneName, objects, HubRoomLayout.PortalZoneVisualRootObjectName, 0);
             ValidateExactCount(issues, sceneName, objects, "WorkshopRoomZone", 0);
             ValidateExactCount(issues, sceneName, objects, "StorageRoomZone", 0);
             ValidateExactCount(issues, sceneName, objects, "WorkshopRoomCameraBounds", 0);

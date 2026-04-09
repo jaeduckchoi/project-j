@@ -31,6 +31,7 @@
 
 - generated 자산 루트와 선택적 외부 원본 경로의 정본은 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`와 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`다.
 - 저장소 안의 UI 작업 기준 경로는 `Assets/Resources/Generated/Sprites/UI`다.
+- 플레이어 작업 기준 경로는 `Assets/Resources/Generated/Sprites/Player`다.
 - 외부 원본 경로는 비워 둘 수 있으며, 비어 있으면 빌더는 현재 generated PNG를 유지한다.
 - 외부 UI 원본을 연결할 때는 기존 `PanelVariants` 입력이 output에서 `Panels`로 정리된다.
 
@@ -38,6 +39,7 @@
 
 - `JongguMinimalPrototypeBuilder`는 generated 자산, Build Settings, Canvas 동기화, 현재 프로젝트에 남아 있는 관리 씬 정리, generated scene audit 흐름의 정본 구현이다.
 - existing 지원 씬을 강제로 재생성하는 도구가 아니라, sync와 현재 남아 있는 씬 기준 유지보수 중심으로 동작해야 한다.
+- 빌더는 PNG를 잘라 붙이거나 타일 합성하지 않고, 단일 외부 원본을 그대로 복사하거나 이미 있는 generated 이미지를 재사용해야 한다.
 
 ### 런타임 보강
 

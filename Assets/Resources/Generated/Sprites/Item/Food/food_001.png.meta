@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9fc7c2a4f9d56364ab95ccc87670fa65
+guid: 584800f01e0894c46842f0d1faf4052e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -783755556358060740
-    second: PlayerSide_0
+      213: 1428670397636999168
+    second: food_001
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -45,13 +45,13 @@ TextureImporter:
     wrapW: 1
   nPOTScale: 0
   lightmap: 0
-  compressionQuality: 100
-  spriteMode: 1
+  compressionQuality: 50
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
-  alignment: 9
-  spritePivot: {x: 0.5, y: 0.08}
-  spritePixelsToUnits: 80
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,11 +75,11 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 100
+    textureCompression: 1
+    compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -88,11 +88,11 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 100
+    textureCompression: 1
+    compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -101,11 +101,11 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 100
+    textureCompression: 1
+    compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerSide_0
+      name: food_001
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 61
-        height: 82
+        y: 2
+        width: 32
+        height: 30
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 4}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c350a88597a8f15f0800000000000000
-      internalID: -783755556358060740
+      spriteID: 008f4404828a3d310800000000000000
+      internalID: 1428670397636999168
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 2260a870609c46640a03cff1aa1fe924
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlayerSide_0: -783755556358060740
+      food_001: 1428670397636999168
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

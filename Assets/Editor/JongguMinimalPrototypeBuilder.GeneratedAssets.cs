@@ -121,9 +121,9 @@ namespace Editor
 
             return new SpriteLibrary
             {
-                PlayerFront = CreatePlayerSprite(PlayerSpriteRoot + "/player-front.png", "image (2).png"),
-                PlayerBack = CreatePlayerSprite(PlayerSpriteRoot + "/player-back.png", "image (1).png"),
-                PlayerSide = CreatePlayerSprite(PlayerSpriteRoot + "/player-side.png", "image.png"),
+                PlayerFront = LoadPlayerSprite(PlayerFrontSpritePath),
+                PlayerBack = LoadPlayerSprite(PlayerBackSpritePath),
+                PlayerSide = LoadPlayerSprite(PlayerSideSpritePath),
                 HubFloorTile = EnsureCopiedSpriteAsset(
                     HubFloorTileDesignSourcePath,
                     HubFloorTileSpritePath,
@@ -132,27 +132,54 @@ namespace Editor
                     FilterMode.Point,
                     TextureWrapMode.Repeat),
                 HubFloorBackground = LoadConfiguredSprite(HubFloorBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f)),
-                HubWallBackground = EnsureHubWallBackgroundSpriteAsset(),
-                HubFrontOutline = EnsureHubFrontOutlineSpriteAsset(),
-                HubBar = EnsureCopiedSpriteAsset(
-                    HubBarDesignSourcePath,
-                    HubBarSpritePath,
+                HubWallBackground = EnsureCopiedSpriteAsset(
+                    HubWallBackgroundDesignSourcePath,
+                    HubWallBackgroundSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f),
+                    FilterMode.Point),
+                HubFrontOutline = EnsureCopiedSpriteAsset(
+                    HubFrontOutlineDesignSourcePath,
+                    HubFrontOutlineSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f),
+                    FilterMode.Point),
+                FrontCounter = EnsureCopiedSpriteAsset(
+                    FrontCounterDesignSourcePath,
+                    FrontCounterSpritePath,
                     100f,
                     new Vector2(0.5f, 0.5f),
                     FilterMode.Bilinear,
                     TextureWrapMode.Clamp,
                     HubBarMainSpriteBorder),
-                HubBarRight = EnsureCompositeSpriteAsset(
-                    HubBarDesignSourcePath,
-                    HubBarRightSpritePath,
+                BackCounter = EnsureCopiedSpriteAsset(
+                    BackCounterDesignSourcePath,
+                    BackCounterSpritePath,
                     100f,
-                    new Vector2(0.5f, 0.5f),
-                    FilterMode.Bilinear,
-                    TextureWrapMode.Clamp,
-                    HubBarRightSpriteBorder,
-                    HubBarRightLeftCapCropRect,
-                    HubBarRightBodyCropRect),
-                HubTableUnlocked = LoadConfiguredSprite(HubTableUnlockedSpritePath, 100f, new Vector2(0.5f, 0.5f)),
+                    new Vector2(0.5f, 0.5f)),
+                MosaicTileFloor = EnsureCopiedSpriteAsset(
+                    MosaicTileFloorDesignSourcePath,
+                    MosaicTileFloorSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f)),
+                MosaicTileWall = EnsureCopiedSpriteAsset(
+                    MosaicTileWallDesignSourcePath,
+                    MosaicTileWallSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f)),
+                TableChair2 = EnsureCopiedSpriteAsset(
+                    TableChair2DesignSourcePath,
+                    TableChair2SpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f)),
+                AccountBoard = EnsureCopiedSpriteAsset(
+                    AccountBoardDesignSourcePath,
+                    AccountBoardSpritePath,
+                    100f,
+                    new Vector2(0.5f, 0.5f)),
+                HubBar = LoadConfiguredSprite(FrontCounterSpritePath, 100f, new Vector2(0.5f, 0.5f)),
+                HubBarRight = LoadConfiguredSprite(HubBarRightSpritePath, 100f, new Vector2(0.5f, 0.5f)),
+                HubTableUnlocked = LoadConfiguredSprite(TableChair2SpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuBg = LoadConfiguredSprite(HubTodayMenuBgSpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuItem1 = LoadConfiguredSprite(HubTodayMenuItem1SpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuItem2 = LoadConfiguredSprite(HubTodayMenuItem2SpritePath, 100f, new Vector2(0.5f, 0.5f)),
@@ -203,620 +230,6 @@ namespace Editor
                 : AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
         }
 
-        private static Sprite EnsureCompositeSpriteAsset(
-            string sourceAssetPath,
-            string assetPath,
-            float pixelsPerUnit,
-            Vector2 pivot,
-            FilterMode filterMode = FilterMode.Bilinear,
-            TextureWrapMode wrapMode = TextureWrapMode.Clamp,
-            Vector4? borderOverride = null,
-            params RectInt[] segments)
-        {
-            string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceAssetPath);
-            string assetFullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-
-            if (File.Exists(sourceFullPath))
-            {
-                byte[] compositeBytes = ComposeTextureSegmentsToPngBytes(sourceFullPath, segments);
-                if (compositeBytes != null && compositeBytes.Length > 0)
-                {
-                    WriteFileIfDifferent(assetFullPath, compositeBytes);
-                    AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-                }
-            }
-
-            Vector4 border = borderOverride ?? Vector4.zero;
-
-            return File.Exists(assetFullPath)
-                ? ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot, border, filterMode, wrapMode)
-                : AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-        }
-
-        private static byte[] ComposeTextureSegmentsToPngBytes(string sourceFullPath, IReadOnlyList<RectInt> segments)
-        {
-            if (segments == null || segments.Count == 0)
-            {
-                return null;
-            }
-
-            Texture2D sourceTexture = new(2, 2, TextureFormat.RGBA32, false);
-            if (!sourceTexture.LoadImage(File.ReadAllBytes(sourceFullPath)))
-            {
-                Object.DestroyImmediate(sourceTexture);
-                return null;
-            }
-
-            List<RectInt> normalizedSegments = new(segments.Count);
-            int totalWidth = 0;
-            int maxHeight = 0;
-
-            foreach (RectInt segment in segments)
-            {
-                int startX = Mathf.Clamp(segment.x, 0, sourceTexture.width - 1);
-                int startY = Mathf.Clamp(segment.y, 0, sourceTexture.height - 1);
-                int width = Mathf.Clamp(segment.width, 1, sourceTexture.width - startX);
-                int height = Mathf.Clamp(segment.height, 1, sourceTexture.height - startY);
-                RectInt normalized = new(startX, startY, width, height);
-                normalizedSegments.Add(normalized);
-                totalWidth += width;
-                maxHeight = Mathf.Max(maxHeight, height);
-            }
-
-            try
-            {
-                Texture2D composedTexture = new(totalWidth, maxHeight, TextureFormat.RGBA32, false);
-                try
-                {
-                    int writeX = 0;
-                    foreach (RectInt segment in normalizedSegments)
-                    {
-                        composedTexture.SetPixels(writeX, 0, segment.width, segment.height, sourceTexture.GetPixels(segment.x, segment.y, segment.width, segment.height));
-                        writeX += segment.width;
-                    }
-
-                    composedTexture.Apply();
-                    return composedTexture.EncodeToPNG();
-                }
-                finally
-                {
-                    Object.DestroyImmediate(composedTexture);
-                }
-            }
-            finally
-            {
-                Object.DestroyImmediate(sourceTexture);
-            }
-        }
-
-        /// <summary>
-        /// 허브 벽 배경은 런타임 Resources 경로를 유지하면서도 선택적 외부 타일 조합으로 다시 생성한다.
-        /// 외부 타일이 없으면 현재 generated 스프라이트를 그대로 사용한다.
-        /// </summary>
-        private static Sprite EnsureHubWallBackgroundSpriteAsset()
-        {
-            Texture2D horizontalWallTexture = LoadPngTexture(HubWallBackgroundHorizontalWallDesignSourcePath);
-            Texture2D verticalWallTexture = LoadPngTexture(HubWallBackgroundVerticalWallDesignSourcePath);
-            Texture2D bottomLeftCornerTexture = LoadPngTexture(HubWallBackgroundBottomLeftDesignSourcePath);
-            Texture2D bottomRightCornerTexture = LoadPngTexture(HubWallBackgroundBottomRightDesignSourcePath);
-            Texture2D fillTexture = LoadPngTexture(HubWallBackgroundFillDesignSourcePath);
-
-            if (horizontalWallTexture == null
-                || verticalWallTexture == null
-                || bottomLeftCornerTexture == null
-                || bottomRightCornerTexture == null
-                || fillTexture == null)
-            {
-                DestroyTextureIfNeeded(horizontalWallTexture);
-                DestroyTextureIfNeeded(verticalWallTexture);
-                DestroyTextureIfNeeded(bottomLeftCornerTexture);
-                DestroyTextureIfNeeded(bottomRightCornerTexture);
-                DestroyTextureIfNeeded(fillTexture);
-                return LoadConfiguredSprite(HubWallBackgroundSpritePath, 100f, new Vector2(0.5f, 0.5f));
-            }
-
-            Texture2D backgroundTexture = null;
-
-            try
-            {
-                backgroundTexture = CreateHubWallBackgroundTexture(
-                    horizontalWallTexture,
-                    verticalWallTexture,
-                    bottomLeftCornerTexture,
-                    bottomRightCornerTexture,
-                    fillTexture);
-
-                byte[] pngBytes = backgroundTexture.EncodeToPNG();
-                WriteBytesToAssetPath(HubWallBackgroundSpritePath, pngBytes);
-            }
-            finally
-            {
-                DestroyTextureIfNeeded(backgroundTexture);
-                DestroyTextureIfNeeded(horizontalWallTexture);
-                DestroyTextureIfNeeded(verticalWallTexture);
-                DestroyTextureIfNeeded(bottomLeftCornerTexture);
-                DestroyTextureIfNeeded(bottomRightCornerTexture);
-                DestroyTextureIfNeeded(fillTexture);
-            }
-
-            AssetDatabase.ImportAsset(HubWallBackgroundSpritePath, ImportAssetOptions.ForceUpdate);
-            return ConfigureSpriteAsset(
-                HubWallBackgroundSpritePath,
-                100f,
-                new Vector2(0.5f, 0.5f),
-                Vector4.zero,
-                filterMode: FilterMode.Point);
-        }
-
-        private static Texture2D CreateHubWallBackgroundTexture(
-            Texture2D horizontalWallTexture,
-            Texture2D verticalWallTexture,
-            Texture2D bottomLeftCornerTexture,
-            Texture2D bottomRightCornerTexture,
-            Texture2D fillTexture)
-        {
-            Texture2D targetTexture = new(HubWallBackgroundTextureWidth, HubWallBackgroundTextureHeight, TextureFormat.RGBA32, false);
-            Color32[] targetPixels = new Color32[HubWallBackgroundTextureWidth * HubWallBackgroundTextureHeight];
-
-            int topEdgeY = HubWallBackgroundTextureHeight - HubWallBackgroundBorderSize;
-            int rightEdgeX = HubWallBackgroundTextureWidth - HubWallBackgroundBorderSize;
-            int horizontalWallStartX = HubWallBackgroundBorderSize;
-            int horizontalWallWidth = HubWallBackgroundTextureWidth - (HubWallBackgroundBorderSize * 2);
-            int verticalWallHeight = topEdgeY;
-            int innerStartX = HubWallBackgroundBorderSize;
-            int innerWidth = HubWallBackgroundTextureWidth - (HubWallBackgroundBorderSize * 2);
-            int innerHeight = topEdgeY;
-
-            DrawTextureTiledArea(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                fillTexture,
-                innerStartX,
-                0,
-                innerWidth,
-                innerHeight);
-
-            DrawTextureRepeatedHorizontally(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                horizontalWallTexture,
-                horizontalWallStartX,
-                topEdgeY,
-                horizontalWallWidth,
-                HubWallBackgroundBorderSize,
-                HubWallBackgroundBorderSize);
-            DrawTextureRepeatedVertically(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                verticalWallTexture,
-                0,
-                0,
-                verticalWallHeight,
-                HubWallBackgroundBorderSize,
-                HubWallBackgroundBorderSize);
-            DrawTextureRepeatedVertically(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                verticalWallTexture,
-                rightEdgeX,
-                0,
-                verticalWallHeight,
-                HubWallBackgroundBorderSize,
-                HubWallBackgroundBorderSize,
-                flipX: true);
-            DrawTextureScaled(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                bottomLeftCornerTexture,
-                0,
-                topEdgeY,
-                HubWallBackgroundBorderSize,
-                HubWallBackgroundBorderSize,
-                flipY: true);
-            DrawTextureScaled(
-                targetPixels,
-                HubWallBackgroundTextureWidth,
-                HubWallBackgroundTextureHeight,
-                bottomRightCornerTexture,
-                rightEdgeX,
-                topEdgeY,
-                HubWallBackgroundBorderSize,
-                HubWallBackgroundBorderSize,
-                flipY: true);
-
-            targetTexture.SetPixels32(targetPixels);
-            targetTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
-            return targetTexture;
-        }
-
-        private static Sprite EnsureHubFrontOutlineSpriteAsset()
-        {
-            Texture2D topLeftCornerTexture = LoadPngTexture(HubFrontOutlineTopLeftDesignSourcePath);
-            Texture2D horizontalWallTexture = LoadPngTexture(HubFrontOutlineHorizontalWallDesignSourcePath);
-            Texture2D bottomRightCornerTexture = LoadPngTexture(HubFrontOutlineBottomRightDesignSourcePath);
-            Texture2D sideWallTexture = LoadPngTexture(HubFrontOutlineSideDesignSourcePath);
-
-            if (topLeftCornerTexture == null
-                || horizontalWallTexture == null
-                || bottomRightCornerTexture == null
-                || sideWallTexture == null)
-            {
-                DestroyTextureIfNeeded(topLeftCornerTexture);
-                DestroyTextureIfNeeded(horizontalWallTexture);
-                DestroyTextureIfNeeded(bottomRightCornerTexture);
-                DestroyTextureIfNeeded(sideWallTexture);
-                return LoadConfiguredSprite(HubFrontOutlineSpritePath, 100f, new Vector2(0.5f, 0.5f));
-            }
-
-            Texture2D outlineTexture = null;
-
-            try
-            {
-                outlineTexture = CreateHubFrontOutlineTexture(
-                    topLeftCornerTexture,
-                    horizontalWallTexture,
-                    bottomRightCornerTexture,
-                    sideWallTexture);
-
-                byte[] pngBytes = outlineTexture.EncodeToPNG();
-                WriteBytesToAssetPath(HubFrontOutlineSpritePath, pngBytes);
-            }
-            finally
-            {
-                DestroyTextureIfNeeded(outlineTexture);
-                DestroyTextureIfNeeded(topLeftCornerTexture);
-                DestroyTextureIfNeeded(horizontalWallTexture);
-                DestroyTextureIfNeeded(bottomRightCornerTexture);
-                DestroyTextureIfNeeded(sideWallTexture);
-            }
-
-            AssetDatabase.ImportAsset(HubFrontOutlineSpritePath, ImportAssetOptions.ForceUpdate);
-            return ConfigureSpriteAsset(
-                HubFrontOutlineSpritePath,
-                100f,
-                new Vector2(0.5f, 0.5f),
-                Vector4.zero,
-                filterMode: FilterMode.Point);
-        }
-
-        private static Texture2D CreateHubFrontOutlineTexture(
-            Texture2D topLeftCornerTexture,
-            Texture2D horizontalWallTexture,
-            Texture2D bottomRightCornerTexture,
-            Texture2D sideWallTexture)
-        {
-            Texture2D targetTexture = new(HubFrontOutlineTextureWidth, HubFrontOutlineTextureHeight, TextureFormat.RGBA32, false);
-            Color32[] targetPixels = new Color32[HubFrontOutlineTextureWidth * HubFrontOutlineTextureHeight];
-
-            int topEdgeY = HubFrontOutlineTextureHeight - HubFrontOutlineBorderHeight;
-            int rightEdgeX = HubFrontOutlineTextureWidth - HubFrontOutlineBorderWidth;
-            int topWallWidth = HubFrontOutlineTopWallEndX - HubFrontOutlineTopWallStartX;
-            int bottomWallWidth = HubFrontOutlineTextureWidth - HubFrontOutlineBottomWallStartX;
-            int leftWallHeight = topEdgeY;
-            int rightWallStartY = HubFrontOutlineBorderHeight;
-            int rightWallHeight = HubFrontOutlineTextureHeight - rightWallStartY;
-            int mirroredTopWallStartX = GetMirroredStartX(HubFrontOutlineTopWallStartX, topWallWidth, HubFrontOutlineTextureWidth);
-            int mirroredBottomWallStartX = GetMirroredStartX(HubFrontOutlineBottomWallStartX, bottomWallWidth, HubFrontOutlineTextureWidth);
-            int mirroredLeftWallStartX = GetMirroredStartX(0, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
-            int mirroredLeftWallStartY = GetMirroredStartY(0, leftWallHeight, HubFrontOutlineTextureHeight);
-            int mirroredRightWallStartX = GetMirroredStartX(rightEdgeX, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
-            int mirroredRightWallStartY = GetMirroredStartY(rightWallStartY, rightWallHeight, HubFrontOutlineTextureHeight);
-            int mirroredTopLeftCornerStartX = GetMirroredStartX(0, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
-            int mirroredTopLeftCornerStartY = GetMirroredStartY(topEdgeY, HubFrontOutlineBorderHeight, HubFrontOutlineTextureHeight);
-            int mirroredBottomRightCornerStartX = GetMirroredStartX(rightEdgeX, HubFrontOutlineBorderWidth, HubFrontOutlineTextureWidth);
-            int mirroredBottomRightCornerStartY = GetMirroredStartY(0, HubFrontOutlineBorderHeight, HubFrontOutlineTextureHeight);
-
-            DrawTextureRepeatedHorizontally(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                horizontalWallTexture,
-                mirroredTopWallStartX,
-                0,
-                topWallWidth,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight);
-            DrawTextureRepeatedHorizontally(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                horizontalWallTexture,
-                mirroredBottomWallStartX,
-                topEdgeY,
-                bottomWallWidth,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight);
-            DrawTextureRepeatedVertically(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                sideWallTexture,
-                mirroredLeftWallStartX,
-                mirroredLeftWallStartY,
-                leftWallHeight,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight);
-            DrawTextureRepeatedVertically(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                sideWallTexture,
-                mirroredRightWallStartX,
-                mirroredRightWallStartY,
-                rightWallHeight,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight,
-                flipX: true);
-
-            DrawTextureScaled(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                topLeftCornerTexture,
-                mirroredBottomRightCornerStartX,
-                mirroredBottomRightCornerStartY,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight);
-            DrawTextureScaled(
-                targetPixels,
-                HubFrontOutlineTextureWidth,
-                HubFrontOutlineTextureHeight,
-                bottomRightCornerTexture,
-                mirroredTopLeftCornerStartX,
-                mirroredTopLeftCornerStartY,
-                HubFrontOutlineBorderWidth,
-                HubFrontOutlineBorderHeight);
-
-            targetTexture.SetPixels32(targetPixels);
-            targetTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
-            return targetTexture;
-        }
-
-        private static int GetMirroredStartX(int startX, int width, int containerWidth)
-        {
-            return containerWidth - startX - width;
-        }
-
-        private static int GetMirroredStartY(int startY, int height, int containerHeight)
-        {
-            return containerHeight - startY - height;
-        }
-
-        private static void DrawTextureRepeatedHorizontally(
-            Color32[] targetPixels,
-            int targetWidth,
-            int targetHeight,
-            Texture2D sourceTexture,
-            int startX,
-            int startY,
-            int totalWidth,
-            int tileWidth,
-            int tileHeight,
-            bool flipX = false,
-            bool flipY = false)
-        {
-            if (sourceTexture == null || totalWidth <= 0 || tileWidth <= 0 || tileHeight <= 0)
-            {
-                return;
-            }
-
-            int offset = 0;
-            while (offset < totalWidth)
-            {
-                int currentTileWidth = Mathf.Min(tileWidth, totalWidth - offset);
-                DrawTextureScaled(
-                    targetPixels,
-                    targetWidth,
-                    targetHeight,
-                    sourceTexture,
-                    startX + offset,
-                    startY,
-                    currentTileWidth,
-                    tileHeight,
-                    flipX,
-                    flipY);
-                offset += tileWidth;
-            }
-        }
-
-        private static void DrawTextureRepeatedVertically(
-            Color32[] targetPixels,
-            int targetWidth,
-            int targetHeight,
-            Texture2D sourceTexture,
-            int startX,
-            int startY,
-            int totalHeight,
-            int tileWidth,
-            int tileHeight,
-            bool flipX = false,
-            bool flipY = false)
-        {
-            if (sourceTexture == null || totalHeight <= 0 || tileWidth <= 0 || tileHeight <= 0)
-            {
-                return;
-            }
-
-            int offset = 0;
-            while (offset < totalHeight)
-            {
-                int currentTileHeight = Mathf.Min(tileHeight, totalHeight - offset);
-                DrawTextureScaled(
-                    targetPixels,
-                    targetWidth,
-                    targetHeight,
-                    sourceTexture,
-                    startX,
-                    startY + offset,
-                    tileWidth,
-                    currentTileHeight,
-                    flipX,
-                    flipY);
-                offset += tileHeight;
-            }
-        }
-
-        private static void DrawTextureTiledArea(
-            Color32[] targetPixels,
-            int targetWidth,
-            int targetHeight,
-            Texture2D sourceTexture,
-            int destinationX,
-            int destinationY,
-            int destinationWidth,
-            int destinationHeight,
-            bool flipX = false,
-            bool flipY = false)
-        {
-            if (sourceTexture == null || destinationWidth <= 0 || destinationHeight <= 0)
-            {
-                return;
-            }
-
-            Color32[] sourcePixels = sourceTexture.GetPixels32();
-            int sourceWidth = sourceTexture.width;
-            int sourceHeight = sourceTexture.height;
-
-            for (int y = 0; y < destinationHeight; y++)
-            {
-                int targetY = destinationY + y;
-                if (targetY < 0 || targetY >= targetHeight)
-                {
-                    continue;
-                }
-
-                int tiledY = y % sourceHeight;
-                int sampleY = flipY ? (sourceHeight - 1 - tiledY) : tiledY;
-
-                for (int x = 0; x < destinationWidth; x++)
-                {
-                    int targetX = destinationX + x;
-                    if (targetX < 0 || targetX >= targetWidth)
-                    {
-                        continue;
-                    }
-
-                    int tiledX = x % sourceWidth;
-                    int sampleX = flipX ? (sourceWidth - 1 - tiledX) : tiledX;
-                    Color32 color = sourcePixels[(sampleY * sourceWidth) + sampleX];
-                    if (color.a == 0)
-                    {
-                        continue;
-                    }
-
-                    targetPixels[(targetY * targetWidth) + targetX] = color;
-                }
-            }
-        }
-
-        private static void DrawTextureScaled(
-            Color32[] targetPixels,
-            int targetWidth,
-            int targetHeight,
-            Texture2D sourceTexture,
-            int destinationX,
-            int destinationY,
-            int destinationWidth,
-            int destinationHeight,
-            bool flipX = false,
-            bool flipY = false)
-        {
-            if (sourceTexture == null || destinationWidth <= 0 || destinationHeight <= 0)
-            {
-                return;
-            }
-
-            Color32[] sourcePixels = sourceTexture.GetPixels32();
-            int sourceWidth = sourceTexture.width;
-            int sourceHeight = sourceTexture.height;
-
-            for (int y = 0; y < destinationHeight; y++)
-            {
-                int targetY = destinationY + y;
-                if (targetY < 0 || targetY >= targetHeight)
-                {
-                    continue;
-                }
-
-                int sourceY = Mathf.Min(sourceHeight - 1, Mathf.FloorToInt((float)y * sourceHeight / destinationHeight));
-                if (flipY)
-                {
-                    sourceY = (sourceHeight - 1) - sourceY;
-                }
-
-                int targetRowIndex = targetY * targetWidth;
-                int sourceRowIndex = sourceY * sourceWidth;
-
-                for (int x = 0; x < destinationWidth; x++)
-                {
-                    int targetX = destinationX + x;
-                    if (targetX < 0 || targetX >= targetWidth)
-                    {
-                        continue;
-                    }
-
-                    int sourceX = Mathf.Min(sourceWidth - 1, Mathf.FloorToInt((float)x * sourceWidth / destinationWidth));
-                    if (flipX)
-                    {
-                        sourceX = (sourceWidth - 1) - sourceX;
-                    }
-
-                    Color32 sourceColor = sourcePixels[sourceRowIndex + sourceX];
-                    if (sourceColor.a == 0)
-                    {
-                        continue;
-                    }
-
-                    targetPixels[targetRowIndex + targetX] = sourceColor;
-                }
-            }
-        }
-
-        private static Texture2D LoadPngTexture(string assetPath)
-        {
-            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-            if (!File.Exists(fullPath))
-            {
-                return null;
-            }
-
-            Texture2D texture = new(2, 2, TextureFormat.RGBA32, false);
-            if (!texture.LoadImage(File.ReadAllBytes(fullPath)))
-            {
-                Object.DestroyImmediate(texture);
-                return null;
-            }
-
-            texture.filterMode = FilterMode.Point;
-            texture.wrapMode = TextureWrapMode.Clamp;
-            return texture;
-        }
-
-        private static void WriteBytesToAssetPath(string assetPath, byte[] bytes)
-        {
-            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-            string directoryPath = Path.GetDirectoryName(fullPath);
-            if (!string.IsNullOrWhiteSpace(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            File.WriteAllBytes(fullPath, bytes);
-        }
-
-        private static void DestroyTextureIfNeeded(Texture2D texture)
-        {
-            if (texture != null)
-            {
-                Object.DestroyImmediate(texture);
-            }
-        }
-
         /// <summary>
         /// 선택적 외부 UI PNG를 generated 스프라이트 경로로 복사한다.
         /// 외부 PNG가 없으면 현재 generated 출력물을 그대로 유지한다.
@@ -865,6 +278,7 @@ namespace Editor
                 new Vector4(8f, 8f, 8f, 8f));
         }
 
+
         private static void EnsureUiDesignSpriteAsset(string sourceAssetPath, string assetPath, Vector4 border)
         {
             string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceAssetPath);
@@ -881,25 +295,25 @@ namespace Editor
             ConfigureSpriteAsset(assetPath, 100f, new Vector2(0.5f, 0.5f), border);
         }
 
-        private static Sprite CreatePlayerSprite(string assetPath, string sourceFileName)
+        private static Sprite LoadPlayerSprite(string assetPath)
         {
-            string sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), "temperature", sourceFileName);
-            string targetFullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
-
-            if (File.Exists(sourceFullPath))
-            {
-                CopyFileIfDifferent(sourceFullPath, targetFullPath);
-                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-            }
-
-            Sprite importedSprite = ConfigureSpriteAsset(assetPath, PlayerSpritePixelsPerUnit);
+            Sprite importedSprite = LoadConfiguredSprite(
+                assetPath,
+                PlayerSpritePixelsPerUnit,
+                new Vector2(0.5f, 0.08f),
+                FilterMode.Point);
 
             if (importedSprite != null)
             {
                 return importedSprite;
             }
 
-            return CreateColorSprite(assetPath, Color.white);
+            EnsureColorSpriteAssetExists(assetPath, Color.white);
+            return LoadConfiguredSprite(
+                assetPath,
+                PlayerSpritePixelsPerUnit,
+                new Vector2(0.5f, 0.08f),
+                FilterMode.Point);
         }
 
         private static Sprite LoadConfiguredSprite(string assetPath, float pixelsPerUnit, Vector2 pivot)
@@ -912,6 +326,18 @@ namespace Editor
 
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
             return ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot);
+        }
+
+        private static Sprite LoadConfiguredSprite(string assetPath, float pixelsPerUnit, Vector2 pivot, FilterMode filterMode, TextureWrapMode wrapMode = TextureWrapMode.Clamp)
+        {
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), assetPath);
+            if (!File.Exists(fullPath))
+            {
+                return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            }
+
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            return ConfigureSpriteAsset(assetPath, pixelsPerUnit, pivot, Vector4.zero, filterMode, wrapMode);
         }
 
         private static ResourceData CreateResourceAsset(string assetPath, string id, string displayName, string description, string regionTag, int sellPrice, ResourceRarity rarity)

@@ -27,15 +27,16 @@ namespace Shared
         private const string DefaultUiGeneratedSourceRoot = "";
         private const string DefaultHubFloorTileDesignSourcePath = "";
         private const string DefaultHubBarDesignSourcePath = "";
-        private const string DefaultHubWallBackgroundHorizontalWallDesignSourcePath = "";
-        private const string DefaultHubWallBackgroundVerticalWallDesignSourcePath = "";
-        private const string DefaultHubWallBackgroundFillDesignSourcePath = "";
-        private const string DefaultHubWallBackgroundBottomLeftDesignSourcePath = "";
-        private const string DefaultHubWallBackgroundBottomRightDesignSourcePath = "";
-        private const string DefaultHubFrontOutlineTopLeftDesignSourcePath = "";
-        private const string DefaultHubFrontOutlineHorizontalWallDesignSourcePath = "";
-        private const string DefaultHubFrontOutlineBottomRightDesignSourcePath = "";
-        private const string DefaultHubFrontOutlineSideDesignSourcePath = "";
+        private const string DefaultFrontCounterDesignSourcePath = "";
+        private const string DefaultBackCounterDesignSourcePath = "";
+        private const string DefaultMosaicTileFloorDesignSourcePath = "";
+        private const string DefaultMosaicTileWallDesignSourcePath = "";
+        private const string DefaultTableChair2DesignSourcePath = "";
+        private const string DefaultAccountBoardDesignSourcePath = "";
+        private const string DefaultHubWallBackgroundDesignSourcePath = "";
+        private const string DefaultHubFrontOutlineDesignSourcePath = "";
+        private const string DefaultPlayerIdleFrame1DesignSourcePath = "Design/drive-download-20260409T040302Z-3-001/Character/JONGGU.png";
+        private const string DefaultPlayerIdleFrame2DesignSourcePath = "Design/drive-download-20260409T040302Z-3-001/Character/JONGGU2.png";
         private const string DefaultCloseButtonDesignSourcePath = "";
         private const string DefaultHelpButtonDesignSourcePath = "";
         private const string DefaultSystemTextBoxDesignSourcePath = "";
@@ -57,15 +58,14 @@ namespace Shared
         [Header("허브 외부 원본 경로(선택)")]
         [SerializeField] private string hubFloorTileDesignSourcePath = DefaultHubFloorTileDesignSourcePath;
         [SerializeField] private string hubBarDesignSourcePath = DefaultHubBarDesignSourcePath;
-        [SerializeField] private string hubWallBackgroundHorizontalWallDesignSourcePath = DefaultHubWallBackgroundHorizontalWallDesignSourcePath;
-        [SerializeField] private string hubWallBackgroundVerticalWallDesignSourcePath = DefaultHubWallBackgroundVerticalWallDesignSourcePath;
-        [SerializeField] private string hubWallBackgroundFillDesignSourcePath = DefaultHubWallBackgroundFillDesignSourcePath;
-        [SerializeField] private string hubWallBackgroundBottomLeftDesignSourcePath = DefaultHubWallBackgroundBottomLeftDesignSourcePath;
-        [SerializeField] private string hubWallBackgroundBottomRightDesignSourcePath = DefaultHubWallBackgroundBottomRightDesignSourcePath;
-        [SerializeField] private string hubFrontOutlineTopLeftDesignSourcePath = DefaultHubFrontOutlineTopLeftDesignSourcePath;
-        [SerializeField] private string hubFrontOutlineHorizontalWallDesignSourcePath = DefaultHubFrontOutlineHorizontalWallDesignSourcePath;
-        [SerializeField] private string hubFrontOutlineBottomRightDesignSourcePath = DefaultHubFrontOutlineBottomRightDesignSourcePath;
-        [SerializeField] private string hubFrontOutlineSideDesignSourcePath = DefaultHubFrontOutlineSideDesignSourcePath;
+        [SerializeField] private string frontCounterDesignSourcePath = DefaultFrontCounterDesignSourcePath;
+        [SerializeField] private string backCounterDesignSourcePath = DefaultBackCounterDesignSourcePath;
+        [SerializeField] private string mosaicTileFloorDesignSourcePath = DefaultMosaicTileFloorDesignSourcePath;
+        [SerializeField] private string mosaicTileWallDesignSourcePath = DefaultMosaicTileWallDesignSourcePath;
+        [SerializeField] private string tableChair2DesignSourcePath = DefaultTableChair2DesignSourcePath;
+        [SerializeField] private string accountBoardDesignSourcePath = DefaultAccountBoardDesignSourcePath;
+        [SerializeField] private string hubWallBackgroundDesignSourcePath = DefaultHubWallBackgroundDesignSourcePath;
+        [SerializeField] private string hubFrontOutlineDesignSourcePath = DefaultHubFrontOutlineDesignSourcePath;
 
         [Header("UI 외부 원본 경로(선택)")]
         [SerializeField] private string closeButtonDesignSourcePath = DefaultCloseButtonDesignSourcePath;
@@ -86,21 +86,15 @@ namespace Shared
         [SerializeField] private Vector4 hubBarRightSpriteBorder = new(12f, 0f, 4f, 0f);
 
         [Header("허브 벽 배경 설정")]
-        [SerializeField] private int hubWallBackgroundTextureWidth = 1524;
-        [SerializeField] private int hubWallBackgroundTextureHeight = 140;
-        [SerializeField] private int hubWallBackgroundBorderSize = 32;
 
         [Header("허브 전면 아웃라인 설정")]
-        [SerializeField] private int hubFrontOutlineTextureWidth = 1920;
-        [SerializeField] private int hubFrontOutlineTextureHeight = 1080;
-        [SerializeField] private int hubFrontOutlineBorderWidth = 96;
-        [SerializeField] private int hubFrontOutlineBorderHeight = 90;
-        [SerializeField] private int hubFrontOutlineTopWallStartX;
-        [SerializeField] private int hubFrontOutlineTopWallEndX = 1606;
-        [SerializeField] private int hubFrontOutlineBottomWallStartX = 300;
+
+        [Header("플레이어 외부 원본 경로(선택)")]
+        [SerializeField] private string playerIdleFrame1DesignSourcePath = DefaultPlayerIdleFrame1DesignSourcePath;
+        [SerializeField] private string playerIdleFrame2DesignSourcePath = DefaultPlayerIdleFrame2DesignSourcePath;
 
         [Header("플레이어/월드 텍스트 기본값")]
-        [SerializeField] private float playerSpritePixelsPerUnit = 1000f;
+        [SerializeField] private float playerSpritePixelsPerUnit = 80f;
         [SerializeField] private float playerVisualScale = 0.76f;
         [SerializeField] private Vector3 defaultPlayerRootScale = new(1.5f, 1.5f, 1f);
         [SerializeField] private float worldTitleFontSize = 5.1f;
@@ -114,15 +108,16 @@ namespace Shared
         public string UiGeneratedSourceRoot => uiGeneratedSourceRoot;
         public string HubFloorTileDesignSourcePath => hubFloorTileDesignSourcePath;
         public string HubBarDesignSourcePath => hubBarDesignSourcePath;
-        public string HubWallBackgroundHorizontalWallDesignSourcePath => hubWallBackgroundHorizontalWallDesignSourcePath;
-        public string HubWallBackgroundVerticalWallDesignSourcePath => hubWallBackgroundVerticalWallDesignSourcePath;
-        public string HubWallBackgroundFillDesignSourcePath => hubWallBackgroundFillDesignSourcePath;
-        public string HubWallBackgroundBottomLeftDesignSourcePath => hubWallBackgroundBottomLeftDesignSourcePath;
-        public string HubWallBackgroundBottomRightDesignSourcePath => hubWallBackgroundBottomRightDesignSourcePath;
-        public string HubFrontOutlineTopLeftDesignSourcePath => hubFrontOutlineTopLeftDesignSourcePath;
-        public string HubFrontOutlineHorizontalWallDesignSourcePath => hubFrontOutlineHorizontalWallDesignSourcePath;
-        public string HubFrontOutlineBottomRightDesignSourcePath => hubFrontOutlineBottomRightDesignSourcePath;
-        public string HubFrontOutlineSideDesignSourcePath => hubFrontOutlineSideDesignSourcePath;
+        public string FrontCounterDesignSourcePath => !string.IsNullOrWhiteSpace(frontCounterDesignSourcePath) ? frontCounterDesignSourcePath : hubBarDesignSourcePath;
+        public string BackCounterDesignSourcePath => backCounterDesignSourcePath;
+        public string MosaicTileFloorDesignSourcePath => mosaicTileFloorDesignSourcePath;
+        public string MosaicTileWallDesignSourcePath => mosaicTileWallDesignSourcePath;
+        public string TableChair2DesignSourcePath => tableChair2DesignSourcePath;
+        public string AccountBoardDesignSourcePath => accountBoardDesignSourcePath;
+        public string HubWallBackgroundDesignSourcePath => hubWallBackgroundDesignSourcePath;
+        public string HubFrontOutlineDesignSourcePath => hubFrontOutlineDesignSourcePath;
+        public string PlayerIdleFrame1DesignSourcePath => playerIdleFrame1DesignSourcePath;
+        public string PlayerIdleFrame2DesignSourcePath => playerIdleFrame2DesignSourcePath;
         public string CloseButtonDesignSourcePath => closeButtonDesignSourcePath;
         public string HelpButtonDesignSourcePath => helpButtonDesignSourcePath;
         public string SystemTextBoxDesignSourcePath => systemTextBoxDesignSourcePath;
@@ -137,16 +132,6 @@ namespace Shared
         public RectInt HubBarRightBodyCropRect => hubBarRightBodyCropRect;
         public Vector4 HubBarMainSpriteBorder => hubBarMainSpriteBorder;
         public Vector4 HubBarRightSpriteBorder => hubBarRightSpriteBorder;
-        public int HubWallBackgroundTextureWidth => hubWallBackgroundTextureWidth;
-        public int HubWallBackgroundTextureHeight => hubWallBackgroundTextureHeight;
-        public int HubWallBackgroundBorderSize => hubWallBackgroundBorderSize;
-        public int HubFrontOutlineTextureWidth => hubFrontOutlineTextureWidth;
-        public int HubFrontOutlineTextureHeight => hubFrontOutlineTextureHeight;
-        public int HubFrontOutlineBorderWidth => hubFrontOutlineBorderWidth;
-        public int HubFrontOutlineBorderHeight => hubFrontOutlineBorderHeight;
-        public int HubFrontOutlineTopWallStartX => hubFrontOutlineTopWallStartX;
-        public int HubFrontOutlineTopWallEndX => hubFrontOutlineTopWallEndX;
-        public int HubFrontOutlineBottomWallStartX => hubFrontOutlineBottomWallStartX;
         public float PlayerSpritePixelsPerUnit => playerSpritePixelsPerUnit;
         public float PlayerVisualScale => playerVisualScale;
         public Vector3 DefaultPlayerRootScale => defaultPlayerRootScale;
@@ -196,25 +181,37 @@ namespace Shared
             CanonicalManagedScenePaths;
 #endif
 
-        public string HubFloorBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub-floor-background.png");
-        public string HubFloorTileSpritePath => CombineAssetPath(HubSpriteRoot, "hub-floor-tile.png");
-        public string HubBarSpritePath => CombineAssetPath(HubSpriteRoot, "hub-bar.png");
-        public string HubBarRightSpritePath => CombineAssetPath(HubSpriteRoot, "hub-bar-right.png");
-        public string HubWallBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub-wall-background.png");
-        public string HubFrontOutlineSpritePath => CombineAssetPath(HubSpriteRoot, "hub-front-outline.png");
-        public string HubTableUnlockedSpritePath => CombineAssetPath(HubSpriteRoot, "hub-table-unlocked.png");
-        public string HubTodayMenuBgSpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-bg.png");
-        public string HubTodayMenuItem1SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-1.png");
-        public string HubTodayMenuItem2SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-2.png");
-        public string HubTodayMenuItem3SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-3.png");
+        public string HubFloorBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub_floor_background.png");
+        public string HubFloorTileSpritePath => CombineAssetPath(HubSpriteRoot, "hub_floor_tile.png");
+        public string FrontCounterSpritePath => CombineAssetPath(HubSpriteRoot, "front_counter.png");
+        public string BackCounterSpritePath => CombineAssetPath(HubSpriteRoot, "back_counter.png");
+        public string MosaicTileFloorSpritePath => CombineAssetPath(HubSpriteRoot, "mosaic_tile_floor.png");
+        public string MosaicTileWallSpritePath => CombineAssetPath(HubSpriteRoot, "mosaic_tile_wall.png");
+        public string TableChair2SpritePath => CombineAssetPath(HubSpriteRoot, "table_chair2.png");
+        public string AccountBoardSpritePath => CombineAssetPath(HubSpriteRoot, "account_board.png");
+        public string HubBarSpritePath => FrontCounterSpritePath;
+        public string HubBarRightSpritePath => CombineAssetPath(HubSpriteRoot, "hub_bar_right.png");
+        public string HubWallBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub_wall_background.png");
+        public string HubFrontOutlineSpritePath => CombineAssetPath(HubSpriteRoot, "hub_front_outline.png");
+        public string HubTableUnlockedSpritePath => TableChair2SpritePath;
+        public string HubTodayMenuBgSpritePath => CombineAssetPath(HubSpriteRoot, "hub_today_menu_bg.png");
+        public string HubTodayMenuItem1SpritePath => CombineAssetPath(HubSpriteRoot, "hub_today_menu_item_1.png");
+        public string HubTodayMenuItem2SpritePath => CombineAssetPath(HubSpriteRoot, "hub_today_menu_item_2.png");
+        public string HubTodayMenuItem3SpritePath => CombineAssetPath(HubSpriteRoot, "hub_today_menu_item_3.png");
 
         public string PlayerFrontSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-front.png");
         public string PlayerBackSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-back.png");
         public string PlayerSideSpritePath => CombineAssetPath(PlayerSpriteRoot, "player-side.png");
+        public string PlayerFrontIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-front-idle-2.png");
+        public string PlayerBackIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-back-idle-2.png");
+        public string PlayerSideIdleFrame2SpritePath => CombineAssetPath(PlayerSpriteRoot, "player-side-idle-2.png");
 
         public string PlayerFrontSpriteResourcePath => ToResourcesLoadPath(PlayerFrontSpritePath);
         public string PlayerBackSpriteResourcePath => ToResourcesLoadPath(PlayerBackSpritePath);
         public string PlayerSideSpriteResourcePath => ToResourcesLoadPath(PlayerSideSpritePath);
+        public string PlayerFrontIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerFrontIdleFrame2SpritePath);
+        public string PlayerBackIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerBackIdleFrame2SpritePath);
+        public string PlayerSideIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerSideIdleFrame2SpritePath);
         public string FloorSpriteResourcePath => ToResourcesLoadPath(CombineAssetPath(WorldSpriteRoot, "world-floor.png"));
         public string HubFloorTileResourcePath => ToResourcesLoadPath(HubFloorTileSpritePath);
         public string HubFloorBackgroundResourcePath => ToResourcesLoadPath(HubFloorBackgroundSpritePath);
@@ -353,15 +350,16 @@ namespace Shared
 
             hubFloorTileDesignSourcePath = NormalizeOptionalAssetPath(hubFloorTileDesignSourcePath);
             hubBarDesignSourcePath = NormalizeOptionalAssetPath(hubBarDesignSourcePath);
-            hubWallBackgroundHorizontalWallDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundHorizontalWallDesignSourcePath);
-            hubWallBackgroundVerticalWallDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundVerticalWallDesignSourcePath);
-            hubWallBackgroundFillDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundFillDesignSourcePath);
-            hubWallBackgroundBottomLeftDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundBottomLeftDesignSourcePath);
-            hubWallBackgroundBottomRightDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundBottomRightDesignSourcePath);
-            hubFrontOutlineTopLeftDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineTopLeftDesignSourcePath);
-            hubFrontOutlineHorizontalWallDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineHorizontalWallDesignSourcePath);
-            hubFrontOutlineBottomRightDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineBottomRightDesignSourcePath);
-            hubFrontOutlineSideDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineSideDesignSourcePath);
+            frontCounterDesignSourcePath = NormalizeOptionalAssetPath(frontCounterDesignSourcePath);
+            backCounterDesignSourcePath = NormalizeOptionalAssetPath(backCounterDesignSourcePath);
+            mosaicTileFloorDesignSourcePath = NormalizeOptionalAssetPath(mosaicTileFloorDesignSourcePath);
+            mosaicTileWallDesignSourcePath = NormalizeOptionalAssetPath(mosaicTileWallDesignSourcePath);
+            tableChair2DesignSourcePath = NormalizeOptionalAssetPath(tableChair2DesignSourcePath);
+            accountBoardDesignSourcePath = NormalizeOptionalAssetPath(accountBoardDesignSourcePath);
+            hubWallBackgroundDesignSourcePath = NormalizeOptionalAssetPath(hubWallBackgroundDesignSourcePath);
+            hubFrontOutlineDesignSourcePath = NormalizeOptionalAssetPath(hubFrontOutlineDesignSourcePath);
+            playerIdleFrame1DesignSourcePath = NormalizeOptionalAssetPath(playerIdleFrame1DesignSourcePath);
+            playerIdleFrame2DesignSourcePath = NormalizeOptionalAssetPath(playerIdleFrame2DesignSourcePath);
 
             closeButtonDesignSourcePath = NormalizeOptionalAssetPath(closeButtonDesignSourcePath);
             helpButtonDesignSourcePath = NormalizeOptionalAssetPath(helpButtonDesignSourcePath);

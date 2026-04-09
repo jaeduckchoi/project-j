@@ -17,15 +17,16 @@ MonoBehaviour:
   uiGeneratedSourceRoot: ""
   hubFloorTileDesignSourcePath: ""
   hubBarDesignSourcePath: ""
-  hubWallBackgroundHorizontalWallDesignSourcePath: ""
-  hubWallBackgroundVerticalWallDesignSourcePath: ""
-  hubWallBackgroundFillDesignSourcePath: ""
-  hubWallBackgroundBottomLeftDesignSourcePath: ""
-  hubWallBackgroundBottomRightDesignSourcePath: ""
-  hubFrontOutlineTopLeftDesignSourcePath: ""
-  hubFrontOutlineHorizontalWallDesignSourcePath: ""
-  hubFrontOutlineBottomRightDesignSourcePath: ""
-  hubFrontOutlineSideDesignSourcePath: ""
+  frontCounterDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Front Counter.png
+  backCounterDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Back Counter.png
+  mosaicTileFloorDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Mosaic Tile Floor.png
+  mosaicTileWallDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Mosaic Tile Wall.png
+  tableChair2DesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Table Chair2.png
+  accountBoardDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Account Board.png
+  hubWallBackgroundDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Hub Wall Background.png
+  hubFrontOutlineDesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Object/Main Hub/Hub Front Outline Brick Wall.png
+  playerIdleFrame1DesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Character/JONGGU.png
+  playerIdleFrame2DesignSourcePath: Design/drive-download-20260409T040302Z-3-001/Character/JONGGU2.png
   closeButtonDesignSourcePath: ""
   helpButtonDesignSourcePath: ""
   systemTextBoxDesignSourcePath: ""
@@ -48,17 +49,7 @@ MonoBehaviour:
     height: 62
   hubBarMainSpriteBorder: {x: 4, y: 0, z: 4, w: 0}
   hubBarRightSpriteBorder: {x: 12, y: 0, z: 4, w: 0}
-  hubWallBackgroundTextureWidth: 1524
-  hubWallBackgroundTextureHeight: 140
-  hubWallBackgroundBorderSize: 32
-  hubFrontOutlineTextureWidth: 1920
-  hubFrontOutlineTextureHeight: 1080
-  hubFrontOutlineBorderWidth: 96
-  hubFrontOutlineBorderHeight: 90
-  hubFrontOutlineTopWallStartX: 0
-  hubFrontOutlineTopWallEndX: 1606
-  hubFrontOutlineBottomWallStartX: 300
-  playerSpritePixelsPerUnit: 1000
+  playerSpritePixelsPerUnit: 80
   playerVisualScale: 0.76
   defaultPlayerRootScale: {x: 1.5, y: 1.5, z: 1}
   worldTitleFontSize: 5.1

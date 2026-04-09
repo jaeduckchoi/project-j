@@ -69,7 +69,7 @@ namespace Editor
             ExecutePrototypeBuild(runAudit: true);
             EditorUtility.DisplayDialog(
                 "종구의 식당",
-                "생성 자산 동기화와 생성 씬 감사를 완료했습니다. 기존 관리 씬에 저장한 정적 값은 유지되며, 현재 프로젝트에 남아 있는 씬만 관리 대상으로 유지합니다.",
+                "generated 자산 동기화와 지원 씬 감사를 완료했습니다. 빌더는 더 이상 정적 월드 오브젝트를 생성하지 않으며, 씬에 저장한 값만 정본으로 유지합니다.",
                 "OK");
         }
 
@@ -110,18 +110,18 @@ namespace Editor
         }
 
         /// <summary>
-        /// 메인 빌드는 생성 자산과 빌드 설정만 비파괴로 동기화하고,
-        /// 현재 프로젝트에 남아 있는 관리 씬만 최소한으로 다시 정리해 에디터 씬에 저장한 정적 값을 보존합니다.
+        /// 메인 빌드는 generated 자산, Canvas 오버라이드, Build Settings, 감사만 비파괴로 동기화한다.
+        /// 지원 씬의 정적 월드 오브젝트는 씬 저장값을 정본으로 두고 빌더가 생성하거나 재배치하지 않는다.
         /// </summary>
         private static void ExecutePrototypeBuild(bool runAudit)
         {
             CachedWorldTextMaterials.Clear();
             SaveLoadedManagedScenesIfDirty();
             PrepareGeneratedFolders();
-            PrepareGeneratedAssets(out SpriteLibrary sprites, out ResourceLibrary resources, out RecipeLibrary recipes);
+            PrepareGeneratedAssets(out _, out _, out _);
             SyncBuildCanvasOverrides();
             SaveAndRefreshAssets();
-            BuildMissingPrototypeScenes(resources, recipes, sprites);
+            SyncManagedSceneFilesAndBuildSettings();
             SaveAndRefreshAssets();
 
             if (runAudit)
@@ -184,31 +184,27 @@ namespace Editor
         }
 
         /// <summary>
-        /// 기존 관리 씬은 덮어쓰지 않고, 현재 프로젝트에 남아 있는 씬만 최소한으로 다시 정리해 Build Settings를 맞춥니다.
-        /// 의도적으로 제거한 탐험 씬은 자동으로 복구하지 않으며, 씬의 정적 값은 에디터에서 직접 저장한 직렬화를 정본으로 사용합니다.
+        /// 지원 씬은 더 이상 빌더가 생성하지 않고, 현재 저장소에 있는 씬 파일만 Build Settings와 감사 대상으로 유지한다.
         /// </summary>
-        private static void BuildMissingPrototypeScenes(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
+        private static void SyncManagedSceneFilesAndBuildSettings()
         {
-            EnsureManagedSceneExists(SharedExplorationHudSourceScene, () => BuildHubScene(resources, recipes, sprites));
-            EnsureTrackedExplorationSceneExists(SceneRoot + "/Beach.unity", () => BuildBeachScene(resources, sprites));
-            EnsureTrackedExplorationSceneExists(SceneRoot + "/DeepForest.unity", () => BuildDeepForestScene(resources, sprites));
-            EnsureTrackedExplorationSceneExists(SceneRoot + "/AbandonedMine.unity", () => BuildAbandonedMineScene(resources, sprites));
-            EnsureTrackedExplorationSceneExists(SceneRoot + "/WindHill.unity", () => BuildWindHillScene(resources, sprites));
+            SaveSceneIfLoadedAndDirty(SharedExplorationHudSourceScene);
+
+            foreach (string scenePath in SharedExplorationHudTargetScenes)
+            {
+                SaveSceneIfLoadedAndDirty(scenePath);
+            }
+
             UpdateBuildSettings();
         }
 
         /// <summary>
-        /// 전체 재생성이 정말 필요할 때만 내부 유지보수 경로에서 사용합니다.
+        /// 과거 재생성 경로를 호출하던 내부 유지보수 엔트리는 현재 sync + audit 동작으로 축소한다.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0051", Justification = "숨겨진 유지보수 경로로 보존합니다.")]
-        private static void ForceRebuildAllManagedScenesForMaintenance(ResourceLibrary resources, RecipeLibrary recipes, SpriteLibrary sprites)
+        private static void ForceRebuildAllManagedScenesForMaintenance()
         {
-            BuildHubScene(resources, recipes, sprites);
-            BuildBeachScene(resources, sprites);
-            BuildDeepForestScene(resources, sprites);
-            BuildAbandonedMineScene(resources, sprites);
-            BuildWindHillScene(resources, sprites);
-            UpdateBuildSettings();
+            ExecutePrototypeBuild(runAudit: true);
         }
 
         /// <summary>
@@ -404,28 +400,6 @@ namespace Editor
                 targetScenePath => string.Equals(scenePath, targetScenePath, StringComparison.OrdinalIgnoreCase));
         }
 
-        private static void EnsureTrackedExplorationSceneExists(string scenePath, Action buildAction)
-        {
-            if (!IsManagedScenePath(scenePath))
-            {
-                return;
-            }
-
-            EnsureManagedSceneExists(scenePath, buildAction);
-        }
-
-        private static bool IsManagedScenePath(string scenePath)
-        {
-            if (string.IsNullOrWhiteSpace(scenePath))
-            {
-                return false;
-            }
-
-            return Array.Exists(
-                ManagedScenePaths,
-                managedScenePath => string.Equals(managedScenePath, scenePath, StringComparison.OrdinalIgnoreCase));
-        }
-
         /// <summary>
         /// 기준 씬 Canvas를 공용 오버라이드 자산으로 먼저 동기화해,
         /// 같은 이름 UI 요소가 다른 씬에도 같은 표시 값으로 다시 생성되도록 맞춥니다.
@@ -501,22 +475,6 @@ namespace Editor
 
             message = $"현재 씬 '{activeScene.name}' Canvas 값을 공용 오버라이드 자산에 덮어썼습니다.";
             return true;
-        }
-
-        private static void EnsureManagedSceneExists(string scenePath, Action buildAction)
-        {
-            if (TryDescribeManagedSceneFileIssue(scenePath, out string issue))
-            {
-                SaveSceneIfLoadedAndDirty(scenePath);
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(issue) && !issue.Contains("찾지 못했습니다", StringComparison.Ordinal))
-            {
-                Debug.LogWarning(issue + " 기본 빌더 구조로 다시 생성합니다.");
-            }
-
-            buildAction?.Invoke();
         }
 
         internal static bool TryDescribeManagedSceneFileIssue(string scenePath, out string issue)
