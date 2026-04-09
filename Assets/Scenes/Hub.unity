@@ -667,7 +667,7 @@ GameObject:
   - component: {fileID: 210100002}
   - component: {fileID: 210100003}
   m_Layer: 0
-  m_Name: Back Counter
+  m_Name: BackCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -758,7 +758,7 @@ GameObject:
   - component: {fileID: 210100012}
   - component: {fileID: 210100013}
   m_Layer: 0
-  m_Name: Mosaic Tile Floor
+  m_Name: MosaicTileFloor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -849,7 +849,7 @@ GameObject:
   - component: {fileID: 210100022}
   - component: {fileID: 210100023}
   m_Layer: 0
-  m_Name: Mosaic Tile Wall
+  m_Name: MosaicTileWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1266,7 +1266,7 @@ GameObject:
   - component: {fileID: 343560798}
   - component: {fileID: 343560799}
   m_Layer: 0
-  m_Name: Front Counter Collider
+  m_Name: FrontCounterCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3164,7 +3164,7 @@ GameObject:
   - component: {fileID: 1069871638}
   - component: {fileID: 1069871639}
   m_Layer: 0
-  m_Name: Table Chair2 Bottom
+  m_Name: TableChair2Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3304,7 +3304,7 @@ GameObject:
   - component: {fileID: 1170162318}
   - component: {fileID: 1170162319}
   m_Layer: 0
-  m_Name: Front Counter
+  m_Name: FrontCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3507,7 +3507,7 @@ GameObject:
   - component: {fileID: 1276978611}
   - component: {fileID: 1276978612}
   m_Layer: 0
-  m_Name: Table Chair2 Middle
+  m_Name: TableChair2Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3634,7 +3634,7 @@ GameObject:
   - component: {fileID: 1336547638}
   - component: {fileID: 1336547639}
   m_Layer: 0
-  m_Name: Table Chair2 Top
+  m_Name: TableChair2Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3808,7 +3808,7 @@ GameObject:
   - component: {fileID: 1371386027}
   - component: {fileID: 1371386026}
   m_Layer: 0
-  m_Name: StorageStation_Label
+  m_Name: StorageStationLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,18 +4,11 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-// ProjectEditor.UI 네임스페이스
 namespace Editor.UI
 {
-    /// <summary>
-    /// UIManager 인스펙터에서 Canvas 정리와 디자인 컨트롤러 진입점을 함께 제공한다.
-    /// </summary>
     [CustomEditor(typeof(UIManager))]
     public class UIManagerEditor : UnityEditor.Editor
     {
-        /// <summary>
-        /// 기본 인스펙터 아래에 편집 보조 버튼을 추가한다.
-        /// </summary>
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -28,24 +21,17 @@ namespace Editor.UI
                 return;
             }
 
-            // 같은 오브젝트의 디자인 컨트롤러를 바로 연결하거나 선택할 수 있게 유지한다.
             PrototypeUIDesignController controller = uiManager.GetComponent<PrototypeUIDesignController>();
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("UI Design", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("UI 프리뷰와 SVG 경로 확인은 PrototypeUIDesignController에서 함께 관리합니다.", MessageType.Info);
+            EditorGUILayout.HelpBox("UI 프리뷰와 SVG 경로 확인은 PrototypeUIDesignController에서 관리합니다.", MessageType.Info);
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Canvas 그룹 정리"))
                 {
                     uiManager.OrganizeCanvasHierarchyInEditor();
-                    MarkSceneDirty(uiManager.gameObject);
-                }
-
-                if (GUILayout.Button("씬 빌더 미리보기"))
-                {
-                    JongguMinimalPrototypeBuilder.ApplyOpenSceneBuilderPreview();
                     MarkSceneDirty(uiManager.gameObject);
                 }
 
@@ -66,9 +52,6 @@ namespace Editor.UI
             }
         }
 
-        /// <summary>
-        /// 편집기 버튼으로 값이 바뀌면 씬 dirty 상태를 함께 표시한다.
-        /// </summary>
         private static void MarkSceneDirty(GameObject targetObject)
         {
             if (targetObject == null)

@@ -1,63 +1,28 @@
-# 빌드 및 생성 기준
+# 빌드 및 생성 가이드
 
-## 기본 메뉴
+## 현재 기준
 
-현재 기본 유지보수 흐름은 `Tools > Jonggu Restaurant > Prototype Build and Audit` 하나입니다.
-이 메뉴는 생성 자산 동기화, Build Settings 정리, Canvas 오버라이드 동기화, 현재 프로젝트에 남아 있는 관리 씬 정리, 구조 감사를 한 번에 수행하는 기본 경로입니다.
+이 저장소에는 더 이상 `Tools > Jonggu Restaurant > Prototype Build and Audit` 같은 통합 빌더/감사 메뉴가 없습니다.
+정적 이미지 에셋 복사, 허브 아트 생성, Canvas 자동 동기화, Build Settings 자동 정리, generated scene audit 흐름도 함께 제거되었습니다.
 
-## 빌더의 책임
+## 유지되는 기준
 
-빌더는 아래 항목만 책임집니다.
+- generated 경로의 정본은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- UI generated 리소스 경로는 `Assets/Resources/Generated/Sprites/UI/{Buttons,MessageBoxes,Panels}`
+- 플레이어 generated 리소스 경로는 `Assets/Resources/Generated/Sprites/Player`
+- 게임 데이터 generated 경로는 `Assets/Resources/Generated/GameData`
 
-- `Assets/Resources/Generated/ui-layout-overrides.asset` 동기화
-- Build Settings 씬 목록 정리
-- 현재 프로젝트에 남아 있는 관리 씬 정리
-- `PrototypeSceneAudit` 실행
+## 작업 원칙
 
-빌더는 아래 항목의 정본이 아닙니다.
+- generated 결과물만 직접 수정하지 말고, 실제 정본 코드나 수동 정본 에셋을 먼저 수정합니다.
+- 빌더가 대신 생성해 주던 정적 허브 이미지나 씬 구조를 기대하지 않습니다.
+- Build Settings, 씬 저장, 하이어라키 정리는 필요 시 Unity 에디터에서 직접 확인합니다.
+- 검증은 삭제된 빌더 메뉴가 아니라 현재 남아 있는 런타임 코드와 씬 직렬화 상태를 기준으로 진행합니다.
 
-- 기존 지원 씬에 이미 저장된 월드 직렬화 값
-- 기존 지원 씬의 정적 배치를 다시 밀어넣는 작업
-- generated 결과물만 직접 고쳐서 해결하는 방식
+## 검증
 
-## generated 경로 기준
+- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
+- generated 경로 변경: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- API 연동 변경: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`, `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `D:\project-j-api` 계약 문서
 
-- generated 자산 루트의 실제 기준은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`입니다.
-- UI 출력 경로는 `Assets/Resources/Generated/Sprites/UI/{Buttons,MessageBoxes,Panels}`입니다.
-- 플레이어 작업 경로는 `Assets/Resources/Generated/Sprites/Player`이며, 빌더는 여기의 PNG를 재사용만 하고 분해/합성하지 않습니다.
-- 저장소는 더 이상 `Assets/Design`를 보관하지 않으며, 필요하면 설정 asset에 외부 원본 경로를 선택적으로 연결합니다.
-- 외부 원본 경로가 비어 있으면 코드는 기본 경로와 메모리 fallback만 사용합니다.
-- 글꼴과 데이터 출력도 같은 설정 자산 기준으로 정렬합니다.
-
-## 빌드 흐름에서 지켜야 할 점
-
-- 지원 씬에 직접 저장한 값은 먼저 씬 저장으로 확정한 뒤 빌더를 실행합니다.
-- `Hub` Canvas 기준을 먼저 공용 오버라이드 자산으로 동기화합니다.
-- 현재 열려 있는 다른 지원 씬이 있으면 해당 씬 관리 값만 마지막에 다시 반영합니다.
-- 기존 지원 씬은 재생성하지 않고, 현재 프로젝트에 남아 있는 씬만 안전한 기본 구조로 유지합니다.
-- 의도적으로 제거한 탐험 씬은 빌더가 자동으로 다시 만들지 않습니다.
-- 빌더는 정적 generated 에셋을 다시 만들지 않습니다.
-- 플레이 중 필요한 월드 오브젝트와 참조는 빌드 경로가 아니라 지원 씬 직렬화에 직접 유지합니다.
-- 지원 씬 Canvas가 비어 있으면 build/auto-sync는 이를 전체 managed UI 삭제로 취급하지 않고, `UIManager` editor preview 기준 baseline을 캡처합니다.
-- `HubUpgradeSlotLeft/Center/Right`와 가격 텍스트는 빌드 경로에서 더 이상 재생성하지 않습니다.
-
-## 다시 실행해야 할 때
-
-- generated 스프라이트, 폰트, 데이터 경로가 어긋났을 때
-- Build Settings 씬 목록을 다시 맞춰야 할 때
-- 지원 Canvas 씬 저장 결과를 다른 씬에도 반영해야 할 때
-- 현재 프로젝트에 남아 있는 씬 구성으로 Build Settings와 감사를 다시 맞춰야 할 때
-- `PrototypeSceneAudit` 기준 구조가 깨졌을 때
-
-## 고위험 변경
-
-- 허브 아트 교체 시 `PrototypeGeneratedAssetSettings.cs`의 외부 원본 경로 기본값, `Assets/Resources/Generated/Sprites/Hub`, `HubRoomLayout`, `JongguMinimalPrototypeBuilder`, 지원 씬 직렬화를 함께 확인합니다.
-- `HubWallBackground`, `HubFrontOutline`, 플레이어 스프라이트는 빌더에서 합성하지 않고 단일 PNG 복사나 기존 generated 파일 재사용만 허용합니다.
-- 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지합니다.
-- 허브 카운터 비주얼은 `HubBarLeftVisual`, `HubBarRightVisual` 분리 구조와 각 파츠 `spriteBorder`를 함께 맞춥니다.
-
-## 실패 처리
-
-- generated 결과물이 이상해도 결과물만 직접 수정하지 말고 생성 경로와 빌더 코드를 먼저 고칩니다.
-- `PrototypeSceneAudit`가 실패하면 빌드 성공으로 간주하지 않습니다.
-- Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 보고에 그 사실을 남깁니다.
+Unity 실행이나 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 결과에 함께 적습니다.
