@@ -1,6 +1,6 @@
 ﻿<Solution>
   <Project Path="Jonggu.Gameplay.csproj" />
-  <Project Path="Jonggu.Editor.csproj" />
   <Project Path="Jonggu.UI.csproj" />
   <Project Path="Jonggu.Shared.csproj" />
+  <Project Path="Jonggu.Editor.csproj" />
 </Solution>
