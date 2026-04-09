@@ -93,6 +93,3 @@ Thumbs.db
 Desktop.ini
 *.orig
 *.rej
-
-# 최상위 디자인 작업 폴더
-/Design/
