@@ -33,7 +33,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 런타임 보강 과정에서 감속 수치와 힌트 문구를 다시 설정합니다.
+        /// 씬 설정 과정에서 감속 수치와 힌트 문구를 다시 설정합니다.
         /// </summary>
         public void Configure(float multiplier, ToolType ignoreWithTool = ToolType.None, string text = "", string id = "")
         {

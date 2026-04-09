@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Exploration.World;
 using TMPro;
 using UI;
 using UI.Controllers;
@@ -115,10 +114,7 @@ namespace Editor
         /// </summary>
         private static void ExecutePrototypeBuild(bool runAudit)
         {
-            CachedWorldTextMaterials.Clear();
             SaveLoadedManagedScenesIfDirty();
-            PrepareGeneratedFolders();
-            PrepareGeneratedAssets(out _, out _, out _);
             SyncBuildCanvasOverrides();
             SaveAndRefreshAssets();
             SyncManagedSceneFilesAndBuildSettings();
@@ -128,42 +124,6 @@ namespace Editor
             {
                 RunGeneratedSceneAudit();
             }
-        }
-
-        /// <summary>
-        /// 생성 자산과 빌드 산출물이 들어갈 기본 폴더를 먼저 맞춥니다.
-        /// </summary>
-        private static void PrepareGeneratedFolders()
-        {
-            ProjectStructureUtility.EnsureBaseProjectFolders();
-            EnsureFolder("Assets", "Resources");
-            EnsureFolder("Assets/Resources", "Generated");
-            EnsureFolder(GeneratedRoot, "GameData");
-            EnsureFolder(GameDataRoot, "Input");
-            EnsureFolder(GameDataRoot, "Resources");
-            EnsureFolder(GameDataRoot, "Recipes");
-            EnsureFolder(GeneratedRoot, "Sprites");
-            EnsureFolder(SpriteRoot, "UI");
-            EnsureFolder(SpriteRoot, "Recipes");
-            EnsureFolder(UiSpriteRoot, "Buttons");
-            EnsureFolder(UiSpriteRoot, "MessageBoxes");
-            EnsureFolder(UiSpriteRoot, "Panels");
-            EnsureFolder(GeneratedRoot, "Fonts");
-            EnsureFolder("Assets", "Scenes");
-        }
-
-        /// <summary>
-        /// 씬 생성 전에 폰트, 스프라이트, 데이터처럼 공통으로 쓰는 generated 자산을 준비합니다.
-        /// </summary>
-        private static void PrepareGeneratedAssets(out SpriteLibrary sprites, out ResourceLibrary resources, out RecipeLibrary recipes)
-        {
-            _generatedHeadingFont = CreateHeadingFontAsset();
-            _generatedKoreanFont = CreateKoreanFontAsset();
-            EnsurePreferredTmpFontAsset();
-            CreateUiDesignSprites();
-            sprites = CreateSprites();
-            resources = CreateResources();
-            recipes = CreateRecipes(resources);
         }
 
         /// <summary>
@@ -199,7 +159,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// 과거 재생성 경로를 호출하던 내부 유지보수 엔트리는 현재 sync + audit 동작으로 축소한다.
+        /// 과거 재생성 유지보수 엔트리는 현재 sync + audit 동작만 다시 실행한다.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0051", Justification = "숨겨진 유지보수 경로로 보존합니다.")]
         private static void ForceRebuildAllManagedScenesForMaintenance()
@@ -233,8 +193,49 @@ namespace Editor
             AssetDatabase.Refresh();
         }
 
+        private static void UpdateBuildSettings()
+        {
+            EditorBuildSettings.scenes = ManagedScenePaths
+                .Select(scenePath => new EditorBuildSettingsScene(scenePath, true))
+                .ToArray();
+        }
+
+        private static int RemoveMissingScriptsRecursive(GameObject target)
+        {
+            int removed = GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
+
+            foreach (Transform child in target.transform)
+            {
+                removed += RemoveMissingScriptsRecursive(child.gameObject);
+            }
+
+            return removed;
+        }
+
+        private static int RemoveMissingScriptsInScene(Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return 0;
+            }
+
+            int removed = 0;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                if (root == null)
+                {
+                    continue;
+                }
+
+                removed += RemoveMissingScriptsRecursive(root);
+            }
+
+            return removed;
+        }
+
         /// <summary>
-        /// 빌더 미리보기는 현재 메뉴로 노출하지 않고 내부 보강 경로에서만 사용한다.
+        /// 빌더 미리보기는 현재 메뉴로 노출하지 않고 내부 정리 경로에서만 사용한다.
+        /// 정적 월드 오브젝트는 생성하거나 재배치하지 않는다.
         /// </summary>
         public static void ApplyOpenSceneBuilderPreview()
         {
@@ -243,8 +244,6 @@ namespace Editor
                 Debug.LogWarning("열린 씬 빌더 미리보기는 플레이 모드를 종료한 뒤 실행하세요.");
                 return;
             }
-
-            CachedWorldTextMaterials.Clear();
 
             Scene activeScene = SceneManager.GetActiveScene();
             if (!activeScene.IsValid() || !activeScene.isLoaded)
@@ -259,15 +258,13 @@ namespace Editor
                 return;
             }
 
-            EnsureGeneratedAssetsForBuilderPreview();
-            PrototypeSceneRuntimeAugmenter.EnsureSceneReady(activeScene);
             PrototypeSceneHierarchyOrganizer.OrganizeSceneHierarchy(activeScene, saveScene: false);
             ApplySceneUiPreviewIfAvailable();
             EditorSceneManager.MarkSceneDirty(activeScene);
             EditorApplication.QueuePlayerLoopUpdate();
             SceneView.RepaintAll();
 
-            Debug.Log($"열린 씬 '{activeScene.name}'에 빌더 미리보기를 적용했습니다.");
+            Debug.Log($"열린 씬 '{activeScene.name}'에 비파괴 빌더 미리보기를 적용했습니다.");
         }
 
         private static bool IsSupportedBuilderPreviewScene(string sceneName)
@@ -276,20 +273,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// 열린 씬 미리보기에서도 빌더와 같은 generated 자산 경로를 먼저 맞춰 둔다.
-        /// 메뉴판 스프라이트나 TMP 자산이 아직 없으면 여기서 바로 생성해 SceneView 프리뷰가 비지 않게 한다.
-        /// </summary>
-        private static void EnsureGeneratedAssetsForBuilderPreview()
-        {
-            CachedWorldTextMaterials.Clear();
-            PrepareGeneratedFolders();
-            PrepareGeneratedAssets(out _, out _, out _);
-            SaveAndRefreshAssets();
-        }
-
-        /// <summary>
-        /// 월드 빌더 프리뷰를 씬에 덮어쓴 뒤 UI 프리뷰도 함께 다시 적용하면
-        /// 팝업과 허브 월드 요소를 SceneView에서 한 번에 맞춰 볼 수 있다.
+        /// 열린 씬 프리뷰는 월드 오브젝트를 건드리지 않고 UI 프리뷰만 다시 적용한다.
         /// </summary>
         private static void ApplySceneUiPreviewIfAvailable()
         {

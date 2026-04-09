@@ -9,7 +9,6 @@
 
 빌더는 아래 항목만 책임집니다.
 
-- generated 자산과 리소스 경로 동기화
 - `Assets/Resources/Generated/ui-layout-overrides.asset` 동기화
 - Build Settings 씬 목록 정리
 - 현재 프로젝트에 남아 있는 관리 씬 정리
@@ -23,12 +22,11 @@
 
 ## generated 경로 기준
 
-- generated 자산 루트의 실제 기준은 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`입니다.
-- 코드 기준은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`입니다.
+- generated 자산 루트의 실제 기준은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`입니다.
 - UI 출력 경로는 `Assets/Resources/Generated/Sprites/UI/{Buttons,MessageBoxes,Panels}`입니다.
 - 플레이어 작업 경로는 `Assets/Resources/Generated/Sprites/Player`이며, 빌더는 여기의 PNG를 재사용만 하고 분해/합성하지 않습니다.
 - 저장소는 더 이상 `Assets/Design`를 보관하지 않으며, 필요하면 설정 asset에 외부 원본 경로를 선택적으로 연결합니다.
-- 외부 원본 경로가 비어 있으면 빌더는 현재 generated PNG를 유지하고 import 설정만 다시 맞춥니다.
+- 외부 원본 경로가 비어 있으면 코드는 기본 경로와 메모리 fallback만 사용합니다.
 - 글꼴과 데이터 출력도 같은 설정 자산 기준으로 정렬합니다.
 
 ## 빌드 흐름에서 지켜야 할 점
@@ -38,7 +36,8 @@
 - 현재 열려 있는 다른 지원 씬이 있으면 해당 씬 관리 값만 마지막에 다시 반영합니다.
 - 기존 지원 씬은 재생성하지 않고, 현재 프로젝트에 남아 있는 씬만 안전한 기본 구조로 유지합니다.
 - 의도적으로 제거한 탐험 씬은 빌더가 자동으로 다시 만들지 않습니다.
-- runtime augmenter는 누락 보강만 하며, 이미 저장된 씬 값을 기본적으로 덮어쓰지 않습니다.
+- 빌더는 정적 generated 에셋을 다시 만들지 않습니다.
+- 플레이 중 필요한 월드 오브젝트와 참조는 빌드 경로가 아니라 지원 씬 직렬화에 직접 유지합니다.
 - 지원 씬 Canvas가 비어 있으면 build/auto-sync는 이를 전체 managed UI 삭제로 취급하지 않고, `UIManager` editor preview 기준 baseline을 캡처합니다.
 - `HubUpgradeSlotLeft/Center/Right`와 가격 텍스트는 빌드 경로에서 더 이상 재생성하지 않습니다.
 
@@ -52,7 +51,7 @@
 
 ## 고위험 변경
 
-- 허브 아트 교체 시 `prototype-generated-asset-settings.asset`의 외부 원본 경로, `Assets/Resources/Generated/Sprites/Hub`, `HubRoomLayout`, `PrototypeSceneRuntimeAugmenter`, `JongguMinimalPrototypeBuilder`, 지원 씬 직렬화를 함께 확인합니다.
+- 허브 아트 교체 시 `PrototypeGeneratedAssetSettings.cs`의 외부 원본 경로 기본값, `Assets/Resources/Generated/Sprites/Hub`, `HubRoomLayout`, `JongguMinimalPrototypeBuilder`, 지원 씬 직렬화를 함께 확인합니다.
 - `HubWallBackground`, `HubFrontOutline`, 플레이어 스프라이트는 빌더에서 합성하지 않고 단일 PNG 복사나 기존 generated 파일 재사용만 허용합니다.
 - 허브 바닥 타일은 기본적으로 `1 월드 유닛 = 32 px` 기준을 유지합니다.
 - 허브 카운터 비주얼은 `HubBarLeftVisual`, `HubBarRightVisual` 분리 구조와 각 파츠 `spriteBorder`를 함께 맞춥니다.

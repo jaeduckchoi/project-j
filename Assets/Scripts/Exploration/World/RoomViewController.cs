@@ -26,7 +26,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 빌더와 런타임 보강에서 카메라 참조를 다시 연결한다.
+        /// 빌더와 씬 설정 코드에서 카메라 참조를 다시 연결한다.
         /// </summary>
         public void Configure(CameraFollow follow)
         {

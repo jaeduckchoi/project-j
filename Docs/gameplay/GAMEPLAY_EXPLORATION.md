@@ -43,7 +43,7 @@
 - 자원 : `Glow Moss`
 - 목적 : `Lantern` 해금 후 진입 가능한 고위험 지역.
 - 위험 : `MineDarkness`, 좁은 동선.
-- 메모 : 런타임 안전장치가 `MineLooseRubble` 같은 보조 위험을 추가할 수 있다.
+- 메모 : 보조 위험과 상호작용 오브젝트도 지원 씬 직렬화에 직접 저장된 구성을 기준으로 유지한다.
 
 ### WindHill (최종)
 
@@ -81,5 +81,4 @@
 - 채집 : `Assets/Scripts/Exploration/Gathering/GatherableResource.cs`
 - 포탈 : `Assets/Scripts/Exploration/World/ScenePortal.cs`
 - 위험 지대 : `DarknessZone.cs`, `MovementModifierZone.cs`, `WindGustZone.cs`
-- 런타임 보강 : `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`
 - 계층 카탈로그 : `Assets/Scripts/Exploration/World/PrototypeSceneHierarchyCatalog.cs`

@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using System;
-using Exploration.World;
 using TMPro;
 using UI;
 using UI.Controllers;
@@ -22,6 +21,10 @@ namespace Editor
 {
     public static partial class JongguMinimalPrototypeBuilder
     {
+#if ENABLE_INPUT_SYSTEM
+        private static InputActionAsset _builderPreviewUiActionsAsset;
+#endif
+
         private static void CreateUiCanvas(bool isHubScene)
         {
             GameObject canvasObject = new("Canvas");
@@ -298,21 +301,14 @@ namespace Editor
 
         private static InputActionAsset EnsureUiInputActionsAsset()
         {
-            string assetPath = InputDataRoot + "/generated-ui-input-actions.asset";
-            InputActionAsset existingAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(assetPath);
-            EnsureMainObjectNameMatchesFileName(existingAsset, assetPath);
-            if (existingAsset != null && HasRequiredUiActions(existingAsset))
+            if (_builderPreviewUiActionsAsset != null && HasRequiredUiActions(_builderPreviewUiActionsAsset))
             {
-                return existingAsset;
-            }
-
-            if (existingAsset != null)
-            {
-                AssetDatabase.DeleteAsset(assetPath);
+                return _builderPreviewUiActionsAsset;
             }
 
             InputActionAsset asset = ScriptableObject.CreateInstance<InputActionAsset>();
             asset.name = "generated-ui-input-actions";
+            asset.hideFlags = HideFlags.HideAndDontSave;
             InputActionMap uiMap = new("UI");
             asset.AddActionMap(uiMap);
 
@@ -370,9 +366,8 @@ namespace Editor
             trackedOrientationAction.expectedControlType = "Quaternion";
             trackedOrientationAction.AddBinding("<XRController>/deviceRotation");
 
-            AssetDatabase.CreateAsset(asset, assetPath);
-            AssetDatabase.SaveAssets();
-            return asset;
+            _builderPreviewUiActionsAsset = asset;
+            return _builderPreviewUiActionsAsset;
         }
 
         private static bool HasRequiredUiActions(InputActionAsset asset)
@@ -1094,313 +1089,20 @@ namespace Editor
                    || objectName is "InventoryText" or "StorageText" or "SelectedRecipeText" or "UpgradeText";
         }
 
-        private static void CreateWorldLabel(string objectName, Transform parent, Vector3 localPosition, string content, Color color, float fontSize, int sortingOrder)
+        private static TMP_FontAsset EnsurePreferredTmpFontAsset()
         {
-            CreateWorldTextObject(objectName, parent, localPosition, content, color, fontSize, sortingOrder);
+            return _generatedKoreanFont != null
+                ? _generatedKoreanFont
+                : TMP_Settings.defaultFontAsset;
         }
 
-        /// <summary>
-        /// 월드 배치용 TextMeshPro 오브젝트를 만들고 참조를 바로 돌려준다.
-        /// 메뉴 보드처럼 후속 구성에서 텍스트 컴포넌트가 필요할 때 사용한다.
-        /// </summary>
-        private static TextMeshPro CreateWorldTextObject(
-            string objectName,
-            Transform parent,
-            Vector3 localPosition,
-            string content,
-            Color color,
-            float fontSize,
-            int sortingOrder,
-            float? labelScale = null,
-            FontStyles? fontStyle = null,
-            float? characterSpacing = null)
+        private static TMP_FontAsset EnsureHeadingTmpFontAsset()
         {
-            bool defaultLargeLabel = fontSize >= 3.4f;
-            bool defaultPrimaryLabel = fontSize >= 2.5f;
-            GameObject labelObject = new(objectName);
-            if (parent != null)
-            {
-                labelObject.transform.SetParent(parent, false);
-                ApplySceneTransformOverride(labelObject.transform, objectName, localPosition, Quaternion.identity, Vector3.one, useLocalSpace: true);
-            }
-            else
-            {
-                ApplySceneTransformOverride(labelObject.transform, objectName, localPosition, Quaternion.identity, Vector3.one, useLocalSpace: false);
-            }
-
-            TextMeshPro text = labelObject.AddComponent<TextMeshPro>();
-            text.text = content;
-            text.fontSize = fontSize;
-            text.alignment = TextAlignmentOptions.Center;
-            text.color = color;
-            text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.characterSpacing = characterSpacing ?? (defaultLargeLabel ? 0.22f : defaultPrimaryLabel ? 0.08f : 0.02f);
-            text.wordSpacing = 0f;
-            text.lineSpacing = 0f;
-            text.fontStyle = fontStyle ?? (fontSize >= 2.5f ? FontStyles.Bold : FontStyles.Normal);
-            ApplySceneComponentOverride(text, objectName);
-
-            bool isLargeLabel = text.fontSize >= 3.4f;
-            bool isPrimaryLabel = text.fontSize >= 2.5f;
-            TMP_FontAsset preferredFont = isLargeLabel ? EnsureHeadingTmpFontAsset() : EnsurePreferredTmpFontAsset();
-            if (text.font == null)
-            {
-                if (preferredFont != null)
-                {
-                    text.font = preferredFont;
-                }
-                else if (TMP_Settings.defaultFontAsset != null)
-                {
-                    text.font = TMP_Settings.defaultFontAsset;
-                }
-            }
-
-            float resolvedLabelScale = labelScale ?? (isLargeLabel ? 0.39f : isPrimaryLabel ? 0.36f : 0.33f);
-            labelObject.transform.localScale = ResolveSceneObjectScale(objectName, Vector3.one * resolvedLabelScale);
-            Material worldTextMaterial = EnsureWorldTextSharedMaterial(text.font, isLargeLabel || isPrimaryLabel);
-            if (worldTextMaterial != null)
-            {
-                text.fontSharedMaterial = worldTextMaterial;
-            }
-
-            ApplyWorldTextReadability(text);
-
-            MeshRenderer meshRenderer = text.GetComponent<MeshRenderer>();
-            meshRenderer.sortingOrder = sortingOrder;
-            ApplySceneComponentOverride(meshRenderer, objectName);
-            ApplySceneActiveOverride(labelObject, objectName);
-            return text;
+            return _generatedHeadingFont != null
+                ? _generatedHeadingFont
+                : EnsurePreferredTmpFontAsset();
         }
 
-        /// <summary>
-        /// 허브 월드 텍스트는 배경 그림 위에서도 읽히도록 외곽선과 패딩을 기본 적용한다.
-        /// </summary>
-        private static void ApplyWorldTextReadability(TextMeshPro text)
-        {
-            if (text == null)
-            {
-                return;
-            }
-
-            text.extraPadding = true;
-        }
-
-        /// <summary>
-        /// 에디터 빌드에서는 TMP setter가 renderer.material을 열지 않도록
-        /// 공유 머티리얼 에셋을 만들어 폰트별/강도별로 재사용한다.
-        /// </summary>
-        private static Material EnsureWorldTextSharedMaterial(TMP_FontAsset fontAsset, bool useStrongOutline)
-        {
-            if (fontAsset == null || fontAsset.material == null)
-            {
-                return null;
-            }
-
-            string materialName = fontAsset.name + (useStrongOutline ? "WorldTextStrong" : "WorldTextNormal");
-            if (CachedWorldTextMaterials.TryGetValue(materialName, out Material cachedMaterial) && cachedMaterial != null)
-            {
-                return cachedMaterial;
-            }
-
-            string materialPath = $"{FontRoot}/{materialName}.mat";
-            Material materialAsset = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
-            if (materialAsset == null)
-            {
-                materialAsset = new Material(fontAsset.material)
-                {
-                    name = materialName
-                };
-                AssetDatabase.CreateAsset(materialAsset, materialPath);
-            }
-
-            materialAsset.SetColor(ShaderUtilities.ID_OutlineColor, HubRoomLayout.WorldTextOutlineColor);
-            materialAsset.SetFloat(
-                ShaderUtilities.ID_OutlineWidth,
-                useStrongOutline
-                    ? HubRoomLayout.WorldTextStrongOutlineWidth
-                    : HubRoomLayout.WorldTextNormalOutlineWidth);
-            EditorUtility.SetDirty(materialAsset);
-
-            CachedWorldTextMaterials[materialName] = materialAsset;
-            return materialAsset;
-        }
-
-        /// <summary>
-        /// 허브 바닥 표시는 별도 이미지 대신 얇은 바닥 패널과 텍스트 조합으로 다시 만든다.
-        /// </summary>
-        private static void CreateHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Sprite floorSprite, Transform parent)
-        {
-            GameObject sign = CreateDecorBlock(
-                placement.ObjectName,
-                placement.Position,
-                placement.BackdropScale,
-                floorSprite,
-                HubRoomLayout.SignBackdropColor,
-                HubRoomLayout.SignSortingOrder,
-                parent);
-
-            CreateWorldTextObject(
-                placement.ObjectName + "Label",
-                sign.transform,
-                placement.TextLocalPosition,
-                placement.Content,
-                HubRoomLayout.SignTextColor,
-                placement.FontSize,
-                HubRoomLayout.SignTextSortingOrder,
-                labelScale: placement.TextScale,
-                fontStyle: FontStyles.Bold,
-                characterSpacing: placement.CharacterSpacing);
-        }
-
-        private static GameObject CreateFloorZone(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color, int sortingOrder)
-        {
-            return CreateDecorBlock(objectName, position, scale, sprite, color, sortingOrder);
-        }
-
-        private static void CreateFeaturePad(string objectName, Vector3 position, Vector3 scale, Sprite sprite, Color color)
-        {
-            CreateDecorBlock(objectName, position, scale, sprite, color, 3);
-        }
-
-        /// <summary>
-        /// 허브 전용 배경 아트를 레이어별 자식 오브젝트로 배치한다.
-        /// </summary>
-        private static GameObject CreateHubArtSprite(string objectName, Vector3 position, Sprite sprite, int sortingOrder, Transform parent)
-        {
-            if (sprite == null)
-            {
-                return null;
-            }
-
-            return CreateDecorBlock(objectName, position, Vector3.one, sprite, Color.white, sortingOrder, parent);
-        }
-
-        private static void CreateHubTiledArtSprite(
-            string objectName,
-            Vector3 position,
-            Vector2 worldSize,
-            Vector3 localScale,
-            Sprite sprite,
-            int sortingOrder,
-            Transform parent)
-        {
-            if (sprite == null)
-            {
-                return;
-            }
-
-            Vector2 tiledSize = new(
-                Mathf.Approximately(localScale.x, 0f) ? worldSize.x : worldSize.x / localScale.x,
-                Mathf.Approximately(localScale.y, 0f) ? worldSize.y : worldSize.y / localScale.y);
-
-            CreateDecorBlock(objectName, position, localScale, sprite, Color.white, sortingOrder, parent, SpriteDrawMode.Tiled, tiledSize);
-        }
-
-        private static void CreateHubSplitBarArt(
-            string objectName,
-            Vector3 position,
-            Sprite leftSprite,
-            Sprite rightSprite,
-            int sortingOrder,
-            Transform parent)
-        {
-            GameObject root = new(objectName);
-            if (parent != null)
-            {
-                root.transform.SetParent(parent, false);
-                ApplySceneTransformOverride(root.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: true);
-            }
-            else
-            {
-                ApplySceneTransformOverride(root.transform, objectName, position, Quaternion.identity, Vector3.one, useLocalSpace: false);
-            }
-
-            CreateDecorBlock(
-                HubRoomLayout.BarLeftVisualObjectName,
-                HubRoomLayout.BarLeftVisualLocalPosition,
-                Vector3.one,
-                leftSprite,
-                Color.white,
-                sortingOrder,
-                root.transform,
-                SpriteDrawMode.Sliced,
-                HubRoomLayout.BarLeftVisualSize);
-
-            if (rightSprite != null)
-            {
-                CreateDecorBlock(
-                    HubRoomLayout.BarRightVisualObjectName,
-                    HubRoomLayout.BarRightVisualLocalPosition,
-                    Vector3.one,
-                    rightSprite,
-                    Color.white,
-                    sortingOrder,
-                    root.transform,
-                    SpriteDrawMode.Sliced,
-                    HubRoomLayout.BarRightVisualSize);
-            }
-
-            ApplySceneActiveOverride(root, objectName);
-        }
-
-        private static GameObject CreateDecorBlock(
-            string objectName,
-            Vector3 position,
-            Vector3 scale,
-            Sprite sprite,
-            Color color,
-            int sortingOrder,
-            Transform parent = null,
-            SpriteDrawMode drawMode = SpriteDrawMode.Simple,
-            Vector2? tiledSize = null)
-        {
-            GameObject go = new(objectName);
-            if (parent != null)
-            {
-                go.transform.SetParent(parent, false);
-                ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: true);
-            }
-            else
-            {
-                ApplySceneTransformOverride(go.transform, objectName, position, Quaternion.identity, scale, useLocalSpace: false);
-            }
-
-            SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            renderer.drawMode = drawMode;
-            if (tiledSize.HasValue)
-            {
-                renderer.size = tiledSize.Value;
-            }
-
-            ApplySceneComponentOverride(renderer, objectName);
-            ApplySceneActiveOverride(go, objectName);
-            return go;
-        }
-
-        /// <summary>
-        /// 배경 아트 위에 상호작용만 남기고 싶은 허브 오브젝트는 렌더러와 월드 라벨을 숨긴다.
-        /// 콜라이더와 상호작용 컴포넌트는 유지하므로 프롬프트와 기능은 그대로 동작한다.
-        /// </summary>
-        private static void HideWorldInteractionPresentation(GameObject root)
-        {
-            if (root == null)
-            {
-                return;
-            }
-
-            foreach (SpriteRenderer renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
-            {
-                renderer.enabled = false;
-            }
-
-            foreach (TextMeshPro label in root.GetComponentsInChildren<TextMeshPro>(true))
-            {
-                label.gameObject.SetActive(false);
-            }
-        }
     }
 }
 #endif

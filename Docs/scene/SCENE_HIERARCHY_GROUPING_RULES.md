@@ -68,7 +68,7 @@ SceneGameplayRoot
 ## 함께 수정할 항목
 
 - 그룹 이름 변경: `PrototypeSceneHierarchyOrganizer`, `PrototypeSceneAudit`, 빌더, 관련 문서
-- 허브 아트 루트 변경: `HubRoomLayout`, runtime augmenter, 빌더, generated 허브 스프라이트 경로
+- 허브 아트 루트 변경: `HubRoomLayout`, 빌더, generated 허브 스프라이트 경로
 - Canvas 루트 변경: `UI_GROUPING_RULES.md`, `UIManager`, 빌더, UI 오버라이드 자산 처리 코드
 
 ## 검증 경로

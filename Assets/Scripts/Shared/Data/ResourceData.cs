@@ -37,6 +37,24 @@ namespace Shared.Data
         public Sprite Icon => icon;
         public ResourceRarity Rarity => rarity;
         public int BaseSellPrice => baseSellPrice;
+
+        public void ConfigureRuntime(
+            string id,
+            string resourceName,
+            string resourceDescription,
+            string sourceRegion,
+            int sellPriceValue,
+            ResourceRarity resourceRarity,
+            Sprite resourceIcon = null)
+        {
+            resourceId = string.IsNullOrWhiteSpace(id) ? string.Empty : id;
+            displayName = string.IsNullOrWhiteSpace(resourceName) ? resourceId : resourceName;
+            description = string.IsNullOrWhiteSpace(resourceDescription) ? string.Empty : resourceDescription;
+            regionTag = string.IsNullOrWhiteSpace(sourceRegion) ? string.Empty : sourceRegion;
+            baseSellPrice = Mathf.Max(0, sellPriceValue);
+            rarity = resourceRarity;
+            icon = resourceIcon;
+        }
     }
 
     /// <summary>

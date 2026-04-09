@@ -16,7 +16,7 @@ namespace Exploration.World
         public string SpawnId => spawnId;
 
         /// <summary>
-        /// 빌더나 런타임 보강 코드에서 기본 스폰 식별자를 다시 지정합니다.
+        /// 빌더나 씬 설정 코드에서 기본 스폰 식별자를 다시 지정합니다.
         /// </summary>
         public void Configure(string id)
         {

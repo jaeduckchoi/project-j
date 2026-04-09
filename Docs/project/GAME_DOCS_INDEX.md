@@ -16,7 +16,7 @@
 - `GAME_DOCS_INDEX.md`: 이 인덱스와 작업별 문서 진입점
 - `GAME_PROJECT_STRUCTURE.md`: 실제 저장소 구조, 책임 경계, generated 경로
 - `AGENT_WORKFLOW.md`: 기본 작업 루프, 검증 매트릭스, 드리프트 정리 기준
-- `SOURCE_OF_TRUTH.md`: 씬 직렬화, runtime augmenter, builder, generated 자산, 인접 API 계약의 정본 관계
+- `SOURCE_OF_TRUTH.md`: 씬 직렬화, builder, generated 자산 경로, 인접 API 계약의 정본 관계
 - `GIT_COMMIT_TEMPLATE.md`: 커밋 메시지 규칙의 유일한 정본
 
 ## 3. `gameplay` 문서
@@ -32,7 +32,7 @@
 - `UI_GROUPING_RULES.md`: Canvas 그룹 구조와 이름 기준
 - `GAME_SCENE_AND_SETUP.md`: 지원 씬 역할, 주요 직렬화 포인트, 고위험 체크포인트
 - `SCENE_HIERARCHY_GROUPING_RULES.md`: 월드 계층 구조와 그룹 배치 기준
-- `GAME_BUILD_GUIDE.md`: 빌더 흐름, generated 자산 경로, 감사 기준
+- `GAME_BUILD_GUIDE.md`: 빌더 흐름, 정적 generated 에셋 비생성 원칙, 감사 기준
 
 ## 5. 작업별 빠른 진입점
 

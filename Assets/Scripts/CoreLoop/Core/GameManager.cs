@@ -160,11 +160,10 @@ namespace CoreLoop.Core
         }
 
         /// <summary>
-        /// 첫 진입 씬에도 런타임 보강과 지역 진입 안내를 적용합니다.
+        /// 첫 진입 씬에도 지역 진입 안내를 적용합니다.
         /// </summary>
         private void Start()
         {
-            PrototypeSceneRuntimeAugmenter.EnsureSceneReady(SceneManager.GetActiveScene());
             dayCycleManager?.HandleSceneEntered(SceneManager.GetActiveScene().name);
             remoteSession?.BeginSession();
         }
@@ -174,7 +173,6 @@ namespace CoreLoop.Core
         /// </summary>
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            PrototypeSceneRuntimeAugmenter.EnsureSceneReady(scene);
             TryMovePlayerToPendingSpawn(scene);
             dayCycleManager?.HandleSceneEntered(scene.name);
         }

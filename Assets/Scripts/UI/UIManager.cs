@@ -13,6 +13,7 @@ using Restaurant;
 using Management.Storage;
 using TMPro;
 using Management.Tools;
+using Shared;
 using UI.Content;
 using UI.Controllers;
 using UI.Layout;
@@ -1853,14 +1854,14 @@ namespace UI
         private void ApplyTextPresentation()
         {
             bool isHubScene = IsHubScene();
-            TMP_FontAsset preferredFont = bodyFontAsset != null
-                ? bodyFontAsset
-                : TMP_Settings.defaultFontAsset != null
-                    ? TMP_Settings.defaultFontAsset
+            TMP_FontAsset runtimeDefaultFont = TmpFontAssetResolver.EnsureDefaultFontAsset();
+            TMP_FontAsset preferredFont = TmpFontAssetResolver.ResolveFontOrDefault(
+                bodyFontAsset != null
+                    ? bodyFontAsset
                     : interactionPromptText != null
                         ? interactionPromptText.font
-                        : null;
-            TMP_FontAsset headingFont = headingFontAsset != null ? headingFontAsset : preferredFont;
+                        : runtimeDefaultFont);
+            TMP_FontAsset headingFont = TmpFontAssetResolver.ResolveHeadingFontOrDefault(headingFontAsset, preferredFont);
 
             ApplyCanvasScaleSettings();
             EnsureCanvasGroups();
@@ -4081,11 +4082,7 @@ namespace UI
             if (isHubScene)
             {
                 PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
-                TMP_FontAsset headingFont = headingFontAsset != null
-                    ? headingFontAsset
-                    : bodyFontAsset != null
-                        ? bodyFontAsset
-                        : TMP_Settings.defaultFontAsset;
+                TMP_FontAsset headingFont = TmpFontAssetResolver.ResolveHeadingFontOrDefault(headingFontAsset, bodyFontAsset);
                 bool showPopup = activeHubPanel != HubPopupPanel.None;
 
                 ApplyHubPopupFrameStyle(headingFont, theme.Text);

@@ -449,7 +449,7 @@ MonoBehaviour:
   textEntries:
   - objectName: ActionCaption
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 15
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 260
@@ -468,7 +468,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: GuideText
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 18
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 514
@@ -487,7 +487,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupCloseButton_Label
     overrideFont: 1
-    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    font: {fileID: 0}
     fontSize: 20
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 514
@@ -506,7 +506,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftCaption
     overrideFont: 1
-    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    font: {fileID: 0}
     fontSize: 32
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 257
@@ -525,7 +525,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText01
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -544,7 +544,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText02
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -563,7 +563,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText03
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -582,7 +582,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText04
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -601,7 +601,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupRightCaption
     overrideFont: 1
-    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    font: {fileID: 0}
     fontSize: 32
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -620,7 +620,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupTitle
     overrideFont: 1
-    font: {fileID: 11400000, guid: 7a70a9d31a22fde4d949debaf2aa04f0, type: 2}
+    font: {fileID: 0}
     fontSize: 40
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 257
@@ -639,7 +639,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: RestaurantResultText
     overrideFont: 1
-    font: {fileID: 11400000, guid: c01c99198f385aa4eb543f8b7399f7c4, type: 2}
+    font: {fileID: 0}
     fontSize: 18
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 514

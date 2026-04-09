@@ -60,7 +60,7 @@ namespace Exploration.Gathering
         }
 
         /// <summary>
-        /// 런타임 보강이나 빌더에서 채집 자원과 필요 도구를 다시 설정합니다.
+        /// 씬 설정 코드나 빌더에서 채집 자원과 필요 도구를 다시 설정합니다.
         /// </summary>
         public void Configure(ResourceData resource, ToolType toolType, int minimumAmount = 1, int maximumAmount = 2)
         {

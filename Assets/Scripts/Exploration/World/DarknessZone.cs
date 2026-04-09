@@ -32,7 +32,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 런타임 보강 경로에서 기본 이동 배수와 안내 문구를 보충합니다.
+        /// 씬 설정 코드에서 기본 이동 배수와 안내 문구를 보충합니다.
         /// </summary>
         public void Configure(float movementMultiplier, string text = "", string id = "")
         {

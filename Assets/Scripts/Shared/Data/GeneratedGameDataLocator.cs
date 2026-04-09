@@ -24,6 +24,7 @@ namespace Shared.Data
         private static readonly Dictionary<string, ResourceData> ResourceCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, RecipeData> RecipeCache = new(StringComparer.OrdinalIgnoreCase);
         private static bool _manifestLoadAttempted;
+        private static bool _fallbackAssetsCreated;
 
         /// <summary>
         /// generated ?먯썝 ?먯뀑???대쫫, id, ?쒖떆 ?대쫫 湲곗??쇰줈 李얠븘 諛섑솚?⑸땲??
@@ -111,6 +112,7 @@ namespace Shared.Data
             GeneratedGameDataManifest manifest = Resources.Load<GeneratedGameDataManifest>(GeneratedDataManifestPath);
             if (manifest == null)
             {
+                BootstrapFallbackAssets();
                 return;
             }
 
@@ -243,6 +245,129 @@ namespace Shared.Data
                 .Replace("-", string.Empty, StringComparison.Ordinal)
                 .Replace("_", string.Empty, StringComparison.Ordinal)
                 .Replace(" ", string.Empty, StringComparison.Ordinal);
+        }
+
+        private static void BootstrapFallbackAssets()
+        {
+            if (_fallbackAssetsCreated)
+            {
+                return;
+            }
+
+            _fallbackAssetsCreated = true;
+
+            ResourceData fish = CreateRuntimeResource("fish", "생선", "바닷가에서 쉽게 얻을 수 있는 기본 재료입니다.", "바닷가", 10, ResourceRarity.Common);
+            ResourceData shell = CreateRuntimeResource("shell", "조개", "국물 요리에 쓰기 좋은 바닷가 재료입니다.", "바닷가", 12, ResourceRarity.Common);
+            ResourceData seaweed = CreateRuntimeResource("seaweed", "해초", "향이 좋은 해산 재료입니다.", "바닷가", 8, ResourceRarity.Common);
+            ResourceData herb = CreateRuntimeResource("herb", "약초", "깊은 숲에서 얻는 향이 짙은 약초입니다.", "깊은 숲", 14, ResourceRarity.Uncommon);
+            ResourceData mushroom = CreateRuntimeResource("mushroom", "버섯", "숲의 그늘 아래에서 자라는 식재료입니다.", "깊은 숲", 16, ResourceRarity.Uncommon);
+            ResourceData glowMoss = CreateRuntimeResource("glow_moss", "발광 이끼", "폐광산 안쪽의 습한 벽면에서 자라는 희귀 식재료입니다.", "폐광산", 22, ResourceRarity.Rare);
+            ResourceData windHerb = CreateRuntimeResource("wind_herb", "향초", "바람이 센 언덕에서만 자라는 고급 허브입니다.", "바람 언덕", 18, ResourceRarity.Rare);
+
+            CreateRuntimeRecipe(
+                "sushi_set",
+                "생선 초밥 세트",
+                "생선을 빠르게 준비할 수 있는 기본 메뉴입니다.",
+                30,
+                1,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish)
+                });
+
+            CreateRuntimeRecipe(
+                "seafood_soup",
+                "해물탕",
+                "생선, 조개, 해초를 모두 넣은 고급 메뉴입니다.",
+                55,
+                2,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("shell", "조개", 1, shell),
+                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed)
+                });
+
+            CreateRuntimeRecipe(
+                "herb_fish_soup",
+                "약초 생선탕",
+                "바닷가 생선과 숲의 약초를 넣어 끓인 메뉴입니다.",
+                42,
+                2,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("herb", "약초", 1, herb)
+                });
+
+            CreateRuntimeRecipe(
+                "forest_basket",
+                "숲 버섯 모둠",
+                "약초와 버섯을 넣어 만든 가벼운 숲 메뉴입니다.",
+                38,
+                1,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("herb", "약초", 1, herb),
+                    RecipeIngredient.CreateRuntime("mushroom", "버섯", 1, mushroom)
+                });
+
+            CreateRuntimeRecipe(
+                "glow_moss_stew",
+                "광채 해물탕",
+                "발광 이끼와 해초를 함께 넣어 진하게 끓인 메뉴입니다.",
+                68,
+                3,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed),
+                    RecipeIngredient.CreateRuntime("glow_moss", "발광 이끼", 1, glowMoss)
+                });
+
+            CreateRuntimeRecipe(
+                "wind_herb_salad",
+                "향초 해초 무침",
+                "바람 언덕 향초와 해초를 함께 버무린 메뉴입니다.",
+                46,
+                2,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed),
+                    RecipeIngredient.CreateRuntime("wind_herb", "향초", 1, windHerb)
+                });
+        }
+
+        private static ResourceData CreateRuntimeResource(
+            string id,
+            string displayName,
+            string description,
+            string regionTag,
+            int sellPrice,
+            ResourceRarity rarity)
+        {
+            ResourceData resource = ScriptableObject.CreateInstance<ResourceData>();
+            resource.name = $"resource-{id}";
+            resource.hideFlags = HideFlags.HideAndDontSave;
+            resource.ConfigureRuntime(id, displayName, description, regionTag, sellPrice, rarity);
+            CacheResource(resource);
+            return resource;
+        }
+
+        private static RecipeData CreateRuntimeRecipe(
+            string id,
+            string displayName,
+            string description,
+            int sellPrice,
+            int reputationDelta,
+            IEnumerable<RecipeIngredient> ingredients)
+        {
+            RecipeData recipe = ScriptableObject.CreateInstance<RecipeData>();
+            recipe.name = $"recipe-{id}";
+            recipe.hideFlags = HideFlags.HideAndDontSave;
+            recipe.ConfigureRuntime(id, displayName, description, sellPrice, reputationDelta, string.Empty, 0, string.Empty, string.Empty, ingredients);
+            CacheRecipe(recipe);
+            return recipe;
         }
 
 #if UNITY_EDITOR

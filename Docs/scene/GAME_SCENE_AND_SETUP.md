@@ -19,7 +19,7 @@
 ## 씬 정본 규칙
 
 - 지원 씬에 직접 저장된 `Transform`, 컴포넌트 직렬화 값, `SpriteRenderer`, 월드 `TextMeshPro` 값은 기본 정본입니다.
-- `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`는 누락된 오브젝트, 누락된 컴포넌트, 끊어진 참조만 보강합니다.
+- 플레이 중 필요한 월드 오브젝트와 참조는 지원 씬 직렬화에 직접 저장해 유지합니다.
 - 빌더는 기존 지원 씬을 재생성하거나 기존 월드 직렬화 값을 강제로 덮어쓰는 용도로 쓰지 않습니다.
 - 지원 Canvas 씬의 관리 대상 UI 값은 `Assets/Resources/Generated/ui-layout-overrides.asset`을 통해 공용 기준으로 유지됩니다.
 
@@ -64,7 +64,7 @@ Canvas 내부 계층은 `Docs/ui/UI_GROUPING_RULES.md`를 따릅니다.
 - `GoToBeach`, `GoToDeepForest`, `GoToAbandonedMine`, `GoToWindHill`
 - `CameraBounds`
 
-허브 아트나 카운터 구조를 바꾸면 generated 허브 스프라이트, `HubRoomLayout`, runtime augmenter, 빌더, 지원 씬 직렬화를 함께 확인합니다.
+허브 아트나 카운터 구조를 바꾸면 generated 허브 스프라이트, `HubRoomLayout`, 빌더, 지원 씬 직렬화를 함께 확인합니다.
 
 ### 탐험 씬 공통
 

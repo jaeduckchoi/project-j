@@ -64,7 +64,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 빌더와 런타임 보강에서 존 구성 값을 한 번에 다시 설정한다.
+        /// 빌더와 씬 설정 코드에서 존 구성 값을 한 번에 다시 설정한다.
         /// </summary>
         public void Configure(
             RoomViewController roomController,

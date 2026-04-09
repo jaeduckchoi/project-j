@@ -232,17 +232,18 @@ namespace Shared
 
         public static PrototypeGeneratedAssetSettings GetCurrent()
         {
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                return LoadOrCreateEditorSettings();
-            }
-#endif
-
             if (_cachedSettings != null)
             {
                 return _cachedSettings;
             }
+
+#if UNITY_EDITOR
+            _cachedSettings = AssetDatabase.LoadAssetAtPath<PrototypeGeneratedAssetSettings>(AssetPath);
+            if (_cachedSettings != null)
+            {
+                return _cachedSettings;
+            }
+#endif
 
             _cachedSettings = Resources.Load<PrototypeGeneratedAssetSettings>(ResourcesLoadPath);
             if (_cachedSettings != null)
@@ -286,50 +287,6 @@ namespace Shared
         }
 
 #if UNITY_EDITOR
-        [InitializeOnLoadMethod]
-        private static void EnsureSettingsAssetExistsOnEditorLoad()
-        {
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                return;
-            }
-
-            LoadOrCreateEditorSettings();
-        }
-
-        private static PrototypeGeneratedAssetSettings LoadOrCreateEditorSettings()
-        {
-            PrototypeGeneratedAssetSettings settings = AssetDatabase.LoadAssetAtPath<PrototypeGeneratedAssetSettings>(AssetPath);
-            if (settings != null)
-            {
-                _cachedSettings = settings;
-                return settings;
-            }
-
-            EnsureAssetFoldersExist();
-            settings = CreateInstance<PrototypeGeneratedAssetSettings>();
-            settings.name = DefaultAssetFileName;
-            settings.NormalizeSerializedPaths();
-            AssetDatabase.CreateAsset(settings, AssetPath);
-            AssetDatabase.SaveAssets();
-            _cachedSettings = settings;
-            return settings;
-        }
-
-        private static void EnsureAssetFoldersExist()
-        {
-            EnsureFolder("Assets", "Resources");
-            EnsureFolder("Assets/Resources", "Generated");
-        }
-
-        private static void EnsureFolder(string parentPath, string childName)
-        {
-            string fullPath = parentPath + "/" + childName;
-            if (!AssetDatabase.IsValidFolder(fullPath))
-            {
-                AssetDatabase.CreateFolder(parentPath, childName);
-            }
-        }
 #endif
 
         private void OnValidate()

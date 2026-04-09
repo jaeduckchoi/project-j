@@ -31,7 +31,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 빌더나 런타임 보강 코드에서 힌트 내용을 다시 설정한다.
+        /// 빌더나 씬 설정 코드에서 힌트 내용을 다시 설정한다.
         /// </summary>
         public void Configure(string id, string text, float hintDuration = 5f, bool once = true)
         {

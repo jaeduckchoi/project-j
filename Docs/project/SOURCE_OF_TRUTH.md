@@ -17,7 +17,7 @@
 ### 지원 씬 직렬화
 
 - `Assets/Scenes` 아래에 현재 존재하는 지원 씬 자산에 직접 저장된 월드 `Transform`, 주요 컴포넌트 직렬화 값, `SpriteRenderer`, 월드 `TextMeshPro` 값은 런타임 정본이다.
-- 이미 씬에 저장된 값은 런타임 보강 코드가 기본적으로 덮어쓰지 않는다.
+- 플레이 중 필요한 월드 오브젝트와 참조도 지원 씬 직렬화에 직접 저장된 값을 기준으로 유지한다.
 
 ### Canvas 관리 UI
 
@@ -29,22 +29,17 @@
 
 ### generated 자산 경로
 
-- generated 자산 루트와 선택적 외부 원본 경로의 정본은 `Assets/Resources/Generated/prototype-generated-asset-settings.asset`와 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`다.
+- generated 자산 루트와 선택적 외부 원본 경로의 정본은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`다.
 - 저장소 안의 UI 작업 기준 경로는 `Assets/Resources/Generated/Sprites/UI`다.
 - 플레이어 작업 기준 경로는 `Assets/Resources/Generated/Sprites/Player`다.
-- 외부 원본 경로는 비워 둘 수 있으며, 비어 있으면 빌더는 현재 generated PNG를 유지한다.
+- 외부 원본 경로는 비워 둘 수 있으며, 비어 있으면 코드 기본값과 메모리 fallback만 사용한다.
 - 외부 UI 원본을 연결할 때는 기존 `PanelVariants` 입력이 output에서 `Panels`로 정리된다.
 
 ### 빌더
 
-- `JongguMinimalPrototypeBuilder`는 generated 자산, Build Settings, Canvas 동기화, 현재 프로젝트에 남아 있는 관리 씬 정리, generated scene audit 흐름의 정본 구현이다.
+- `JongguMinimalPrototypeBuilder`는 Build Settings, Canvas 동기화, 현재 프로젝트에 남아 있는 관리 씬 정리, generated scene audit 흐름의 정본 구현이다.
 - existing 지원 씬을 강제로 재생성하는 도구가 아니라, sync와 현재 남아 있는 씬 기준 유지보수 중심으로 동작해야 한다.
-- 빌더는 PNG를 잘라 붙이거나 타일 합성하지 않고, 단일 외부 원본을 그대로 복사하거나 이미 있는 generated 이미지를 재사용해야 한다.
-
-### 런타임 보강
-
-- `PrototypeSceneRuntimeAugmenter`는 누락된 오브젝트, 누락된 참조, 런타임 생성이 필요한 오브젝트만 보강한다.
-- 이미 저장된 오브젝트와 값은 그대로 유지하는 것이 기본 원칙이다.
+- 빌더는 정적 generated 에셋을 생성, 복사, 복구하지 않는다.
 
 ### 감사 코드
 
@@ -82,7 +77,6 @@
 ### generated 자산 경로 변경
 
 - `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
-- `Assets/Resources/Generated/prototype-generated-asset-settings.asset`
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`
 - `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 
@@ -95,10 +89,8 @@
 
 ### 허브 월드 아트 변경
 
-- `Assets/Resources/Generated/prototype-generated-asset-settings.asset`
 - `Assets/Resources/Generated/Sprites/Hub`
 - `Assets/Scripts/Exploration/World/HubRoomLayout.cs`
-- `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`
 - 허브 업그레이드 슬롯 정적 비주얼은 더 이상 builder/runtime/audit가 생성하거나 요구하지 않고, `UpgradeStation` 상호작용만 유지한다.
 
@@ -106,7 +98,7 @@
 
 1. 이 값이 지원 씬에 직접 저장된 값인가?
 2. 관리 대상 Canvas 값이라면 `ui-layout-overrides.asset` 기준인가?
-3. generated 경로나 선택적 외부 원본 경로라면 `PrototypeGeneratedAssetSettings` 기준인가?
+3. generated 경로나 선택적 외부 원본 경로라면 `PrototypeGeneratedAssetSettings.cs` 기준인가?
 4. 값이 실제로 missing recovery용인가, 아니면 기존 씬 값을 덮어쓰는가?
 5. 인접 API 계약까지 포함해 관련 코드와 문서가 같은 기준을 설명하고 있는가?
 

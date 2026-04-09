@@ -56,7 +56,7 @@ namespace Management.Storage
         }
 
         /// <summary>
-        /// 런타임 보강이나 씬 생성 단계에서 패드 역할을 다시 설정합니다.
+        /// 씬 설정이나 씬 생성 단계에서 패드 역할을 다시 설정합니다.
         /// </summary>
         public void Configure(StorageManager manager, StorageStationAction action, string label)
         {

@@ -36,8 +36,9 @@
 - 코드 식별자, 경로, 씬 이름, 메뉴 이름처럼 번역하면 안 되는 고유 명칭은 원문 그대로 유지한다.
 - generated 씬, generated 에셋, 런타임 출력물은 결과물만 직접 수정하지 말고 생성 경로부터 수정한다.
 - 지원 씬에 저장된 월드 직렬화 값은 정본이다.
-- 런타임 보강 코드는 누락된 오브젝트, 누락된 컴포넌트, 끊어진 참조만 보충하고 기존 씬 저장값은 덮어쓰지 않는다.
+- 플레이 중 필요한 월드 오브젝트와 참조는 지원 씬 직렬화에 직접 저장하고 유지한다.
 - UI 변경은 `UIManager`, `JongguMinimalPrototypeBuilder`, `ui-layout-overrides.asset` 기준을 함께 확인한다.
+- 빌더는 더 이상 정적 generated 에셋을 생성하지 않는다. `prototype-generated-asset-settings.asset`, generated game data manifest, generated 입력 액션, generated 폰트/머티리얼을 새로 만들거나 복구하는 방향으로 작업하지 않는다.
 - `D:\project-j-api`와 맞물리는 scene/resource/recipe/tool/upgrade code를 바꾸면 API 계약, Unity 코드, 관련 문서를 같은 변경에서 함께 맞춘다.
 - Windows 환경에서 큰 신규 파일을 만들 때는 한 번의 대형 패치로 통째로 추가하지 말고, 파일 뼈대를 먼저 만든 뒤 여러 번의 작은 `apply_patch` 업데이트로 나눠 작성한다.
 - 하이어라키 규칙이나 빌더 관리 오브젝트 이름을 바꾸면 관련 감사 코드와 문서를 함께 갱신한다.
@@ -73,5 +74,5 @@
 
 - Unity 실행, 플레이 모드, 배치 컴파일을 직접 확인했다면 어떤 검증을 했는지 적는다.
 - 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 명시한다.
-- 구조, UI, generated 자산 변경은 가능하면 `Tools > Jonggu Restaurant > Prototype Build and Audit` 기준으로 검증한다.
+- 구조, UI, generated 자산 경로 변경은 가능하면 `Tools > Jonggu Restaurant > Prototype Build and Audit` 기준으로 검증한다.
 - 더 가벼운 확인이 필요하면 `GameplayAutomationAudit.RunLightAutomationAudit()` 가능 여부를 함께 검토한다.

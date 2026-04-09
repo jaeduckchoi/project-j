@@ -19,7 +19,8 @@
 
 4. 정본 경계 결정
 - 무엇이 정본인지 `SOURCE_OF_TRUTH.md`에서 먼저 판단한다.
-- scene serialization, builder, runtime augmenter, generated asset 중 어디를 먼저 수정해야 하는지 결정한다.
+- scene serialization, builder, generated asset 중 어디를 먼저 수정해야 하는지 결정한다.
+- 정적 generated 에셋 이슈라면 결과물 파일을 다시 만들지 말고 메모리 fallback, 수동 정본 에셋, 또는 씬 직렬화 중 어디가 정본인지 먼저 결정한다.
 
 5. 구현
 - 결과물만 직접 수정하지 않고, 정본 경계에 맞는 파일부터 수정한다.
@@ -61,12 +62,13 @@
 ### 씬/월드 변경
 
 - 지원 씬의 저장값이 정본인지 먼저 판단한다.
-- `PrototypeSceneRuntimeAugmenter`가 기존 값을 덮어쓰지 않는지 확인한다.
+- 플레이 중 필요한 오브젝트와 참조가 씬 직렬화에 직접 저장돼 있는지 확인한다.
 - 하이어라키가 바뀌면 `PrototypeSceneAudit`와 계층 문서까지 함께 갱신한다.
 
 ### generated 자산/빌더 변경
 
-- `PrototypeGeneratedAssetSettings`와 실제 output 폴더 구조가 맞는지 확인한다.
+- `PrototypeGeneratedAssetSettings.cs`의 코드 기본값과 실제 런타임 로드 경로가 맞는지 확인한다.
+- 빌더가 정적 generated 에셋을 다시 만들지 않도록 확인하고, 필요한 값은 메모리 fallback 또는 수동 정본 에셋으로 옮긴다.
 - 빌더 코드, generated 경로, 관련 문서를 함께 맞춘다.
 - 가능하면 `Prototype Build and Audit` 기준으로 확인한다.
 
