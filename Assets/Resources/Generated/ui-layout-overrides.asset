@@ -300,13 +300,6 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0}
       anchoredPosition: {x: 0, y: 232}
       sizeDelta: {x: 936, y: 84}
-  - objectName: TopLeftPanel
-    layout:
-      anchorMin: {x: 0, y: 1}
-      anchorMax: {x: 0, y: 1}
-      pivot: {x: 0, y: 1}
-      anchoredPosition: {x: 18, y: -18}
-      sizeDelta: {x: 320, y: 72}
   imageEntries:
   - objectName: ActionAccent
     overrideSprite: 1
@@ -857,7 +850,6 @@ MonoBehaviour:
     parentName: HUDStatusGroup
     siblingIndex: 0
   removedObjectNames:
-  - GoldText
   - InteractionPromptText
   - InventoryText
   - MaterialPanelButton

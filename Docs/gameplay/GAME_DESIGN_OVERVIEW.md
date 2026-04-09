@@ -1,7 +1,7 @@
 # 종구의 식당 게임 기획 개요
 
 이 문서는 `Jonggu Restaurant` 프로토타입의 게임 기획서 진입점이다.
-세부 시스템 기획은 같은 폴더의 다른 문서에서 다룬다. 코드 경로나 빌더 흐름 같은 구현 기준은 `.aiassistant/rules/{project,ui,scene,build}` 문서를 참고한다.
+세부 시스템 기획은 같은 폴더의 다른 문서에서 다룬다. 코드 경로나 빌더 흐름 같은 구현 기준은 `Docs/project/GAME_DOCS_INDEX.md`를 따라 관련 `Docs/project/*`, `Docs/ui/*`, `Docs/scene/*`, `Docs/build/*` 문서를 참고한다.
 
 ## 1. 한 줄 소개
 
@@ -66,4 +66,4 @@
 - 폴더와 코드 배치 : `../project/GAME_PROJECT_STRUCTURE.md`
 - UI와 텍스트 기준 : `../ui/UI_AND_TEXT_GUIDE.md`
 - 씬 계층과 점검 : `../scene/GAME_SCENE_AND_SETUP.md`
-- 빌더와 감사 흐름 : `../build/GAME_BUILD_GUIDE.md`
+- 빌드와 generated 경로 기준 : `../build/GAME_BUILD_GUIDE.md`

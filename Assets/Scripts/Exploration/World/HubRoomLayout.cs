@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Exploration.World
 {
     /// <summary>
-    /// 허브 16:9 고정 화면 아트와 상호작용 지점 좌표를 한 곳에서 관리한다.
-    /// 1920x1080 원본 아트를 월드 19.2 x 10.8 크기에 대응시켜 같은 구도를 유지한다.
+    /// 허브 씬의 논리 타일 좌표와 직렬화된 월드 좌표를 한 곳에서 관리한다.
+    /// 허브는 32x18 타일 월드를 기준으로 하고, 1타일 = 1유닛 계약을 그대로 사용한다.
     /// </summary>
     public static class HubRoomLayout
     {
@@ -147,20 +147,28 @@ namespace Exploration.World
         public const float TargetAspectHeight = 9f;
         public const float TargetAspectRatio = TargetAspectWidth / TargetAspectHeight;
 
-        public const float ScreenWidth = 19.2f;
-        public const float ScreenHeight = 10.8f;
+        public const int TilePixelsPerUnit = 64;
+        public const int HubTileWidth = 32;
+        public const int HubTileHeight = 18;
+        // Hub.unity 는 32x18 타일 월드를 1타일 = 1유닛 기준으로 직렬화한다.
+        public const float WorldUnitsPerTile = 1f;
+        public const float ScreenWidth = HubTileWidth * WorldUnitsPerTile;
+        public const float ScreenHeight = HubTileHeight * WorldUnitsPerTile;
+        public const float CameraVisibleTileWidth = 27f;
+        public const float CameraVisibleTileHeight = 15.1875f;
 
-        // 허브 메인 화면은 배경 원본이 화면을 꽉 채우도록 추가 여백 없이 카메라 크기를 맞춘다.
+        // 허브는 32x18 월드 위에서 동작하지만, 메인 카메라는 예시 배치와 같은 픽셀 밀도로 보이도록
+        // 약 27x15.1875 타일만 보이게 잡는다.
         public static readonly Vector2 CameraSafePadding = Vector2.zero;
         public static readonly Vector3 CameraPosition = Vector3.zero;
-        public static readonly Vector2 CameraSize = new(ScreenWidth + (CameraSafePadding.x * 2f), ScreenHeight + (CameraSafePadding.y * 2f));
+        public static readonly Vector2 CameraSize = new(CameraVisibleTileWidth + (CameraSafePadding.x * 2f), CameraVisibleTileHeight + (CameraSafePadding.y * 2f));
         public static readonly float ScreenOrthographicSize = CameraSize.y * 0.5f;
 
         public static readonly Vector3 BackgroundPosition = Vector3.zero;
         public static readonly Vector3 BackgroundScale = Vector3.one;
-        public const float FloorTilePixelsPerUnit = 32f;
-        public static readonly Vector3 FloorTileScale = new(1f / 3f, 1f / 3f, 1f);
-        public static readonly Vector2 FloorTileTiledSize = new(ScreenWidth / FloorTileScale.x, ScreenHeight / FloorTileScale.y);
+        public const float FloorTilePixelsPerUnit = TilePixelsPerUnit;
+        public static readonly Vector3 FloorTileScale = new(WorldUnitsPerTile, WorldUnitsPerTile, 1f);
+        public static readonly Vector2 FloorTileTiledSize = new(HubTileWidth, HubTileHeight);
         public const string TableRootObjectName = "HubTableGroup";
 
         public static readonly Vector3 FloorBackgroundPosition = Vector3.zero;
@@ -174,32 +182,32 @@ namespace Exploration.World
         public static readonly Vector2 BarRightVisualSize = new(4.06f, BarVisualHeight);
         public static readonly Vector3 BarLeftVisualLocalPosition = new(-(BarVisualGapWidth + BarRightVisualSize.x) * 0.5f, 0f, 0f);
         public static readonly Vector3 BarRightVisualLocalPosition = new((BarVisualGapWidth + BarLeftVisualSize.x) * 0.5f, 0f, 0f);
-        // 테이블 묶음은 그룹 기준 좌표와 자식 오프셋을 나눠 두어 나중에 한 번에 이동시키기 쉽게 유지한다.
-        public static readonly Vector3 TableGroupPosition = new(-6.48f, -1.57f, 0f);
-        public static readonly Vector3 TableTopLocalPosition = new(0f, 1.53f, 0f);
+        // 상호작용 테이블 묶음은 논리 타일 좌표로 표현하되, 현재 씬 배치와 같은 월드 결과를 유지한다.
+        public static readonly Vector3 TableGroupPosition = TileToWorld(-10.8f, -2.616667f);
+        public static readonly Vector3 TableTopLocalPosition = TileOffset(0f, 2.55f);
         public static readonly Vector3 TableMiddleLocalPosition = Vector3.zero;
-        public static readonly Vector3 TableBottomLocalPosition = new(0f, -1.53f, 0f);
+        public static readonly Vector3 TableBottomLocalPosition = TileOffset(0f, -2.55f);
         public static readonly Vector3 TableTopPosition = TableGroupPosition + TableTopLocalPosition;
         public static readonly Vector3 TableMiddlePosition = TableGroupPosition + TableMiddleLocalPosition;
         public static readonly Vector3 TableBottomPosition = TableGroupPosition + TableBottomLocalPosition;
-        public static readonly Vector3 ExploreSignPosition = new(-7.90f, -4.89f, 0f);
+        public static readonly Vector3 ExploreSignPosition = TileToWorld(-13.166667f, -8.15f);
         public static readonly Vector3 ExploreSignBackdropScale = new(2.88f, 0.82f, 1f);
-        public static readonly Vector3 WarehouseSignPosition = new(7.55f, 4.98f, 0f);
+        public static readonly Vector3 WarehouseSignPosition = TileToWorld(12.583333f, 8.3f);
         public static readonly Vector3 WarehouseSignBackdropScale = new(2.78f, 0.82f, 1f);
         public static readonly Vector3 SignTextLocalOffset = new(0f, 0.03f, 0f);
         public const string StorageVisualRootObjectName = "HubStorageStationVisual";
         public const string UpgradeWorkbenchVisualRootObjectName = "HubUpgradeWorkbenchVisual";
         public const string PortalZoneVisualRootObjectName = "HubPortalZoneVisual";
-        public static readonly Vector3 StorageVisualPosition = new(7.54f, 3.76f, 0f);
-        public static readonly Vector3 UpgradeWorkbenchVisualPosition = new(1.86f, -3.22f, 0f);
-        public static readonly Vector3 PortalZoneVisualPosition = new(-6.38f, -4.42f, 0f);
+        public static readonly Vector3 StorageVisualPosition = TileToWorld(12.566667f, 6.266667f);
+        public static readonly Vector3 UpgradeWorkbenchVisualPosition = TileToWorld(3.1f, -5.366667f);
+        public static readonly Vector3 PortalZoneVisualPosition = TileToWorld(-10.633333f, -7.366667f);
         public static readonly Vector3 FrontOutlinePosition = Vector3.zero;
-        public static readonly Vector3 TodayMenuBoardPosition = new(-0.82f, 4.06f, 0f);
-        public static readonly Vector3 TodayMenuHeaderLabelLocalPosition = new(-1.96f, 0.04f, 0f);
+        public static readonly Vector3 TodayMenuBoardPosition = TileToWorld(-1.366667f, 6.766667f);
+        public static readonly Vector3 TodayMenuHeaderLabelLocalPosition = TileOffset(-3.266667f, 0.066667f);
         public static readonly Vector3 TodayMenuHeaderShadowLocalOffset = new(0.06f, -0.06f, 0f);
-        public static readonly Vector3 TodayMenuEntryLeftLocalPosition = new(0.86f, 0.02f, 0f);
-        public static readonly Vector3 TodayMenuEntryCenterLocalPosition = new(1.96f, 0.02f, 0f);
-        public static readonly Vector3 TodayMenuEntryRightLocalPosition = new(3.06f, 0.02f, 0f);
+        public static readonly Vector3 TodayMenuEntryLeftLocalPosition = TileOffset(1.433333f, 0.033333f);
+        public static readonly Vector3 TodayMenuEntryCenterLocalPosition = TileOffset(3.266667f, 0.033333f);
+        public static readonly Vector3 TodayMenuEntryRightLocalPosition = TileOffset(5.1f, 0.033333f);
         public static readonly Vector3 TodayMenuEntryBackdropScale = Vector3.one;
         public static readonly Vector3 TodayMenuEntryIconLocalOffset = new(0f, 0f, 0f);
         public static readonly Vector3 TodayMenuEntryIconScale = Vector3.one;
@@ -248,28 +256,28 @@ namespace Exploration.World
         public static readonly Color UpgradeToolGoldColor = new(0.94f, 0.66f, 0.25f, 1f);
         public static readonly Color PortalZoneBaseColor = new(0.25f, 0.22f, 0.20f, 0.72f);
 
-        // 하단 전경선 앞까지 자연스럽게 접근할 수 있도록 아래쪽 이동 여유를 조금 더 둔다.
-        public static readonly Vector3 MovementBoundsPosition = new(0f, -0.15f, 0f);
-        public static readonly Vector2 MovementBoundsSize = new(18.7f, 10.3f);
+        // 하단 전경선과 벽 두께 때문에 이동 경계는 전체 32x18 타일보다 살짝 안쪽으로 줄여 둔다.
+        public static readonly Vector3 MovementBoundsPosition = TileToWorld(0f, -0.25f);
+        public static readonly Vector2 MovementBoundsSize = TileSize(31.166667f, 17.166667f);
 
-        public static readonly Vector3 PlayerStartPosition = new(-7.15f, -4.15f, 0f);
+        public static readonly Vector3 PlayerStartPosition = TileToWorld(-11.916667f, -6.916667f);
         public static readonly Vector3 HubEntryPosition = PlayerStartPosition;
 
-        public static readonly Vector3 RecipeSelectorPosition = new(-1.10f, 2.45f, 0f);
-        public static readonly Vector3 RecipeSelectorScale = new(1.55f, 1.55f, 1f);
-        public static readonly Vector3 ServiceCounterPosition = new(-3.10f, 2.20f, 0f);
-        public static readonly Vector3 ServiceCounterScale = new(1.95f, 1.55f, 1f);
+        public static readonly Vector3 RecipeSelectorPosition = TileToWorld(-0.833333f, 4.083333f);
+        public static readonly Vector3 RecipeSelectorScale = TileScale(2.583333f, 2.583333f);
+        public static readonly Vector3 ServiceCounterPosition = TileToWorld(-4.166667f, 3.666667f);
+        public static readonly Vector3 ServiceCounterScale = TileScale(3.25f, 2.583333f);
 
-        public static readonly Vector3 StorageStationPosition = new(8.00f, 4.10f, 0f);
-        public static readonly Vector3 StorageStationScale = new(1.80f, 1.35f, 1f);
+        public static readonly Vector3 StorageStationPosition = TileToWorld(13.333333f, 6.833333f);
+        public static readonly Vector3 StorageStationScale = TileScale(3f, 2.25f);
 
-        public static readonly Vector3 UpgradeStationPosition = new(1.86f, -1.55f, 0f);
-        public static readonly Vector3 UpgradeStationScale = new(2.70f, 3.65f, 1f);
+        public static readonly Vector3 UpgradeStationPosition = TileToWorld(3.1f, -2.583333f);
+        public static readonly Vector3 UpgradeStationScale = TileScale(4.5f, 6.083333f);
 
-        public static readonly Vector3 GoToBeachPosition = new(-7.80f, -4.18f, 0f);
-        public static readonly Vector3 GoToDeepForestPosition = new(-6.85f, -4.18f, 0f);
-        public static readonly Vector3 GoToAbandonedMinePosition = new(-5.90f, -4.18f, 0f);
-        public static readonly Vector3 GoToWindHillPosition = new(-4.95f, -4.18f, 0f);
+        public static readonly Vector3 GoToBeachPosition = TileToWorld(-13f, -6.966667f);
+        public static readonly Vector3 GoToDeepForestPosition = TileToWorld(-11.416667f, -6.966667f);
+        public static readonly Vector3 GoToAbandonedMinePosition = TileToWorld(-9.833333f, -6.966667f);
+        public static readonly Vector3 GoToWindHillPosition = TileToWorld(-8.25f, -6.966667f);
 
         public static readonly Vector3 PortalScale = new(0.72f, 0.82f, 1f);
         public static readonly Vector3 PortalPadScale = new(0.78f, 0.22f, 1f);
@@ -470,5 +478,25 @@ namespace Exploration.World
         public static readonly Color RoomFloorColor = new(0.86f, 0.72f, 0.49f, 1f);
         public static readonly Color RoomWallColor = new(0.46f, 0.30f, 0.18f, 1f);
         public static readonly Color FrontOccluderColor = new(0.34f, 0.21f, 0.13f, 1f);
+
+        private static Vector3 TileToWorld(float tileX, float tileY, float z = 0f)
+        {
+            return new Vector3(tileX * WorldUnitsPerTile, tileY * WorldUnitsPerTile, z);
+        }
+
+        private static Vector3 TileOffset(float tileX, float tileY, float z = 0f)
+        {
+            return TileToWorld(tileX, tileY, z);
+        }
+
+        private static Vector2 TileSize(float tileWidth, float tileHeight)
+        {
+            return new Vector2(tileWidth * WorldUnitsPerTile, tileHeight * WorldUnitsPerTile);
+        }
+
+        private static Vector3 TileScale(float tileWidth, float tileHeight, float z = 1f)
+        {
+            return new Vector3(tileWidth * WorldUnitsPerTile, tileHeight * WorldUnitsPerTile, z);
+        }
     }
 }

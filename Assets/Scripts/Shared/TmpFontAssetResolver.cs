@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.TextCore;
 using UnityEngine.TextCore.LowLevel;
 
 namespace Shared
@@ -15,7 +14,6 @@ namespace Shared
         private static readonly string[] KoreanOsFontNames =
         {
             "Malgun Gothic",
-            "맑은 고딕",
             "Noto Sans CJK KR",
             "Noto Sans KR",
             "NanumGothic",
@@ -25,9 +23,9 @@ namespace Shared
         private const string DefaultFontResourcePath = "Fonts & Materials/LiberationSans SDF";
         private const string FallbackFontResourcePath = "Fonts & Materials/LiberationSans SDF - Fallback";
 
-        private static TMP_FontAsset cachedDefaultFont;
-        private static TMP_FontAsset cachedLatinFont;
-        private static TMP_FontAsset cachedKoreanFont;
+        private static TMP_FontAsset _cachedDefaultFont;
+        private static TMP_FontAsset _cachedLatinFont;
+        private static TMP_FontAsset _cachedKoreanFont;
 
         public static TMP_FontAsset EnsureDefaultFontAsset()
         {
@@ -68,53 +66,53 @@ namespace Shared
 
         private static TMP_FontAsset ResolveDefaultFontAsset()
         {
-            if (cachedDefaultFont != null)
+            if (_cachedDefaultFont != null)
             {
-                return cachedDefaultFont;
+                return _cachedDefaultFont;
             }
 
-            cachedLatinFont = ResolveLatinFontAsset();
-            cachedKoreanFont = ResolveKoreanFontAsset();
+            _cachedLatinFont = ResolveLatinFontAsset();
+            _cachedKoreanFont = ResolveKoreanFontAsset();
 
-            if (cachedKoreanFont != null)
+            if (_cachedKoreanFont != null)
             {
-                AddFallbackFont(cachedKoreanFont, cachedLatinFont);
-                cachedDefaultFont = cachedKoreanFont;
-                return cachedDefaultFont;
+                AddFallbackFont(_cachedKoreanFont, _cachedLatinFont);
+                _cachedDefaultFont = _cachedKoreanFont;
+                return _cachedDefaultFont;
             }
 
-            cachedDefaultFont = cachedLatinFont;
-            return cachedDefaultFont;
+            _cachedDefaultFont = _cachedLatinFont;
+            return _cachedDefaultFont;
         }
 
         private static TMP_FontAsset ResolveLatinFontAsset()
         {
-            if (cachedLatinFont != null)
+            if (_cachedLatinFont != null)
             {
-                return cachedLatinFont;
+                return _cachedLatinFont;
             }
 
             if (TMP_Settings.defaultFontAsset != null)
             {
-                cachedLatinFont = TMP_Settings.defaultFontAsset;
-                return cachedLatinFont;
+                _cachedLatinFont = TMP_Settings.defaultFontAsset;
+                return _cachedLatinFont;
             }
 
-            cachedLatinFont = Resources.Load<TMP_FontAsset>(DefaultFontResourcePath);
-            if (cachedLatinFont != null)
+            _cachedLatinFont = Resources.Load<TMP_FontAsset>(DefaultFontResourcePath);
+            if (_cachedLatinFont != null)
             {
-                return cachedLatinFont;
+                return _cachedLatinFont;
             }
 
-            cachedLatinFont = Resources.Load<TMP_FontAsset>(FallbackFontResourcePath);
-            return cachedLatinFont;
+            _cachedLatinFont = Resources.Load<TMP_FontAsset>(FallbackFontResourcePath);
+            return _cachedLatinFont;
         }
 
         private static TMP_FontAsset ResolveKoreanFontAsset()
         {
-            if (cachedKoreanFont != null)
+            if (_cachedKoreanFont != null)
             {
-                return cachedKoreanFont;
+                return _cachedKoreanFont;
             }
 
             foreach (string fontName in KoreanOsFontNames)
@@ -125,8 +123,8 @@ namespace Shared
                     continue;
                 }
 
-                cachedKoreanFont = runtimeFont;
-                return cachedKoreanFont;
+                _cachedKoreanFont = runtimeFont;
+                return _cachedKoreanFont;
             }
 
             Debug.LogWarning("Shared.TmpFontAssetResolver: 사용할 수 있는 한국어 OS 폰트를 찾지 못했습니다. 한글 표시가 필요하면 프로젝트에 TMP 폰트 에셋을 지정해야 합니다.");
@@ -152,9 +150,7 @@ namespace Shared
                 9,
                 GlyphRenderMode.SDFAA,
                 1024,
-                1024,
-                AtlasPopulationMode.Dynamic,
-                true);
+                1024);
 
             if (fontAsset == null)
             {

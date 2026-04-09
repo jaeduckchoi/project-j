@@ -15,7 +15,7 @@ namespace Shared.Data
     public static class GeneratedGameDataLocator
     {
         private const string GeneratedDataManifestPath = "Generated/generated-game-data-manifest";
-        private static Shared.PrototypeGeneratedAssetSettings AssetSettings => Shared.PrototypeGeneratedAssetSettings.GetCurrent();
+        private static PrototypeGeneratedAssetSettings AssetSettings => PrototypeGeneratedAssetSettings.GetCurrent();
         private static string GeneratedDataRoot => AssetSettings.GameDataRoot;
         private static string GeneratedResourceDataRoot => AssetSettings.ResourceDataRoot;
         private static string GeneratedRecipeDataRoot => AssetSettings.RecipeDataRoot;
@@ -354,7 +354,7 @@ namespace Shared.Data
             return resource;
         }
 
-        private static RecipeData CreateRuntimeRecipe(
+        private static void CreateRuntimeRecipe(
             string id,
             string displayName,
             string description,
@@ -367,7 +367,6 @@ namespace Shared.Data
             recipe.hideFlags = HideFlags.HideAndDontSave;
             recipe.ConfigureRuntime(id, displayName, description, sellPrice, reputationDelta, string.Empty, 0, string.Empty, string.Empty, ingredients);
             CacheRecipe(recipe);
-            return recipe;
         }
 
 #if UNITY_EDITOR

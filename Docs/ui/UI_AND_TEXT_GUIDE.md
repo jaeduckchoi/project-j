@@ -3,14 +3,22 @@
 ## 현재 UI 기준
 
 - Canvas 최상위 공용 루트는 `HUDRoot`, `PopupRoot`
-- 런타임 UI 동작의 중심은 `Assets/Scripts/UI/UIManager.cs`
+- 런타임 UI 동작의 중심은 `Assets/Scripts/UI/UIManager.cs`(엔트리)와 `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- 레이아웃 catalog 정본은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`이며, 에디터 sync/overlay/capture는 `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 맡는다.
 - 레이아웃 정본은 `Assets/Resources/Generated/ui-layout-overrides.asset`
 - 레이아웃 설정 타입은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
+- 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
+- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
+- 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- 팝업 콘텐츠 catalog: `Assets/Scripts/UI/Content/PrototypeUIPopupCatalog.cs`
+- TMP 폰트 해석/한글 fallback: `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
 
 ## 관리 대상 이름
 
 - HUD: `GuideText`, `RestaurantResultText`, `GuideHelpButton`
 - Popup: `PopupTitle`, `PopupLeftCaption`, `PopupRightCaption`, `InventoryText`, `StorageText`, `SelectedRecipeText`, `UpgradeText`
+
+`TopLeftPanel`과 `GoldText`는 탐험 씬에서는 좌측 상단 상태 카드, Hub에서는 우측 상단 코인 배지 컨테이너로 재사용합니다.
 
 이 이름들은 현재 런타임 UI 코드 기준으로 함께 유지합니다.
 
@@ -24,12 +32,18 @@
 
 - 씬에 직접 저장된 popup 텍스트, 이미지, 폰트, 배치 값은 명시적 요청 없이는 덮어쓰지 않습니다.
 - Canvas 그룹 재정리는 `UIManager`와 `PrototypeUIDesignController` 기반 편집 도구를 사용합니다.
-- 삭제된 빌더, 자동 동기화, 구조 감사 파일을 전제로 작업하지 않습니다.
+- 현재 코드 밖의 별도 자동 동기화/감사 흐름을 전제로 작업하지 않습니다.
 
 ## 함께 확인할 코드
 
-- `Assets/Scripts/UI/UIManager.cs`
+- `Assets/Scripts/UI/UIManager.cs`, `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` 및 `.Editor.cs`, `.Editor.Capture.cs`
 - `Assets/Scripts/UI/PopupPauseStateUtility.cs`
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
+- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- `Assets/Scripts/UI/Content/PrototypeUIPopupCatalog.cs`
+- `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+- `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
 - `Assets/Editor/UI/UIManagerEditor.cs`
 - `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`

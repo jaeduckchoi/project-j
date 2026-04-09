@@ -9,9 +9,11 @@ namespace UI.Layout
     public static partial class PrototypeUILayout
     {
         // 상단 상태 카드 배치다.
-        public static readonly PrototypeUIRect TopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(320f, 72f));
+        public static readonly PrototypeUIRect ExploreTopLeftPanel = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(320f, 72f));
+        public static readonly PrototypeUIRect HubTopLeftPanel = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -22f), new Vector2(188f, 52f));
         public static readonly PrototypeUIRect TopLeftAccent = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, -18f), new Vector2(318f, 6f));
-        public static readonly PrototypeUIRect GoldText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(26f, -28f), new Vector2(286f, 30f));
+        public static readonly PrototypeUIRect ExploreGoldText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(26f, -28f), new Vector2(286f, 30f));
+        public static readonly PrototypeUIRect HubGoldText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 0.5f), new Vector2(-34f, -22f), new Vector2(116f, 34f));
 
         // 허브와 탐험 씬 공용 프롬프트, 안내, 결과 카드 배치다.
         public static readonly PrototypeUIRect HubGuideBackdrop = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 154f), new Vector2(860f, 58f));
@@ -72,6 +74,8 @@ namespace UI.Layout
         public static PrototypeUIRect GuideText(bool isHubScene) => isHubScene ? HubGuideText : ExploreGuideText;
         public static PrototypeUIRect GuideHelpButton(bool isHubScene) => isHubScene ? HubGuideHelpButton : ExploreGuideHelpButton;
         public static PrototypeUIRect ResultText(bool isHubScene) => isHubScene ? HubResultText : ExploreResultText;
+        public static PrototypeUIRect TopLeftPanel(bool isHubScene) => isHubScene ? HubTopLeftPanel : ExploreTopLeftPanel;
+        public static PrototypeUIRect GoldText(bool isHubScene) => isHubScene ? HubGoldText : ExploreGoldText;
         public static PrototypeUIRect InventoryCard(bool isHubScene) => isHubScene ? HubInventoryCard : ExploreInventoryCard;
         public static PrototypeUIRect InventoryAccent(bool isHubScene) => isHubScene ? HubInventoryAccent : ExploreInventoryAccent;
         public static PrototypeUIRect InventoryCaption(bool isHubScene) => isHubScene ? HubInventoryCaption : ExploreInventoryCaption;

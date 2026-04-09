@@ -1,11 +1,10 @@
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
 
 namespace Editor
 {
     /// <summary>
-    /// 기능 기반 기본 폴더 구조를 한 번에 맞춰 이후 작업 경로를 예측 가능하게 유지한다.
+    /// 기능 기반 기본 폴더 구조를 유지하기 위한 에디터 유틸리티입니다.
     /// </summary>
     public static class ProjectStructureUtility
     {
@@ -32,22 +31,8 @@ namespace Editor
             "Assets/Scripts/UI"
         };
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0051", Justification = "숨겨진 유지보수 경로로 보존합니다.")]
-        private static void EnsureBaseProjectFoldersForMaintenance()
-        {
-            if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                Debug.LogWarning("프로젝트 구조 정리는 플레이 모드가 아닐 때만 실행할 수 있습니다.");
-                return;
-            }
-
-            EnsureBaseProjectFolders();
-            AssetDatabase.Refresh();
-            EditorUtility.DisplayDialog("종구네 식당", "기능 기반 기본 폴더 구조를 맞췄습니다.", "OK");
-        }
-
         /// <summary>
-        /// 빌더와 내부 유지보수 경로가 같은 기준 구조를 재사용하도록 공용 폴더를 보장한다.
+        /// 빌더와 이후 유지보수 경로가 같은 기준 구조를 재사용하도록 공용 폴더를 보장합니다.
         /// </summary>
         public static void EnsureBaseProjectFolders()
         {

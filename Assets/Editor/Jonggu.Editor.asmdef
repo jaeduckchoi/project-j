@@ -5,6 +5,7 @@
         "Jonggu.Gameplay",
         "Jonggu.Shared",
         "Jonggu.UI",
+        "Unity.2D.Sprite.Editor",
         "Unity.InputSystem",
         "Unity.InputSystem.ForUI",
         "Unity.TextMeshPro",

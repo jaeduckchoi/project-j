@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using CoreLoop.Flow;
 using Exploration.Gathering;
 using Exploration.World;
 using Management.Inventory;
@@ -188,7 +187,6 @@ namespace CoreLoop.Core
 
             RunExclusive(StorageTransferRoutine(
                 "deposit",
-                selectedEntry.resource,
                 ResolveResourceCode(selectedEntry.resource),
                 selectedEntry.amount,
                 $"{selectedEntry.resource.DisplayName} x{selectedEntry.amount}을(를) 창고에 맡겼습니다."));
@@ -217,7 +215,6 @@ namespace CoreLoop.Core
 
             RunExclusive(StorageTransferRoutine(
                 "withdraw",
-                selectedEntry.resource,
                 ResolveResourceCode(selectedEntry.resource),
                 selectedEntry.amount,
                 $"{selectedEntry.resource.DisplayName} x{selectedEntry.amount}을(를) 창고에서 꺼냈습니다."));
@@ -269,8 +266,6 @@ namespace CoreLoop.Core
                 DisableRemote("API bootstrap을 불러오지 못해 로컬 상태로 계속합니다.");
                 yield break;
             }
-
-            ApplyRemoteCatalogToRestaurants();
 
             bool snapshotLoaded = false;
             if (!string.IsNullOrWhiteSpace(savedPlayerId))
@@ -448,7 +443,7 @@ namespace CoreLoop.Core
                 (_, message) => ShowGuide(message));
         }
 
-        private IEnumerator StorageTransferRoutine(string actionPath, ResourceData resource, string resourceCode, int quantity, string successMessage)
+        private IEnumerator StorageTransferRoutine(string actionPath, string resourceCode, int quantity, string successMessage)
         {
             string requestBody = JsonUtility.ToJson(new JongguApiStorageTransferRequest
             {
