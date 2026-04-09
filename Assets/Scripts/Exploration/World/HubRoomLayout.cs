@@ -22,9 +22,6 @@ namespace Exploration.World
             WallBackground,
             Bar,
             TableUnlocked,
-            UpgradeSlotLeft,
-            UpgradeSlotCenter,
-            UpgradeSlotRight,
             FrontOutline
         }
 
@@ -83,30 +80,6 @@ namespace Exploration.World
             public string ColliderObjectName { get; }
             public Vector3 LocalPosition { get; }
             public Vector3 ColliderLocalPosition { get; }
-        }
-
-        public readonly struct HubUpgradeSlotPlacement
-        {
-            public HubUpgradeSlotPlacement(
-                string slotObjectName,
-                string priceObjectName,
-                HubArtSpriteId spriteId,
-                Vector3 position,
-                int goldCost)
-            {
-                SlotObjectName = slotObjectName;
-                PriceObjectName = priceObjectName;
-                SpriteId = spriteId;
-                Position = position;
-                GoldCost = goldCost;
-            }
-
-            public string SlotObjectName { get; }
-            public string PriceObjectName { get; }
-            public HubArtSpriteId SpriteId { get; }
-            public Vector3 Position { get; }
-            public int GoldCost { get; }
-            public string GoldCostLabel => GoldCost.ToString("#,0");
         }
 
         public readonly struct HubFloorSignPlacement
@@ -209,13 +182,6 @@ namespace Exploration.World
         public static readonly Vector3 TableTopPosition = TableGroupPosition + TableTopLocalPosition;
         public static readonly Vector3 TableMiddlePosition = TableGroupPosition + TableMiddleLocalPosition;
         public static readonly Vector3 TableBottomPosition = TableGroupPosition + TableBottomLocalPosition;
-        public static readonly Vector3 UpgradeSlotLeftPosition = new(-2.20f, -1.61f, 0f);
-        public static readonly Vector3 UpgradeSlotCenterPosition = new(1.85f, -1.61f, 0f);
-        public static readonly Vector3 UpgradeSlotRightPosition = new(5.89f, -1.61f, 0f);
-        public static readonly Vector3 UpgradePrice5000Position = new(-2.12f, -1.62f, 0f);
-        public static readonly Vector3 UpgradePrice20000Position = new(1.86f, -1.62f, 0f);
-        public static readonly Vector3 UpgradePrice100000Position = new(5.89f, -1.62f, 0f);
-        public static readonly Vector3 UpgradePriceTextLocalOffset = new(0f, -0.02f, 0f);
         public static readonly Vector3 ExploreSignPosition = new(-7.90f, -4.89f, 0f);
         public static readonly Vector3 ExploreSignBackdropScale = new(2.88f, 0.82f, 1f);
         public static readonly Vector3 WarehouseSignPosition = new(7.55f, 4.98f, 0f);
@@ -251,8 +217,6 @@ namespace Exploration.World
         public const int TodayMenuBackdropSortingOrder = 7;
         public const int TodayMenuItemSortingOrder = 8;
         public const int TodayMenuTextSortingOrder = 9;
-        public const float UpgradePriceFontSize = 3.2f;
-        public const float UpgradePriceTextScale = 0.28f;
         public const float SignFontSize = 4.0f;
         public const float SignTextScale = 0.40f;
         public const float SignCharacterSpacing = 0.04f;
@@ -263,7 +227,6 @@ namespace Exploration.World
 
         public static readonly Color SignBackdropColor = new(0.94f, 0.86f, 0.68f, 0.96f);
         public static readonly Color SignTextColor = new(0.19f, 0.12f, 0.08f, 1f);
-        public static readonly Color UpgradePriceTextColor = new(0.23f, 0.15f, 0.09f, 1f);
         public static readonly Color WorldTextOutlineColor = new(0.18f, 0.10f, 0.05f, 0.94f);
         public static readonly Color TodayMenuHeaderTextColor = new(0.99f, 0.93f, 0.82f, 1f);
         public static readonly Color TodayMenuHeaderShadowColor = new(0.39f, 0.23f, 0.15f, 1f);
@@ -391,13 +354,6 @@ namespace Exploration.World
             new("HubTableBottomGroup", "HubTableBottom", "HubTableBottomCollider", TableBottomLocalPosition, Vector3.zero)
         };
 
-        private static readonly HubUpgradeSlotPlacement[] UpgradeSlotPlacementList =
-        {
-            new("HubUpgradeSlotLeft", "HubUpgradePrice5000", HubArtSpriteId.UpgradeSlotLeft, UpgradeSlotLeftPosition, 5000),
-            new("HubUpgradeSlotCenter", "HubUpgradePrice20000", HubArtSpriteId.UpgradeSlotCenter, UpgradeSlotCenterPosition, 20000),
-            new("HubUpgradeSlotRight", "HubUpgradePrice100000", HubArtSpriteId.UpgradeSlotRight, UpgradeSlotRightPosition, 100000)
-        };
-
         private static readonly HubFloorSignPlacement[] FloorSignPlacementList =
         {
             new(
@@ -454,7 +410,6 @@ namespace Exploration.World
         public static IReadOnlyList<HubArtPlacement> ArtPlacements => ArtPlacementList;
         public static IReadOnlyList<HubColliderPlacement> ColliderPlacements => ColliderPlacementList;
         public static IReadOnlyList<HubTablePlacement> TablePlacements => TablePlacementList;
-        public static IReadOnlyList<HubUpgradeSlotPlacement> UpgradeSlotPlacements => UpgradeSlotPlacementList;
         public static IReadOnlyList<HubFloorSignPlacement> FloorSignPlacements => FloorSignPlacementList;
         public static IReadOnlyList<HubDecorBlockPlacement> DecorBlockPlacements => DecorBlockPlacementList;
 

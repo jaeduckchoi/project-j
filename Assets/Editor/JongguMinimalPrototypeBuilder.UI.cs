@@ -1226,24 +1226,6 @@ namespace Editor
         }
 
         /// <summary>
-        /// 업그레이드 슬롯 내부 가격 표시는 슬롯 자식 텍스트로 생성해 슬롯 이동과 함께 유지한다.
-        /// </summary>
-        private static void CreateHubUpgradePriceText(string objectName, Transform parent, Vector3 localPosition, string content)
-        {
-            CreateWorldTextObject(
-                objectName,
-                parent,
-                localPosition,
-                content,
-                HubRoomLayout.UpgradePriceTextColor,
-                HubRoomLayout.UpgradePriceFontSize,
-                HubRoomLayout.SignTextSortingOrder,
-                labelScale: HubRoomLayout.UpgradePriceTextScale,
-                fontStyle: FontStyles.Bold,
-                characterSpacing: 0.08f);
-        }
-
-        /// <summary>
         /// 허브 바닥 표시는 별도 이미지 대신 얇은 바닥 패널과 텍스트 조합으로 다시 만든다.
         /// </summary>
         private static void CreateHubFloorSign(HubRoomLayout.HubFloorSignPlacement placement, Sprite floorSprite, Transform parent)

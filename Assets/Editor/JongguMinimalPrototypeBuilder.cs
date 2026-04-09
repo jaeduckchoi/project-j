@@ -84,7 +84,6 @@ namespace Editor
         private static string HubFrontOutlineSpritePath => AssetSettings.HubFrontOutlineSpritePath;
         private static string HubBarSpritePath => AssetSettings.HubBarSpritePath;
         private static string HubTableUnlockedSpritePath => AssetSettings.HubTableUnlockedSpritePath;
-        private static string HubUpgradeSlotSpritePath => AssetSettings.HubUpgradeSlotSpritePath;
         private static string HubTodayMenuBgSpritePath => AssetSettings.HubTodayMenuBgSpritePath;
         private static string HubTodayMenuItem1SpritePath => AssetSettings.HubTodayMenuItem1SpritePath;
         private static string HubTodayMenuItem2SpritePath => AssetSettings.HubTodayMenuItem2SpritePath;
@@ -311,7 +310,6 @@ namespace Editor
             public Sprite HubBar;
             public Sprite HubBarRight;
             public Sprite HubTableUnlocked;
-            public Sprite HubUpgradeSlot;
             public Sprite HubTodayMenuBg;
             public Sprite HubTodayMenuItem1;
             public Sprite HubTodayMenuItem2;
@@ -365,7 +363,6 @@ namespace Editor
                 CreateHubLayerRoots(out Transform hubBackgroundLayer, out Transform hubObjectLayer, out Transform hubForegroundLayer, out Transform hubTableGroup);
                 BuildHubArtLayout(sprites, mapWidth, mapHeight, hubBackgroundLayer, hubObjectLayer, hubForegroundLayer);
                 BuildHubTableLayout(sprites, hubTableGroup);
-                BuildHubUpgradeSlotLayout(sprites, hubObjectLayer);
                 BuildHubCollisionLayout();
 
                 CreateSpawnPoint("HubEntry", HubRoomLayout.HubEntryPosition, "HubEntry");
@@ -1451,21 +1448,6 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// 업그레이드 슬롯은 위치, 스프라이트, 비용 표시를 한 스펙으로 관리해
-        /// 이후 위치별 해금 비용 로직을 같은 기준으로 연결할 수 있게 만든다.
-        /// </summary>
-        private static void BuildHubUpgradeSlotLayout(SpriteLibrary sprites, Transform objectLayer)
-        {
-            foreach (HubRoomLayout.HubUpgradeSlotPlacement placement in HubRoomLayout.UpgradeSlotPlacements)
-            {
-                Sprite sprite = ResolveHubArtSprite(sprites, placement.SpriteId);
-                GameObject slotObject = CreateHubArtSprite(placement.SlotObjectName, placement.Position, sprite, HubRoomLayout.ObjectSortingOrder, objectLayer);
-                Transform priceParent = slotObject != null ? slotObject.transform : objectLayer;
-                CreateHubUpgradePriceText(placement.PriceObjectName, priceParent, HubRoomLayout.UpgradePriceTextLocalOffset, placement.GoldCostLabel);
-            }
-        }
-
         private static void BuildHubDecorBlockLayout(Sprite floorSprite, Transform objectLayer)
         {
             Dictionary<string, Transform> roots = new();
@@ -1528,9 +1510,6 @@ namespace Editor
                 HubRoomLayout.HubArtSpriteId.WallBackground => sprites.HubWallBackground,
                 HubRoomLayout.HubArtSpriteId.Bar => sprites.HubBar,
                 HubRoomLayout.HubArtSpriteId.TableUnlocked => sprites.HubTableUnlocked,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotLeft => sprites.HubUpgradeSlot,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotCenter => sprites.HubUpgradeSlot,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotRight => sprites.HubUpgradeSlot,
                 HubRoomLayout.HubArtSpriteId.FrontOutline => sprites.HubFrontOutline,
                 _ => null
             };

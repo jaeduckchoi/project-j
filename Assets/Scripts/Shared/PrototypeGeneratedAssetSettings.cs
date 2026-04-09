@@ -188,7 +188,6 @@ namespace Shared
         public string HubWallBackgroundSpritePath => CombineAssetPath(HubSpriteRoot, "hub-wall-background.png");
         public string HubFrontOutlineSpritePath => CombineAssetPath(HubSpriteRoot, "hub-front-outline.png");
         public string HubTableUnlockedSpritePath => CombineAssetPath(HubSpriteRoot, "hub-table-unlocked.png");
-        public string HubUpgradeSlotSpritePath => CombineAssetPath(HubSpriteRoot, "hub-upgrade-slot.png");
         public string HubTodayMenuBgSpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-bg.png");
         public string HubTodayMenuItem1SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-1.png");
         public string HubTodayMenuItem2SpritePath => CombineAssetPath(HubSpriteRoot, "hub-today-menu-item-2.png");
@@ -209,7 +208,6 @@ namespace Shared
         public string HubBarResourcePath => ToResourcesLoadPath(HubBarSpritePath);
         public string HubBarRightResourcePath => ToResourcesLoadPath(HubBarRightSpritePath);
         public string HubTableUnlockedResourcePath => ToResourcesLoadPath(HubTableUnlockedSpritePath);
-        public string HubUpgradeSlotResourcePath => ToResourcesLoadPath(HubUpgradeSlotSpritePath);
         public string HubTodayMenuBgResourcePath => ToResourcesLoadPath(HubTodayMenuBgSpritePath);
         public string HubTodayMenuItem1ResourcePath => ToResourcesLoadPath(HubTodayMenuItem1SpritePath);
         public string HubTodayMenuItem2ResourcePath => ToResourcesLoadPath(HubTodayMenuItem2SpritePath);

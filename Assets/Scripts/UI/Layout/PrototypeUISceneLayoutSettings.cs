@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UI.Controllers;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 #endif
 
@@ -796,6 +798,9 @@ namespace UI.Layout
     public static class PrototypeUISceneLayoutCatalog
     {
         private static PrototypeUISceneLayoutSettings _cachedSettings;
+#if UNITY_EDITOR
+        private static int _ignoreRemovedObjectChecksDepth;
+#endif
 
         /// <summary>
         /// 저장된 레이아웃이 있으면 그 값을, 없으면 전달한 기본값을 반환합니다.
@@ -897,10 +902,40 @@ namespace UI.Layout
 
         public static bool IsObjectRemoved(string objectName)
         {
+#if UNITY_EDITOR
+            if (_ignoreRemovedObjectChecksDepth > 0)
+            {
+                return false;
+            }
+#endif
             return !string.IsNullOrWhiteSpace(objectName)
                 && TryGetSettings(out PrototypeUISceneLayoutSettings settings)
                 && settings.IsObjectRemoved(objectName);
         }
+
+#if UNITY_EDITOR
+        internal static IDisposable SuppressRemovedObjectChecks()
+        {
+            _ignoreRemovedObjectChecksDepth++;
+            return new RemovedObjectSuppressionScope();
+        }
+
+        private sealed class RemovedObjectSuppressionScope : IDisposable
+        {
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                _disposed = true;
+                _ignoreRemovedObjectChecksDepth = Math.Max(0, _ignoreRemovedObjectChecksDepth - 1);
+            }
+        }
+#endif
 
         public static HashSet<string> GetManagedCanvasObjectNames(bool isHubScene)
         {
@@ -1053,23 +1088,17 @@ namespace UI.Layout
             Dictionary<string, string> nameMap = new(StringComparer.Ordinal);
             HashSet<string> duplicateNames = new(StringComparer.Ordinal);
 
-            for (int canvasIndex = 0; canvasIndex < canvases.Count; canvasIndex++)
-            {
-                Canvas canvas = canvases[canvasIndex];
-                if (canvas == null)
-                {
-                    continue;
-                }
-
-                RectTransform rootRect = canvas.transform as RectTransform;
-                if (rootRect == null)
-                {
-                    continue;
-                }
-
-                CaptureCanvasOverridesRecursive(rootRect, rootRect, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, duplicateNames);
-                CaptureSceneNameOverrides(rootRect, nameMap);
-            }
+            CaptureCanvasOverridesFromScene(
+                scene,
+                canvases,
+                layoutMap,
+                imageMap,
+                textMap,
+                buttonMap,
+                hierarchyMap,
+                nameMap,
+                duplicateNames,
+                out bool usedPreviewCapture);
 
             PrototypeUISceneLayoutSettings settings = LoadOrCreateSettingsAsset();
             Undo.RecordObject(settings, "Sync Canvas UI Layouts");
@@ -1090,6 +1119,11 @@ namespace UI.Layout
             else
             {
                 message = $"Canvas UI 레이아웃 {layoutMap.Count}건, Image {imageMap.Count}건, TMP {textMap.Count}건, Button {buttonMap.Count}건을 저장했습니다. 중복 이름 {duplicateNames.Count}건은 마지막 값을 기준으로 덮어썼습니다.";
+            }
+
+            if (usedPreviewCapture)
+            {
+                message += " 빈 Canvas는 UIManager editor preview 기준 baseline으로 캡처했습니다.";
             }
 
             return true;
@@ -1126,23 +1160,17 @@ namespace UI.Layout
             Dictionary<string, string> nameMap = new(StringComparer.Ordinal);
             HashSet<string> duplicateNames = new(StringComparer.Ordinal);
 
-            for (int canvasIndex = 0; canvasIndex < canvases.Count; canvasIndex++)
-            {
-                Canvas canvas = canvases[canvasIndex];
-                if (canvas == null)
-                {
-                    continue;
-                }
-
-                RectTransform rootRect = canvas.transform as RectTransform;
-                if (rootRect == null)
-                {
-                    continue;
-                }
-
-                CaptureCanvasOverridesRecursive(rootRect, rootRect, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, duplicateNames);
-                CaptureSceneNameOverrides(rootRect, nameMap);
-            }
+            CaptureCanvasOverridesFromScene(
+                scene,
+                canvases,
+                layoutMap,
+                imageMap,
+                textMap,
+                buttonMap,
+                hierarchyMap,
+                nameMap,
+                duplicateNames,
+                out bool usedPreviewCapture);
 
             if (layoutMap.Count == 0
                 && imageMap.Count == 0
@@ -1168,6 +1196,11 @@ namespace UI.Layout
             AssetDatabase.SaveAssets();
 
             message = $"Canvas UI 레이아웃 {layoutMap.Count}건, Image {imageMap.Count}건, TMP {textMap.Count}건, Button {buttonMap.Count}건을 현재 씬 기준으로 덮어썼습니다.";
+            if (usedPreviewCapture)
+            {
+                message += " 빈 Canvas는 UIManager editor preview 기준 baseline으로 캡처했습니다.";
+            }
+
             return true;
         }
 
@@ -1270,6 +1303,181 @@ namespace UI.Layout
             }
 
             return results;
+        }
+
+        private static void CaptureCanvasOverridesFromScene(
+            Scene scene,
+            IEnumerable<Canvas> canvases,
+            IDictionary<string, PrototypeUIRect> layoutMap,
+            IDictionary<string, PrototypeUISceneImageEntry> imageMap,
+            IDictionary<string, PrototypeUISceneTextEntry> textMap,
+            IDictionary<string, PrototypeUISceneButtonEntry> buttonMap,
+            IDictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap,
+            IDictionary<string, string> nameMap,
+            ISet<string> duplicateNames,
+            out bool usedPreviewCapture)
+        {
+            usedPreviewCapture = false;
+            if (canvases == null)
+            {
+                return;
+            }
+
+            foreach (Canvas canvas in canvases)
+            {
+                if (canvas == null)
+                {
+                    continue;
+                }
+
+                RectTransform rootRect = canvas.transform as RectTransform;
+                if (rootRect == null)
+                {
+                    continue;
+                }
+
+                if (HasPersistedManagedCanvasHierarchy(scene, rootRect))
+                {
+                    CaptureCanvasOverridesFromRoot(rootRect, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, nameMap, duplicateNames);
+                    continue;
+                }
+
+                if (TryCapturePreviewCanvasOverrides(scene, canvas, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, nameMap, duplicateNames))
+                {
+                    usedPreviewCapture = true;
+                    continue;
+                }
+
+                CaptureCanvasOverridesFromRoot(rootRect, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, nameMap, duplicateNames);
+            }
+        }
+
+        private static void CaptureCanvasOverridesFromRoot(
+            RectTransform canvasRoot,
+            IDictionary<string, PrototypeUIRect> layoutMap,
+            IDictionary<string, PrototypeUISceneImageEntry> imageMap,
+            IDictionary<string, PrototypeUISceneTextEntry> textMap,
+            IDictionary<string, PrototypeUISceneButtonEntry> buttonMap,
+            IDictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap,
+            IDictionary<string, string> nameMap,
+            ISet<string> duplicateNames)
+        {
+            if (canvasRoot == null)
+            {
+                return;
+            }
+
+            CaptureCanvasOverridesRecursive(canvasRoot, canvasRoot, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, duplicateNames);
+            CaptureSceneNameOverrides(canvasRoot, nameMap);
+        }
+
+        private static bool HasPersistedManagedCanvasHierarchy(Scene scene, RectTransform canvasRoot)
+        {
+            if (canvasRoot == null)
+            {
+                return false;
+            }
+
+            foreach (string objectName in GetManagedCanvasObjectNames(IsHubScene(scene)))
+            {
+                if (FindChildRecursive(canvasRoot, objectName) != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryCapturePreviewCanvasOverrides(
+            Scene sourceScene,
+            Canvas sourceCanvas,
+            IDictionary<string, PrototypeUIRect> layoutMap,
+            IDictionary<string, PrototypeUISceneImageEntry> imageMap,
+            IDictionary<string, PrototypeUISceneTextEntry> textMap,
+            IDictionary<string, PrototypeUISceneButtonEntry> buttonMap,
+            IDictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap,
+            IDictionary<string, string> nameMap,
+            ISet<string> duplicateNames)
+        {
+            if (sourceCanvas == null)
+            {
+                return false;
+            }
+
+            Scene previewScene = EditorSceneManager.NewPreviewScene();
+            Scene previousActiveScene = SceneManager.GetActiveScene();
+            GameObject previewCanvasObject = null;
+            int originalLayoutCount = layoutMap != null ? layoutMap.Count : 0;
+            int originalImageCount = imageMap != null ? imageMap.Count : 0;
+            int originalTextCount = textMap != null ? textMap.Count : 0;
+            int originalButtonCount = buttonMap != null ? buttonMap.Count : 0;
+            int originalHierarchyCount = hierarchyMap != null ? hierarchyMap.Count : 0;
+            int originalNameCount = nameMap != null ? nameMap.Count : 0;
+
+            try
+            {
+                previewCanvasObject = Object.Instantiate(sourceCanvas.gameObject);
+                previewCanvasObject.name = sourceCanvas.gameObject.name;
+                SceneManager.MoveGameObjectToScene(previewCanvasObject, previewScene);
+
+                RectTransform previewRoot = previewCanvasObject.transform as RectTransform;
+                if (previewRoot == null || !previewCanvasObject.TryGetComponent(out global::UI.UIManager uiManager))
+                {
+                    return false;
+                }
+
+                DestroyImmediateChildren(previewRoot);
+
+                if (sourceScene.IsValid() && sourceScene.isLoaded)
+                {
+                    SceneManager.SetActiveScene(sourceScene);
+                }
+
+                using (SuppressRemovedObjectChecks())
+                {
+                    uiManager.OrganizeCanvasHierarchyInEditor();
+                    uiManager.ApplyEditorDesignPreview(false, PrototypeUIPreviewPanel.None);
+                }
+
+                CaptureCanvasOverridesFromRoot(previewRoot, layoutMap, imageMap, textMap, buttonMap, hierarchyMap, nameMap, duplicateNames);
+                return (layoutMap != null && layoutMap.Count > originalLayoutCount)
+                    || (imageMap != null && imageMap.Count > originalImageCount)
+                    || (textMap != null && textMap.Count > originalTextCount)
+                    || (buttonMap != null && buttonMap.Count > originalButtonCount)
+                    || (hierarchyMap != null && hierarchyMap.Count > originalHierarchyCount)
+                    || (nameMap != null && nameMap.Count > originalNameCount);
+            }
+            finally
+            {
+                if (previousActiveScene.IsValid() && previousActiveScene.isLoaded)
+                {
+                    SceneManager.SetActiveScene(previousActiveScene);
+                }
+
+                if (previewCanvasObject != null)
+                {
+                    Object.DestroyImmediate(previewCanvasObject);
+                }
+
+                if (previewScene.IsValid())
+                {
+                    EditorSceneManager.ClosePreviewScene(previewScene);
+                }
+            }
+        }
+
+        private static void DestroyImmediateChildren(Transform root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            for (int index = root.childCount - 1; index >= 0; index--)
+            {
+                Object.DestroyImmediate(root.GetChild(index).gameObject);
+            }
         }
 
         private static bool IsHubScene(Scene scene)

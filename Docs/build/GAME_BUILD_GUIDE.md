@@ -36,6 +36,8 @@
 - 현재 열려 있는 다른 지원 씬이 있으면 해당 씬 관리 값만 마지막에 다시 반영합니다.
 - 기존 지원 씬은 재생성하지 않고, 누락된 씬만 안전한 기본 구조로 복구합니다.
 - runtime augmenter는 누락 보강만 하며, 이미 저장된 씬 값을 기본적으로 덮어쓰지 않습니다.
+- 지원 씬 Canvas가 비어 있으면 build/auto-sync는 이를 전체 managed UI 삭제로 취급하지 않고, `UIManager` editor preview 기준 baseline을 캡처합니다.
+- `HubUpgradeSlotLeft/Center/Right`와 가격 텍스트는 빌드 경로에서 더 이상 재생성하지 않습니다.
 
 ## 다시 실행해야 할 때
 

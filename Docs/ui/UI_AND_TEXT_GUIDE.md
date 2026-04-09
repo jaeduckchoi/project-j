@@ -21,6 +21,8 @@
 - `Assets/Editor/UI/PrototypeUICanvasAutoSync.cs`는 지원하는 Canvas 씬 저장 시 관리 대상 값을 공용 자산으로 동기화합니다.
 - `Assets/Editor/JongguMinimalPrototypeBuilder.cs`와 `Assets/Scripts/UI/UIManager.cs`는 같은 오버라이드 자산 기준으로 HUD와 팝업 구조를 맞춥니다.
 - 지원 씬에 이미 저장된 월드 직렬화 값은 씬이 정본이며, UI 오버라이드는 Canvas 관리 대상 값에만 적용됩니다.
+- 지원 씬 Canvas에 managed UI 계층이 실제로 저장돼 있으면 그 계층과 누락된 오브젝트가 `removedObjectNames` 기준이 됩니다.
+- 지원 씬 Canvas가 비어 있으면 auto-sync/build는 이를 전체 삭제로 보지 않고, `UIManager` editor preview 기준 baseline을 캡처합니다.
 
 ## generated UI 경로
 

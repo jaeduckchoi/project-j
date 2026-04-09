@@ -153,7 +153,6 @@ namespace Editor
                     HubBarRightLeftCapCropRect,
                     HubBarRightBodyCropRect),
                 HubTableUnlocked = LoadConfiguredSprite(HubTableUnlockedSpritePath, 100f, new Vector2(0.5f, 0.5f)),
-                HubUpgradeSlot = LoadConfiguredSprite(HubUpgradeSlotSpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuBg = LoadConfiguredSprite(HubTodayMenuBgSpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuItem1 = LoadConfiguredSprite(HubTodayMenuItem1SpritePath, 100f, new Vector2(0.5f, 0.5f)),
                 HubTodayMenuItem2 = LoadConfiguredSprite(HubTodayMenuItem2SpritePath, 100f, new Vector2(0.5f, 0.5f)),

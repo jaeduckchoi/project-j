@@ -24,6 +24,8 @@
 - 지원 씬 Canvas 아래의 관리 대상 UI 기준은 `Assets/Resources/Generated/ui-layout-overrides.asset`가 정본이다.
 - `PrototypeUISceneLayoutSettings`, `UIManager`, `PrototypeUICanvasAutoSync`, 빌더가 같은 기준을 공유한다.
 - managed UI에는 `GuideText`, `RestaurantResultText`, `GuideHelpButton`, `PopupTitle`, `PopupLeftCaption`, HUD/Popup 그룹 구조가 포함된다.
+- 지원 씬 Canvas에 managed UI 계층이 실제로 저장돼 있으면 그 직렬화 값이 정본이다.
+- 지원 씬 Canvas가 비어 있으면 이를 전체 삭제로 해석하지 않고, editor preview 기준 baseline을 캡처해 공용 오버라이드 자산을 유지한다.
 
 ### generated 자산 경로
 
@@ -95,6 +97,7 @@
 - `Assets/Scripts/Exploration/World/HubRoomLayout.cs`
 - `Assets/Scripts/Exploration/World/PrototypeSceneRuntimeAugmenter.cs`
 - `Assets/Editor/JongguMinimalPrototypeBuilder*.cs`
+- 허브 업그레이드 슬롯 정적 비주얼은 더 이상 builder/runtime/audit가 생성하거나 요구하지 않고, `UpgradeStation` 상호작용만 유지한다.
 
 ## 5. 정본 판단 순서
 

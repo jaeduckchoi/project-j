@@ -28,7 +28,6 @@ namespace Exploration.World
         private static string HubBarResourcePath => AssetSettings.HubBarResourcePath;
         private static string HubBarRightResourcePath => AssetSettings.HubBarRightResourcePath;
         private static string HubTableUnlockedResourcePath => AssetSettings.HubTableUnlockedResourcePath;
-        private static string HubUpgradeSlotResourcePath => AssetSettings.HubUpgradeSlotResourcePath;
         private static string HubTodayMenuBgResourcePath => AssetSettings.HubTodayMenuBgResourcePath;
         private static string HubTodayMenuItem1ResourcePath => AssetSettings.HubTodayMenuItem1ResourcePath;
         private static string HubTodayMenuItem2ResourcePath => AssetSettings.HubTodayMenuItem2ResourcePath;
@@ -704,7 +703,6 @@ namespace Exploration.World
             }
 
             EnsureHubTableLayout(tableGroup);
-            EnsureHubUpgradeSlotLayout(objectLayer);
             foreach (HubRoomLayout.HubFloorSignPlacement placement in HubRoomLayout.FloorSignPlacements)
             {
                 EnsureHubFloorSign(placement, objectLayer);
@@ -750,27 +748,6 @@ namespace Exploration.World
 
                 Transform colliderParent = tableObject != null ? tableObject.transform : groupObject.transform;
                 EnsureInvisibleWall(placement.ColliderObjectName, placement.ColliderLocalPosition, HubRoomLayout.TableColliderScale, colliderParent);
-            }
-        }
-
-        private static void EnsureHubUpgradeSlotLayout(Transform objectLayer)
-        {
-            foreach (HubRoomLayout.HubUpgradeSlotPlacement placement in HubRoomLayout.UpgradeSlotPlacements)
-            {
-                string resourcePath = ResolveHubArtResourcePath(placement.SpriteId);
-                GameObject slotObject = EnsureSceneSpriteObject(
-                    placement.SlotObjectName,
-                    resourcePath,
-                    placement.Position,
-                    HubRoomLayout.ObjectSortingOrder,
-                    objectLayer);
-
-                Transform priceParent = slotObject != null ? slotObject.transform : objectLayer;
-                EnsureHubUpgradePriceText(
-                    placement.PriceObjectName,
-                    priceParent,
-                    HubRoomLayout.UpgradePriceTextLocalOffset,
-                    placement.GoldCostLabel);
             }
         }
 
@@ -835,9 +812,6 @@ namespace Exploration.World
                 HubRoomLayout.HubArtSpriteId.WallBackground => HubWallBackgroundResourcePath,
                 HubRoomLayout.HubArtSpriteId.Bar => HubBarResourcePath,
                 HubRoomLayout.HubArtSpriteId.TableUnlocked => HubTableUnlockedResourcePath,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotLeft => HubUpgradeSlotResourcePath,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotCenter => HubUpgradeSlotResourcePath,
-                HubRoomLayout.HubArtSpriteId.UpgradeSlotRight => HubUpgradeSlotResourcePath,
                 HubRoomLayout.HubArtSpriteId.FrontOutline => HubFrontOutlineResourcePath,
                 _ => string.Empty
             };
@@ -987,33 +961,6 @@ namespace Exploration.World
         /// 허브 업그레이드 가격은 슬롯 자식 텍스트로 유지해 슬롯 기준 배치를 함께 따라가게 만든다.
         /// 기존 스프라이트가 남아 있으면 텍스트만 보이도록 렌더러를 끈다.
         /// </summary>
-        private static void EnsureHubUpgradePriceText(string objectName, Transform parent, Vector3 localPosition, string content)
-        {
-            TMPro.TextMeshPro text = EnsureWorldTextObject(
-                objectName,
-                parent,
-                localPosition,
-                content,
-                HubRoomLayout.UpgradePriceTextColor,
-                HubRoomLayout.UpgradePriceFontSize,
-                HubRoomLayout.SignTextSortingOrder,
-                labelScale: HubRoomLayout.UpgradePriceTextScale,
-                fontStyle: TMPro.FontStyles.Bold,
-                characterSpacing: 0.08f);
-
-            if (text == null)
-            {
-                return;
-            }
-
-            SpriteRenderer renderer = text.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                renderer.sprite = null;
-                renderer.enabled = false;
-            }
-        }
-
         /// <summary>
         /// 허브 바닥 표시는 별도 그림 대신 얇은 바닥 패널과 텍스트로 다시 맞춘다.
         /// </summary>
