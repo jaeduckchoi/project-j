@@ -20,3 +20,9 @@
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 그 사실과 남은 검증 단계를 적는다.
 - 커밋 메시지를 만들 때는 이 저장소 규칙만 따르고, 한국어 한 줄만 출력하며, 본문·불릿·설명은 금지하고, 형식은 `타입 : 내용`만 허용하며, 전체는 50자 이내로 제한한다.
 - 커밋 메시지의 상세 타입 표와 예시는 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
+
+Claude 운영 기준:
+
+- Claude 프로젝트 설정은 `.claude/settings.json`(팀 공유)과 `.claude/settings.local.json`(개인 전용, gitignore됨)으로 관리한다.
+- 읽기 범위와 제외 기준은 `Docs/project/GAME_ASSISTANT_RULES.md`의 "읽기 범위와 제외 기준" 섹션이 단일 정본이다. `.claude/settings.json`의 `permissions.deny`는 이 목록을 Read/Glob/Grep 수준에서 결정적으로 차단하는 구현이다. 정본 목록을 바꾸면 `.claude/settings.json`도 같은 변경에서 맞춘다.
+- `permissions.deny`는 Read/Glob/Grep에만 적용되고 Bash의 `cat`, `ls`, `find` 등은 별도 Bash deny 규칙이 없으면 우회 가능하다. 목적은 컨텍스트 절약과 실수 방지이며 보안용 완전 격리는 아니다.

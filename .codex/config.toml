@@ -1,0 +1,9 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+# Unity 저장소 편집은 워크스페이스 내부 소스에 한정하고,
+# 네트워크가 필요한 작업은 Codex가 별도 승인을 요청하도록 둔다.
+network_access = false

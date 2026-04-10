@@ -28,3 +28,40 @@
 - Unity csproj 빌드가 가능한 범위라면 관련 어셈블리를 한 번 빌드해 경로 이동 회귀를 먼저 잡는다.
 - API 연동 변경은 가능하면 `D:\project-j-api`와 함께 계약/동작을 확인한다.
 - Unity에서 직접 실행하지 못했으면 미검증 사실을 명시한다.
+
+## 읽기 범위와 제외 기준
+
+Claude, Codex 등 모든 에이전트는 아래 목록을 기본 읽기 대상에서 제외한다. 이 목록은 단일 정본이며, Claude는 `.claude/settings.json`의 `permissions.deny`로 결정적으로 차단하고, Codex는 `AGENTS.md`와 `.codex/config.toml` 기반 지침으로 동일 범위를 지킨다. Codex에는 경로별 읽기 차단에 해당하는 결정적 기능이 없으므로(Codex 샌드박스는 쓰기만 차단), Codex 측은 지침 준수로만 유지된다.
+
+### Unity 캐시/빌드/로그 디렉터리
+
+- `Library/`, `Temp/`, `obj/`, `Obj/`
+- `Build/`, `Builds/`
+- `Logs/`, `UserSettings/`, `MemoryCaptures/`, `Recordings/`, `TestResults/`
+- `.utmp/`
+
+### 자동 생성 솔루션·프로젝트 파일
+
+- `*.csproj`, `*.sln`, `*.slnx`, `*.unityproj`
+- `*.suo`, `*.user`, `*.userprefs`, `*.DotSettings.user`
+
+### 디버그 심볼·개인 설정·IDE 로컬
+
+- `*.pdb`, `*.mdb`
+- `.git/`, `.vs/`, `.idea/`
+
+### 로그·크래시·배포 산출물
+
+- `*.log`
+- `*.apk`, `*.aab`, `*.unitypackage`
+
+### 바이너리 에셋 원본 (authored/imported)
+
+- 이미지: `*.png`, `*.jpg`, `*.jpeg`, `*.gif`, `*.bmp`, `*.tga`, `*.tif`, `*.tiff`, `*.psd`, `*.exr`, `*.hdr`, `*.ico`, `*.webp`
+- 3D: `*.fbx`, `*.obj`, `*.blend`, `*.blend1`, `*.dae`, `*.3ds`, `*.ma`, `*.mb`
+- 오디오: `*.wav`, `*.mp3`, `*.ogg`, `*.flac`, `*.aiff`
+- 비디오: `*.mp4`, `*.mov`, `*.avi`, `*.webm`
+- 폰트: `*.ttf`, `*.otf`, `*.woff`, `*.woff2`
+- 네이티브/아카이브: `*.dll`, `*.so`, `*.dylib`, `*.lib`, `*.exe`, `*.zip`, `*.7z`, `*.rar`, `*.tar`, `*.gz`
+
+위 바이너리 원본은 작업이 필수로 요구할 때만 읽고, generated 결과물은 결과 자체를 편집하지 말고 생성 경로와 정본 코드부터 수정한다. 이 목록을 바꾸면 `.claude/settings.json`도 같은 변경에서 맞춘다.

@@ -21,3 +21,11 @@
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 그 사실과 남은 검증 단계를 적는다.
 - 커밋 메시지를 만들 때는 이 저장소 규칙만 따르고, 한국어 한 줄만 출력하며, 본문·불릿·설명은 금지하고, 형식은 `타입 : 내용`만 허용하며, 전체는 50자 이내로 제한한다.
 - 커밋 메시지의 상세 타입 표와 예시는 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
+
+Codex 운영 기준:
+
+- Codex 프로젝트 설정은 `.codex/config.toml`, `.codex/rules/*.rules`, `AGENTS.md` 조합으로 관리한다.
+- Codex CLI에는 Claude의 `permissions.deny`처럼 경로별 읽기를 결정적으로 차단하는 기능이 없다. Codex 샌드박스는 쓰기만 제한하므로, 읽기 범위는 샌드박스(`sandbox_mode`), 승인 규칙, 그리고 본 지침으로만 유지된다.
+- 읽기 범위와 제외 기준은 `Docs/project/GAME_ASSISTANT_RULES.md`의 "읽기 범위와 제외 기준" 섹션이 단일 정본이다. Codex는 이 목록을 기본 작업 대상에서 제외한다.
+- 이미지·오디오·모델 같은 authored 바이너리 원본은 꼭 필요한 경우에만 읽고, generated 결과물은 결과만 직접 수정하지 말고 생성 경로와 정본 코드부터 고친다.
+- 원격 반영(`git push`)과 파괴적 git 명령(`reset --hard`, `checkout --`, `clean -fd`, `clean -fdx`)은 명시적 사용자 승인 전제로만 다룬다. 구체 판정은 `.codex/rules/unity-safety.rules`를 따른다.
