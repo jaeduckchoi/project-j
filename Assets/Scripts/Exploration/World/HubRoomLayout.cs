@@ -154,11 +154,10 @@ namespace Exploration.World
         public const float WorldUnitsPerTile = 1f;
         public const float ScreenWidth = HubTileWidth * WorldUnitsPerTile;
         public const float ScreenHeight = HubTileHeight * WorldUnitsPerTile;
-        public const float CameraVisibleTileWidth = 27f;
-        public const float CameraVisibleTileHeight = 15.1875f;
+        public const float CameraVisibleTileWidth = ScreenWidth;
+        public const float CameraVisibleTileHeight = ScreenHeight;
 
-        // 허브는 32x18 월드 위에서 동작하지만, 메인 카메라는 예시 배치와 같은 픽셀 밀도로 보이도록
-        // 약 27x15.1875 타일만 보이게 잡는다.
+        // 허브는 32x18 월드 전체가 1920x1080 한 화면에 들어오도록 잡는다.
         public static readonly Vector2 CameraSafePadding = Vector2.zero;
         public static readonly Vector3 CameraPosition = Vector3.zero;
         public static readonly Vector2 CameraSize = new(CameraVisibleTileWidth + (CameraSafePadding.x * 2f), CameraVisibleTileHeight + (CameraSafePadding.y * 2f));

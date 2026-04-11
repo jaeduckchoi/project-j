@@ -33,8 +33,16 @@ namespace UI
         private const string HudRootName = "HUDRoot";
         private const string PopupRootName = "PopupRoot";
         private const string HudStatusGroupName = "HUDStatusGroup";
-        private const string TopLeftPanelInnerObjectName = "TopLeftPanelInner";
-        private const string TopLeftPanelCoinIconObjectName = "TopLeftPanelCoinIcon";
+        private const string ExploreStatusPanelObjectName = "TopLeftPanel";
+        private const string ExploreEconomyTextObjectName = "GoldText";
+        private const string HubResourcePanelObjectName = "ResourcePanel";
+        private const string HubResourceAmountTextObjectName = "ResourceAmountText";
+        private const string HubResourcePanelInnerObjectName = "ResourcePanelInner";
+        private const string HubResourcePanelCoinIconObjectName = "ResourcePanelCoinIcon";
+        private const string LegacyHubResourcePanelObjectName = "TopLeftPanel";
+        private const string LegacyHubResourceAmountTextObjectName = "GoldText";
+        private const string LegacyHubResourcePanelInnerObjectName = "TopLeftPanelInner";
+        private const string LegacyHubResourcePanelCoinIconObjectName = "TopLeftPanelCoinIcon";
         private const string HudActionGroupCanonicalName = "HUDActionGroup";
         private const string HudBottomGroupName = "HUDBottomGroup";
         private const string HudOverlayGroupName = "HUDOverlayGroup";
@@ -46,6 +54,8 @@ namespace UI
         private const string PopupFrameRightGroupName = "PopupFrameRight";
         private static string HudActionGroupName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudActionGroupCanonicalName);
         private static string HudPanelButtonGroupObjectName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudPanelButtonGroupCanonicalName);
+        private static string StatusPanelObjectName(bool isHubScene) => isHubScene ? HubResourcePanelObjectName : ExploreStatusPanelObjectName;
+        private static string EconomyTextObjectName(bool isHubScene) => isHubScene ? HubResourceAmountTextObjectName : ExploreEconomyTextObjectName;
         private static readonly Color PopupItemBoxFallbackColor = new(0.96f, 0.92f, 0.78f, 1f);
         private static readonly Color PopupItemBoxSelectedColor = new(1f, 0.97f, 0.84f, 1f);
         private static readonly Color HubCoinBadgeOuterColor = new(0.93f, 0.71f, 0.18f, 1f);
@@ -76,11 +86,13 @@ namespace UI
         // HUD/Popup에 남겨야 하는 managed object 이름은 엔트리에서 한 번만 선언해 partial 간 기준을 공유합니다.
         private static IEnumerable<string> EnumerateHudCanvasObjectNames()
         {
-            yield return "TopLeftPanel";
+            yield return ExploreStatusPanelObjectName;
+            yield return HubResourcePanelObjectName;
             yield return "InteractionPromptBackdrop";
             yield return "GuideBackdrop";
             yield return "ResultBackdrop";
-            yield return "GoldText";
+            yield return ExploreEconomyTextObjectName;
+            yield return HubResourceAmountTextObjectName;
             yield return "InteractionPromptText";
             yield return "GuideText";
             yield return "RestaurantResultText";

@@ -82,24 +82,30 @@ namespace Shared
 
         public static PrototypeGeneratedAssetSettings GetCurrent()
         {
-            if (_cachedSettings != null)
-            {
-                return _cachedSettings;
-            }
-
 #if UNITY_EDITOR
             _cachedSettings = AssetDatabase.LoadAssetAtPath<PrototypeGeneratedAssetSettings>(AssetPath);
             if (_cachedSettings != null)
             {
                 return _cachedSettings;
             }
-#endif
 
             _cachedSettings = Resources.Load<PrototypeGeneratedAssetSettings>(ResourcesLoadPath);
             if (_cachedSettings != null)
             {
                 return _cachedSettings;
             }
+#else
+            if (_cachedSettings != null)
+            {
+                return _cachedSettings;
+            }
+
+            _cachedSettings = Resources.Load<PrototypeGeneratedAssetSettings>(ResourcesLoadPath);
+            if (_cachedSettings != null)
+            {
+                return _cachedSettings;
+            }
+#endif
 
             _cachedSettings = CreateInstance<PrototypeGeneratedAssetSettings>();
             _cachedSettings.hideFlags = HideFlags.HideAndDontSave;

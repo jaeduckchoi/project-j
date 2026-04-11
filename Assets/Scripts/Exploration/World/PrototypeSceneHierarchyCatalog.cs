@@ -83,6 +83,7 @@ namespace Exploration.World
             new("HubArtRoot", WorldVisualRootName, 0),
             new("HubMovementBounds", WorldBoundsRootName, 1),
             new("HubEntry", SpawnRootName, 0),
+            new("GoToBeach", PortalRootName, 0),
             new("RecipeSelector", InteractionRootName, 0),
             new("ServiceCounter", InteractionRootName, 1),
             new("StorageStation", InteractionRootName, 2),
@@ -91,7 +92,8 @@ namespace Exploration.World
 
         private static readonly PrototypeSceneHierarchyEntry[] BeachGroupEntries =
         {
-            new(ResourceRootName, SceneGameplayRootName, 3)
+            new(ResourceRootName, SceneGameplayRootName, 3),
+            new(InteractionRootName, SceneGameplayRootName, 4)
         };
 
         private static readonly PrototypeSceneHierarchyEntry[] BeachLeafEntries =
@@ -101,17 +103,9 @@ namespace Exploration.World
             new("BottomWall", WorldBoundsRootName, 3),
             new("LeftWall", WorldBoundsRootName, 4),
             new("RightWall", WorldBoundsRootName, 5),
-            new("SandBase", WorldVisualRootName, 0),
-            new("OceanBand", WorldVisualRootName, 1),
-            new("ShoreLine", WorldVisualRootName, 2),
-            new("Dock", WorldVisualRootName, 3),
-            new("BoatMark", WorldVisualRootName, 4),
-            new("RockClusterA", WorldVisualRootName, 5),
-            new("RockClusterB", WorldVisualRootName, 6),
-            new("GrassPatch", WorldVisualRootName, 7),
-            new("BeachTitle", WorldVisualRootName, 8),
             new("BeachEntry", SpawnRootName, 0),
             new("ReturnToHub", PortalRootName, 0),
+            new("BoatInteraction", InteractionRootName, 0),
             new("FishSpot01", ResourceRootName, 0),
             new("FishSpot01_Pad", "FishSpot01", 0),
             new("FishSpot02", ResourceRootName, 1),

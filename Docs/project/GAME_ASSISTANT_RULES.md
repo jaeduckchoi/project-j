@@ -7,6 +7,7 @@
 - generated 결과물만 직접 고치지 말고 생성 경로 또는 정본 코드부터 수정한다.
 - 씬에 저장된 월드 직렬화 값은 정본이며 런타임 보강 코드는 누락분만 보충한다.
 - UI 변경은 `UIManager`, `PrototypeUISceneLayoutCatalog`, `PrototypeUISceneLayoutSettings`, `ui-layout-overrides.asset`를 함께 확인한다.
+- UI는 런타임 생성에만 의존하지 말고 `PrototypeUIDesignController`와 `UIManager.EditorPreview`를 통해 에디터에서 보이고 조정 가능해야 한다.
 - 정적 generated 에셋 생성이나 복구를 빌더에 기대하지 않는다.
 - `D:\project-j-api`와 맞물리는 code를 바꾸면 API 계약, Unity 코드, 문서를 같은 변경에서 함께 맞춘다.
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 결과에 그 사실과 남은 검증 단계를 적는다.

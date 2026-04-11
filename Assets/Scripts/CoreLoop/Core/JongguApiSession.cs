@@ -742,7 +742,6 @@ namespace CoreLoop.Core
             if (requestInFlight)
             {
                 ShowGuide("이전 API 요청이 아직 끝나지 않았습니다.");
-                return true;
             }
 
             return true;

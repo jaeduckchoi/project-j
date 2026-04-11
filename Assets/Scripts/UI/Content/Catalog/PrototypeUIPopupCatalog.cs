@@ -1,7 +1,6 @@
 using UI.Controllers;
 
-// UI.Content 네임스페이스
-namespace UI.Content
+namespace UI.Content.Catalog
 {
     /// <summary>
     /// 팝업 제목과 좌우 캡션 묶음을 에디터 프리뷰용으로 전달한다.

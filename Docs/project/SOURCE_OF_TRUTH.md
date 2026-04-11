@@ -21,20 +21,21 @@
 ### Canvas 관리 UI
 
 - `Assets/Resources/Generated/ui-layout-overrides.asset`가 관리 대상 Canvas 레이아웃의 정본입니다.
-- UI 코드는 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `UIManager`, `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `Content/Catalog` 아래에 둡니다.
-- `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs`가 런타임 read API와 managed object 이름 기준의 정본이며, `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 에디터 sync/overlay/capture 흐름을 맡습니다.
-- `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`와 `Assets/Scripts/UI/UIManager.cs`(엔트리), `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`가 이를 읽는 런타임 기준입니다.
-- 레이아웃 partial 정본: `Assets/Scripts/UI/Layout/Definitions/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`.
-- 스타일 partial 정본: `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs`, `Assets/Scripts/UI/Style/Catalog/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/Foundation/PrototypeUITheme.cs`.
+- UI 코드는 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둡니다.
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`가 런타임 read API와 managed object 이름 기준의 정본이며, `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 에디터 sync/overlay/capture 흐름을 맡습니다.
+- `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`와 `Assets/Scripts/UI/UIManager.EditorPreview.cs`는 런타임 생성 UI를 에디터에서도 생성·프리뷰·저장 가능하게 유지하는 정본 흐름입니다.
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`와 `Assets/Scripts/UI/UIManager.cs`(엔트리), `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`가 이를 읽는 런타임 기준입니다.
+- 레이아웃 partial 정본: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`.
+- 스타일 partial 정본: `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUITheme.cs`.
 - 팝업 콘텐츠 catalog 정본: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`.
 - 팝업 일시정지 계산 정본: `Assets/Scripts/UI/PopupPauseStateUtility.cs` (`UIManager`는 결과만 받아 `Time.timeScale`에 반영).
 - `GuideText`, `RestaurantResultText`, `GuideHelpButton`, `PopupTitle`, `PopupLeftCaption` 같은 managed UI 이름은 런타임 UI 코드 기준으로 유지합니다.
 
-### TMP 폰트 해석
+### TMP 폰트 자산
 
-- `Assets/Scripts/Shared/TmpFontAssetResolver.cs`가 TMP 기본 폰트와 한국어 OS 폰트(Malgun Gothic, Noto Sans CJK KR 등) fallback의 정본입니다.
-- generated TMP 폰트가 비어 있거나 삭제된 작업 트리에서도 런타임이 최소 폰트를 확보하도록 보장합니다.
-- UI/월드 텍스트가 한글을 표시해야 하면 이 파일을 통해 폰트를 받고, 별도 fallback 코드를 새로 만들지 않습니다.
+- 프로젝트 원본 폰트 소스는 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`입니다.
+- 프로젝트 TMP Font Asset 경로는 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`입니다.
+- UI/월드 텍스트는 씬에 저장된 폰트 참조와 TMP 기본 폰트 fallback을 기준으로 처리합니다.
 
 ### generated 경로
 
@@ -71,23 +72,22 @@
 
 ### UI 구조 변경
 
-- `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs`(`.Editor.cs`, `.Editor.Capture.cs` 포함)
-- `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`
-- `Assets/Scripts/UI/Layout/Definitions/PrototypeUILayout.cs`(`.UI.cs`, `.Popup.cs` 포함)
-- `Assets/Scripts/UI/Layout/Definitions/PrototypeUIObjectNames.cs`
-- `Assets/Scripts/UI/Style/Catalog/PrototypeUISkinCatalog.cs`(`.UI.cs`, `.Popup.cs` 포함), `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`(`.Editor.cs`, `.Editor.Capture.cs` 포함)
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(`.UI.cs`, `.Popup.cs` 포함)
+- `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
+- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(`.UI.cs`, `.Popup.cs` 포함), `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
 - `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - `Assets/Scripts/UI/PopupPauseStateUtility.cs`
 - `Assets/Resources/Generated/ui-layout-overrides.asset`
 - `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - `Docs/ui/UI_GROUPING_RULES.md`
 
-### TMP 폰트/한글 fallback 변경
+### TMP 폰트 자산 변경
 
-- `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
 - `Assets/Scripts/UI/UIManager.cs` (폰트 적용 호출부)
-- `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs` (텍스트 스타일에서 폰트 사용 시)
+- `Assets/Scripts/UI/Style/PrototypeUISkin.cs` (텍스트 스타일에서 폰트 사용 시)
 - `Docs/project/GAME_PROJECT_STRUCTURE.md`
 - `Docs/ui/UI_AND_TEXT_GUIDE.md`
 

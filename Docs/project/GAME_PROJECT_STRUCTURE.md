@@ -99,15 +99,15 @@ Assets
 
 - API 세션/원격 동기화: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`
 - 전역 상태: `Assets/Scripts/CoreLoop/Core/GameManager.cs`
-- UI 탐색 폴더: 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `UIManager`, `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `Content/Catalog` 아래에 둔다.
-- UI 동작: `Assets/Scripts/UI/UIManager.cs` (엔트리), `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- UI 레이아웃 catalog: `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs` (런타임 read API), `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`
-- UI 레이아웃 설정: `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`
-- UI 레이아웃 partial: `Assets/Scripts/UI/Layout/Definitions/PrototypeUILayout.cs`, `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`
-- UI 스타일 catalog: `Assets/Scripts/UI/Style/Catalog/PrototypeUISkinCatalog.cs`, `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/Foundation/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- UI 탐색 폴더: 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둔다.
+- UI 동작: `Assets/Scripts/UI/UIManager.cs` (엔트리), `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- UI 레이아웃 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (런타임 read API), `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`
+- UI 레이아웃 설정: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
+- UI 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`, `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`
+- UI 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`, `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
 - UI 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - 팝업 일시정지 유틸: `Assets/Scripts/UI/PopupPauseStateUtility.cs`
-- TMP 폰트 해석/한글 fallback: `Assets/Scripts/Shared/TmpFontAssetResolver.cs`
+- TMP 폰트 자산: 프로젝트 원본 폰트 소스는 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`, TMP Font Asset은 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`
 - generated 경로/기본값: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 
 ## 인접 저장소

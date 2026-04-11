@@ -300,6 +300,20 @@ MonoBehaviour:
       pivot: {x: 0.5, y: 0}
       anchoredPosition: {x: 0, y: 232}
       sizeDelta: {x: 936, y: 84}
+  - objectName: ResourceAmountText
+    layout:
+      anchorMin: {x: 1, y: 1}
+      anchorMax: {x: 1, y: 1}
+      pivot: {x: 1, y: 0.5}
+      anchoredPosition: {x: -34, y: -33}
+      sizeDelta: {x: 92, y: 24}
+  - objectName: ResourcePanel
+    layout:
+      anchorMin: {x: 1, y: 1}
+      anchorMax: {x: 1, y: 1}
+      pivot: {x: 1, y: 1}
+      anchoredPosition: {x: -24, y: -16}
+      sizeDelta: {x: 144, y: 34}
   imageEntries:
   - objectName: ActionAccent
     overrideSprite: 1
@@ -433,16 +447,16 @@ MonoBehaviour:
     type: 1
     color: {r: 1, g: 1, b: 1, a: 1}
     preserveAspect: 0
-  - objectName: TopLeftPanel
+  - objectName: ResourcePanel
     overrideSprite: 1
-    sprite: {fileID: 21300000, guid: 4eef45612b495e0459211306fdc62a88, type: 3}
+    sprite: {fileID: 21300000, guid: db4f24ca436fee745ac0944d5cd89164, type: 3}
     type: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 0.93, g: 0.71, b: 0.18, a: 1}
     preserveAspect: 0
   textEntries:
   - objectName: ActionCaption
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: ad3307ed0e0004d49a5940edb8170ee3, type: 2}
     fontSize: 15
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 260
@@ -461,7 +475,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: GuideText
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 18
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 514
@@ -480,7 +494,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupCloseButton_Label
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: ad3307ed0e0004d49a5940edb8170ee3, type: 2}
     fontSize: 20
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 514
@@ -499,7 +513,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftCaption
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: ad3307ed0e0004d49a5940edb8170ee3, type: 2}
     fontSize: 32
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 257
@@ -518,7 +532,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText01
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -537,7 +551,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText02
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -556,7 +570,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText03
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -575,7 +589,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupLeftItemText04
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 17
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -594,7 +608,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupRightCaption
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: ad3307ed0e0004d49a5940edb8170ee3, type: 2}
     fontSize: 32
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 257
@@ -613,7 +627,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: PopupTitle
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: ad3307ed0e0004d49a5940edb8170ee3, type: 2}
     fontSize: 40
     color: {r: 1, g: 1, b: 1, a: 1}
     alignment: 257
@@ -632,7 +646,7 @@ MonoBehaviour:
     isRightToLeftText: 0
   - objectName: RestaurantResultText
     overrideFont: 1
-    font: {fileID: 0}
+    font: {fileID: 11400000, guid: 7f9159c683c9e8b49a90074bd8845de0, type: 2}
     fontSize: 18
     color: {r: 0.23, g: 0.27, b: 0.34, a: 1}
     alignment: 514
@@ -846,9 +860,12 @@ MonoBehaviour:
   - objectName: ResultBackdrop
     parentName: HUDOverlayGroup
     siblingIndex: 0
-  - objectName: TopLeftPanel
+  - objectName: ResourcePanel
     parentName: HUDStatusGroup
     siblingIndex: 0
+  - objectName: ResourceAmountText
+    parentName: HUDStatusGroup
+    siblingIndex: 1
   removedObjectNames:
   - InteractionPromptText
   - InventoryText

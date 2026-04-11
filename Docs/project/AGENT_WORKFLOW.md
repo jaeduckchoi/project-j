@@ -14,10 +14,11 @@
 ### UI 변경
 
 - `Assets/Scripts/UI/UIManager.cs`
-- `Assets/Scripts/UI/UIManager/UIManager.Lifecycle.cs` 및 같은 family partial
-- `Assets/Scripts/UI/Layout/Catalog/PrototypeUISceneLayoutCatalog.cs` (`.Editor.cs`, `.Editor.Capture.cs` 포함)
-- `Assets/Scripts/UI/Layout/Definitions/PrototypeUISceneLayoutSettings.cs`
+- `Assets/Scripts/UI/UIManager.Lifecycle.cs` 및 같은 family partial
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`.Editor.cs`, `.Editor.Capture.cs` 포함)
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
 - `Assets/Resources/Generated/ui-layout-overrides.asset`
+- 에디터에서 Canvas UI가 비어 보이면 런타임 생성만 믿지 말고 `PrototypeUIDesignController` 자동 프리뷰와 `UIManager.EditorPreview` 경로가 관리 UI를 만들고 저장할 수 있는지 확인한다.
 
 ### 구조 리팩토링/경로 정리
 

@@ -91,6 +91,11 @@ namespace Editor.UI
                 Debug.Log("Canvas UI 레이아웃과 표시 값 오버라이드를 초기화했습니다.");
             }
 
+            if (GUILayout.Button("Save Current Scene UI Settings"))
+            {
+                LogLayoutSyncResult(PrototypeUISceneLayoutCatalog.TryOverlayCanvasLayoutsFromScene(controller.gameObject.scene, out string message), message);
+            }
+
             if (GUILayout.Button("Clear Preview"))
             {
                 controller.ClearEditorPreviewInEditor();
@@ -109,6 +114,18 @@ namespace Editor.UI
             if (controller.gameObject.scene.IsValid())
             {
                 EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
+            }
+        }
+
+        private static void LogLayoutSyncResult(bool success, string message)
+        {
+            if (success)
+            {
+                Debug.Log(message);
+            }
+            else
+            {
+                Debug.LogWarning(message);
             }
         }
     }
