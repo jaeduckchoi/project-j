@@ -18,12 +18,14 @@
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`.Editor.cs`, `.Editor.Capture.cs` 포함)
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
 - `Assets/Resources/Generated/ui-layout-overrides.asset`
+- 관리 대상 이름이나 그룹 루트를 바꾸면 `PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames` 기준이 함께 맞는지 확인한다.
 - 에디터에서 Canvas UI가 비어 보이면 런타임 생성만 믿지 말고 `PrototypeUIDesignController` 자동 프리뷰와 `UIManager.EditorPreview` 경로가 관리 UI를 만들고 저장할 수 있는지 확인한다.
 
 ### 구조 리팩토링/경로 정리
 
 - 파일 이동 전 asmdef 범위, namespace 유지 여부, `.meta` 보존 여부를 먼저 확인한다.
 - partial family는 엔트리 파일, read API, catalog, definitions처럼 역할별 폴더 경계를 먼저 정한 뒤 이동한다.
+- UI managed object 이름은 `PrototypeUISceneLayoutCatalog`를 단일 정본으로 유지하고, runtime/editor 양쪽에 별도 문자열 목록을 만들지 않는다.
 - 이동 후 `Docs/project/*`, `Docs/ui/*`, `Docs/build/*`, `Docs/scene/*`에 직접 적힌 경로를 함께 갱신한다.
 
 ### 주석 정리

@@ -9,6 +9,10 @@ using UnityEngine.SceneManagement;
 
 namespace Editor.UI
 {
+    /// <summary>
+    /// 현재 활성 씬의 managed UI를 한눈에 확인하고,
+    /// 에디터 프리뷰 적용과 레이아웃 저장 흐름을 같은 창에서 다루는 보조 도구입니다.
+    /// </summary>
     public sealed class PrototypeUILayoutEditorWindow : EditorWindow
     {
         private readonly List<ManagedUiRow> managedRows = new();

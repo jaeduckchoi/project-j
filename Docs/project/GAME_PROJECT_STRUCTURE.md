@@ -46,11 +46,31 @@ Assets
 │     ├─ Controllers
 │     ├─ Layout
 │     │  ├─ Catalog
-│     │  └─ Definitions
+│     │  ├─ Definitions
+│     │  ├─ PrototypeUILayout.cs
+│     │  ├─ PrototypeUILayout.UI.cs
+│     │  ├─ PrototypeUILayout.Popup.cs
+│     │  ├─ PrototypeUIObjectNames.cs
+│     │  ├─ PrototypeUISceneLayoutCatalog.cs
+│     │  └─ PrototypeUISceneLayoutSettings.cs
 │     ├─ Style
 │     │  ├─ Catalog
-│     │  └─ Foundation
-│     └─ UIManager
+│     │  ├─ Foundation
+│     │  ├─ PrototypeUISkin.cs
+│     │  ├─ PrototypeUISkinCatalog.cs
+│     │  ├─ PrototypeUISkinCatalog.UI.cs
+│     │  ├─ PrototypeUISkinCatalog.Popup.cs
+│     │  └─ PrototypeUITheme.cs
+│     ├─ UIManager
+│     ├─ UIManager.cs
+│     ├─ UIManager.Lifecycle.cs
+│     ├─ UIManager.EditorPreview.cs
+│     ├─ UIManager.Bindings.cs
+│     ├─ UIManager.Input.cs
+│     ├─ UIManager.Canvas.cs
+│     ├─ UIManager.Chrome.cs
+│     ├─ UIManager.HubPopup.cs
+│     └─ UIManager.Refresh.cs
 └─ Settings
 ```
 
@@ -100,10 +120,11 @@ Assets
 - API 세션/원격 동기화: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`
 - 전역 상태: `Assets/Scripts/CoreLoop/Core/GameManager.cs`
 - UI 탐색 폴더: 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둔다.
+- `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `UIManager` 폴더는 family 경계와 `.meta` 유지를 위해 남을 수 있지만, 현재 partial 파일은 주로 각 루트 폴더 바로 아래에 둔다.
 - UI 동작: `Assets/Scripts/UI/UIManager.cs` (엔트리), `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- UI 레이아웃 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (런타임 read API), `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`
+- UI 레이아웃 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (런타임 read API, managed object 이름 정본), `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`
 - UI 레이아웃 설정: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
-- UI 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`, `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`
+- UI 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`, `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`(PopupTitle/Caption 공용 상수)
 - UI 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`, `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
 - UI 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - 팝업 일시정지 유틸: `Assets/Scripts/UI/PopupPauseStateUtility.cs`

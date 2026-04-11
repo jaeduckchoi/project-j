@@ -10,6 +10,7 @@ namespace UI
 {
     public partial class UIManager
     {
+        // 런타임 매니저 이벤트와 선택적 UI 참조를 한 곳에서 다시 묶어 씬 재진입 시 중복 구독을 막습니다.
         private void BindSceneReferences()
         {
             cachedPlayer = FindFirstObjectByType<PlayerController>();
@@ -198,109 +199,35 @@ namespace UI
 
         private void ResolveOptionalUiReferences()
         {
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("RecipePanelButton"))
-            {
-                recipePanelButton = null;
-            }
-            else if (recipePanelButton == null)
-            {
-                Transform recipeTransform = FindNamedUiTransform("RecipePanelButton");
-                if (recipeTransform != null)
-                {
-                    recipePanelButton = recipeTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("UpgradePanelButton"))
-            {
-                upgradePanelButton = null;
-            }
-            else if (upgradePanelButton == null)
-            {
-                Transform upgradeTransform = FindNamedUiTransform("UpgradePanelButton");
-                if (upgradeTransform != null)
-                {
-                    upgradePanelButton = upgradeTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("MaterialPanelButton"))
-            {
-                materialPanelButton = null;
-            }
-            else if (materialPanelButton == null)
-            {
-                Transform materialTransform = FindNamedUiTransform("MaterialPanelButton");
-                if (materialTransform != null)
-                {
-                    materialPanelButton = materialTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("PopupCloseButton"))
-            {
-                popupCloseButton = null;
-            }
-            else if (popupCloseButton == null)
-            {
-                Transform closeTransform = FindNamedUiTransform("PopupCloseButton");
-                if (closeTransform != null)
-                {
-                    popupCloseButton = closeTransform.GetComponent<Button>();
-                }
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("GuideHelpButton"))
-            {
-                guideHelpButton = null;
-            }
-            else if (guideHelpButton == null)
-            {
-                Transform helpTransform = FindNamedUiTransform("GuideHelpButton");
-                if (helpTransform != null)
-                {
-                    guideHelpButton = helpTransform.GetComponent<Button>();
-                }
-            }
+            ResolveOptionalComponentReference(ref recipePanelButton, "RecipePanelButton");
+            ResolveOptionalComponentReference(ref upgradePanelButton, "UpgradePanelButton");
+            ResolveOptionalComponentReference(ref materialPanelButton, "MaterialPanelButton");
+            ResolveOptionalComponentReference(ref popupCloseButton, "PopupCloseButton");
+            ResolveOptionalComponentReference(ref guideHelpButton, "GuideHelpButton");
 
             string economyTextObjectName = EconomyTextObjectName(IsHubScene());
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(economyTextObjectName))
+            ResolveOptionalComponentReference(ref goldText, economyTextObjectName);
+            ResolveOptionalComponentReference(ref guideText, "GuideText");
+            ResolveOptionalComponentReference(ref resultText, "RestaurantResultText");
+        }
+
+        private void ResolveOptionalComponentReference<T>(ref T component, string objectName) where T : Component
+        {
+            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
             {
-                goldText = null;
-            }
-            else if (goldText == null)
-            {
-                Transform goldTransform = FindNamedUiTransform(economyTextObjectName);
-                if (goldTransform != null)
-                {
-                    goldText = goldTransform.GetComponent<TextMeshProUGUI>();
-                }
+                component = null;
+                return;
             }
 
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("GuideText"))
+            if (component != null)
             {
-                guideText = null;
-            }
-            else if (guideText == null)
-            {
-                Transform guideTransform = FindNamedUiTransform("GuideText");
-                if (guideTransform != null)
-                {
-                    guideText = guideTransform.GetComponent<TextMeshProUGUI>();
-                }
+                return;
             }
 
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved("RestaurantResultText"))
+            Transform targetTransform = FindNamedUiTransform(objectName);
+            if (targetTransform != null)
             {
-                resultText = null;
-            }
-            else if (resultText == null)
-            {
-                Transform resultTransform = FindNamedUiTransform("RestaurantResultText");
-                if (resultTransform != null)
-                {
-                    resultText = resultTransform.GetComponent<TextMeshProUGUI>();
-                }
+                component = targetTransform.GetComponent<T>();
             }
         }
 

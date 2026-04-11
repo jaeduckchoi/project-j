@@ -38,121 +38,76 @@ namespace UI.Layout
         }
 
         /// <summary>
+        /// Canvas 한 번 캡처에서 얻은 레이아웃/표시 값 묶음입니다.
+        /// sync와 overlay가 같은 수집 결과를 재사용하도록 중간 표현으로 둡니다.
+        /// </summary>
+        private sealed class CapturedCanvasOverrides
+        {
+            public Dictionary<string, PrototypeUIRect> Layouts { get; } = new(StringComparer.Ordinal);
+            public Dictionary<string, PrototypeUISceneImageEntry> Images { get; } = new(StringComparer.Ordinal);
+            public Dictionary<string, PrototypeUISceneTextEntry> Texts { get; } = new(StringComparer.Ordinal);
+            public Dictionary<string, PrototypeUISceneButtonEntry> Buttons { get; } = new(StringComparer.Ordinal);
+            public Dictionary<string, PrototypeUISceneHierarchyEntry> Hierarchies { get; } = new(StringComparer.Ordinal);
+            public Dictionary<string, string> Names { get; } = new(StringComparer.Ordinal);
+            public HashSet<string> DuplicateNames { get; } = new(StringComparer.Ordinal);
+            public bool UsedPreviewCapture { get; set; }
+
+            public bool HasEntries =>
+                Layouts.Count > 0
+                || Images.Count > 0
+                || Texts.Count > 0
+                || Buttons.Count > 0
+                || Hierarchies.Count > 0
+                || Names.Count > 0;
+        }
+
+        /// <summary>
         /// 현재 씬 Canvas 아래 모든 UI RectTransform, Image, TMP, Button 값을 공용 자산에 저장합니다.
         /// </summary>
         public static bool TrySyncCanvasLayoutsFromScene(Scene scene, out string message)
         {
-            if (!scene.IsValid() || !scene.isLoaded)
+            if (!TryCaptureCanvasOverrides(scene, out CapturedCanvasOverrides captured, out message))
             {
-                message = "열려 있는 씬이 없어 Canvas UI 값을 읽을 수 없습니다.";
                 return false;
             }
-
-            List<Canvas> canvases = GetSceneCanvases(scene);
-            if (canvases.Count == 0)
-            {
-                message = "현재 씬에서 Canvas 컴포넌트를 찾지 못했습니다.";
-                return false;
-            }
-
-            Dictionary<string, PrototypeUIRect> layoutMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneImageEntry> imageMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneTextEntry> textMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneButtonEntry> buttonMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap = new(StringComparer.Ordinal);
-            Dictionary<string, string> nameMap = new(StringComparer.Ordinal);
-            HashSet<string> duplicateNames = new(StringComparer.Ordinal);
-
-            CaptureCanvasOverridesFromScene(
-                scene,
-                canvases,
-                layoutMap,
-                imageMap,
-                textMap,
-                buttonMap,
-                hierarchyMap,
-                nameMap,
-                duplicateNames,
-                out bool usedPreviewCapture);
 
             PrototypeUISceneLayoutSettings settings = LoadOrCreateSettingsAsset();
             Undo.RecordObject(settings, "Sync Canvas UI Layouts");
-            settings.ReplaceLayouts(ConvertToLayoutEntries(layoutMap));
-            settings.ReplaceImages(ConvertToImageEntries(imageMap));
-            settings.ReplaceTexts(ConvertToTextEntries(textMap));
-            settings.ReplaceButtons(ConvertToButtonEntries(buttonMap));
-            settings.ReplaceHierarchies(ConvertToHierarchyEntries(hierarchyMap));
-            settings.ReplaceRemovedObjects(BuildRemovedObjectNameList(IsHubScene(scene), hierarchyMap.Keys, nameMap));
-            settings.ReplaceNames(ConvertToNameEntries(nameMap));
+            settings.ReplaceLayouts(ConvertToLayoutEntries(captured.Layouts));
+            settings.ReplaceImages(ConvertToImageEntries(captured.Images));
+            settings.ReplaceTexts(ConvertToTextEntries(captured.Texts));
+            settings.ReplaceButtons(ConvertToButtonEntries(captured.Buttons));
+            settings.ReplaceHierarchies(ConvertToHierarchyEntries(captured.Hierarchies));
+            settings.ReplaceRemovedObjects(BuildRemovedObjectNameList(IsHubScene(scene), captured.Hierarchies.Keys, captured.Names));
+            settings.ReplaceNames(ConvertToNameEntries(captured.Names));
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
 
-            if (duplicateNames.Count == 0)
+            if (captured.DuplicateNames.Count == 0)
             {
-                message = $"Canvas UI 레이아웃 {layoutMap.Count}건, Image {imageMap.Count}건, TMP {textMap.Count}건, Button {buttonMap.Count}건을 공용 자산에 저장했습니다.";
+                message = BuildCanvasCaptureSummary(captured, "공용 자산에 저장했습니다.");
             }
             else
             {
-                message = $"Canvas UI 레이아웃 {layoutMap.Count}건, Image {imageMap.Count}건, TMP {textMap.Count}건, Button {buttonMap.Count}건을 저장했습니다. 중복 이름 {duplicateNames.Count}건은 마지막 값을 기준으로 덮어썼습니다.";
+                message = BuildCanvasCaptureSummary(captured, $"저장했습니다. 중복 이름 {captured.DuplicateNames.Count}건은 마지막 값을 기준으로 덮어썼습니다.");
             }
 
-            if (usedPreviewCapture)
-            {
-                message += " 빈 Canvas는 UIManager editor preview 기준 baseline으로 캡처했습니다.";
-            }
-
+            message = AppendPreviewCaptureMessage(captured, message);
             return true;
         }
 
-        /// <summary>
-        /// 현재 씬의 HUD 그룹 이름과 기준 레이아웃만 공용 자산에 다시 저장합니다.
-        /// 전체 Canvas 오버라이드를 덮지 않고, HUD 구조 기준만 현재 씬 값으로 맞출 때 사용합니다.
-        /// </summary>
         /// <summary>
         /// 현재 씬의 Canvas 값을 기존 공용 자산 위에 덮어써,
         /// 기본 Hub 기준값은 유지하면서 현재 씬에서 조정한 UI 값만 마지막에 반영합니다.
         /// </summary>
         public static bool TryOverlayCanvasLayoutsFromScene(Scene scene, out string message)
         {
-            if (!scene.IsValid() || !scene.isLoaded)
+            if (!TryCaptureCanvasOverrides(scene, out CapturedCanvasOverrides captured, out message))
             {
-                message = "열려 있는 씬이 없어 Canvas UI 값을 읽을 수 없습니다.";
                 return false;
             }
 
-            List<Canvas> canvases = GetSceneCanvases(scene);
-            if (canvases.Count == 0)
-            {
-                message = "현재 씬에서 Canvas 컴포넌트를 찾지 못했습니다.";
-                return false;
-            }
-
-            Dictionary<string, PrototypeUIRect> layoutMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneImageEntry> imageMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneTextEntry> textMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneButtonEntry> buttonMap = new(StringComparer.Ordinal);
-            Dictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap = new(StringComparer.Ordinal);
-            Dictionary<string, string> nameMap = new(StringComparer.Ordinal);
-            HashSet<string> duplicateNames = new(StringComparer.Ordinal);
-
-            CaptureCanvasOverridesFromScene(
-                scene,
-                canvases,
-                layoutMap,
-                imageMap,
-                textMap,
-                buttonMap,
-                hierarchyMap,
-                nameMap,
-                duplicateNames,
-                out bool usedPreviewCapture);
-
-            if (layoutMap.Count == 0
-                && imageMap.Count == 0
-                && textMap.Count == 0
-                && buttonMap.Count == 0
-                && hierarchyMap.Count == 0
-                && nameMap.Count == 0)
+            if (!captured.HasEntries)
             {
                 message = "현재 씬에서 저장할 Canvas UI 값을 찾지 못했습니다.";
                 return false;
@@ -160,22 +115,18 @@ namespace UI.Layout
 
             PrototypeUISceneLayoutSettings settings = LoadOrCreateSettingsAsset();
             Undo.RecordObject(settings, "Overlay Canvas UI Layouts");
-            settings.UpsertLayouts(ConvertToLayoutEntries(layoutMap));
-            settings.UpsertImages(ConvertToImageEntries(imageMap));
-            settings.UpsertTexts(ConvertToTextEntries(textMap));
-            settings.UpsertButtons(ConvertToButtonEntries(buttonMap));
-            settings.UpsertHierarchies(ConvertToHierarchyEntries(hierarchyMap));
-            settings.SyncRemovedObjects(GetManagedCanvasObjectNames(IsHubScene(scene), nameMap), hierarchyMap.Keys);
-            settings.UpsertNames(ConvertToNameEntries(nameMap));
+            settings.UpsertLayouts(ConvertToLayoutEntries(captured.Layouts));
+            settings.UpsertImages(ConvertToImageEntries(captured.Images));
+            settings.UpsertTexts(ConvertToTextEntries(captured.Texts));
+            settings.UpsertButtons(ConvertToButtonEntries(captured.Buttons));
+            settings.UpsertHierarchies(ConvertToHierarchyEntries(captured.Hierarchies));
+            settings.SyncRemovedObjects(GetManagedCanvasObjectNames(IsHubScene(scene), captured.Names), captured.Hierarchies.Keys);
+            settings.UpsertNames(ConvertToNameEntries(captured.Names));
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
 
-            message = $"Canvas UI 레이아웃 {layoutMap.Count}건, Image {imageMap.Count}건, TMP {textMap.Count}건, Button {buttonMap.Count}건을 현재 씬 기준으로 덮어썼습니다.";
-            if (usedPreviewCapture)
-            {
-                message += " 빈 Canvas는 UIManager editor preview 기준 baseline으로 캡처했습니다.";
-            }
-
+            message = BuildCanvasCaptureSummary(captured, "현재 씬 기준으로 덮어썼습니다.");
+            message = AppendPreviewCaptureMessage(captured, message);
             return true;
         }
 
@@ -260,6 +211,54 @@ namespace UI.Layout
             settings.ClearNames();
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
+        }
+
+        private static bool TryCaptureCanvasOverrides(Scene scene, out CapturedCanvasOverrides captured, out string message)
+        {
+            captured = null;
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                message = "열려 있는 씬이 없어 Canvas UI 값을 읽을 수 없습니다.";
+                return false;
+            }
+
+            List<Canvas> canvases = GetSceneCanvases(scene);
+            if (canvases.Count == 0)
+            {
+                message = "현재 씬에서 Canvas 컴포넌트를 찾지 못했습니다.";
+                return false;
+            }
+
+            captured = new CapturedCanvasOverrides();
+            CaptureCanvasOverridesFromScene(
+                scene,
+                canvases,
+                captured.Layouts,
+                captured.Images,
+                captured.Texts,
+                captured.Buttons,
+                captured.Hierarchies,
+                captured.Names,
+                captured.DuplicateNames,
+                out bool usedPreviewCapture);
+            captured.UsedPreviewCapture = usedPreviewCapture;
+            message = null;
+            return true;
+        }
+
+        private static string BuildCanvasCaptureSummary(CapturedCanvasOverrides captured, string actionSuffix)
+        {
+            return $"Canvas UI 레이아웃 {captured.Layouts.Count}건, Image {captured.Images.Count}건, TMP {captured.Texts.Count}건, Button {captured.Buttons.Count}건을 {actionSuffix}";
+        }
+
+        private static string AppendPreviewCaptureMessage(CapturedCanvasOverrides captured, string baseMessage)
+        {
+            if (captured == null || !captured.UsedPreviewCapture)
+            {
+                return baseMessage;
+            }
+
+            return baseMessage + " 빈 Canvas는 UIManager editor preview 기준 baseline으로 캡처했습니다.";
         }
 
         private static List<Canvas> GetSceneCanvases(Scene scene)

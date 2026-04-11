@@ -112,7 +112,7 @@ namespace UI
                 return;
             }
 
-            foreach (string objectName in EnumerateHudCanvasObjectNames())
+            foreach (string objectName in EnumerateHudCanvasObjectNames(IsHubScene()))
             {
                 ReparentCanvasObject(objectName, GetHudCanvasGroupParent(objectName, hudRoot));
             }
@@ -139,7 +139,7 @@ namespace UI
                 return;
             }
 
-            foreach (string objectName in PopupCanvasObjectNames)
+            foreach (string objectName in PrototypeUISceneLayoutCatalog.EnumeratePopupCanvasObjectNames())
             {
                 ReparentCanvasObject(objectName, GetPopupCanvasGroupParent(objectName, popupRoot));
             }
@@ -360,7 +360,9 @@ namespace UI
                 return savedParent;
             }
 
-            bool usePopupRoot = objectName == "InventoryText" ? IsHubScene() : PopupCanvasObjectNames.Contains(objectName);
+            bool usePopupRoot = objectName == "InventoryText"
+                ? IsHubScene()
+                : PrototypeUISceneLayoutCatalog.IsPopupCanvasObjectName(objectName);
 
             if (usePopupRoot)
             {

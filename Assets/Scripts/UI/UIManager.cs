@@ -65,54 +65,31 @@ namespace UI
         private static readonly CaptionPresentationPreset DefaultCaptionPresentation = new(15f, true, Vector4.zero, 0.5f, 12f, 15f);
         private static readonly CaptionPresentationPreset FixedPopupTitlePresentation = new(40f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 24f);
         private static readonly CaptionPresentationPreset FixedPopupCaptionPresentation = new(32f, false, new Vector4(10f, 8f, 10f, 8f), 0f, 12f, 20f);
-
-        private static readonly HashSet<string> PopupCanvasObjectNames = new()
+        private static readonly string[] AdditionalHudRuntimeObjectNames =
         {
-            "PopupOverlay",
-            "PopupFrame",
-            "PopupFrameLeft",
-            "PopupFrameRight",
-            PrototypeUIObjectNames.PopupTitle,
-            "PopupCloseButton",
-            "PopupLeftBody",
-            "PopupRightBody",
-            PrototypeUIObjectNames.PopupLeftCaption,
-            PrototypeUIObjectNames.PopupRightCaption,
-            "StorageText",
-            "SelectedRecipeText",
-            "UpgradeText"
+            "StorageCard",
+            "RecipeCard",
+            "UpgradeCard",
+            "StorageAccent",
+            "RecipeAccent",
+            "UpgradeAccent",
+            "StorageCaption",
+            "RecipeCaption",
+            "UpgradeCaption"
         };
 
-        // HUD/Popup에 남겨야 하는 managed object 이름은 엔트리에서 한 번만 선언해 partial 간 기준을 공유합니다.
-        private static IEnumerable<string> EnumerateHudCanvasObjectNames()
+        // managed 이름 정본은 Layout catalog가 들고, 런타임 전용 HUD 보조 오브젝트만 엔트리에서 추가합니다.
+        private static IEnumerable<string> EnumerateHudCanvasObjectNames(bool isHubScene)
         {
-            yield return ExploreStatusPanelObjectName;
-            yield return HubResourcePanelObjectName;
-            yield return "InteractionPromptBackdrop";
-            yield return "GuideBackdrop";
-            yield return "ResultBackdrop";
-            yield return ExploreEconomyTextObjectName;
-            yield return HubResourceAmountTextObjectName;
-            yield return "InteractionPromptText";
-            yield return "GuideText";
-            yield return "RestaurantResultText";
-            yield return "GuideHelpButton";
-            yield return HudPanelButtonGroupObjectName;
-            yield return "ActionDock";
-            yield return "ActionAccent";
-            yield return "ActionCaption";
-            yield return "RecipePanelButton";
-            yield return "UpgradePanelButton";
-            yield return "MaterialPanelButton";
-            yield return "StorageCard";
-            yield return "RecipeCard";
-            yield return "UpgradeCard";
-            yield return "StorageAccent";
-            yield return "RecipeAccent";
-            yield return "UpgradeAccent";
-            yield return "StorageCaption";
-            yield return "RecipeCaption";
-            yield return "UpgradeCaption";
+            foreach (string objectName in PrototypeUISceneLayoutCatalog.EnumerateHudCanvasObjectNames(isHubScene))
+            {
+                yield return objectName;
+            }
+
+            foreach (string objectName in AdditionalHudRuntimeObjectNames)
+            {
+                yield return objectName;
+            }
         }
 
         [SerializeField] private TextMeshProUGUI interactionPromptText;

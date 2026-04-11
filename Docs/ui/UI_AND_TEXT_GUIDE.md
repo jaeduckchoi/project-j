@@ -10,7 +10,8 @@
 - 레이아웃 정본은 `Assets/Resources/Generated/ui-layout-overrides.asset`
 - 레이아웃 설정 타입은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
 - 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
-- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
+- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames`)
+- 팝업 타이틀/캡션 공용 상수: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
 - 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
 - 팝업 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - 프로젝트 원본 폰트 소스: 본문 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, 제목 `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`
@@ -24,7 +25,7 @@
 탐험 씬의 좌측 상단 상태 카드는 `TopLeftPanel`과 `GoldText`를 유지합니다.
 Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountText`를 사용합니다.
 
-이 이름들은 현재 런타임 UI 코드 기준으로 함께 유지합니다.
+이 이름들은 `PrototypeUISceneLayoutCatalog` 기준으로 함께 유지합니다.
 
 ## generated UI 경로
 

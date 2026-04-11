@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 namespace UI.Layout
 {
     /// <summary>
@@ -15,6 +17,46 @@ namespace UI.Layout
     public static partial class PrototypeUISceneLayoutCatalog
     {
         // 런타임은 이 파일을 읽기 API로만 사용하고, 에디터 저장/캡처는 sibling partial이 맡습니다.
+        private static readonly string[] SharedHudManagedObjectNames =
+        {
+            "HUDRoot",
+            "PopupRoot",
+            "HUDStatusGroup",
+            "HUDActionGroup",
+            "HUDBottomGroup",
+            "HUDOverlayGroup",
+            "PopupShellGroup",
+            "PopupFrameHeader",
+            "InteractionPromptBackdrop",
+            "InteractionPromptText",
+            "GuideBackdrop",
+            "GuideText",
+            "GuideHelpButton",
+            "ResultBackdrop",
+            "RestaurantResultText"
+        };
+
+        private static readonly string[] ExploreHudManagedObjectNames =
+        {
+            "TopLeftPanel",
+            "GoldText"
+        };
+
+        private static readonly string[] HubHudManagedObjectNames =
+        {
+            "ResourcePanel",
+            "ResourceAmountText",
+            "HUDPanelButtonGroup",
+            "ActionDock",
+            "ActionAccent",
+            "ActionCaption",
+            "RecipePanelButton",
+            "UpgradePanelButton",
+            "MaterialPanelButton"
+        };
+
+        private static readonly HashSet<string> PopupCanvasObjectNames = BuildPopupCanvasObjectNames();
+
 #if !UNITY_EDITOR
         private static PrototypeUISceneLayoutSettings _cachedSettings;
 #endif
@@ -130,6 +172,29 @@ namespace UI.Layout
                 && settings.IsObjectRemoved(objectName);
         }
 
+        /// <summary>
+        /// HUD 그룹 재배치와 에디터 캡처가 함께 쓰는 HUD 관리 이름 목록입니다.
+        /// 이름 오버라이드가 있으면 현재 씬 이름으로 풀어 반환합니다.
+        /// </summary>
+        public static IEnumerable<string> EnumerateHudCanvasObjectNames(bool isHubScene)
+        {
+            return EnumerateHudCanvasObjectNames(isHubScene, null);
+        }
+
+        /// <summary>
+        /// 허브 팝업 루트 아래에서 관리하는 오브젝트 이름 목록입니다.
+        /// </summary>
+        public static IEnumerable<string> EnumeratePopupCanvasObjectNames()
+        {
+            return PopupCanvasObjectNames;
+        }
+
+        public static bool IsPopupCanvasObjectName(string objectName)
+        {
+            return !string.IsNullOrWhiteSpace(objectName)
+                && PopupCanvasObjectNames.Contains(objectName);
+        }
+
         public static HashSet<string> GetManagedCanvasObjectNames(bool isHubScene)
         {
             return GetManagedCanvasObjectNames(isHubScene, null);
@@ -137,55 +202,51 @@ namespace UI.Layout
 
         public static HashSet<string> GetManagedCanvasObjectNames(bool isHubScene, IReadOnlyDictionary<string, string> sceneNameOverrides)
         {
-            HashSet<string> objectNames = new(System.StringComparer.Ordinal)
-            {
-                "HUDRoot",
-                "PopupRoot",
-                "HUDStatusGroup",
-                ResolveManagedObjectName("HUDActionGroup", sceneNameOverrides),
-                "HUDBottomGroup",
-                "HUDOverlayGroup",
-                "PopupShellGroup",
-                "PopupFrameHeader",
-                "InteractionPromptBackdrop",
-                "InteractionPromptText",
-                "GuideBackdrop",
-                "GuideText",
-                "GuideHelpButton",
-                "ResultBackdrop",
-                "RestaurantResultText",
-            };
+            HashSet<string> objectNames = new(StringComparer.Ordinal);
+            AddObjectNames(objectNames, EnumerateHudCanvasObjectNames(isHubScene, sceneNameOverrides));
 
             if (!isHubScene)
             {
-                objectNames.Add("TopLeftPanel");
-                objectNames.Add("GoldText");
                 return objectNames;
             }
 
-            objectNames.Add("ResourcePanel");
-            objectNames.Add("ResourceAmountText");
-            objectNames.Add(ResolveManagedObjectName("HUDPanelButtonGroup", sceneNameOverrides));
-            objectNames.Add("PopupOverlay");
-            objectNames.Add("PopupFrame");
-            objectNames.Add("PopupFrameLeft");
-            objectNames.Add("PopupFrameRight");
-            objectNames.Add("PopupLeftBody");
-            objectNames.Add("PopupRightBody");
-            objectNames.Add(PrototypeUIObjectNames.PopupTitle);
-            objectNames.Add(PrototypeUIObjectNames.PopupLeftCaption);
-            objectNames.Add(PrototypeUIObjectNames.PopupRightCaption);
-            objectNames.Add("PopupCloseButton");
             objectNames.Add("InventoryText");
-            objectNames.Add("StorageText");
-            objectNames.Add("SelectedRecipeText");
-            objectNames.Add("UpgradeText");
-            objectNames.Add("ActionDock");
-            objectNames.Add("ActionAccent");
-            objectNames.Add("ActionCaption");
-            objectNames.Add("RecipePanelButton");
-            objectNames.Add("UpgradePanelButton");
-            objectNames.Add("MaterialPanelButton");
+            AddObjectNames(objectNames, PopupCanvasObjectNames);
+            return objectNames;
+        }
+
+        private static IEnumerable<string> EnumerateHudCanvasObjectNames(bool isHubScene, IReadOnlyDictionary<string, string> sceneNameOverrides)
+        {
+            foreach (string objectName in SharedHudManagedObjectNames)
+            {
+                yield return ResolveManagedObjectName(objectName, sceneNameOverrides);
+            }
+
+            string[] sceneSpecificObjectNames = isHubScene ? HubHudManagedObjectNames : ExploreHudManagedObjectNames;
+            foreach (string objectName in sceneSpecificObjectNames)
+            {
+                yield return ResolveManagedObjectName(objectName, sceneNameOverrides);
+            }
+        }
+
+        private static HashSet<string> BuildPopupCanvasObjectNames()
+        {
+            HashSet<string> objectNames = new(StringComparer.Ordinal)
+            {
+                "PopupOverlay",
+                "PopupFrame",
+                "PopupFrameLeft",
+                "PopupFrameRight",
+                PrototypeUIObjectNames.PopupTitle,
+                "PopupCloseButton",
+                "PopupLeftBody",
+                "PopupRightBody",
+                PrototypeUIObjectNames.PopupLeftCaption,
+                PrototypeUIObjectNames.PopupRightCaption,
+                "StorageText",
+                "SelectedRecipeText",
+                "UpgradeText"
+            };
 
             for (int index = 0; index < PrototypeUILayout.HubPopupBodyItemBoxCount; index++)
             {
@@ -199,6 +260,22 @@ namespace UI.Layout
             }
 
             return objectNames;
+        }
+
+        private static void AddObjectNames(ISet<string> target, IEnumerable<string> objectNames)
+        {
+            if (target == null || objectNames == null)
+            {
+                return;
+            }
+
+            foreach (string objectName in objectNames)
+            {
+                if (!string.IsNullOrWhiteSpace(objectName))
+                {
+                    target.Add(objectName);
+                }
+            }
         }
 
         private static string ResolveManagedObjectName(string canonicalName, IReadOnlyDictionary<string, string> sceneNameOverrides)

@@ -22,14 +22,14 @@
 
 - `Assets/Resources/Generated/ui-layout-overrides.asset`가 관리 대상 Canvas 레이아웃의 정본입니다.
 - UI 코드는 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둡니다.
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`가 런타임 read API와 managed object 이름 기준의 정본이며, `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`가 에디터 sync/overlay/capture 흐름을 맡습니다.
+- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`가 런타임 read API와 managed object 이름 기준의 정본이며, `GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames`를 통해 runtime/editor가 같은 목록을 공유합니다. `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`는 에디터 sync/overlay/capture 흐름을 맡습니다.
 - `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`와 `Assets/Scripts/UI/UIManager.EditorPreview.cs`는 런타임 생성 UI를 에디터에서도 생성·프리뷰·저장 가능하게 유지하는 정본 흐름입니다.
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`와 `Assets/Scripts/UI/UIManager.cs`(엔트리), `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`가 이를 읽는 런타임 기준입니다.
-- 레이아웃 partial 정본: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`.
+- 레이아웃 partial 정본: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`(PopupTitle/Caption 공용 상수).
 - 스타일 partial 정본: `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUITheme.cs`.
 - 팝업 콘텐츠 catalog 정본: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`.
 - 팝업 일시정지 계산 정본: `Assets/Scripts/UI/PopupPauseStateUtility.cs` (`UIManager`는 결과만 받아 `Time.timeScale`에 반영).
-- `GuideText`, `RestaurantResultText`, `GuideHelpButton`, `PopupTitle`, `PopupLeftCaption` 같은 managed UI 이름은 런타임 UI 코드 기준으로 유지합니다.
+- `GuideText`, `RestaurantResultText`, `GuideHelpButton`, `PopupTitle`, `PopupLeftCaption` 같은 managed UI 이름은 `PrototypeUISceneLayoutCatalog` 기준으로 유지합니다.
 
 ### TMP 폰트 자산
 
@@ -76,7 +76,7 @@
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`(`.Editor.cs`, `.Editor.Capture.cs` 포함)
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
 - `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(`.UI.cs`, `.Popup.cs` 포함)
-- `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
+- `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs` (PopupTitle/Caption 같은 팝업 공용 이름을 건드릴 때)
 - `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(`.UI.cs`, `.Popup.cs` 포함), `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
 - `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - `Assets/Scripts/UI/PopupPauseStateUtility.cs`
