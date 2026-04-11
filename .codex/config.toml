@@ -2,8 +2,34 @@
 
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
+default_permissions = "project-j-read-scope"
 
 [sandbox_workspace_write]
 # Unity 저장소 편집은 워크스페이스 내부 소스에 한정하고,
 # 네트워크가 필요한 작업은 Codex가 별도 승인을 요청하도록 둔다.
 network_access = false
+
+[permissions.project-j-read-scope.filesystem]
+# .claude/settings.json permissions.deny의 디렉터리 차단 범위를
+# Codex 파일시스템 permission profile로 동기화한다.
+# Claude의 확장자 glob 제외는 Docs/project/GAME_ASSISTANT_RULES.md와
+# AGENTS.md 지침으로 유지한다.
+":minimal" = "read"
+
+[permissions.project-j-read-scope.filesystem.":project_roots"]
+"." = "write"
+"Library" = "none"
+"Temp" = "none"
+"obj" = "none"
+"Obj" = "none"
+"Logs" = "none"
+"UserSettings" = "none"
+"MemoryCaptures" = "none"
+"Recordings" = "none"
+"TestResults" = "none"
+"Build" = "none"
+"Builds" = "none"
+".utmp" = "none"
+".git" = "none"
+".vs" = "none"
+".idea" = "none"

@@ -1,5 +1,9 @@
 # Unity 프로젝트에서는 변경 유실이나 대량 삭제로 이어지는 명령을
 # 프로젝트 레벨에서 한 번 더 제어한다.
+#
+# 읽기 범위 제한은 .codex/config.toml의 project-j-read-scope
+# permission profile이 담당한다. 이 파일은 샌드박스 밖 명령 승인
+# 정책만 다룬다.
 
 prefix_rule(
     pattern = ["git", "reset", "--hard"],

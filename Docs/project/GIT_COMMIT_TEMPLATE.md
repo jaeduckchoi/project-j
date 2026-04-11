@@ -96,4 +96,5 @@
 
 - 이 파일은 로컬 `commit.template`의 정본이다.
 - 다른 문서에는 이 규칙을 중복 복사하지 말고 이 파일만 참조한다.
+- IntelliJ AI Assistant의 커밋 메시지 생성은 `.aiassistant/rules`만으로 보장하지 말고, IDE의 `Prompt for generation` 또는 `Prompt Library > Commit Message Generation`에 위 "커밋 메시지 생성 입력 템플릿"을 넣어 운영한다.
 - 커밋 규칙을 바꾸면 엔트리 파일과 관련 project 문서의 링크만 함께 확인한다.

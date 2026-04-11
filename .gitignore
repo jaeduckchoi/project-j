@@ -93,3 +93,5 @@ Thumbs.db
 Desktop.ini
 *.orig
 *.rej
+
+/.claude/settings.local.json
