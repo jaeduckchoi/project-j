@@ -17,6 +17,8 @@ namespace UI
             }
 
             PrototypeUISkin.ClearGeneratedCache();
+            bool previousPreserveEditorLayoutState = preserveExistingEditorLayoutDuringPreview;
+            preserveExistingEditorLayoutDuringPreview = true;
             EnsureEditorPreviewCanvasHierarchy();
             bool previousSuppressState = suppressCanvasGroupingInEditorPreview;
             suppressCanvasGroupingInEditorPreview = true;
@@ -30,6 +32,7 @@ namespace UI
             finally
             {
                 suppressCanvasGroupingInEditorPreview = previousSuppressState;
+                preserveExistingEditorLayoutDuringPreview = previousPreserveEditorLayoutState;
             }
         }
 
@@ -45,8 +48,18 @@ namespace UI
                 return;
             }
 
-            EnsureCanvasGroups();
-            ResolveOptionalUiReferences();
+            bool previousPreserveEditorLayoutState = preserveExistingEditorLayoutDuringPreview;
+            preserveExistingEditorLayoutDuringPreview = true;
+
+            try
+            {
+                EnsureCanvasGroups();
+                ResolveOptionalUiReferences();
+            }
+            finally
+            {
+                preserveExistingEditorLayoutDuringPreview = previousPreserveEditorLayoutState;
+            }
         }
 
         private void EnsureEditorPreviewCanvasHierarchy()

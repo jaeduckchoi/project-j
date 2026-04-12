@@ -926,13 +926,7 @@ namespace UI
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 new PrototypeUIRect(anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta));
-            ApplyRectLayout(
-                rect,
-                resolvedLayout.AnchorMin,
-                resolvedLayout.AnchorMax,
-                resolvedLayout.Pivot,
-                resolvedLayout.AnchoredPosition,
-                resolvedLayout.SizeDelta);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: target != null);
         }
 
         private void ApplyNamedRectLayout(string objectName, PrototypeUIRect layout)

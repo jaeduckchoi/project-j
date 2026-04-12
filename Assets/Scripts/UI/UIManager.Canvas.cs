@@ -39,7 +39,7 @@ namespace UI
             return EnsureCanvasGroupRoot(transform, groupName, siblingIndex);
         }
 
-        private static Transform EnsureCanvasGroupRoot(Transform parent, string groupName, int siblingIndex)
+        private Transform EnsureCanvasGroupRoot(Transform parent, string groupName, int siblingIndex)
         {
             if (parent == null
                 || string.IsNullOrWhiteSpace(groupName)
@@ -76,13 +76,8 @@ namespace UI
                 rect = rootObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = resolvedLayout.AnchorMin;
-            rect.anchorMax = resolvedLayout.AnchorMax;
-            rect.pivot = resolvedLayout.Pivot;
-            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
-            rect.sizeDelta = resolvedLayout.SizeDelta;
-            Transform siblingParent = rect.parent != null ? rect.parent : parent;
-            rect.SetSiblingIndex(ClampSiblingIndex(siblingParent, siblingIndex));
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, siblingIndex, preserveExistingLayout: existing != null);
             return rect;
         }
 
@@ -310,16 +305,15 @@ namespace UI
                 rect = containerObject.AddComponent<RectTransform>();
             }
 
-            if (existing == null)
-            {
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.sizeDelta = Vector2.zero;
-            }
-
-            rect.SetSiblingIndex(ClampSiblingIndex(rect.parent != null ? rect.parent : parent, siblingIndex));
+            ApplyManagedRectLayout(
+                rect,
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
+                preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, siblingIndex, preserveExistingLayout: existing != null);
             return rect;
         }
 
@@ -407,7 +401,7 @@ namespace UI
 
         private void ApplySavedCanvasHierarchyOverrides()
         {
-            if (transform == null)
+            if (transform == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout: true))
             {
                 return;
             }

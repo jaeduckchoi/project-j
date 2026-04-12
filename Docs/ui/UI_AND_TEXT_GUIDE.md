@@ -37,7 +37,7 @@ Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountT
 
 - 씬에 직접 저장된 popup 텍스트, 이미지, 폰트, 배치 값은 명시적 요청 없이는 덮어쓰지 않습니다.
 - Canvas 그룹 재정리는 `UIManager`와 `PrototypeUIDesignController` 기반 편집 도구를 사용합니다.
-- 에디터에서 UI가 보이지 않는 변경은 완료 상태로 보지 않습니다. `PrototypeUIDesignController` 자동 프리뷰로 관리 UI를 만들고, 씬에서 조정한 값은 현재 씬 UI 설정 저장 흐름으로 `ui-layout-overrides.asset`에 반영합니다.
+- 에디터에서 UI가 보이지 않는 변경은 완료 상태로 보지 않습니다. `PrototypeUIDesignController`의 `Apply Preview`로 관리 UI를 수동 생성·갱신하고, 씬에서 조정한 값은 `Save Current Scene UI Settings` 저장 흐름으로 `ui-layout-overrides.asset`에 반영합니다. 수동 프리뷰는 기존 씬 `RectTransform` 배치를 덮어쓰지 않아야 합니다.
 - 현재 코드 밖의 별도 자동 동기화/감사 흐름을 전제로 작업하지 않습니다.
 
 ## 함께 확인할 코드

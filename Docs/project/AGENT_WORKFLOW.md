@@ -19,7 +19,7 @@
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
 - `Assets/Resources/Generated/ui-layout-overrides.asset`
 - 관리 대상 이름이나 그룹 루트를 바꾸면 `PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames` 기준이 함께 맞는지 확인한다.
-- 에디터에서 Canvas UI가 비어 보이면 런타임 생성만 믿지 말고 `PrototypeUIDesignController` 자동 프리뷰와 `UIManager.EditorPreview` 경로가 관리 UI를 만들고 저장할 수 있는지 확인한다.
+- 에디터에서 Canvas UI가 비어 보이면 런타임 생성만 믿지 말고 `PrototypeUIDesignController`의 `Apply Preview` 수동 프리뷰와 `UIManager.EditorPreview` 경로가 관리 UI를 만들고 저장할 수 있는지 확인한다. 프리뷰는 기존 씬 `RectTransform` 배치를 덮어쓰지 않아야 한다.
 
 ### 구조 리팩토링/경로 정리
 

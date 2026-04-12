@@ -125,6 +125,7 @@ namespace UI
         private bool isPopupPauseApplied;
         private float popupPausePreviousTimeScale = 1f;
         private bool suppressCanvasGroupingInEditorPreview;
+        private bool preserveExistingEditorLayoutDuringPreview;
 
 #if ENABLE_INPUT_SYSTEM
         private static InputActionAsset _runtimeUiActionsAsset;

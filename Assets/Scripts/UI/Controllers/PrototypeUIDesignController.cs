@@ -1,8 +1,5 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 // UI.Controllers 네임스페이스
 namespace UI.Controllers
@@ -31,17 +28,14 @@ namespace UI.Controllers
         [SerializeField] private UIManager uiManager;
         [SerializeField] private bool showEditorPreview = true;
         [SerializeField] private PrototypeUIPreviewPanel editorPreviewPanel = PrototypeUIPreviewPanel.Recipe;
-        [SerializeField] private bool autoApplyEditorPreview = true;
 
 #if UNITY_EDITOR
         private bool isApplyingPreview;
-        private bool previewApplyQueued;
 #endif
 
         public UIManager UiManager => uiManager;
         public bool ShowEditorPreview => showEditorPreview;
         public PrototypeUIPreviewPanel EditorPreviewPanel => editorPreviewPanel;
-        public bool AutoApplyEditorPreview => autoApplyEditorPreview;
 
         /// <summary>
         /// 에디터 확장에서 UIManager를 생성 직후 연결할 때 사용한다.
@@ -60,25 +54,8 @@ namespace UI.Controllers
         }
 
 #if UNITY_EDITOR
-        private void OnEnable()
-        {
-            EditorApplication.hierarchyChanged += HandleEditorHierarchyChanged;
-            EditorApplication.projectChanged += HandleEditorProjectChanged;
-            Undo.undoRedoPerformed += HandleUndoRedoPerformed;
-            QueueEditorPreviewApply();
-        }
-
-        private void OnDisable()
-        {
-            EditorApplication.hierarchyChanged -= HandleEditorHierarchyChanged;
-            EditorApplication.projectChanged -= HandleEditorProjectChanged;
-            Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
-            EditorApplication.delayCall -= ApplyQueuedEditorPreview;
-            previewApplyQueued = false;
-        }
-
         /// <summary>
-        /// 인스펙터 값이 바뀌면 프리뷰 대상 UIManager 참조를 먼저 맞추고 자동 프리뷰를 예약한다.
+        /// 인스펙터 값이 바뀌면 프리뷰 대상 UIManager 참조만 맞춘다.
         /// </summary>
         private void OnValidate()
         {
@@ -88,7 +65,6 @@ namespace UI.Controllers
             }
 
             SyncUiManagerReference();
-            QueueEditorPreviewApply();
         }
 
         /// <summary>
@@ -117,50 +93,6 @@ namespace UI.Controllers
             {
                 isApplyingPreview = false;
             }
-        }
-
-        private void QueueEditorPreviewApply()
-        {
-            if (Application.isPlaying
-                || isApplyingPreview
-                || previewApplyQueued
-                || !autoApplyEditorPreview
-                || gameObject == null
-                || !gameObject.scene.IsValid())
-            {
-                return;
-            }
-
-            previewApplyQueued = true;
-            EditorApplication.delayCall += ApplyQueuedEditorPreview;
-        }
-
-        private void HandleEditorHierarchyChanged()
-        {
-            QueueEditorPreviewApply();
-        }
-
-        private void HandleEditorProjectChanged()
-        {
-            QueueEditorPreviewApply();
-        }
-
-        private void HandleUndoRedoPerformed()
-        {
-            QueueEditorPreviewApply();
-        }
-
-        private void ApplyQueuedEditorPreview()
-        {
-            EditorApplication.delayCall -= ApplyQueuedEditorPreview;
-            previewApplyQueued = false;
-
-            if (this == null || Application.isPlaying || !isActiveAndEnabled)
-            {
-                return;
-            }
-
-            ApplyEditorPreviewInEditor();
         }
 
         /// <summary>

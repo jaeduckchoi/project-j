@@ -41,10 +41,10 @@ namespace UI
             SetNamedObjectActive("ActionCaption", false);
             SetHubCoinBadgeVisualState(isHubScene);
 
-            ApplyRectLayout(goldText != null ? goldText.rectTransform : null, PrototypeUILayout.EconomyText(isHubScene));
-            ApplyRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, PrototypeUILayout.PromptText(isHubScene));
-            ApplyRectLayout(guideText != null ? guideText.rectTransform : null, PrototypeUILayout.GuideText(isHubScene));
-            ApplyRectLayout(resultText != null ? resultText.rectTransform : null, PrototypeUILayout.ResultText(isHubScene));
+            ApplyManagedRectLayout(goldText != null ? goldText.rectTransform : null, PrototypeUILayout.EconomyText(isHubScene), preserveExistingLayout: true);
+            ApplyManagedRectLayout(interactionPromptText != null ? interactionPromptText.rectTransform : null, PrototypeUILayout.PromptText(isHubScene), preserveExistingLayout: true);
+            ApplyManagedRectLayout(guideText != null ? guideText.rectTransform : null, PrototypeUILayout.GuideText(isHubScene), preserveExistingLayout: true);
+            ApplyManagedRectLayout(resultText != null ? resultText.rectTransform : null, PrototypeUILayout.ResultText(isHubScene), preserveExistingLayout: true);
             ApplyScreenTextStyle(
                 goldText,
                 headingFont,
@@ -108,10 +108,10 @@ namespace UI
             NormalizeHubPopupHierarchyOrder();
             EnsurePopupBodyItemBoxes(bodyFont, textColor);
 
-            ApplyRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupFrameText);
-            ApplyRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
-            ApplyRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
-            ApplyRectLayout(upgradeText != null ? upgradeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText);
+            ApplyManagedRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupFrameText, preserveExistingLayout: true);
+            ApplyManagedRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText, preserveExistingLayout: true);
+            ApplyManagedRectLayout(selectedRecipeText != null ? selectedRecipeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText, preserveExistingLayout: true);
+            ApplyManagedRectLayout(upgradeText != null ? upgradeText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText, preserveExistingLayout: true);
 
             ApplyPopupInventoryTextStyle(inventoryText, bodyFont, textColor);
             ApplyPopupDetailTextStyle(storageText, bodyFont, textColor);
@@ -232,7 +232,7 @@ namespace UI
 
         private void NormalizeHubPopupHierarchyOrder()
         {
-            if (transform == null)
+            if (transform == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout: true))
             {
                 return;
             }
@@ -332,7 +332,7 @@ namespace UI
                 rect = boxObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(rect, layout);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
 
             Image image = boxObject.GetComponent<Image>();
             if (image == null)
@@ -402,14 +402,15 @@ namespace UI
                 rect = iconObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(
+            ApplyManagedRectLayout(
                 rect,
                 new PrototypeUIRect(
                     new Vector2(0f, 0.5f),
                     new Vector2(0f, 0.5f),
                     new Vector2(0.5f, 0.5f),
                     new Vector2(40f, 0f),
-                    new Vector2(44f, 44f)));
+                    new Vector2(44f, 44f)),
+                preserveExistingLayout: existing != null);
 
             Image image = iconObject.GetComponent<Image>();
             if (image == null)
@@ -445,14 +446,15 @@ namespace UI
                 rect = textObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(
+            ApplyManagedRectLayout(
                 rect,
                 new PrototypeUIRect(
                     Vector2.zero,
                     Vector2.one,
                     new Vector2(0.5f, 0.5f),
                     new Vector2(30f, 0f),
-                    new Vector2(-88f, -20f)));
+                    new Vector2(-88f, -20f)),
+                preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -594,7 +596,7 @@ namespace UI
             }
 
             RectTransform rect = button.GetComponent<RectTransform>();
-            ApplyRectLayout(rect, layout);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: true);
             ApplyButtonPresentation(button, headingFont, accentColor);
             button.gameObject.SetActive(true);
         }

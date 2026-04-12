@@ -166,12 +166,8 @@ namespace UI
                 rect = backdropObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = resolvedLayout.AnchorMin;
-            rect.anchorMax = resolvedLayout.AnchorMax;
-            rect.pivot = resolvedLayout.Pivot;
-            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
-            rect.sizeDelta = resolvedLayout.SizeDelta;
-            rect.SetSiblingIndex(0);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, 0, preserveExistingLayout: existing != null);
 
             Image image = backdropObject.GetComponent<Image>();
             if (image == null)
@@ -261,12 +257,8 @@ namespace UI
                 rect = accentObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = resolvedLayout.AnchorMin;
-            rect.anchorMax = resolvedLayout.AnchorMax;
-            rect.pivot = resolvedLayout.Pivot;
-            rect.anchoredPosition = resolvedLayout.AnchoredPosition;
-            rect.sizeDelta = resolvedLayout.SizeDelta;
-            rect.SetSiblingIndex(1);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, 1, preserveExistingLayout: existing != null);
 
             Image image = accentObject.GetComponent<Image>();
             if (image == null)
@@ -344,15 +336,8 @@ namespace UI
                 rect = captionObject.AddComponent<RectTransform>();
             }
 
-            if (!preserveExistingPopupHeading)
-            {
-                rect.anchorMin = resolvedLayout.AnchorMin;
-                rect.anchorMax = resolvedLayout.AnchorMax;
-                rect.pivot = resolvedLayout.Pivot;
-                rect.anchoredPosition = resolvedLayout.AnchoredPosition;
-                rect.sizeDelta = resolvedLayout.SizeDelta;
-                rect.SetSiblingIndex(2);
-            }
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null || preserveExistingPopupHeading);
+            SetManagedSiblingIndex(rect, 2, preserveExistingLayout: existing != null || preserveExistingPopupHeading);
 
             TextMeshProUGUI text = existingText;
             if (text == null)
@@ -433,7 +418,7 @@ namespace UI
                 rect = textObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(rect, layout);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -475,7 +460,7 @@ namespace UI
                 rect = buttonObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(rect, layout);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
 
             Image image = buttonObject.GetComponent<Image>();
             if (image == null)
@@ -558,12 +543,15 @@ namespace UI
                 rect = textObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = new Vector2(0.5f, 0f);
-            rect.anchorMax = new Vector2(0.5f, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(920f, 60f);
-            rect.SetAsLastSibling();
+            ApplyManagedRectLayout(
+                rect,
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                Vector2.zero,
+                new Vector2(920f, 60f),
+                preserveExistingLayout: existing != null);
+            SetManagedAsLastSibling(rect, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -612,12 +600,8 @@ namespace UI
             }
 
             PrototypeUIRect layout = PrototypeUILayout.EconomyText(IsHubScene());
-            rect.anchorMin = layout.AnchorMin;
-            rect.anchorMax = layout.AnchorMax;
-            rect.pivot = layout.Pivot;
-            rect.anchoredPosition = layout.AnchoredPosition;
-            rect.sizeDelta = layout.SizeDelta;
-            rect.SetAsLastSibling();
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
+            SetManagedAsLastSibling(rect, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -672,13 +656,17 @@ namespace UI
                 rect = fillObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.offsetMin = new Vector2(4f, 3f);
-            rect.offsetMax = new Vector2(-4f, -3f);
-            rect.SetSiblingIndex(0);
+            if (!ShouldPreserveExistingEditorLayout(preserveExistingLayout: existing != null))
+            {
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.offsetMin = new Vector2(4f, 3f);
+                rect.offsetMax = new Vector2(-4f, -3f);
+            }
+
+            SetManagedSiblingIndex(rect, 0, preserveExistingLayout: existing != null);
 
             Image image = fillObject.GetComponent<Image>();
             if (image == null)
@@ -705,12 +693,15 @@ namespace UI
                 rect = iconObject.AddComponent<RectTransform>();
             }
 
-            rect.anchorMin = new Vector2(0f, 0.5f);
-            rect.anchorMax = new Vector2(0f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(18f, 0f);
-            rect.sizeDelta = new Vector2(18f, 18f);
-            rect.SetAsLastSibling();
+            ApplyManagedRectLayout(
+                rect,
+                new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(18f, 0f),
+                new Vector2(18f, 18f),
+                preserveExistingLayout: existing != null);
+            SetManagedAsLastSibling(rect, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI iconText = iconObject.GetComponent<TextMeshProUGUI>();
             if (iconText != null)
@@ -844,8 +835,8 @@ namespace UI
                 rect = buttonObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(rect, PrototypeUILayout.HubPopupCloseButton);
-            rect.SetAsLastSibling();
+            ApplyManagedRectLayout(rect, PrototypeUILayout.HubPopupCloseButton, preserveExistingLayout: existing != null);
+            SetManagedAsLastSibling(rect, preserveExistingLayout: existing != null);
 
             Image image = buttonObject.GetComponent<Image>();
             if (image == null)
@@ -915,8 +906,8 @@ namespace UI
                 rect = buttonObject.AddComponent<RectTransform>();
             }
 
-            ApplyRectLayout(rect, PrototypeUILayout.GuideHelpButton(isHubScene));
-            rect.SetAsLastSibling();
+            ApplyManagedRectLayout(rect, PrototypeUILayout.GuideHelpButton(isHubScene), preserveExistingLayout: existing != null);
+            SetManagedAsLastSibling(rect, preserveExistingLayout: existing != null);
 
             Image image = buttonObject.GetComponent<Image>();
             if (image == null)
@@ -945,6 +936,64 @@ namespace UI
         /// <summary>
         /// 텍스트나 버튼의 위치와 크기를 지정된 값으로 다시 맞춥니다.
         /// </summary>
+        private bool ShouldPreserveExistingEditorLayout(bool preserveExistingLayout)
+        {
+#if UNITY_EDITOR
+            return !Application.isPlaying
+                   && preserveExistingEditorLayoutDuringPreview
+                   && preserveExistingLayout;
+#else
+            return false;
+#endif
+        }
+
+        private void ApplyManagedRectLayout(RectTransform rect, PrototypeUIRect layout, bool preserveExistingLayout)
+        {
+            if (rect == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            {
+                return;
+            }
+
+            ApplyRectLayout(rect, layout);
+        }
+
+        private void ApplyManagedRectLayout(
+            RectTransform rect,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Vector2 pivot,
+            Vector2 anchoredPosition,
+            Vector2 sizeDelta,
+            bool preserveExistingLayout)
+        {
+            if (rect == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            {
+                return;
+            }
+
+            ApplyRectLayout(rect, anchorMin, anchorMax, pivot, anchoredPosition, sizeDelta);
+        }
+
+        private void SetManagedSiblingIndex(Transform target, int siblingIndex, bool preserveExistingLayout)
+        {
+            if (target == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            {
+                return;
+            }
+
+            target.SetSiblingIndex(ClampSiblingIndex(target.parent, siblingIndex));
+        }
+
+        private void SetManagedAsLastSibling(Transform target, bool preserveExistingLayout)
+        {
+            if (target == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            {
+                return;
+            }
+
+            target.SetAsLastSibling();
+        }
+
         private static void ApplyRectLayout(RectTransform rect, PrototypeUIRect layout)
         {
             if (rect == null)
@@ -1124,7 +1173,7 @@ namespace UI
         /// <summary>
         /// 버튼 RectTransform을 조정해 허브 하단과 우측 액션 영역 배치를 맞춥니다.
         /// </summary>
-        private static void ApplyButtonLayout(Button button, PrototypeUIRect layout)
+        private void ApplyButtonLayout(Button button, PrototypeUIRect layout)
         {
             if (button == null)
             {
@@ -1132,8 +1181,7 @@ namespace UI
             }
 
             RectTransform rect = button.GetComponent<RectTransform>();
-            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(button.name, layout);
-            ApplyRectLayout(rect, resolvedLayout);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: true);
         }
 
         /// <summary>
