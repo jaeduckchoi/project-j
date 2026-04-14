@@ -62,6 +62,8 @@
 
 - Unity API 연동의 외부 정본은 `D:\project-j-api\docs\rules\API.md`, 관련 controller/dto, `src/main/resources/db/migration/V2__seed_catalog.sql`
 - Unity 쪽 구현 정본은 `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`와 `Assets/Scripts/CoreLoop/Core/GameManager.cs`
+- Unity DTO는 API envelope의 `timestamp`, validation `error.fieldErrors[]`, bootstrap `tools.defaultUnlocked`, `portalRules.requiredUpgradeCode`, `upgrades.name/goldCost/prerequisiteUpgradeCode/resourceCosts`, snapshot `purchasedUpgradeCodes/availableUpgrades`를 수용해야 합니다.
+- Unity가 API로 직접 보내는 자원 코드는 서버 seed 정본인 `Fish`, `Shell`, `Seaweed`, `Herb`, `Mushroom`, `GlowMoss`, `WindHerb` 형식을 사용하고, generated GameData가 없을 때의 메모리 fallback도 같은 canonical code를 유지합니다.
 
 ## 정본이 아닌 것
 
