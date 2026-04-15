@@ -8,6 +8,7 @@
 ## 함께 수정할 항목
 
 - 그룹 이름 변경: `PrototypeSceneHierarchyOrganizer`, 관련 씬 문서, 필요 시 런타임 참조 코드
+- CameraBounds authored 경계 정리: `PrototypeSceneHierarchyOrganizer`는 `CameraBounds`의 부모/순서만 맞추고, 위치와 크기는 씬 직렬화 정본을 유지합니다.
 - Canvas 루트 변경: `UI_GROUPING_RULES.md`, `UIManager`, `PrototypeUISceneLayoutCatalog`, `PrototypeUISceneLayoutSettings`
 - 허브/월드 구조 변경: 관련 `Exploration/World` 코드와 씬 직렬화
 

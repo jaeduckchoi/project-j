@@ -15,6 +15,7 @@
 
 - `Assets/Scenes` 아래 실제 씬 직렬화 값이 월드 구조의 정본입니다.
 - 런타임 보강 코드는 누락된 오브젝트, 컴포넌트, 참조만 보충해야 합니다.
+- `SceneWorldRoot`는 월드 계층 정리용 루트이고, MainCamera의 하드 경계 정본은 `WorldBoundsRoot/CameraBounds`입니다.
 - `Assets/Scripts/Exploration/World/HubRoomLayout.cs` 는 허브의 32x18 논리 타일 계약과 1타일 = 1유닛 기준을 담고, 최종 배치 정본은 여전히 `Assets/Scenes/Hub.unity` 직렬화 값입니다.
 - 허브의 `Back Counter`, `Front Counter`, `Mosaic Tile Floor`, `Mosaic Tile Wall` 는 `Design/Object/Main Hub/*` 32px 소스 아트를 기준으로 하며, 현재는 `Assets/Scenes/Hub.unity` 의 `scale 3.125` 직렬화 값으로 월드 타일 크기를 맞춥니다.
 

@@ -1,0 +1,21 @@
+{
+    "name": "Jonggu.Gameplay.EditModeTests",
+    "rootNamespace": "",
+    "references": [
+        "Jonggu.Gameplay"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -21,6 +21,7 @@ namespace Exploration.Camera
         private Vector3 velocity;
         private Collider2D boundsOverride;
         private float defaultOrthographicSize;
+        private float requestedOrthographicSize;
         private bool initialSnapPending = true;
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace Exploration.Camera
             if (targetCamera != null)
             {
                 defaultOrthographicSize = targetCamera.orthographicSize;
+                requestedOrthographicSize = defaultOrthographicSize;
             }
         }
 
@@ -131,7 +133,8 @@ namespace Exploration.Camera
                 return;
             }
 
-            targetCamera.orthographicSize = Mathf.Max(0.1f, orthographicSize);
+            requestedOrthographicSize = Mathf.Max(0.1f, orthographicSize);
+            targetCamera.orthographicSize = requestedOrthographicSize;
 
             if (snapImmediately)
             {
@@ -149,7 +152,8 @@ namespace Exploration.Camera
                 return;
             }
 
-            targetCamera.orthographicSize = defaultOrthographicSize;
+            requestedOrthographicSize = defaultOrthographicSize;
+            targetCamera.orthographicSize = requestedOrthographicSize;
 
             if (snapImmediately)
             {
@@ -169,7 +173,8 @@ namespace Exploration.Camera
                 return;
             }
 
-            targetCamera.orthographicSize = defaultOrthographicSize;
+            requestedOrthographicSize = defaultOrthographicSize;
+            targetCamera.orthographicSize = requestedOrthographicSize;
 
             if (snapImmediately)
             {
@@ -198,10 +203,11 @@ namespace Exploration.Camera
         {
             if (!TryGetEffectiveBounds(out Bounds bounds) || targetCamera == null || !targetCamera.orthographic)
             {
+                RestoreRequestedOrthographicSizeIfNeeded();
                 return cameraPosition;
             }
 
-            float verticalExtent = targetCamera.orthographicSize;
+            float verticalExtent = ResolveEffectiveOrthographicSize(bounds);
             float horizontalExtent = verticalExtent * targetCamera.aspect;
             float minX = bounds.min.x + horizontalExtent;
             float maxX = bounds.max.x - horizontalExtent;
@@ -214,7 +220,7 @@ namespace Exploration.Camera
         }
 
         /// <summary>
-        /// 기본 CameraBounds를 바깥 경계로 유지하면서, 방 override가 있으면 두 영역의 교집합만 유효 bounds로 사용한다.
+        /// 기본 CameraBounds를 정본으로 유지하면서, 방 override가 있으면 두 영역의 교집합만 유효 bounds로 사용한다.
         /// </summary>
         private bool TryGetEffectiveBounds(out Bounds effectiveBounds)
         {
@@ -237,14 +243,70 @@ namespace Exploration.Camera
             }
 
             Bounds overrideBounds = boundsOverride.bounds;
-            if (!effectiveBounds.Intersects(overrideBounds))
+            if (TryIntersectBounds(effectiveBounds, overrideBounds, out Bounds intersectionBounds))
             {
-                return true;
+                effectiveBounds = intersectionBounds;
             }
 
-            Vector3 intersectionMin = Vector3.Max(effectiveBounds.min, overrideBounds.min);
-            Vector3 intersectionMax = Vector3.Min(effectiveBounds.max, overrideBounds.max);
-            effectiveBounds.SetMinMax(intersectionMin, intersectionMax);
+            return true;
+        }
+
+        /// <summary>
+        /// 현재 bounds와 화면 비율 안에서 실제 카메라 size를 조정한다.
+        /// </summary>
+        private float ResolveEffectiveOrthographicSize(Bounds bounds)
+        {
+            if (targetCamera == null)
+            {
+                return 0.1f;
+            }
+
+            float aspect = Mathf.Max(0.0001f, targetCamera.aspect);
+            float requestedSize = Mathf.Max(0.1f, requestedOrthographicSize > 0f ? requestedOrthographicSize : targetCamera.orthographicSize);
+            float maxSizeByHeight = Mathf.Max(0.1f, bounds.extents.y);
+            float maxSizeByWidth = Mathf.Max(0.1f, bounds.extents.x / aspect);
+            float effectiveSize = Mathf.Min(requestedSize, maxSizeByHeight, maxSizeByWidth);
+
+            if (!Mathf.Approximately(targetCamera.orthographicSize, effectiveSize))
+            {
+                targetCamera.orthographicSize = effectiveSize;
+            }
+
+            return effectiveSize;
+        }
+
+        /// <summary>
+        /// 유효 bounds 제약이 없을 때는 요청된 기본/override size로 카메라를 되돌린다.
+        /// </summary>
+        private void RestoreRequestedOrthographicSizeIfNeeded()
+        {
+            if (targetCamera == null)
+            {
+                return;
+            }
+
+            float requestedSize = Mathf.Max(0.1f, requestedOrthographicSize > 0f ? requestedOrthographicSize : targetCamera.orthographicSize);
+            if (!Mathf.Approximately(targetCamera.orthographicSize, requestedSize))
+            {
+                targetCamera.orthographicSize = requestedSize;
+            }
+        }
+
+        /// <summary>
+        /// 두 bounds의 교집합이 있으면 반환한다.
+        /// </summary>
+        private static bool TryIntersectBounds(Bounds currentBounds, Bounds nextBounds, out Bounds intersectionBounds)
+        {
+            if (!currentBounds.Intersects(nextBounds))
+            {
+                intersectionBounds = default;
+                return false;
+            }
+
+            Vector3 intersectionMin = Vector3.Max(currentBounds.min, nextBounds.min);
+            Vector3 intersectionMax = Vector3.Min(currentBounds.max, nextBounds.max);
+            intersectionBounds = new Bounds();
+            intersectionBounds.SetMinMax(intersectionMin, intersectionMax);
             return true;
         }
 

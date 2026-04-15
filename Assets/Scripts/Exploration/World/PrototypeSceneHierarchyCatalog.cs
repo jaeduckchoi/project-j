@@ -66,7 +66,7 @@ namespace Exploration.World
         {
             new("Canvas", string.Empty, 3),
             new("GameManager", SceneSystemRootName, 0),
-            new("Main Camera", SceneSystemRootName, 2),
+            new("MainCamera", SceneSystemRootName, 2),
             new("EventSystem", SceneSystemRootName, 3),
             new("CameraBounds", WorldBoundsRootName, 0),
             new("Jonggu", PlayerRootName, 0)
@@ -92,6 +92,11 @@ namespace Exploration.World
 
         private static readonly PrototypeSceneHierarchyEntry[] BeachGroupEntries =
         {
+            new("BeachTilemapRoot", WorldVisualRootName, 0),
+            new("BeachDecorRoot", WorldVisualRootName, 1),
+            new("BeachBoatRoot", "BeachDecorRoot", 0),
+            new("BeachLandmarkRoot", "BeachDecorRoot", 1),
+            new("BeachTreeRoot", "BeachDecorRoot", 2),
             new(ResourceRootName, SceneGameplayRootName, 3),
             new(InteractionRootName, SceneGameplayRootName, 4)
         };
@@ -103,6 +108,18 @@ namespace Exploration.World
             new("BottomWall", WorldBoundsRootName, 3),
             new("LeftWall", WorldBoundsRootName, 4),
             new("RightWall", WorldBoundsRootName, 5),
+            new("BeachBaseTilemap", "BeachTilemapRoot", 0),
+            new("BeachDockTilemap", "BeachTilemapRoot", 1),
+            new("BeachBoat01", "BeachBoatRoot", 0),
+            new("BeachBoat02", "BeachBoatRoot", 1),
+            new("BeachBoat03", "BeachBoatRoot", 2),
+            new("BeachBoat04", "BeachBoatRoot", 3),
+            new("BeachPassengerShip", "BeachBoatRoot", 4),
+            new("BeachLighthouse", "BeachLandmarkRoot", 0),
+            new("BeachTree01", "BeachTreeRoot", 0),
+            new("BeachTree02", "BeachTreeRoot", 1),
+            new("BeachTree03", "BeachTreeRoot", 2),
+            new("BeachTree04", "BeachTreeRoot", 3),
             new("BeachEntry", SpawnRootName, 0),
             new("ReturnToHub", PortalRootName, 0),
             new("BoatInteraction", InteractionRootName, 0),
