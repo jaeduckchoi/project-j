@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -130,6 +131,52 @@ namespace UI.Layout
             return true;
         }
 
+        public static bool TrySaveCanvasLayoutsFromRoot(RectTransform canvasRoot, bool isHubScene, string assetPath, out string message)
+        {
+            if (!TryCaptureCanvasOverridesFromRoot(canvasRoot, out CapturedCanvasOverrides captured, out message))
+            {
+                return false;
+            }
+
+            PrototypeUISceneLayoutSettings settings = LoadOrCreateSettingsAsset(assetPath);
+            Undo.RecordObject(settings, "Save Draft Canvas UI Layouts");
+            settings.ReplaceLayouts(ConvertToLayoutEntries(captured.Layouts));
+            settings.ReplaceImages(ConvertToImageEntries(captured.Images));
+            settings.ReplaceTexts(ConvertToTextEntries(captured.Texts));
+            settings.ReplaceButtons(ConvertToButtonEntries(captured.Buttons));
+            settings.ReplaceHierarchies(ConvertToHierarchyEntries(captured.Hierarchies));
+            settings.ReplaceRemovedObjects(BuildRemovedObjectNameList(isHubScene, captured.Hierarchies.Keys, captured.Names));
+            settings.ReplaceNames(ConvertToNameEntries(captured.Names));
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+
+            message = BuildCanvasCaptureSummary(captured, "드래프트 자산에 저장했습니다.");
+            return true;
+        }
+
+        public static bool TryOverlayCanvasLayoutsFromRoot(RectTransform canvasRoot, bool isHubScene, out string message)
+        {
+            if (!TryCaptureCanvasOverridesFromRoot(canvasRoot, out CapturedCanvasOverrides captured, out message))
+            {
+                return false;
+            }
+
+            PrototypeUISceneLayoutSettings settings = LoadOrCreateSettingsAsset();
+            Undo.RecordObject(settings, "Overlay Draft Canvas UI Layouts");
+            settings.UpsertLayouts(ConvertToLayoutEntries(captured.Layouts));
+            settings.UpsertImages(ConvertToImageEntries(captured.Images));
+            settings.UpsertTexts(ConvertToTextEntries(captured.Texts));
+            settings.UpsertButtons(ConvertToButtonEntries(captured.Buttons));
+            settings.UpsertHierarchies(ConvertToHierarchyEntries(captured.Hierarchies));
+            settings.SyncRemovedObjects(GetManagedCanvasObjectNames(isHubScene, captured.Names), captured.Hierarchies.Keys);
+            settings.UpsertNames(ConvertToNameEntries(captured.Names));
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+
+            message = BuildCanvasCaptureSummary(captured, "드래프트 기준으로 공용 자산에 반영했습니다.");
+            return true;
+        }
+
         public static bool TrySyncHudOverridesFromScene(Scene scene, out string message)
         {
             if (!scene.IsValid() || !scene.isLoaded)
@@ -246,6 +293,56 @@ namespace UI.Layout
             return true;
         }
 
+        private static bool TryCaptureCanvasOverridesFromRoot(RectTransform canvasRoot, out CapturedCanvasOverrides captured, out string message)
+        {
+            captured = null;
+            if (canvasRoot == null)
+            {
+                message = "저장할 드래프트 Canvas가 없습니다.";
+                return false;
+            }
+
+            captured = new CapturedCanvasOverrides();
+            CaptureCanvasOverridesFromRoot(
+                canvasRoot,
+                captured.Layouts,
+                captured.Images,
+                captured.Texts,
+                captured.Buttons,
+                captured.Hierarchies,
+                captured.Names,
+                captured.DuplicateNames);
+            NormalizeRootHierarchyParents(canvasRoot.name, captured.Hierarchies);
+
+            if (!captured.HasEntries)
+            {
+                message = "드래프트 Canvas에서 저장할 Canvas UI 값을 찾지 못했습니다.";
+                return false;
+            }
+
+            message = null;
+            return true;
+        }
+
+        private static void NormalizeRootHierarchyParents(string canvasRootName, IDictionary<string, PrototypeUISceneHierarchyEntry> hierarchyMap)
+        {
+            if (string.IsNullOrWhiteSpace(canvasRootName) || hierarchyMap == null || hierarchyMap.Count == 0)
+            {
+                return;
+            }
+
+            List<string> objectNames = new(hierarchyMap.Keys);
+            for (int index = 0; index < objectNames.Count; index++)
+            {
+                string objectName = objectNames[index];
+                PrototypeUISceneHierarchyEntry entry = hierarchyMap[objectName];
+                if (string.Equals(entry.ParentName, canvasRootName, StringComparison.Ordinal))
+                {
+                    hierarchyMap[objectName] = new PrototypeUISceneHierarchyEntry(entry.ObjectName, "Canvas", entry.SiblingIndex);
+                }
+            }
+        }
+
         private static string BuildCanvasCaptureSummary(CapturedCanvasOverrides captured, string actionSuffix)
         {
             return $"Canvas UI 레이아웃 {captured.Layouts.Count}건, Image {captured.Images.Count}건, TMP {captured.Texts.Count}건, Button {captured.Buttons.Count}건을 {actionSuffix}";
@@ -286,26 +383,59 @@ namespace UI.Layout
 
         private static PrototypeUISceneLayoutSettings LoadOrCreateSettingsAsset()
         {
-            PrototypeUISceneLayoutSettings settings = AssetDatabase.LoadAssetAtPath<PrototypeUISceneLayoutSettings>(PrototypeUISceneLayoutSettings.AssetPath);
+            return LoadOrCreateSettingsAsset(PrototypeUISceneLayoutSettings.AssetPath);
+        }
+
+        private static PrototypeUISceneLayoutSettings LoadOrCreateSettingsAsset(string assetPath)
+        {
+            string normalizedAssetPath = string.IsNullOrWhiteSpace(assetPath)
+                ? PrototypeUISceneLayoutSettings.AssetPath
+                : assetPath.Replace('\\', '/');
+            PrototypeUISceneLayoutSettings settings = AssetDatabase.LoadAssetAtPath<PrototypeUISceneLayoutSettings>(normalizedAssetPath);
             if (settings != null)
             {
                 return settings;
             }
 
-            EnsureFolder("Assets/Resources", "Generated");
+            string directoryPath = Path.GetDirectoryName(normalizedAssetPath)?.Replace('\\', '/');
+            EnsureFolderPath(directoryPath);
 
             settings = ScriptableObject.CreateInstance<PrototypeUISceneLayoutSettings>();
-            AssetDatabase.CreateAsset(settings, PrototypeUISceneLayoutSettings.AssetPath);
+            AssetDatabase.CreateAsset(settings, normalizedAssetPath);
             AssetDatabase.SaveAssets();
             return settings;
         }
 
-        private static void EnsureFolder(string parentPath, string folderName)
+        private static void EnsureFolderPath(string folderPath)
         {
-            string childPath = parentPath + "/" + folderName;
-            if (!AssetDatabase.IsValidFolder(childPath))
+            if (string.IsNullOrWhiteSpace(folderPath))
             {
-                AssetDatabase.CreateFolder(parentPath, folderName);
+                return;
+            }
+
+            string normalizedFolderPath = folderPath.Replace('\\', '/');
+            string[] segments = normalizedFolderPath.Split('/');
+            if (segments.Length == 0)
+            {
+                return;
+            }
+
+            string currentPath = segments[0];
+            for (int index = 1; index < segments.Length; index++)
+            {
+                string folderName = segments[index];
+                if (string.IsNullOrWhiteSpace(folderName))
+                {
+                    continue;
+                }
+
+                string childPath = currentPath + "/" + folderName;
+                if (!AssetDatabase.IsValidFolder(childPath))
+                {
+                    AssetDatabase.CreateFolder(currentPath, folderName);
+                }
+
+                currentPath = childPath;
             }
         }
     }

@@ -12,19 +12,19 @@ namespace UI.Style
             switch (objectName)
             {
                 case "PopupFrame":
-                    spriteSpec = BuildGeneratedUiPanelSpec("dark-thin-outline-panel");
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark_thin_outline_panel");
                     return true;
                 case "PopupFrameLeft":
                 case "PopupLeftPanel":
-                    spriteSpec = BuildGeneratedUiPanelSpec("dark-outline-panel");
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark_outline_panel");
                     return true;
                 case "PopupFrameRight":
                 case "PopupRightPanel":
-                    spriteSpec = BuildGeneratedUiPanelSpec("dark-outline-panel-alt");
+                    spriteSpec = BuildGeneratedUiPanelSpec("dark_outline_panel_alt");
                     return true;
                 case "PopupLeftBody":
                 case "PopupRightBody":
-                    spriteSpec = BuildGeneratedUiMessageBoxSpec("system-text-box");
+                    spriteSpec = BuildGeneratedUiMessageBoxSpec("system_text_box");
                     return true;
             }
 
@@ -32,7 +32,7 @@ namespace UI.Style
                 && (objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
                     || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)))
             {
-                spriteSpec = BuildGeneratedUiPanelSpec("light-solid-panel");
+                spriteSpec = BuildGeneratedUiPanelSpec("light_solid_panel");
                 return true;
             }
 
@@ -45,7 +45,7 @@ namespace UI.Style
             if (!string.IsNullOrWhiteSpace(objectName)
                 && objectName.IndexOf("Close", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                spriteSpec = BuildGeneratedUiButtonSpec("close-button");
+                spriteSpec = BuildGeneratedUiButtonSpec("close_button");
                 return true;
             }
 
