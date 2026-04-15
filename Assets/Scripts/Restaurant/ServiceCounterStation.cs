@@ -1,5 +1,6 @@
 using CoreLoop.Core;
 using Exploration.Interaction;
+using Restaurant.Kitchen;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -19,6 +20,11 @@ namespace Restaurant
         {
             get
             {
+                if (RestaurantFlowController.TryGetLegacyPrompt(gameObject, promptLabel, out string kitchenPrompt))
+                {
+                    return kitchenPrompt;
+                }
+
                 if (restaurantManager == null)
                 {
                     return "영업대를 준비 중입니다";
@@ -45,6 +51,11 @@ namespace Restaurant
         /// </summary>
         private void Awake()
         {
+            if (Application.isPlaying)
+            {
+                RestaurantFlowController.GetOrCreate();
+            }
+
             if (restaurantManager == null)
             {
                 restaurantManager = FindFirstObjectByType<RestaurantManager>();
@@ -56,6 +67,11 @@ namespace Restaurant
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
+            if (RestaurantFlowController.IsLegacyKitchenStation(gameObject, promptLabel))
+            {
+                return true;
+            }
+
             return restaurantManager != null;
         }
 
@@ -64,18 +80,13 @@ namespace Restaurant
         /// </summary>
         public void Interact(GameObject interactor)
         {
-            if (restaurantManager == null)
+            if (RestaurantFlowController.TryHandleLegacyInteract(gameObject, promptLabel, interactor))
             {
                 return;
             }
 
-            if (GameManager.Instance != null
-                && GameManager.Instance.RemoteSession != null
-                && GameManager.Instance.RemoteSession.TryRunService(restaurantManager))
+            if (restaurantManager == null)
             {
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
-                    "first_service_start",
-                    "영업 결과는 하단 안내와 요리 패널에서 바로 확인할 수 있습니다.");
                 return;
             }
 

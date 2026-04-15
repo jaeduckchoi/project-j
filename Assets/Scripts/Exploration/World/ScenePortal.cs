@@ -81,13 +81,6 @@ namespace Exploration.World
                 return;
             }
 
-            if (GameManager.Instance != null
-                && GameManager.Instance.RemoteSession != null
-                && GameManager.Instance.RemoteSession.TryTravel(this))
-            {
-                return;
-            }
-
             GameManager.Instance?.LoadScene(targetSceneName, targetSpawnPointId);
         }
 

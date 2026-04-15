@@ -96,16 +96,5 @@ namespace Management.Economy
             ReputationChanged?.Invoke(CurrentReputation);
         }
 
-        /// <summary>
-        /// 원격 스냅샷 기준으로 골드와 평판을 즉시 동기화한다.
-        /// </summary>
-        public void ApplyRemoteState(int gold, int reputation)
-        {
-            initialized = true;
-            CurrentGold = Mathf.Max(0, gold);
-            CurrentReputation = reputation;
-            GoldChanged?.Invoke(CurrentGold);
-            ReputationChanged?.Invoke(CurrentReputation);
-        }
     }
 }

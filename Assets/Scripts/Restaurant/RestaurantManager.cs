@@ -12,7 +12,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace Restaurant
 {
     /// <summary>
-    /// 메뉴 선택과 영업 결과를 관리한다. 원격 API가 준비되면 bootstrap 레시피 카탈로그를 우선 사용한다.
+    /// 메뉴 선택과 영업 결과를 관리한다. 씬 참조와 generated 게임 데이터를 기준으로 레시피 목록을 유지한다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RestaurantManager")]
     public class RestaurantManager : MonoBehaviour
@@ -21,8 +21,6 @@ namespace Restaurant
         [SerializeField, Min(1)] private int serviceCapacity = 3;
         [SerializeField] private int selectedRecipeIndex;
 
-        private readonly List<RecipeData> remoteRecipes = new();
-        private bool remoteCatalogApplied;
         private string selectedRecipeId = string.Empty;
 
         public event Action<RecipeData> SelectedRecipeChanged;
@@ -49,98 +47,6 @@ namespace Restaurant
                 EnsureRecipeList();
                 return availableRecipes;
             }
-        }
-
-        /// <summary>
-        /// API bootstrap의 recipes/ingredients 배열을 메뉴 선택 정본으로 반영합니다.
-        /// </summary>
-        public void ApplyRemoteCatalog(
-            IEnumerable<JongguApiRecipeDefinition> recipes,
-            IEnumerable<JongguApiIngredientDefinition> ingredientCatalog = null)
-        {
-            if (recipes == null)
-            {
-                return;
-            }
-
-            Dictionary<string, JongguApiIngredientDefinition> ingredientsById = BuildIngredientCatalog(ingredientCatalog);
-            ClearRemoteRecipes();
-            remoteCatalogApplied = false;
-
-            foreach (JongguApiRecipeDefinition definition in recipes)
-            {
-                if (definition == null || string.IsNullOrWhiteSpace(definition.recipeId))
-                {
-                    continue;
-                }
-
-                RecipeData recipe = ScriptableObject.CreateInstance<RecipeData>();
-                recipe.name = definition.recipeId;
-
-                List<RecipeIngredient> ingredients = new();
-                if (definition.ingredients != null)
-                {
-                    foreach (JongguApiRecipeIngredientDefinition ingredient in definition.ingredients)
-                    {
-                        if (ingredient == null || string.IsNullOrWhiteSpace(ingredient.ingredientId))
-                        {
-                            continue;
-                        }
-
-                        ResourceData resource = GeneratedGameDataLocator.FindGeneratedResource(
-                            ingredient.ingredientName,
-                            ingredient.ingredientId);
-                        RecipeIngredient recipeIngredient = RecipeIngredient.CreateRuntime(
-                            ingredient.ingredientId,
-                            ingredient.ingredientName,
-                            ingredient.quantity,
-                            resource);
-
-                        if (ingredientsById.TryGetValue(ingredient.ingredientId, out JongguApiIngredientDefinition catalogIngredient))
-                        {
-                            recipeIngredient.ConfigureCatalogMetadata(
-                                catalogIngredient.difficulty,
-                                catalogIngredient.supplySource,
-                                catalogIngredient.acquisitionSource,
-                                catalogIngredient.acquisitionMethod,
-                                catalogIngredient.acquisitionTool,
-                                catalogIngredient.buyPrice,
-                                catalogIngredient.sellPrice,
-                                catalogIngredient.memo);
-                        }
-
-                        ingredients.Add(recipeIngredient);
-                    }
-                }
-
-                recipe.ConfigureRuntime(
-                    definition.recipeId,
-                    definition.recipeName,
-                    BuildRemoteRecipeDescription(definition),
-                    definition.price,
-                    0,
-                    definition.supplySource,
-                    definition.difficulty,
-                    definition.cookingMethod,
-                    definition.memo,
-                    ingredients);
-
-                remoteRecipes.Add(recipe);
-            }
-
-            if (remoteRecipes.Count == 0)
-            {
-                EnsureRecipeList();
-                RefreshSelectedRecipe();
-                BroadcastState();
-                return;
-            }
-
-            remoteCatalogApplied = true;
-            availableRecipes.Clear();
-            availableRecipes.AddRange(remoteRecipes);
-            RefreshSelectedRecipe();
-            BroadcastState();
         }
 
         /// <summary>
@@ -334,30 +240,6 @@ namespace Restaurant
         }
 
         /// <summary>
-        /// API 스냅샷 기준으로 선택 메뉴와 영업 가능 인분을 다시 맞춘다.
-        /// </summary>
-        public void ApplyRemoteState(string snapshotSelectedRecipeId, int capacity, string serviceResult = null)
-        {
-            EnsureRecipeList();
-
-            serviceCapacity = Mathf.Max(1, capacity);
-            selectedRecipeId = string.IsNullOrWhiteSpace(snapshotSelectedRecipeId) ? string.Empty : snapshotSelectedRecipeId;
-            SelectedRecipe = FindRecipeById(selectedRecipeId);
-            selectedRecipeIndex = SelectedRecipe != null ? Mathf.Max(availableRecipes.IndexOf(SelectedRecipe), 0) : 0;
-
-            if (!string.IsNullOrWhiteSpace(serviceResult))
-            {
-                LastServiceResult = serviceResult;
-            }
-            else if (SelectedRecipe == null)
-            {
-                LastServiceResult = "메뉴를 고르고 영업을 시작하세요.";
-            }
-
-            BroadcastState();
-        }
-
-        /// <summary>
         /// 현재 인덱스와 레시피 목록을 기준으로 선택 메뉴를 다시 맞춥니다.
         /// </summary>
         private void RefreshSelectedRecipe()
@@ -420,11 +302,6 @@ namespace Restaurant
             availableRecipes ??= new List<RecipeData>();
             availableRecipes.RemoveAll(recipe => recipe == null);
 
-            if (remoteCatalogApplied)
-            {
-                return;
-            }
-
             TryAddDefaultRecipe("SushiSet", "스시 세트");
             TryAddDefaultRecipe("SeafoodSoup", "해물탕");
             TryAddDefaultRecipe("HerbFishSoup", "약초 생선탕");
@@ -463,58 +340,6 @@ namespace Restaurant
             ServiceResultChanged?.Invoke(LastServiceResult);
         }
 
-        private void ClearRemoteRecipes()
-        {
-            availableRecipes ??= new List<RecipeData>();
-
-            foreach (RecipeData recipe in remoteRecipes)
-            {
-                if (recipe == null)
-                {
-                    continue;
-                }
-
-                availableRecipes.Remove(recipe);
-
-                if (Application.isPlaying)
-                {
-                    Destroy(recipe);
-                }
-                else
-                {
-                    DestroyImmediate(recipe);
-                }
-            }
-
-            remoteRecipes.Clear();
-        }
-
-        private static string BuildRemoteRecipeDescription(JongguApiRecipeDefinition definition)
-        {
-            if (definition == null)
-            {
-                return string.Empty;
-            }
-
-            if (!string.IsNullOrWhiteSpace(definition.memo))
-            {
-                return definition.memo;
-            }
-
-            List<string> parts = new();
-            if (!string.IsNullOrWhiteSpace(definition.supplySource))
-            {
-                parts.Add(definition.supplySource);
-            }
-
-            if (!string.IsNullOrWhiteSpace(definition.cookingMethod))
-            {
-                parts.Add(definition.cookingMethod);
-            }
-
-            return parts.Count > 0 ? string.Join(" · ", parts) : string.Empty;
-        }
-
         private static string BuildIngredientRequirementLine(RecipeIngredient ingredient)
         {
             if (ingredient == null)
@@ -538,28 +363,6 @@ namespace Restaurant
                 : 0;
 
             return $"  {displayName} {ownedAmount}/{ingredientAmount}";
-        }
-
-        private static Dictionary<string, JongguApiIngredientDefinition> BuildIngredientCatalog(
-            IEnumerable<JongguApiIngredientDefinition> ingredientCatalog)
-        {
-            Dictionary<string, JongguApiIngredientDefinition> ingredientsById = new(StringComparer.Ordinal);
-            if (ingredientCatalog == null)
-            {
-                return ingredientsById;
-            }
-
-            foreach (JongguApiIngredientDefinition ingredient in ingredientCatalog)
-            {
-                if (ingredient == null || string.IsNullOrWhiteSpace(ingredient.ingredientId))
-                {
-                    continue;
-                }
-
-                ingredientsById[ingredient.ingredientId] = ingredient;
-            }
-
-            return ingredientsById;
         }
 
         /// <summary>

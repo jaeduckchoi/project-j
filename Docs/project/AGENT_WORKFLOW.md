@@ -5,7 +5,7 @@
 1. 루트 엔트리 파일(`AGENTS.md` 또는 `CLAUDE.md`)과 `.aiassistant/rules/README.md`를 읽는다.
 2. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽는다.
 3. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 문서를 찾는다.
-4. 코드, 씬, generated 자산, 인접 API 저장소 상태를 실제로 확인한다.
+4. 코드, 씬, generated 자산 상태를 실제로 확인한다.
 5. 정본 경계를 먼저 결정한 뒤 구현한다.
 6. 문서와 검증까지 같은 변경에서 마무리한다.
 
@@ -43,10 +43,10 @@
 - `PrototypeGeneratedAssetSettings.cs`를 기준으로 경로를 맞춘다.
 - generated 자산 복구를 별도 빌더에 기대하지 않는다.
 
-### Unity API 연동 변경
+### 로컬 데이터와 런타임 상태 변경
 
-- `JongguApiSession`, `GameManager`, 관련 runtime manager
-- `D:\project-j-api`의 API 문서, DTO, controller, seed SQL
+- `GameManager`, `GeneratedGameDataLocator`, 관련 runtime manager
+- 인벤토리, 창고, 경제, 도구, 업그레이드 흐름이 generated GameData와 메모리 fallback 기준에 맞는지 확인한다.
 
 ## 문서와 검증
 

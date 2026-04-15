@@ -169,37 +169,6 @@ namespace Management.Tools
         }
 
         /// <summary>
-        /// 원격 스냅샷이 가진 해금 도구 목록으로 런타임 상태를 교체한다.
-        /// </summary>
-        public void ApplyRemoteState(IEnumerable<ToolType> tools)
-        {
-            initialized = true;
-            unlockedTools.Clear();
-
-            if (tools != null)
-            {
-                foreach (ToolType toolType in tools)
-                {
-                    if (toolType == ToolType.None)
-                    {
-                        continue;
-                    }
-
-                    unlockedTools.Add(toolType);
-                }
-            }
-
-            RefreshRuntimeTools
-            (
-            )
-            ;
-            ToolsChanged
-            ?
-            .
-            Invoke();
-        }
-
-        /// <summary>
         /// UI 표시용 직렬화 목록을 정렬된 상태로 다시 만든다.
         /// </summary>
         private void RefreshRuntimeTools

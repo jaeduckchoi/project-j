@@ -1,0 +1,110 @@
+using System;
+using Exploration.Interaction;
+using UnityEngine;
+
+namespace Restaurant.Kitchen
+{
+    public abstract class BackCounterToolStation : MonoBehaviour, IInteractable
+    {
+        [SerializeField] private KitchenToolType toolType = KitchenToolType.Pot;
+
+        protected KitchenToolType ToolType
+        {
+            get => toolType;
+            set => toolType = value;
+        }
+
+        public string InteractionPrompt => RestaurantFlowController.GetOrCreate().BuildToolPrompt(toolType);
+        public Transform InteractionTransform => transform;
+
+        public bool CanInteract(GameObject interactor)
+        {
+            return RestaurantFlowController.GetOrCreate().CanUseTool(toolType);
+        }
+
+        public void Interact(GameObject interactor)
+        {
+            RestaurantFlowController.GetOrCreate().TryUseTool(toolType, interactor);
+        }
+    }
+
+    public sealed class CuttingBoardStation : BackCounterToolStation
+    {
+        private void Reset()
+        {
+            ToolType = KitchenToolType.CuttingBoard;
+        }
+    }
+
+    public sealed class PotStation : BackCounterToolStation
+    {
+        private void Reset()
+        {
+            ToolType = KitchenToolType.Pot;
+        }
+    }
+
+    public sealed class FryingPanStation : BackCounterToolStation
+    {
+        private void Reset()
+        {
+            ToolType = KitchenToolType.FryingPan;
+        }
+    }
+
+    public sealed class FryerStation : BackCounterToolStation
+    {
+        private void Reset()
+        {
+            ToolType = KitchenToolType.Fryer;
+        }
+    }
+
+    public sealed class RefrigeratorStation : MonoBehaviour, IInteractable
+    {
+        public static event Action PanelRequested;
+
+        public string InteractionPrompt => "[E] Refrigerator";
+        public Transform InteractionTransform => transform;
+
+        public bool CanInteract(GameObject interactor)
+        {
+            return true;
+        }
+
+        public void Interact(GameObject interactor)
+        {
+            RestaurantFlowController.GetOrCreate();
+            PanelRequested?.Invoke();
+        }
+
+        public static void RequestPanel()
+        {
+            PanelRequested?.Invoke();
+        }
+    }
+
+    public sealed class FrontCounterStation : MonoBehaviour, IInteractable
+    {
+        public static event Action PanelRequested;
+
+        public string InteractionPrompt => "[E] FrontCounter";
+        public Transform InteractionTransform => transform;
+
+        public bool CanInteract(GameObject interactor)
+        {
+            return true;
+        }
+
+        public void Interact(GameObject interactor)
+        {
+            RestaurantFlowController.GetOrCreate();
+            PanelRequested?.Invoke();
+        }
+
+        public static void RequestPanel()
+        {
+            PanelRequested?.Invoke();
+        }
+    }
+}

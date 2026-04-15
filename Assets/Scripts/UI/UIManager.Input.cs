@@ -96,16 +96,7 @@ namespace UI
 
             if (ReadPopupActionPressed(KeyCode.W, keyboard => keyboard.wKey))
             {
-                if (GameManager.Instance != null
-                    && GameManager.Instance.RemoteSession != null
-                    && GameManager.Instance.RemoteSession.TryStoreSelected(cachedStorage, inventory))
-                {
-                    changed = true;
-                }
-                else
-                {
-                    changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
-                }
+                changed |= cachedStorage.StoreSelectedFromInventory(inventory) > 0;
             }
 
             if (ReadPopupActionPressed(KeyCode.A, keyboard => keyboard.aKey))
@@ -118,16 +109,7 @@ namespace UI
 
             if (ReadPopupActionPressed(KeyCode.S, keyboard => keyboard.sKey))
             {
-                if (GameManager.Instance != null
-                    && GameManager.Instance.RemoteSession != null
-                    && GameManager.Instance.RemoteSession.TryWithdrawSelected(cachedStorage, inventory))
-                {
-                    changed = true;
-                }
-                else
-                {
-                    changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
-                }
+                changed |= cachedStorage.WithdrawSelectedToInventory(inventory) > 0;
             }
 
             if (changed)

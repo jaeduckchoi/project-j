@@ -46,6 +46,8 @@ namespace UI
             return activeHubPanel switch
             {
                 HubPopupPanel.Storage => BuildStoragePopupContent(),
+                HubPopupPanel.Refrigerator => BuildRefrigeratorPopupContent(),
+                HubPopupPanel.FrontCounter => BuildFrontCounterPopupContent(),
                 HubPopupPanel.Recipe => BuildRecipePopupContent(),
                 HubPopupPanel.Upgrade => BuildUpgradePopupContent(),
                 HubPopupPanel.Materials => BuildMaterialPopupContent(),
@@ -95,13 +97,6 @@ namespace UI
                     {
                         if (cachedRestaurant != null)
                         {
-                            if (GameManager.Instance != null
-                                && GameManager.Instance.RemoteSession != null
-                                && GameManager.Instance.RemoteSession.TrySelectRecipe(cachedRestaurant, recipeIndex))
-                            {
-                                return;
-                            }
-
                             cachedRestaurant.SelectRecipeByIndex(recipeIndex);
                         }
                     }));

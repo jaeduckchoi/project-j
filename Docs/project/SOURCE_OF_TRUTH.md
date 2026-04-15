@@ -58,12 +58,11 @@
 - `Assets/Art/*` authored 스프라이트 import 자동화도 에디터 정본 범위에 포함됩니다.
 - 과거 자동 생성·감사 흐름은 더 이상 정본이 아닙니다.
 
-### 인접 API 계약
+### 로컬 게임 데이터 계약
 
-- Unity API 연동의 외부 정본은 `D:\project-j-api\docs\rules\API.md`, 관련 controller/dto, `src/main/resources/db/migration/V2__seed_catalog.sql`
-- Unity 쪽 구현 정본은 `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`와 `Assets/Scripts/CoreLoop/Core/GameManager.cs`
-- Unity DTO는 API envelope의 `timestamp`, validation `error.fieldErrors[]`, bootstrap `tools.defaultUnlocked`, `portalRules.requiredUpgradeCode`, `upgrades.name/goldCost/prerequisiteUpgradeCode/resourceCosts`, snapshot `purchasedUpgradeCodes/availableUpgrades`를 수용해야 합니다.
-- Unity가 API로 직접 보내는 자원 코드는 서버 seed 정본인 `Fish`, `Shell`, `Seaweed`, `Herb`, `Mushroom`, `GlowMoss`, `WindHerb` 형식을 사용하고, generated GameData가 없을 때의 메모리 fallback도 같은 canonical code를 유지합니다.
+- Unity 런타임은 외부 네트워크 연동 없이 씬 직렬화 값, generated GameData, 메모리 fallback 데이터를 기준으로 상태를 구성합니다.
+- 레시피와 자원 코드는 generated GameData와 `GeneratedGameDataLocator`의 fallback 정의를 기준으로 유지합니다.
+- fallback 자원 코드는 `Fish`, `Shell`, `Seaweed`, `Herb`, `Mushroom`, `GlowMoss`, `WindHerb` 형식을 사용합니다.
 
 ## 정본이 아닌 것
 
@@ -106,8 +105,8 @@
 - `Docs/project/GAME_PROJECT_STRUCTURE.md`
 - `Docs/build/GAME_BUILD_GUIDE.md`
 
-### Unity API 연동 변경
+### 로컬 데이터와 런타임 상태 변경
 
 - `Assets/Scripts/CoreLoop/Core/GameManager.cs`
-- `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`
-- `D:\project-j-api\docs\rules\API.md`와 관련 DTO/controller/seed SQL
+- `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`
+- 관련 manager의 초기화, 인벤토리, 창고, 경제, 도구, 업그레이드 흐름

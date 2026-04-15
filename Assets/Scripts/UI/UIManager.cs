@@ -135,6 +135,8 @@ namespace UI
         {
             None,
             Storage,
+            Refrigerator,
+            FrontCounter,
             Recipe,
             Upgrade,
             Materials
@@ -200,6 +202,8 @@ namespace UI
             {
                 HubPopupPanel.None => PrototypeUIPreviewPanel.None,
                 HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
+                HubPopupPanel.Refrigerator => PrototypeUIPreviewPanel.Storage,
+                HubPopupPanel.FrontCounter => PrototypeUIPreviewPanel.Materials,
                 HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
                 HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,
                 HubPopupPanel.Materials => PrototypeUIPreviewPanel.Materials,

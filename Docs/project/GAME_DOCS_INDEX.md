@@ -16,13 +16,13 @@
 - `GAME_DOCS_INDEX.md`: 이 인덱스와 작업별 문서 진입점
 - `GAME_PROJECT_STRUCTURE.md`: 실제 저장소 구조, 책임 경계, generated 경로
 - `AGENT_WORKFLOW.md`: 기본 작업 루프, 검증 매트릭스, 드리프트 정리 기준
-- `SOURCE_OF_TRUTH.md`: 씬 직렬화, builder, generated 자산 경로, 인접 API 계약의 정본 관계
+- `SOURCE_OF_TRUTH.md`: 씬 직렬화, builder, generated 자산 경로, 로컬 게임 데이터의 정본 관계
 - `GIT_COMMIT_TEMPLATE.md`: 커밋 메시지 규칙의 유일한 정본
 
 ## 3. `gameplay` 문서
 
 - `GAME_DESIGN_OVERVIEW.md`: 게임 콘셉트, 핵심 루프, 장기 의도
-- `GAMEPLAY_CORE_LOOP.md`: 자유 이동형 코어 루프와 서버 데이터 계약
+- `GAMEPLAY_CORE_LOOP.md`: 자유 이동형 코어 루프와 로컬 게임 데이터 기준
 - `GAMEPLAY_EXPLORATION.md`: 지역, 포털, 위험 지대, 탐험 의도
 - `GAMEPLAY_RESTAURANT_AND_GROWTH.md`: 영업, 업그레이드, 자원 소비와 성장 축
 
@@ -44,7 +44,7 @@
   `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - generated 자산, 폰트, 빌더 경로 수정:
   `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
-- Unity API 연동:
+- 로컬 데이터와 런타임 상태 변경:
   `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 문서/규칙 체계 정리:
   `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, 이 인덱스

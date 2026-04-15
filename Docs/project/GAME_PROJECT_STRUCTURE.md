@@ -117,7 +117,6 @@ Assets
 
 ## 런타임 기준 파일
 
-- API 세션/원격 동기화: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`
 - 전역 상태: `Assets/Scripts/CoreLoop/Core/GameManager.cs`
 - UI 탐색 폴더: 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둔다.
 - `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `UIManager` 폴더는 family 경계와 `.meta` 유지를 위해 남을 수 있지만, 현재 partial 파일은 주로 각 루트 폴더 바로 아래에 둔다.
@@ -131,6 +130,6 @@ Assets
 - TMP 폰트 자산: 프로젝트 원본 폰트 소스는 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`, TMP Font Asset은 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`
 - generated 경로/기본값: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 
-## 인접 저장소
+## 외부 네트워크 연동
 
-`D:\project-j-api`는 Unity 트리 밖에 있지만 API 연동 작업에서는 함께 확인해야 하는 결합 저장소입니다.
+현재 Unity 클라이언트는 외부 네트워크 연동 없이 로컬 런타임 상태와 generated GameData 기준으로 동작합니다.

@@ -695,7 +695,6 @@ MonoBehaviour:
   toolManager: {fileID: 100115}
   dayCycleManager: {fileID: 100114}
   upgradeManager: {fileID: 100112}
-  remoteSession: {fileID: 0}
 --- !u!114 &100114
 MonoBehaviour:
   m_ObjectHideFlags: 0

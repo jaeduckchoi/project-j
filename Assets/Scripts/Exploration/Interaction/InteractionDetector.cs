@@ -14,6 +14,8 @@ namespace Exploration.Interaction
     public class InteractionDetector : MonoBehaviour
     {
         private readonly List<IInteractable> nearbyInteractables = new();
+        private readonly Collider2D[] overlapBuffer = new Collider2D[32];
+        private ContactFilter2D overlapFilter;
         private Collider2D triggerCollider;
 
         public event Action<IInteractable> CurrentInteractableChanged;
@@ -25,6 +27,8 @@ namespace Exploration.Interaction
         /// </summary>
         private void Awake()
         {
+            overlapFilter = ContactFilter2D.noFilter;
+
             triggerCollider = GetComponent<Collider2D>();
             if (triggerCollider != null)
             {
@@ -37,6 +41,7 @@ namespace Exploration.Interaction
         /// </summary>
         private void Update()
         {
+            RefreshNearbyOverlapCandidates();
             CleanupMissingInteractables();
             RefreshCurrentInteractable();
         }
@@ -84,6 +89,24 @@ namespace Exploration.Interaction
 
             nearbyInteractables.Remove(interactable);
             RefreshCurrentInteractable();
+        }
+
+        private void RefreshNearbyOverlapCandidates()
+        {
+            if (triggerCollider == null)
+            {
+                return;
+            }
+
+            int overlapCount = triggerCollider.Overlap(overlapFilter, overlapBuffer);
+            for (int i = 0; i < overlapCount; i++)
+            {
+                IInteractable interactable = FindInteractable(overlapBuffer[i]);
+                if (interactable != null && !nearbyInteractables.Contains(interactable))
+                {
+                    nearbyInteractables.Add(interactable);
+                }
+            }
         }
 
         /// <summary>

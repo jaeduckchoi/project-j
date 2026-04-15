@@ -23,6 +23,6 @@
 
 - UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
 - generated 경로 변경: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
-- API 연동 변경: `Assets/Scripts/CoreLoop/Core/JongguApiSession.cs`, `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `D:\project-j-api` 계약 문서
+- 로컬 상태/게임 데이터 변경: `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`, 관련 runtime manager
 
 Unity 실행이나 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 결과에 함께 적습니다.

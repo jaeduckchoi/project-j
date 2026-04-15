@@ -111,9 +111,9 @@
 - `WindHill`은 깊은 숲과 연결된 가로형 지역이며, 상단에서 `AbandonedMine`으로 이어진다.
 - `Shortcut`은 초반에는 막혀 있고, 골드를 소비해 `Beach`와 `WindHill` 사이를 여는 편의 경로다.
 
-## 8. API 연동 기준
+## 8. 로컬 데이터 기준
 
-- 원격 세션과 스냅샷 반영은 `JongguApiSession`, `GameManager`를 기준으로 유지한다.
-- 레시피 메타데이터와 기본 재료 구성은 서버 bootstrap `recipes`, `ingredients`를 기준으로 유지한다.
+- 런타임 상태는 외부 네트워크 연동 없이 `GameManager`와 각 manager의 로컬 상태를 기준으로 유지한다.
+- 레시피 메타데이터와 기본 재료 구성은 generated GameData와 메모리 fallback 레시피를 기준으로 유지한다.
 - 자유 조합형 `FrontCounter`의 상세 공정 단계와 시그니처는 외부 레시피 공정표 정본을 따른다.
 - 안내 문구, 포탈 잠금, 팝업 일시정지 회귀는 현재 런타임 코드 기준으로 직접 확인한다.

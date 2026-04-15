@@ -197,6 +197,6 @@
 - `Assets/Scripts/Management/Upgrade/UpgradeManager.cs`
 - `Assets/Scripts/Management/Economy/EconomyManager.cs`
 - `Assets/Scripts/UI/UIManager.cs`
-- 레시피 메타데이터 : 서버 bootstrap `recipes`
-- 재료 메타데이터 : 서버 bootstrap `ingredients`
+- 레시피 메타데이터 : generated GameData와 메모리 fallback 레시피
+- 재료 메타데이터 : generated GameData와 메모리 fallback 자원
 - 세부 조리 공정 정본 : 외부 구글 시트의 레시피 공정표

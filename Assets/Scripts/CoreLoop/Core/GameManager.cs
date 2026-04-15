@@ -30,7 +30,6 @@ namespace CoreLoop.Core
         [SerializeField] private ToolManager toolManager;
         [SerializeField] private DayCycleManager dayCycleManager;
         [SerializeField] private UpgradeManager upgradeManager;
-        [SerializeField] private JongguApiSession remoteSession;
 
         private string pendingSpawnPointId;
 
@@ -42,7 +41,6 @@ namespace CoreLoop.Core
         public ToolManager Tools => toolManager;
         public DayCycleManager DayCycle => dayCycleManager;
         public UpgradeManager Upgrades => upgradeManager;
-        public JongguApiSession RemoteSession => remoteSession;
         public string HubSceneName => hubSceneName;
         public string FirstExplorationSceneName => firstExplorationSceneName;
 
@@ -74,7 +72,6 @@ namespace CoreLoop.Core
             toolManager = EnsureManager(toolManager);
             dayCycleManager = EnsureManager(dayCycleManager);
             upgradeManager = EnsureManager(upgradeManager);
-            remoteSession = EnsureManager(remoteSession);
 
             // 프로토타입은 저장 로드가 없으므로 시작 시점에 바로 런타임 상태를 세웁니다.
             inventoryManager?.InitializeIfNeeded();
@@ -122,19 +119,6 @@ namespace CoreLoop.Core
         /// </summary>
         public void LoadScene(string sceneName, string spawnPointId = "")
         {
-            LoadSceneInternal(sceneName, spawnPointId, updateGuideState: true);
-        }
-
-        /// <summary>
-        /// 원격 스냅샷으로 상태를 맞춘 뒤에는 씬만 이동하고 안내 상태는 서버 응답 표시를 우선한다.
-        /// </summary>
-        public void LoadSceneFromRemoteState(string sceneName, string spawnPointId = "")
-        {
-            LoadSceneInternal(sceneName, spawnPointId, updateGuideState: false);
-        }
-
-        private void LoadSceneInternal(string sceneName, string spawnPointId, bool updateGuideState)
-        {
             if (string.IsNullOrWhiteSpace(sceneName))
             {
                 Debug.LogWarning("LoadScene failed: sceneName is empty.");
@@ -150,10 +134,7 @@ namespace CoreLoop.Core
             }
 
             // 위치 안내는 이동 직전에 바뀌어야 허브 복귀 / 출발 상태가 꼬이지 않습니다.
-            if (updateGuideState)
-            {
-                dayCycleManager?.HandleSceneTravel(SceneManager.GetActiveScene().name, sceneName, hubSceneName);
-            }
+            dayCycleManager?.HandleSceneTravel(SceneManager.GetActiveScene().name, sceneName, hubSceneName);
 
             pendingSpawnPointId = spawnPointId;
             SceneManager.LoadScene(sceneName);
@@ -165,7 +146,6 @@ namespace CoreLoop.Core
         private void Start()
         {
             dayCycleManager?.HandleSceneEntered(SceneManager.GetActiveScene().name);
-            remoteSession?.BeginSession();
         }
 
         /// <summary>

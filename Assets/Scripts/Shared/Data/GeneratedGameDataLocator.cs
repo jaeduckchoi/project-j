@@ -256,13 +256,13 @@ namespace Shared.Data
 
             _fallbackAssetsCreated = true;
 
-            ResourceData fish = CreateRuntimeResource("fish", "생선", "바닷가에서 쉽게 얻을 수 있는 기본 재료입니다.", "바닷가", 10, ResourceRarity.Common);
-            ResourceData shell = CreateRuntimeResource("shell", "조개", "국물 요리에 쓰기 좋은 바닷가 재료입니다.", "바닷가", 12, ResourceRarity.Common);
-            ResourceData seaweed = CreateRuntimeResource("seaweed", "해초", "향이 좋은 해산 재료입니다.", "바닷가", 8, ResourceRarity.Common);
-            ResourceData herb = CreateRuntimeResource("herb", "약초", "깊은 숲에서 얻는 향이 짙은 약초입니다.", "깊은 숲", 14, ResourceRarity.Uncommon);
-            ResourceData mushroom = CreateRuntimeResource("mushroom", "버섯", "숲의 그늘 아래에서 자라는 식재료입니다.", "깊은 숲", 16, ResourceRarity.Uncommon);
-            ResourceData glowMoss = CreateRuntimeResource("glow_moss", "발광 이끼", "폐광산 안쪽의 습한 벽면에서 자라는 희귀 식재료입니다.", "폐광산", 22, ResourceRarity.Rare);
-            ResourceData windHerb = CreateRuntimeResource("wind_herb", "향초", "바람이 센 언덕에서만 자라는 고급 허브입니다.", "바람 언덕", 18, ResourceRarity.Rare);
+            ResourceData fish = CreateRuntimeResource("Fish", "생선", "바닷가에서 쉽게 얻을 수 있는 기본 재료입니다.", "바닷가", 10, ResourceRarity.Common);
+            ResourceData shell = CreateRuntimeResource("Shell", "조개", "국물 요리에 쓰기 좋은 바닷가 재료입니다.", "바닷가", 12, ResourceRarity.Common);
+            ResourceData seaweed = CreateRuntimeResource("Seaweed", "해초", "향이 좋은 해산 재료입니다.", "바닷가", 8, ResourceRarity.Common);
+            ResourceData herb = CreateRuntimeResource("Herb", "약초", "깊은 숲에서 얻는 향이 짙은 약초입니다.", "깊은 숲", 14, ResourceRarity.Uncommon);
+            ResourceData mushroom = CreateRuntimeResource("Mushroom", "버섯", "숲의 그늘 아래에서 자라는 식재료입니다.", "깊은 숲", 16, ResourceRarity.Uncommon);
+            ResourceData glowMoss = CreateRuntimeResource("GlowMoss", "발광 이끼", "폐광산 안쪽의 습한 벽면에서 자라는 희귀 식재료입니다.", "폐광산", 22, ResourceRarity.Rare);
+            ResourceData windHerb = CreateRuntimeResource("WindHerb", "향초", "바람이 센 언덕에서만 자라는 고급 허브입니다.", "바람 언덕", 18, ResourceRarity.Rare);
 
             CreateRuntimeRecipe(
                 "sushi_set",
@@ -272,7 +272,7 @@ namespace Shared.Data
                 1,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish)
+                    RecipeIngredient.CreateRuntime("Fish", "생선", 1, fish)
                 });
 
             CreateRuntimeRecipe(
@@ -283,9 +283,9 @@ namespace Shared.Data
                 2,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
-                    RecipeIngredient.CreateRuntime("shell", "조개", 1, shell),
-                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed)
+                    RecipeIngredient.CreateRuntime("Fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("Shell", "조개", 1, shell),
+                    RecipeIngredient.CreateRuntime("Seaweed", "해초", 1, seaweed)
                 });
 
             CreateRuntimeRecipe(
@@ -296,8 +296,8 @@ namespace Shared.Data
                 2,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
-                    RecipeIngredient.CreateRuntime("herb", "약초", 1, herb)
+                    RecipeIngredient.CreateRuntime("Fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("Herb", "약초", 1, herb)
                 });
 
             CreateRuntimeRecipe(
@@ -308,8 +308,8 @@ namespace Shared.Data
                 1,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("herb", "약초", 1, herb),
-                    RecipeIngredient.CreateRuntime("mushroom", "버섯", 1, mushroom)
+                    RecipeIngredient.CreateRuntime("Herb", "약초", 1, herb),
+                    RecipeIngredient.CreateRuntime("Mushroom", "버섯", 1, mushroom)
                 });
 
             CreateRuntimeRecipe(
@@ -320,9 +320,9 @@ namespace Shared.Data
                 3,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("fish", "생선", 1, fish),
-                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed),
-                    RecipeIngredient.CreateRuntime("glow_moss", "발광 이끼", 1, glowMoss)
+                    RecipeIngredient.CreateRuntime("Fish", "생선", 1, fish),
+                    RecipeIngredient.CreateRuntime("Seaweed", "해초", 1, seaweed),
+                    RecipeIngredient.CreateRuntime("GlowMoss", "발광 이끼", 1, glowMoss)
                 });
 
             CreateRuntimeRecipe(
@@ -333,8 +333,8 @@ namespace Shared.Data
                 2,
                 new[]
                 {
-                    RecipeIngredient.CreateRuntime("seaweed", "해초", 1, seaweed),
-                    RecipeIngredient.CreateRuntime("wind_herb", "향초", 1, windHerb)
+                    RecipeIngredient.CreateRuntime("Seaweed", "해초", 1, seaweed),
+                    RecipeIngredient.CreateRuntime("WindHerb", "향초", 1, windHerb)
                 });
         }
 

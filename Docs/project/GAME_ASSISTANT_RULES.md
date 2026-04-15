@@ -9,7 +9,6 @@
 - UI 변경은 `UIManager`, `PrototypeUISceneLayoutCatalog`, `PrototypeUISceneLayoutSettings`, `ui-layout-overrides.asset`를 함께 확인한다.
 - UI는 런타임 생성에만 의존하지 말고 `PrototypeUIDesignController`와 `UIManager.EditorPreview`를 통해 에디터에서 보이고 조정 가능해야 한다.
 - 정적 generated 에셋 생성이나 복구를 빌더에 기대하지 않는다.
-- `D:\project-j-api`와 맞물리는 code를 바꾸면 API 계약, Unity 코드, 문서를 같은 변경에서 함께 맞춘다.
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 결과에 그 사실과 남은 검증 단계를 적는다.
 
 ## 구현 규칙
@@ -28,7 +27,6 @@
 - 구조, UI, generated 경로 변경은 정적 검색과 관련 런타임 코드 기준으로 검증한다.
 - 구조 리팩토링 뒤에는 옛 경로 문자열이 문서와 코드에 남지 않았는지 정적 검색으로 확인한다.
 - Unity csproj 빌드가 가능한 범위라면 관련 어셈블리를 한 번 빌드해 경로 이동 회귀를 먼저 잡는다.
-- API 연동 변경은 가능하면 `D:\project-j-api`와 함께 계약/동작을 확인한다.
 - Unity에서 직접 실행하지 못했으면 미검증 사실을 명시한다.
 
 ## 읽기 범위와 제외 기준

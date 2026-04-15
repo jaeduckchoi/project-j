@@ -43,7 +43,7 @@ namespace Shared.Data
         public IReadOnlyList<RecipeIngredient> Ingredients => ingredients;
 
         /// <summary>
-        /// 서버 bootstrap 레시피를 런타임 표시용 ScriptableObject에 그대로 반영합니다.
+        /// 런타임 fallback 레시피를 표시용 ScriptableObject에 반영합니다.
         /// </summary>
         public void ConfigureRuntime(
             string id,
@@ -125,7 +125,7 @@ namespace Shared.Data
         public string Memo => memo;
 
         /// <summary>
-        /// 서버 bootstrap의 ingredientId/name/quantity 구조를 그대로 담는 재료 항목을 만듭니다.
+        /// 런타임 fallback 레시피의 재료 항목을 만듭니다.
         /// </summary>
         public static RecipeIngredient CreateRuntime(string id, string displayName, int quantity, ResourceData resolvedResource = null)
         {
@@ -139,7 +139,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// bootstrap.ingredients 카탈로그에서 내려온 부가 정보를 재료 항목에 보존합니다.
+        /// 로컬 카탈로그의 부가 정보를 재료 항목에 보존합니다.
         /// </summary>
         public void ConfigureCatalogMetadata(
             int ingredientDifficulty,

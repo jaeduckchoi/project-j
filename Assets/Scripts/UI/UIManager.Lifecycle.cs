@@ -1,4 +1,5 @@
 using Management.Storage;
+using Restaurant.Kitchen;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -24,6 +25,8 @@ namespace UI
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
             StorageStation.StoragePanelRequested += HandleStoragePanelRequested;
+            RefrigeratorStation.PanelRequested += HandleRefrigeratorPanelRequested;
+            FrontCounterStation.PanelRequested += HandleFrontCounterPanelRequested;
         }
 
         /// <summary>
@@ -56,6 +59,9 @@ namespace UI
             RestorePopupPauseIfNeeded();
             SceneManager.sceneLoaded -= HandleSceneLoaded;
             StorageStation.StoragePanelRequested -= HandleStoragePanelRequested;
+            RefrigeratorStation.PanelRequested -= HandleRefrigeratorPanelRequested;
+            FrontCounterStation.PanelRequested -= HandleFrontCounterPanelRequested;
+            UnbindKitchenFlow();
             UnbindInventory();
             UnbindStorage();
             UnbindEconomy();
