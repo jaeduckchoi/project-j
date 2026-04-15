@@ -21,6 +21,7 @@ namespace Exploration.Camera
         private Vector3 velocity;
         private Collider2D boundsOverride;
         private float defaultOrthographicSize;
+        private bool initialSnapPending = true;
 
         /// <summary>
         /// 카메라 컴포넌트 참조를 캐시한다.
@@ -39,14 +40,8 @@ namespace Exploration.Camera
         /// </summary>
         private void Start()
         {
-            if (target == null)
-            {
-                PlayerController player = FindFirstObjectByType<PlayerController>();
-                if (player != null)
-                {
-                    target = player.transform;
-                }
-            }
+            ResolveTargetIfNeeded();
+            TryInitialSnapToTarget();
         }
 
         /// <summary>
@@ -54,14 +49,8 @@ namespace Exploration.Camera
         /// </summary>
         private void LateUpdate()
         {
-            if (target == null)
-            {
-                PlayerController player = FindFirstObjectByType<PlayerController>();
-                if (player != null)
-                {
-                    target = player.transform;
-                }
-            }
+            ResolveTargetIfNeeded();
+            TryInitialSnapToTarget();
 
             if (target == null)
             {
@@ -71,6 +60,37 @@ namespace Exploration.Camera
             Vector3 desiredPosition = new(target.position.x, target.position.y, transform.position.z);
             Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
             transform.position = ClampToBounds(smoothedPosition);
+        }
+
+        /// <summary>
+        /// 인스펙터 참조가 비어 있으면 현재 씬 플레이어를 추적 대상으로 자동 연결한다.
+        /// </summary>
+        private void ResolveTargetIfNeeded()
+        {
+            if (target != null)
+            {
+                return;
+            }
+
+            PlayerController player = FindFirstObjectByType<PlayerController>();
+            if (player != null)
+            {
+                target = player.transform;
+            }
+        }
+
+        /// <summary>
+        /// 타깃을 처음 확보한 프레임에는 한 번 즉시 스냅해 시작 화면을 경계 안에서 맞춘다.
+        /// </summary>
+        private void TryInitialSnapToTarget()
+        {
+            if (!initialSnapPending || target == null)
+            {
+                return;
+            }
+
+            SnapToTrackedTarget();
+            initialSnapPending = false;
         }
 
         /// <summary>
@@ -176,13 +196,11 @@ namespace Exploration.Camera
         /// </summary>
         private Vector3 ClampToBounds(Vector3 cameraPosition)
         {
-            Collider2D activeBounds = boundsOverride != null ? boundsOverride : mapBounds;
-            if (activeBounds == null || targetCamera == null || !targetCamera.orthographic)
+            if (!TryGetEffectiveBounds(out Bounds bounds) || targetCamera == null || !targetCamera.orthographic)
             {
                 return cameraPosition;
             }
 
-            Bounds bounds = activeBounds.bounds;
             float verticalExtent = targetCamera.orthographicSize;
             float horizontalExtent = verticalExtent * targetCamera.aspect;
             float minX = bounds.min.x + horizontalExtent;
@@ -193,6 +211,41 @@ namespace Exploration.Camera
             cameraPosition.x = minX > maxX ? bounds.center.x : Mathf.Clamp(cameraPosition.x, minX, maxX);
             cameraPosition.y = minY > maxY ? bounds.center.y : Mathf.Clamp(cameraPosition.y, minY, maxY);
             return cameraPosition;
+        }
+
+        /// <summary>
+        /// 기본 CameraBounds를 바깥 경계로 유지하면서, 방 override가 있으면 두 영역의 교집합만 유효 bounds로 사용한다.
+        /// </summary>
+        private bool TryGetEffectiveBounds(out Bounds effectiveBounds)
+        {
+            if (mapBounds == null && boundsOverride == null)
+            {
+                effectiveBounds = default;
+                return false;
+            }
+
+            if (mapBounds == null)
+            {
+                effectiveBounds = boundsOverride.bounds;
+                return true;
+            }
+
+            effectiveBounds = mapBounds.bounds;
+            if (boundsOverride == null)
+            {
+                return true;
+            }
+
+            Bounds overrideBounds = boundsOverride.bounds;
+            if (!effectiveBounds.Intersects(overrideBounds))
+            {
+                return true;
+            }
+
+            Vector3 intersectionMin = Vector3.Max(effectiveBounds.min, overrideBounds.min);
+            Vector3 intersectionMax = Vector3.Min(effectiveBounds.max, overrideBounds.max);
+            effectiveBounds.SetMinMax(intersectionMin, intersectionMax);
+            return true;
         }
 
         /// <summary>

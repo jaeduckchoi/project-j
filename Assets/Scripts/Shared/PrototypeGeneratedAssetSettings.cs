@@ -64,9 +64,9 @@ namespace Shared
         public string PlayerFrontSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "front.png");
         public string PlayerBackSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "back.png");
         public string PlayerSideSpritePath => CombineAssetPath(PlayerBaseSpriteRoot, "side.png");
-        public string PlayerFrontIdleFrame2SpritePath => CombineAssetPath(PlayerIdleFrontSpriteRoot, "frame-2.png");
-        public string PlayerBackIdleFrame2SpritePath => CombineAssetPath(PlayerIdleBackSpriteRoot, "frame-2.png");
-        public string PlayerSideIdleFrame2SpritePath => CombineAssetPath(PlayerIdleSideSpriteRoot, "frame-2.png");
+        public string PlayerFrontIdleFrame2SpritePath => CombineAssetPath(PlayerIdleFrontSpriteRoot, "frame_2.png");
+        public string PlayerBackIdleFrame2SpritePath => CombineAssetPath(PlayerIdleBackSpriteRoot, "frame_2.png");
+        public string PlayerSideIdleFrame2SpritePath => CombineAssetPath(PlayerIdleSideSpriteRoot, "frame_2.png");
 
         public string PlayerFrontSpriteResourcePath => ToResourcesLoadPath(PlayerFrontSpritePath);
         public string PlayerBackSpriteResourcePath => ToResourcesLoadPath(PlayerBackSpritePath);

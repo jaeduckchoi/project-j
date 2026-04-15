@@ -27,5 +27,7 @@ Codex 운영 기준:
 - Codex 프로젝트 설정은 `.codex/config.toml`, `.codex/rules/*.rules`, `AGENTS.md` 조합으로 관리한다.
 - Codex 프로젝트 읽기 범위는 `.codex/config.toml`의 `project-j-read-scope` permission profile, `.codex/rules/*.rules`, `AGENTS.md` 조합으로 관리한다.
 - 읽기 범위와 제외 기준은 `Docs/project/GAME_ASSISTANT_RULES.md`의 "읽기 범위와 제외 기준" 섹션이 단일 정본이다. Codex는 이 목록을 기본 작업 대상에서 제외한다. 단, Codex 파일시스템 permission profile은 경로 단위 설정이므로 Claude `permissions.deny`의 확장자 glob 전체를 1:1로 대체하지 못하는 범위는 문서 지침으로 유지한다.
+- Windows PowerShell 명령과 텍스트 파일 I/O는 `Docs/project/GAME_ASSISTANT_RULES.md`의 구현 규칙에 따라 UTF-8 인코딩을 명시한다.
+- `js_repl`에서 Node 패키지나 로컬 파서를 불러올 때는 `Docs/project/GAME_ASSISTANT_RULES.md`의 구현 규칙에 따라 `require` 대신 dynamic `import()`를 기본으로 사용한다.
 - 이미지·오디오·모델 같은 authored 바이너리 원본은 꼭 필요한 경우에만 읽고, generated 결과물은 결과만 직접 수정하지 말고 생성 경로와 정본 코드부터 고친다.
 - 원격 반영(`git push`)과 파괴적 git 명령(`reset --hard`, `checkout --`, `clean -fd`, `clean -fdx`)은 명시적 사용자 승인 전제로만 다룬다. 구체 판정은 `.codex/rules/unity-safety.rules`를 따른다.

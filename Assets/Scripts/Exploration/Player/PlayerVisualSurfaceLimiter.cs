@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Tilemaps;
 
 namespace Exploration.Player
 {
@@ -11,9 +12,10 @@ namespace Exploration.Player
     public sealed class PlayerVisualSurfaceLimiter : MonoBehaviour
     {
         [SerializeField] private Transform visualRoot;
+        [SerializeField] private Transform walkableSurfaceRoot;
         [SerializeField] private SpriteRenderer baseSurfaceRenderer;
 
-        private readonly List<SpriteRenderer> walkableSurfaces = new();
+        private readonly List<Renderer> walkableSurfaces = new();
         private Rigidbody2D body;
         private Vector2 lastValidPosition;
         private bool hasLastValidPosition;
@@ -72,15 +74,21 @@ namespace Exploration.Player
         private void RefreshWalkableSurfaces()
         {
             walkableSurfaces.Clear();
-            if (visualRoot == null)
+            Transform surfaceRoot = walkableSurfaceRoot != null ? walkableSurfaceRoot : visualRoot;
+            if (surfaceRoot == null)
             {
                 return;
             }
 
-            SpriteRenderer[] surfaceRenderers = visualRoot.GetComponentsInChildren<SpriteRenderer>(true);
-            foreach (SpriteRenderer surfaceRenderer in surfaceRenderers)
+            Renderer[] surfaceRenderers = surfaceRoot.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer surfaceRenderer in surfaceRenderers)
             {
                 if (surfaceRenderer == null || !surfaceRenderer.enabled || !surfaceRenderer.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                if (!IsSupportedWalkableRenderer(surfaceRenderer))
                 {
                     continue;
                 }
@@ -96,7 +104,7 @@ namespace Exploration.Player
 
         private bool IsOnWalkableSurface(Vector2 position)
         {
-            foreach (SpriteRenderer surfaceRenderer in walkableSurfaces)
+            foreach (Renderer surfaceRenderer in walkableSurfaces)
             {
                 if (surfaceRenderer == null || !surfaceRenderer.enabled || !surfaceRenderer.gameObject.activeInHierarchy)
                 {
@@ -121,7 +129,7 @@ namespace Exploration.Player
             nearestPosition = position;
             float nearestDistance = float.PositiveInfinity;
 
-            foreach (SpriteRenderer surfaceRenderer in walkableSurfaces)
+            foreach (Renderer surfaceRenderer in walkableSurfaces)
             {
                 if (surfaceRenderer == null || !surfaceRenderer.enabled || !surfaceRenderer.gameObject.activeInHierarchy)
                 {
@@ -143,6 +151,11 @@ namespace Exploration.Player
             }
 
             return !float.IsPositiveInfinity(nearestDistance);
+        }
+
+        private static bool IsSupportedWalkableRenderer(Renderer renderer)
+        {
+            return renderer is SpriteRenderer || renderer is TilemapRenderer;
         }
 
         private void MoveTo(Vector2 position)

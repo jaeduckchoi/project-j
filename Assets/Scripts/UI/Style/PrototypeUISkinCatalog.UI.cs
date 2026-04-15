@@ -21,17 +21,17 @@ namespace UI.Style
             switch (objectName)
             {
                 case "TopLeftPanel":
-                    return BuildGeneratedUiPanelSpec("light-outline-panel");
+                    return BuildGeneratedUiPanelSpec("light_outline_panel");
                 case "ResourcePanel":
-                    return BuildGeneratedUiPanelSpec("dark-thin-outline-panel");
+                    return BuildGeneratedUiPanelSpec("dark_thin_outline_panel");
                 case "ActionDock":
                 case "HUDPanelButtonGroup":
-                    return BuildGeneratedUiPanelSpec("dark-solid-panel");
+                    return BuildGeneratedUiPanelSpec("dark_solid_panel");
                 case "GuideBackdrop":
                 case "ResultBackdrop":
-                    return BuildGeneratedUiMessageBoxSpec("system-text-box");
+                    return BuildGeneratedUiMessageBoxSpec("system_text_box");
                 case "InteractionPromptBackdrop":
-                    return BuildGeneratedUiMessageBoxSpec("interaction-text-box", new Vector4(8f, 14f, 8f, 14f));
+                    return BuildGeneratedUiMessageBoxSpec("interaction_text_box", new Vector4(8f, 14f, 8f, 14f));
             }
 
             return new PrototypeUISpriteSpec("PanelBrown", PanelSliceBorder, 6, 4, false);
@@ -44,7 +44,7 @@ namespace UI.Style
         {
             if (string.Equals(objectName, "GuideHelpButton", StringComparison.Ordinal))
             {
-                return BuildGeneratedUiButtonSpec("help-button");
+                return BuildGeneratedUiButtonSpec("help_button");
             }
 
             return new PrototypeUISpriteSpec("ButtonBrown", ButtonSliceBorder, 4, 4, true);

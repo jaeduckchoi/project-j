@@ -624,7 +624,7 @@ namespace UI
             Image badgeImage = badgeTransform.GetComponent<Image>();
             if (badgeImage != null)
             {
-                ApplyGeneratedPanelSprite(badgeImage, "dark-thin-outline-panel", HubCoinBadgeOuterColor);
+                ApplyGeneratedPanelSprite(badgeImage, "dark_thin_outline_panel", HubCoinBadgeOuterColor);
                 badgeImage.raycastTarget = false;
             }
 
@@ -674,7 +674,7 @@ namespace UI
                 image = fillObject.AddComponent<Image>();
             }
 
-            ApplyGeneratedPanelSprite(image, "dark-solid-panel", HubCoinBadgeInnerColor);
+            ApplyGeneratedPanelSprite(image, "dark_solid_panel", HubCoinBadgeInnerColor);
             image.raycastTarget = false;
         }
 
