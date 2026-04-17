@@ -13,19 +13,23 @@
 └─ CLAUDE.md
 ```
 
-## Unity 자산 구조
+## 주요 디렉터리
+
+- `Assets/Scripts`: 런타임 코드
+- `Assets/Editor`: 에디터 전용 도구와 인스펙터 보조 코드
+- `Assets/Scenes`: 씬 직렬화 정본
+- `Assets/Art`: authored 스프라이트 원본
+- `Assets/Resources/Generated`: 런타임이 읽는 generated 리소스
+- `Docs`: 프로젝트, 게임플레이, UI, 씬, 빌드 문서 정본
+
+## Assets 기준 구조
 
 ```text
 Assets
 ├─ Art
-│  ├─ Buildings
-│  ├─ Characters
-│  ├─ FX
-│  ├─ Props
-│  ├─ Tiles
-│  └─ UI
 ├─ Editor
 │  ├─ Art
+│  ├─ Tests
 │  └─ UI
 ├─ Resources
 │  └─ Generated
@@ -41,95 +45,53 @@ Assets
 │  ├─ Restaurant
 │  ├─ Shared
 │  └─ UI
-│     ├─ Content
-│     │  └─ Catalog
-│     ├─ Controllers
-│     ├─ Layout
-│     │  ├─ Catalog
-│     │  ├─ Definitions
-│     │  ├─ PrototypeUILayout.cs
-│     │  ├─ PrototypeUILayout.UI.cs
-│     │  ├─ PrototypeUILayout.Popup.cs
-│     │  ├─ PrototypeUIObjectNames.cs
-│     │  ├─ PrototypeUISceneLayoutCatalog.cs
-│     │  └─ PrototypeUISceneLayoutSettings.cs
-│     ├─ Style
-│     │  ├─ Catalog
-│     │  ├─ Foundation
-│     │  ├─ PrototypeUISkin.cs
-│     │  ├─ PrototypeUISkinCatalog.cs
-│     │  ├─ PrototypeUISkinCatalog.UI.cs
-│     │  ├─ PrototypeUISkinCatalog.Popup.cs
-│     │  └─ PrototypeUITheme.cs
-│     ├─ UIManager
-│     ├─ UIManager.cs
-│     ├─ UIManager.Lifecycle.cs
-│     ├─ UIManager.EditorPreview.cs
-│     ├─ UIManager.Bindings.cs
-│     ├─ UIManager.Input.cs
-│     ├─ UIManager.Canvas.cs
-│     ├─ UIManager.Chrome.cs
-│     ├─ UIManager.HubPopup.cs
-│     └─ UIManager.Refresh.cs
 └─ Settings
 ```
 
-## 책임 경계
-
-- `Assets/Scripts`: 런타임 코드
-- `Assets/Art`: authored 원본 스프라이트 아트
-- `Assets/Scenes`: 실제 씬 직렬화 정본
-- `Assets/Resources/Generated`: 런타임이 읽는 generated 리소스
-- `Assets/Editor`: 구조 정리, authored art import, 인스펙터 보조 도구
-
 ## 어셈블리 경계
 
-- `Assets/Scripts/Jonggu.Gameplay.asmdef`: 런타임 게임플레이 코드. CoreLoop, Exploration, Management, Restaurant 네임스페이스를 포함한다.
-- `Assets/Scripts/Shared/Jonggu.Shared.asmdef`: 공용 데이터/유틸. `Shared`, `Shared.Data` 네임스페이스를 포함한다.
-- `Assets/Scripts/UI/Jonggu.UI.asmdef`: UI 런타임 코드. `UI`, `UI.Content`, `UI.Controllers`, `UI.Layout`, `UI.Style` 네임스페이스를 포함한다.
-- `Assets/Editor/Jonggu.Editor.asmdef`: 에디터 전용 코드. `ProjectEditor`, `ProjectEditor.UI` 네임스페이스를 사용한다.
+- `Assets/Scripts/Jonggu.Gameplay.asmdef`: CoreLoop, Exploration, Management, Restaurant 런타임 코드
+- `Assets/Scripts/Shared/Jonggu.Shared.asmdef`: 공용 데이터와 유틸
+- `Assets/Scripts/UI/Jonggu.UI.asmdef`: UI 런타임 코드
+- `Assets/Editor/Jonggu.Editor.asmdef`: 에디터 전용 코드
+- `Assets/Editor/Tests/Jonggu.Gameplay.EditModeTests.asmdef`: EditMode 테스트
 
-## 어셈블리별 GlobalSuppressions
+각 asmdef의 `GlobalSuppressions.cs`는 해당 어셈블리의 네임스페이스/폴더 예외만 관리한다. 새 네임스페이스는 폴더 구조와 맞추는 것이 우선이다.
 
-각 asmdef는 자체 `GlobalSuppressions.cs`를 두고 `IDE0130` (네임스페이스/폴더 불일치)를 어셈블리 단위로 억제한다.
+## 런타임 기준 파일
 
-- `Assets/Scripts/GlobalSuppressions.cs`: Gameplay 어셈블리. `Restaurant` 단일 네임스페이스 예외만 유지.
-- `Assets/Scripts/Shared/GlobalSuppressions.cs`: Shared 어셈블리. `Shared.Data` 예외.
-- `Assets/Scripts/UI/GlobalSuppressions.cs`: UI 어셈블리. `UI`, `UI.Content`, `UI.Controllers`, `UI.Layout`, `UI.Style` 예외.
-- `Assets/Editor/GlobalSuppressions.cs`: Editor 어셈블리. `ProjectEditor`, `ProjectEditor.UI` 예외(`UNITY_EDITOR` 가드 안).
+- 전역 상태: `Assets/Scripts/CoreLoop/Core/GameManager.cs`
+- generated 경로/기본값: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- GameData fallback: `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`
+- UI entry: `Assets/Scripts/UI/UIManager.cs`
+- UI partial: `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Kitchen.cs`, `UIManager.Refresh.cs`
+- UI layout: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUISceneLayoutSettings.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`
+- UI style: `Assets/Scripts/UI/Style/PrototypeUISkin*.cs`, `PrototypeUITheme.cs`
+- UI content catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
+- UI controller: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+- 팝업 일시정지 유틸: `Assets/Scripts/UI/PopupPauseStateUtility.cs`
 
-새 네임스페이스는 폴더 구조와 일치시키는 것이 우선이며, 예외 추가는 같은 어셈블리의 GlobalSuppressions에만 등록한다.
+## 에디터 기준 파일
 
-## 에디터 코드 기준
-
-- `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`: 씬 하이어라키 정리
-- `Assets/Editor/ProjectStructureUtility.cs`: 기본 폴더 구조 보조
-- `Assets/Editor/Art/ArtSpriteImportPostprocessor.cs`: `Assets/Art/*` 스프라이트 import 정책과 타일셋 자동 슬라이스
-- `Assets/Editor/UI/*`: UI 인스펙터와 프리뷰 보조
+- 씬 계층 정리: `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`
+- 기본 폴더 보조: `Assets/Editor/ProjectStructureUtility.cs`
+- authored art import: `Assets/Editor/Art/ArtSpriteImportPostprocessor.cs`
+- UI 인스펙터와 프리뷰: `Assets/Editor/UI/*`
 
 ## generated 경로 기준
 
 - 경로 정본: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - UI 리소스: `Assets/Resources/Generated/Sprites/UI`
 - 플레이어 리소스: `Assets/Resources/Generated/Sprites/Player`
-  기본 프레임은 `base`, idle 보조 프레임은 `idle/front`, `idle/back`, `idle/side`에 둔다.
+- 플레이어 기본 프레임: `base`
+- 플레이어 idle 보조 프레임: `idle/front`, `idle/back`, `idle/side`
 - 게임 데이터: `Assets/Resources/Generated/GameData`
 
-## 런타임 기준 파일
+## TMP 폰트 경로
 
-- 전역 상태: `Assets/Scripts/CoreLoop/Core/GameManager.cs`
-- UI 탐색 폴더: 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둔다.
-- `Layout/Catalog`, `Layout/Definitions`, `Style/Catalog`, `Style/Foundation`, `UIManager` 폴더는 family 경계와 `.meta` 유지를 위해 남을 수 있지만, 현재 partial 파일은 주로 각 루트 폴더 바로 아래에 둔다.
-- UI 동작: `Assets/Scripts/UI/UIManager.cs` (엔트리), `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- UI 레이아웃 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (런타임 read API, managed object 이름 정본), `PrototypeUISceneLayoutCatalog.Editor.cs`, `PrototypeUISceneLayoutCatalog.Editor.Capture.cs`
-- UI 레이아웃 설정: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
-- UI 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`, `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`, `PrototypeUIObjectNames.cs`(PopupTitle/Caption 공용 상수)
-- UI 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`, `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
-- UI 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
-- 팝업 일시정지 유틸: `Assets/Scripts/UI/PopupPauseStateUtility.cs`
-- TMP 폰트 자산: 프로젝트 원본 폰트 소스는 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`, TMP Font Asset은 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`
-- generated 경로/기본값: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- 원본 폰트: `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`
+- TMP Font Asset: `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`
 
 ## 외부 네트워크 연동
 
-현재 Unity 클라이언트는 외부 네트워크 연동 없이 로컬 런타임 상태와 generated GameData 기준으로 동작합니다.
+현재 Unity 클라이언트는 외부 네트워크 연동 없이 로컬 런타임 상태와 generated GameData 기준으로 동작한다.

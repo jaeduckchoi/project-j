@@ -2,56 +2,47 @@
 
 ## 기본 루프
 
-1. 루트 엔트리 파일(`AGENTS.md` 또는 `CLAUDE.md`)과 `.aiassistant/rules/README.md`를 읽는다.
-2. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽는다.
-3. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 문서를 찾는다.
-4. 코드, 씬, generated 자산 상태를 실제로 확인한다.
-5. 정본 경계를 먼저 결정한 뒤 구현한다.
-6. 문서와 검증까지 같은 변경에서 마무리한다.
+1. 루트 엔트리와 `.aiassistant/rules/README.md`를 읽는다.
+2. `GAME_ASSISTANT_RULES.md`와 `GAME_DOCS_INDEX.md`에서 필요한 정본 문서만 고른다.
+3. 실제 코드, 씬, generated 경로 상태를 확인한다.
+4. 정본 경계를 먼저 정한 뒤 구현한다.
+5. 관련 문서와 검증 결과까지 같은 변경에서 마무리한다.
 
-## 유형별 확인
+## 작업별 체크포인트
 
 ### UI 변경
 
-- `Assets/Scripts/UI/UIManager.cs`
-- `Assets/Scripts/UI/UIManager.Lifecycle.cs` 및 같은 family partial
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`.Editor.cs`, `.Editor.Capture.cs` 포함)
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`
-- `Assets/Resources/Generated/ui-layout-overrides.asset`
-- 관리 대상 이름이나 그룹 루트를 바꾸면 `PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames` 기준이 함께 맞는지 확인한다.
-- 에디터에서 Canvas UI가 비어 보이면 런타임 생성만 믿지 말고 `PrototypeUIDesignController`의 `Apply Preview` 수동 프리뷰와 `UIManager.EditorPreview` 경로가 관리 UI를 만들고 저장할 수 있는지 확인한다. 프리뷰는 기존 씬 `RectTransform` 배치를 덮어쓰지 않아야 한다.
+- 결합 지점 정본은 `SOURCE_OF_TRUTH.md`의 `Canvas 관리 UI`와 `UI 구조 변경` 섹션을 따른다.
+- 관리 대상 Canvas 이름은 `PrototypeUISceneLayoutCatalog` 한 곳에서만 유지한다.
+- 에디터에서 보이고 저장 가능한 UI는 `PrototypeUIDesignController`와 `UIManager.EditorPreview` 경로까지 확인한다.
+- `UIManager` partial을 바꾸면 관련 partial과 팝업 일시정지 흐름이 함께 맞는지 확인한다.
 
-### 구조 리팩토링/경로 정리
+### 구조 리팩토링
 
-- 파일 이동 전 asmdef 범위, namespace 유지 여부, `.meta` 보존 여부를 먼저 확인한다.
-- partial family는 엔트리 파일, read API, catalog, definitions처럼 역할별 폴더 경계를 먼저 정한 뒤 이동한다.
-- UI managed object 이름은 `PrototypeUISceneLayoutCatalog`를 단일 정본으로 유지하고, runtime/editor 양쪽에 별도 문자열 목록을 만들지 않는다.
-- 이동 후 `Docs/project/*`, `Docs/ui/*`, `Docs/build/*`, `Docs/scene/*`에 직접 적힌 경로를 함께 갱신한다.
-
-### 주석 정리
-
-- 폴더/partial 책임을 처음 읽는 사람이 바로 이해해야 하는 진입 파일에만 주석을 추가한다.
-- 주석은 "왜 여기 있나"를 설명하고, 코드 한 줄 해설처럼 반복되는 설명은 넣지 않는다.
+- 파일 이동 전 asmdef 범위, namespace, `.meta` 보존 여부를 확인한다.
+- partial family는 엔트리 파일과 역할별 하위 파일 경계를 먼저 정한다.
+- 이동 후 옛 경로 문자열이 코드와 문서에 남지 않았는지 정적 검색한다.
 
 ### 씬/하이어라키 변경
 
-- 씬 직렬화 값이 정본인지 먼저 확인한다.
-- `PrototypeSceneHierarchyOrganizer`와 씬 문서를 함께 맞춘다.
+- `Assets/Scenes` 직렬화 값을 정본으로 본다.
+- 런타임 보강 코드는 누락된 오브젝트, 컴포넌트, 참조만 보충한다.
+- 씬 계층을 바꾸면 `PrototypeSceneHierarchyOrganizer`와 `Docs/scene/*`를 함께 확인한다.
 
 ### generated 경로 변경
 
-- `PrototypeGeneratedAssetSettings.cs`를 기준으로 경로를 맞춘다.
-- generated 자산 복구를 별도 빌더에 기대하지 않는다.
+- 경로 정본은 `PrototypeGeneratedAssetSettings.cs`다.
+- generated 결과물을 직접 고치지 말고 생성 경로나 정본 코드를 수정한다.
+- 정적 generated 에셋 복구를 별도 빌더에 기대하지 않는다.
 
 ### 로컬 데이터와 런타임 상태 변경
 
-- `GameManager`, `GeneratedGameDataLocator`, 관련 runtime manager
-- 인벤토리, 창고, 경제, 도구, 업그레이드 흐름이 generated GameData와 메모리 fallback 기준에 맞는지 확인한다.
+- `GameManager`, `GeneratedGameDataLocator`, 관련 manager 초기화 흐름을 확인한다.
+- 인벤토리, 창고, 경제, 도구, 업그레이드가 generated GameData와 fallback 기준에 맞는지 확인한다.
 
 ## 문서와 검증
 
-- 동작 기준이 바뀌면 관련 문서를 바로 갱신한다.
-- 과거 빌더/감사 흐름을 검증 기준으로 남기지 않는다.
-- 구조 리팩토링 뒤에는 옛 경로 문자열과 stale 문서 경로를 정적 검색으로 확인한다.
-- 가능하면 관련 csproj를 빌드해 파일 이동이나 namespace 유지가 깨지지 않았는지 먼저 확인한다.
-- Unity 실행/컴파일을 직접 못 했으면 그 사실과 후속 검증 단계를 적는다.
+- 동작 기준이 바뀌면 관련 문서를 같은 변경에서 갱신한다.
+- 과거 빌더/감사 흐름을 현재 검증 기준처럼 남기지 않는다.
+- 가능하면 관련 csproj나 Unity 검증으로 경로 이동 회귀를 확인한다.
+- Unity 실행/컴파일을 직접 못 했으면 결과에 남은 검증 단계를 적는다.
