@@ -21,7 +21,7 @@
 
 ## 검증
 
-- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
+- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`
 - generated 경로 변경: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - 로컬 상태/게임 데이터 변경: `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`, 관련 runtime manager
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CoreLoop.Core;
 using Exploration.Player;
 using Management.Inventory;
-using Restaurant;
 using Shared.Data;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
@@ -15,6 +14,7 @@ namespace Restaurant.Kitchen
     public sealed class RestaurantFlowController : MonoBehaviour
     {
         private const string RuntimeObjectName = "RestaurantFlowController";
+        private const string LegacyKitchenCounterObjectName = "KitchenCounter ";
 
         private static readonly KitchenToolType[] CookingToolTypes =
         {
@@ -36,12 +36,15 @@ namespace Restaurant.Kitchen
 
         private static readonly SceneStationBinding[] SceneStationBindings =
         {
-            new("FrontCounter", typeof(FrontCounterStation)),
-            new("FrontCounterCollider", typeof(FrontCounterStation)),
-            new("KitchenCounter ", typeof(FrontCounterStation)),
             new("HubTableTopCollider", typeof(DiningTableStation)),
             new("HubTableMiddleCollider", typeof(DiningTableStation)),
             new("HubTableBottomCollider", typeof(DiningTableStation))
+        };
+
+        private static readonly SceneStationHotspot[] SceneStationHotspots =
+        {
+            new("Refrigerator", "RefrigeratorInteractionHotspot", typeof(RefrigeratorStation), new Vector2(0f, -1.1f), new Vector2(1.8f, 1.2f)),
+            new("FrontCounter", "FrontCounterInteractionHotspot", typeof(FrontCounterStation), new Vector2(0f, -0.9f), new Vector2(2.4f, 1.2f))
         };
 
         private readonly Dictionary<KitchenToolType, ToolCookingSession> toolSessions = new();
@@ -451,23 +454,24 @@ namespace Restaurant.Kitchen
             NotifyChanged(true);
         }
 
-        private bool HandleStationInteract(KitchenToolType stationType, GameObject interactor)
+        private void HandleStationInteract(KitchenToolType stationType, GameObject interactor)
         {
             switch (stationType)
             {
                 case KitchenToolType.Refrigerator:
                     RefrigeratorStation.RequestPanel();
-                    return true;
+                    return;
                 case KitchenToolType.FrontCounter:
                     FrontCounterStation.RequestPanel();
-                    return true;
+                    return;
                 case KitchenToolType.CuttingBoard:
                 case KitchenToolType.Pot:
                 case KitchenToolType.FryingPan:
                 case KitchenToolType.Fryer:
-                    return TryUseTool(stationType, interactor);
+                    TryUseTool(stationType, interactor);
+                    return;
                 default:
-                    return false;
+                    return;
             }
         }
 
@@ -543,9 +547,78 @@ namespace Restaurant.Kitchen
                 AddStationIfMissing(binding.ObjectName, binding.ComponentType);
             }
 
+            InstallSceneStationHotspots();
+            EnsureLegacyFrontCounterFallback();
+
             if (GetComponent<CustomerServiceController>() == null)
             {
                 gameObject.AddComponent<CustomerServiceController>();
+            }
+        }
+
+        private static void InstallSceneStationHotspots()
+        {
+            foreach (SceneStationHotspot hotspot in SceneStationHotspots)
+            {
+                EnsureSceneStationHotspot(hotspot);
+            }
+        }
+
+        private static void EnsureLegacyFrontCounterFallback()
+        {
+            if (HasStationComponent("FrontCounterInteractionHotspot", typeof(FrontCounterStation)))
+            {
+                return;
+            }
+
+            AddStationIfMissing(LegacyKitchenCounterObjectName, typeof(FrontCounterStation));
+        }
+
+        private static void EnsureSceneStationHotspot(SceneStationHotspot hotspot)
+        {
+            if (string.IsNullOrWhiteSpace(hotspot.SourceObjectName)
+                || string.IsNullOrWhiteSpace(hotspot.HotspotObjectName)
+                || hotspot.ComponentType == null)
+            {
+                return;
+            }
+
+            GameObject source = GameObject.Find(hotspot.SourceObjectName);
+            if (source == null)
+            {
+                return;
+            }
+
+            GameObject hotspotObject = GameObject.Find(hotspot.HotspotObjectName);
+            if (hotspotObject == null)
+            {
+                hotspotObject = new GameObject(hotspot.HotspotObjectName);
+            }
+
+            Transform hotspotParent = FindHotspotParent();
+            if (hotspotParent != null && hotspotObject.transform.parent != hotspotParent)
+            {
+                hotspotObject.transform.SetParent(hotspotParent, false);
+            }
+
+            hotspotObject.layer = source.layer;
+            hotspotObject.transform.position = source.transform.position + (Vector3)hotspot.Offset;
+            hotspotObject.transform.rotation = Quaternion.identity;
+            hotspotObject.transform.localScale = Vector3.one;
+
+            BoxCollider2D hotspotCollider = hotspotObject.GetComponent<BoxCollider2D>();
+            if (hotspotCollider == null)
+            {
+                hotspotCollider = hotspotObject.AddComponent<BoxCollider2D>();
+            }
+
+            hotspotCollider.isTrigger = true;
+            hotspotCollider.offset = Vector2.zero;
+            hotspotCollider.size = hotspot.Size;
+
+            if (hotspotObject.GetComponent(hotspot.ComponentType) == null)
+            {
+                hotspotObject.AddComponent(hotspot.ComponentType);
             }
         }
 
@@ -558,6 +631,20 @@ namespace Restaurant.Kitchen
             }
 
             target.AddComponent(componentType);
+        }
+
+        private static bool HasStationComponent(string objectName, Type componentType)
+        {
+            GameObject target = GameObject.Find(objectName);
+            return target != null
+                && componentType != null
+                && target.GetComponent(componentType) != null;
+        }
+
+        private static Transform FindHotspotParent()
+        {
+            GameObject interactionRoot = GameObject.Find("InteractionRoot");
+            return interactionRoot != null ? interactionRoot.transform : null;
         }
 
         private bool IsBasicResource(ResourceData resource)
@@ -944,6 +1031,24 @@ namespace Restaurant.Kitchen
 
             public string ObjectName { get; }
             public Type ComponentType { get; }
+        }
+
+        private readonly struct SceneStationHotspot
+        {
+            public SceneStationHotspot(string sourceObjectName, string hotspotObjectName, Type componentType, Vector2 offset, Vector2 size)
+            {
+                SourceObjectName = sourceObjectName ?? string.Empty;
+                HotspotObjectName = hotspotObjectName ?? string.Empty;
+                ComponentType = componentType;
+                Offset = offset;
+                Size = size;
+            }
+
+            public string SourceObjectName { get; }
+            public string HotspotObjectName { get; }
+            public Type ComponentType { get; }
+            public Vector2 Offset { get; }
+            public Vector2 Size { get; }
         }
 
         private sealed class KitchenStageRuntimeDefinition

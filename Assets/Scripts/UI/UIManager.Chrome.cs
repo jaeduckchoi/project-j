@@ -30,6 +30,7 @@ namespace UI
                                           ?? (interactionPromptText != null ? interactionPromptText.font : null)
                                           ?? TMP_Settings.defaultFontAsset;
             TMP_FontAsset headingFont = headingFontAsset ?? bodyFontAsset ?? preferredFont ?? TMP_Settings.defaultFontAsset;
+            bool useTypedPopupUi = ShouldUseTypedPopupUi();
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -39,7 +40,10 @@ namespace UI
 #endif
 
             ApplyCanvasScaleSettings();
-            EnsureCanvasGroups();
+            if (!useTypedPopupUi)
+            {
+                EnsureCanvasGroups();
+            }
             ResolveOptionalUiReferences();
             interactionPromptText = EnsureScreenText(interactionPromptText, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
             goldText = EnsureHudStatusText(goldText, EconomyTextObjectName(isHubScene));
@@ -48,7 +52,7 @@ namespace UI
             PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
 
             EnsureCommonHudChrome(isHubScene, preferredFont, theme.Parchment, theme.Paper);
-            if (isHubScene)
+            if (isHubScene && !useTypedPopupUi)
             {
                 EnsureHubPopupTextReferences();
                 recipePanelButton = EnsureHubMenuButton(recipePanelButton, "RecipePanelButton", "요리", PrototypeUILayout.HubRecipePanelButton);
@@ -61,7 +65,10 @@ namespace UI
             ApplyCompactHudLayout(preferredFont, headingFont, theme.Text, theme.OceanAccent, theme.AmberAccent, theme.GoldAccent);
             ApplyMenuPanelState();
             RefreshStoragePanelVisibility();
-            ApplySavedCanvasHierarchyOverrides();
+            if (!useTypedPopupUi)
+            {
+                ApplySavedCanvasHierarchyOverrides();
+            }
             ApplyWorldTextPresentation(preferredFont, headingFont);
         }
 

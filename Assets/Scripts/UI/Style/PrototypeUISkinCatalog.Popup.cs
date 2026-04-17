@@ -11,6 +11,9 @@ namespace UI.Style
         {
             switch (objectName)
             {
+                case "RefrigeratorPopupFrame":
+                    spriteSpec = BuildGeneratedUiPanelSpec("light_outline_panel");
+                    return true;
                 case "PopupFrame":
                     spriteSpec = BuildGeneratedUiPanelSpec("dark_thin_outline_panel");
                     return true;
@@ -31,8 +34,7 @@ namespace UI.Style
             if (!string.IsNullOrWhiteSpace(objectName)
                 && (objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
                     || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)
-                    || IsRefrigeratorSlotBoxName(objectName)
-                    || objectName == "RefrigeratorRemoveZone"))
+                    || IsRefrigeratorSlotBoxName(objectName)))
             {
                 spriteSpec = BuildGeneratedUiPanelSpec("light_solid_panel");
                 return true;

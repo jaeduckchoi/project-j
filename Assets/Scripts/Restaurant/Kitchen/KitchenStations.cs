@@ -69,6 +69,7 @@ namespace Restaurant.Kitchen
     public sealed class RefrigeratorStation : MonoBehaviour, IInteractable
     {
         public static event Action PanelRequested;
+        public static Action RuntimePanelOpener;
 
         public string InteractionPrompt => "[E] Refrigerator";
         public Transform InteractionTransform => transform;
@@ -87,7 +88,7 @@ namespace Restaurant.Kitchen
         public void Interact(GameObject interactor)
         {
             RestaurantFlowController.GetOrCreate();
-            PanelRequested?.Invoke();
+            NotifyPanelRequested();
         }
 
         /// <summary>
@@ -95,7 +96,16 @@ namespace Restaurant.Kitchen
         /// </summary>
         public static void RequestPanel()
         {
+            NotifyPanelRequested();
+        }
+
+        /// <summary>
+        /// UI 계층이 등록한 런타임 콜백이 있으면 이벤트와 함께 냉장고 팝업 표시를 요청합니다.
+        /// </summary>
+        private static void NotifyPanelRequested()
+        {
             PanelRequested?.Invoke();
+            RuntimePanelOpener?.Invoke();
         }
     }
 

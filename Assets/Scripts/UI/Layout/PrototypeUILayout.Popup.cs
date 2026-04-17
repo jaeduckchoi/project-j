@@ -16,8 +16,8 @@ namespace UI.Layout
         // Hub.unity 팝업 실측 배치값이다. 빌더와 런타임이 따로 어긋나지 않도록 이 값을 공용 기준으로 쓴다.
         public static readonly PrototypeUIRect HubPopupOverlay = new(Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
         public static readonly PrototypeUIRect HubPopupFrame = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1800f, 800f));
-        public static readonly PrototypeUIRect HubPopupTitle = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-334f, 352f), new Vector2(180f, 64f));
-        public static readonly PrototypeUIRect HubPopupCloseButton = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(400f, 360f), new Vector2(48f, 48f));
+        public static readonly PrototypeUIRect HubPopupTitle = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-740f, 364f), new Vector2(220f, 64f));
+        public static readonly PrototypeUIRect HubPopupCloseButton = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(840f, 354f), new Vector2(48f, 48f));
         public static readonly PrototypeUIRect HubPopupFrameLeft = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-460f, 0f), new Vector2(880f, 800f));
         public static readonly PrototypeUIRect HubPopupFrameRight = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(460f, 0f), new Vector2(880f, 800f));
         public static readonly PrototypeUIRect HubPopupLeftCaption = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-20f, 176f), new Vector2(780f, 56f));
@@ -25,11 +25,15 @@ namespace UI.Layout
         public static readonly PrototypeUIRect HubPopupFrameBody = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -112f), new Vector2(820f, 520f));
         public static readonly PrototypeUIRect HubPopupFrameText = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-2f, -38f), new Vector2(780f, 344f));
         public static readonly PrototypeUIRect HubPopupRightDetailText = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -112f), new Vector2(780f, 488f));
-        public static readonly PrototypeUIRect HubRefrigeratorStorage = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-218f, 20f), new Vector2(1235f, 610f));
-        public static readonly PrototypeUIRect HubRefrigeratorSelectedSlot = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(375f, -250f), new Vector2(110f, 110f));
-        public static readonly PrototypeUIRect HubRefrigeratorRemoveZone = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(780f, -232f), new Vector2(112f, 112f));
-        public static readonly PrototypeUIRect HubRefrigeratorRemoveIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(58f, 58f));
-        public static readonly PrototypeUIRect HubRefrigeratorRemoveText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(0f, -12f), new Vector2(128f, 38f));
+        public static readonly PrototypeUIRect HubRefrigeratorStorage = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-288f, 60f), new Vector2(1090f, 540f));
+        public static readonly PrototypeUIRect HubRefrigeratorInfoPanel = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(562.5f, 60f), new Vector2(540f, 540f));
+        public static readonly PrototypeUIRect HubRefrigeratorInfoIcon = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -14f), new Vector2(100f, 100f));
+        public static readonly PrototypeUIRect HubRefrigeratorItemNameText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(138f, -14f), new Vector2(360f, 64f));
+        public static readonly PrototypeUIRect HubRefrigeratorItemDescriptionText = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -136f), new Vector2(500f, 340f));
+        public static readonly PrototypeUIRect HubRefrigeratorSelectedSlot = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, new Vector2(100f, 100f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveZone = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(337.5f, -262f), new Vector2(90f, 84f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 4f), new Vector2(58f, 58f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(0f, -4f), new Vector2(90f, 20f));
         public static readonly PrototypeUIRect HubRefrigeratorDragGhost = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(72f, 72f));
 
         /// <summary>
@@ -54,8 +58,8 @@ namespace UI.Layout
 
         public static PrototypeUIRect HubRefrigeratorSlot(int index)
         {
-            const float slotSize = 110f;
-            const float slotGap = 15f;
+            const float slotSize = 100f;
+            const float slotGap = 10f;
 
             int clampedIndex = Mathf.Clamp(index, 0, RefrigeratorSlotCount - 1);
             int row = clampedIndex / RefrigeratorSlotColumnCount;
@@ -68,7 +72,7 @@ namespace UI.Layout
                 new Vector2(slotSize, slotSize));
         }
 
-        public static readonly PrototypeUIRect HubRefrigeratorSlotIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(64f, 64f));
-        public static readonly PrototypeUIRect HubRefrigeratorSlotAmount = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 8f), new Vector2(72f, 28f));
+        public static readonly PrototypeUIRect HubRefrigeratorSlotIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(62f, 62f));
+        public static readonly PrototypeUIRect HubRefrigeratorSlotAmount = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-8f, 8f), new Vector2(68f, 26f));
     }
 }

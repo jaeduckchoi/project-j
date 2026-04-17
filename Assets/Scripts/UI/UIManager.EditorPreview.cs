@@ -48,6 +48,13 @@ namespace UI
                 return;
             }
 
+            if (ShouldUseTypedPopupUi())
+            {
+                BindTypedPopupUi();
+                ResolveOptionalUiReferences();
+                return;
+            }
+
             bool previousPreserveEditorLayoutState = preserveExistingEditorLayoutDuringPreview;
             preserveExistingEditorLayoutDuringPreview = true;
 
@@ -66,6 +73,12 @@ namespace UI
         {
             if (Application.isPlaying)
             {
+                return;
+            }
+
+            if (ShouldUseTypedPopupUi())
+            {
+                BindTypedPopupUi();
                 return;
             }
 
@@ -232,11 +245,7 @@ namespace UI
             return previewPanel switch
             {
                 PrototypeUIPreviewPanel.None => HubPopupPanel.None,
-                PrototypeUIPreviewPanel.Storage => HubPopupPanel.Storage,
                 PrototypeUIPreviewPanel.Refrigerator => HubPopupPanel.Refrigerator,
-                PrototypeUIPreviewPanel.Recipe => HubPopupPanel.Recipe,
-                PrototypeUIPreviewPanel.Upgrade => HubPopupPanel.Upgrade,
-                PrototypeUIPreviewPanel.Materials => HubPopupPanel.Materials,
                 _ => HubPopupPanel.None
             };
         }

@@ -35,7 +35,6 @@ Assets
 │     ├─ Fonts
 │     ├─ GameData
 │     ├─ Sprites
-│     └─ ui-layout-overrides.asset
 ├─ Scenes
 ├─ Scripts
 │  ├─ CoreLoop
@@ -64,7 +63,7 @@ Assets
 - GameData fallback: `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`
 - UI entry: `Assets/Scripts/UI/UIManager.cs`
 - UI partial: `UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Kitchen.cs`, `UIManager.Refresh.cs`
-- UI layout: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUISceneLayoutSettings.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`
+- UI layout: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`, `PrototypeUILayoutBindingSettings.cs`
 - UI style: `Assets/Scripts/UI/Style/PrototypeUISkin*.cs`, `PrototypeUITheme.cs`
 - UI content catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - UI controller: `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
@@ -75,7 +74,7 @@ Assets
 - 씬 계층 정리: `Assets/Editor/PrototypeSceneHierarchyOrganizer.cs`
 - 기본 폴더 보조: `Assets/Editor/ProjectStructureUtility.cs`
 - authored art import: `Assets/Editor/Art/ArtSpriteImportPostprocessor.cs`
-- UI 인스펙터와 프리뷰: `Assets/Editor/UI/*`
+- UI 인스펙터, 프리뷰, 레이아웃 편집기: `Assets/Editor/UI/*`
 
 ## generated 경로 기준
 

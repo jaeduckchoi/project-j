@@ -13,6 +13,11 @@ namespace UI
     {
         public void ShowStoragePanel()
         {
+            if (ShouldUseTypedPopupUi())
+            {
+                return;
+            }
+
             if (!IsHubScene() || !IsPlayerNearStorageStation())
             {
                 return;
@@ -29,6 +34,14 @@ namespace UI
             if (!IsHubScene())
             {
                 return;
+            }
+
+            if (ShouldUseTypedPopupUi())
+            {
+                if (targetPanel != HubPopupPanel.Refrigerator)
+                {
+                    return;
+                }
             }
 
             activeHubPanel = activeHubPanel == targetPanel ? HubPopupPanel.None : targetPanel;
@@ -78,6 +91,11 @@ namespace UI
 
         private void HandleStoragePopupInput()
         {
+            if (ShouldUseTypedPopupUi())
+            {
+                return;
+            }
+
             if (activeHubPanel != HubPopupPanel.Storage || cachedStorage == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
             {
                 return;

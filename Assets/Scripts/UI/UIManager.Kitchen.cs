@@ -34,6 +34,11 @@ namespace UI
 
         public void ShowFrontCounterPanel()
         {
+            if (ShouldUseTypedPopupUi())
+            {
+                return;
+            }
+
             if (!IsHubScene() || !Application.isPlaying)
             {
                 return;
@@ -80,7 +85,10 @@ namespace UI
 
         private void HandleFrontCounterPanelRequested()
         {
-            ShowFrontCounterPanel();
+            if (!ShouldUseTypedPopupUi())
+            {
+                ShowFrontCounterPanel();
+            }
         }
 
         private void HandleKitchenFlowChanged()

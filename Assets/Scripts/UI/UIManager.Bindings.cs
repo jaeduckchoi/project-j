@@ -1,10 +1,8 @@
 using CoreLoop.Core;
 using Exploration.Player;
 using Restaurant;
-using TMPro;
 using UI.Layout;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
@@ -14,6 +12,7 @@ namespace UI
         private void BindSceneReferences()
         {
             cachedPlayer = FindFirstObjectByType<PlayerController>();
+            BindTypedPopupUi();
             BindInventory();
             BindStorage();
             BindEconomy();
@@ -199,10 +198,22 @@ namespace UI
 
         private void ResolveOptionalUiReferences()
         {
-            ResolveOptionalComponentReference(ref recipePanelButton, "RecipePanelButton");
-            ResolveOptionalComponentReference(ref upgradePanelButton, "UpgradePanelButton");
-            ResolveOptionalComponentReference(ref materialPanelButton, "MaterialPanelButton");
-            ResolveOptionalComponentReference(ref popupCloseButton, "PopupCloseButton");
+            BindTypedPopupUi();
+            if (ShouldUseTypedPopupUi())
+            {
+                recipePanelButton = null;
+                upgradePanelButton = null;
+                materialPanelButton = null;
+                popupCloseButton = popupFrameUi != null ? popupFrameUi.CloseButton : null;
+            }
+            else
+            {
+                ResolveOptionalComponentReference(ref recipePanelButton, "RecipePanelButton");
+                ResolveOptionalComponentReference(ref upgradePanelButton, "UpgradePanelButton");
+                ResolveOptionalComponentReference(ref materialPanelButton, "MaterialPanelButton");
+                ResolveOptionalComponentReference(ref popupCloseButton, "PopupCloseButton");
+            }
+
             ResolveOptionalComponentReference(ref guideHelpButton, "GuideHelpButton");
 
             string economyTextObjectName = EconomyTextObjectName(IsHubScene());
@@ -239,17 +250,17 @@ namespace UI
             UnbindButtons();
             ResolveOptionalUiReferences();
 
-            if (recipePanelButton != null)
+            if (!ShouldUseTypedPopupUi() && recipePanelButton != null)
             {
                 recipePanelButton.onClick.AddListener(HandleRecipePanelClicked);
             }
 
-            if (upgradePanelButton != null)
+            if (!ShouldUseTypedPopupUi() && upgradePanelButton != null)
             {
                 upgradePanelButton.onClick.AddListener(HandleUpgradePanelClicked);
             }
 
-            if (materialPanelButton != null)
+            if (!ShouldUseTypedPopupUi() && materialPanelButton != null)
             {
                 materialPanelButton.onClick.AddListener(HandleMaterialPanelClicked);
             }
@@ -270,17 +281,17 @@ namespace UI
         /// </summary>
         private void UnbindButtons()
         {
-            if (recipePanelButton != null)
+            if (!ShouldUseTypedPopupUi() && recipePanelButton != null)
             {
                 recipePanelButton.onClick.RemoveListener(HandleRecipePanelClicked);
             }
 
-            if (upgradePanelButton != null)
+            if (!ShouldUseTypedPopupUi() && upgradePanelButton != null)
             {
                 upgradePanelButton.onClick.RemoveListener(HandleUpgradePanelClicked);
             }
 
-            if (materialPanelButton != null)
+            if (!ShouldUseTypedPopupUi() && materialPanelButton != null)
             {
                 materialPanelButton.onClick.RemoveListener(HandleMaterialPanelClicked);
             }

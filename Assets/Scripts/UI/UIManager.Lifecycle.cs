@@ -24,9 +24,8 @@ namespace UI
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
-            StorageStation.StoragePanelRequested += HandleStoragePanelRequested;
             RefrigeratorStation.PanelRequested += HandleRefrigeratorPanelRequested;
-            FrontCounterStation.PanelRequested += HandleFrontCounterPanelRequested;
+            RefrigeratorStation.RuntimePanelOpener = ShowRefrigeratorPanel;
         }
 
         /// <summary>
@@ -58,9 +57,11 @@ namespace UI
         {
             RestorePopupPauseIfNeeded();
             SceneManager.sceneLoaded -= HandleSceneLoaded;
-            StorageStation.StoragePanelRequested -= HandleStoragePanelRequested;
             RefrigeratorStation.PanelRequested -= HandleRefrigeratorPanelRequested;
-            FrontCounterStation.PanelRequested -= HandleFrontCounterPanelRequested;
+            if (ReferenceEquals(RefrigeratorStation.RuntimePanelOpener, (System.Action)ShowRefrigeratorPanel))
+            {
+                RefrigeratorStation.RuntimePanelOpener = null;
+            }
             UnbindKitchenFlow();
             UnbindInventory();
             UnbindStorage();

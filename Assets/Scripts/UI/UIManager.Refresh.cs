@@ -29,6 +29,12 @@ namespace UI
                 return;
             }
 
+            if (ShouldUseTypedPopupUi())
+            {
+                RefreshTypedHubPopupContent();
+                return;
+            }
+
             PopupPanelContent popupContent = BuildCurrentHubPopupContent();
 
             if (inventoryText != null)
@@ -47,6 +53,13 @@ namespace UI
 
         private PopupPanelContent BuildCurrentHubPopupContent()
         {
+            if (ShouldUseTypedPopupUi())
+            {
+                return activeHubPanel == HubPopupPanel.Refrigerator
+                    ? BuildRefrigeratorPopupContent()
+                    : new PopupPanelContent(new List<PopupListEntry>(), string.Empty);
+            }
+
             return activeHubPanel switch
             {
                 HubPopupPanel.Storage => BuildStoragePopupContent(),
@@ -771,6 +784,12 @@ namespace UI
                 return;
             }
 
+            if (ShouldUseTypedPopupUi())
+            {
+                RefreshHubPopupOverlay();
+                return;
+            }
+
             if (!Application.isPlaying)
             {
                 RefreshHubPopupOverlay();
@@ -789,17 +808,35 @@ namespace UI
 
         private void ApplyMenuPanelState()
         {
+            if (ShouldUseTypedPopupUi())
+            {
+                ApplyTypedPopupState();
+                SetHubHudVisible(activeHubPanel == HubPopupPanel.None);
+                RefreshHubPopupOverlay();
+                RefreshGuideText();
+                RefreshButtonStates();
+                RefreshHubPopupContent();
+                return;
+            }
+
             bool isHubScene = IsHubScene();
 
             if (isHubScene)
             {
                 PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
                 TMP_FontAsset headingFont = headingFontAsset ?? bodyFontAsset ?? TMP_Settings.defaultFontAsset;
+                TMP_FontAsset bodyFont = bodyFontAsset ?? headingFont;
                 bool showPopup = activeHubPanel != HubPopupPanel.None;
+                bool showRefrigeratorPopup = showPopup && activeHubPanel == HubPopupPanel.Refrigerator;
 
                 ApplyHubPopupFrameStyle(headingFont, theme.Text);
+                if (showRefrigeratorPopup)
+                {
+                    EnsureRefrigeratorPopupChrome(bodyFont, headingFont, theme.Text);
+                }
+
                 SetHubPopupDesignActive(showPopup);
-                SetRefrigeratorPopupDesignActive(showPopup && activeHubPanel == HubPopupPanel.Refrigerator);
+                SetRefrigeratorPopupDesignActive(showRefrigeratorPopup);
                 SetHubHudVisible(!showPopup);
                 SetLegacyHubPopupObjectsActive(false);
 
@@ -859,7 +896,18 @@ namespace UI
         private void RefreshHubPopupOverlay()
         {
             bool shouldShowOverlay = IsHubScene() && activeHubPanel != HubPopupPanel.None;
-            SetNamedObjectActive("PopupOverlay", shouldShowOverlay);
+            if (ShouldUseTypedPopupUi())
+            {
+                if (popupFrameUi != null && popupFrameUi.OverlayRoot != null)
+                {
+                    popupFrameUi.OverlayRoot.SetActive(shouldShowOverlay);
+                }
+            }
+            else
+            {
+                SetNamedObjectActive("PopupOverlay", shouldShowOverlay);
+            }
+
             ApplyPopupPauseState(shouldShowOverlay);
         }
 

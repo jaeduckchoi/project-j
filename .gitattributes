@@ -1,0 +1,25 @@
+* text=auto
+
+.githooks/pre-commit text eol=lf
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+
+*.cs text eol=crlf
+*.md text eol=crlf
+*.txt text eol=crlf
+*.json text eol=crlf
+*.yaml text eol=crlf
+*.yml text eol=crlf
+*.asmdef text eol=crlf
+*.cginc text eol=crlf
+*.compute text eol=crlf
+*.hlsl text eol=crlf
+*.shader text eol=crlf
+*.uxml text eol=crlf
+*.uss text eol=crlf
+
+*.unity text eol=crlf
+*.prefab text eol=crlf
+*.asset text eol=crlf
+*.meta text eol=crlf

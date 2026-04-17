@@ -52,6 +52,11 @@ namespace UI
         private const string PopupFrameHeaderGroupName = "PopupFrameHeader";
         private const string PopupFrameLeftGroupName = "PopupFrameLeft";
         private const string PopupFrameRightGroupName = "PopupFrameRight";
+        private const string PopupSharedLeftEditorGroupName = "PopupSharedLeftGroup";
+        private const string PopupSharedRightEditorGroupName = "PopupSharedRightGroup";
+        private const string PopupStorageRightEditorGroupName = "PopupStorageRightGroup";
+        private const string PopupUpgradeRightEditorGroupName = "PopupUpgradeRightGroup";
+        private const string PopupRefrigeratorEditorGroupName = "PopupRefrigeratorGroup";
         private static string HudActionGroupName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudActionGroupCanonicalName);
         private static string HudPanelButtonGroupObjectName => PrototypeUISceneLayoutCatalog.ResolveObjectName(HudPanelButtonGroupCanonicalName);
         private static string StatusPanelObjectName(bool isHubScene) => isHubScene ? HubResourcePanelObjectName : ExploreStatusPanelObjectName;
@@ -217,12 +222,7 @@ namespace UI
             return popupPanel switch
             {
                 HubPopupPanel.None => PrototypeUIPreviewPanel.None,
-                HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
                 HubPopupPanel.Refrigerator => PrototypeUIPreviewPanel.Refrigerator,
-                HubPopupPanel.FrontCounter => PrototypeUIPreviewPanel.Materials,
-                HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
-                HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,
-                HubPopupPanel.Materials => PrototypeUIPreviewPanel.Materials,
                 _ => PrototypeUIPreviewPanel.None
             };
         }

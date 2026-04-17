@@ -15,7 +15,7 @@
   현재 Hub 씬은 32x18 논리 타일 그리드를 기준으로 하고, 직렬화된 월드 좌표도 1타일 = 1유닛 기준으로 맞춘다.
   `Back Counter`, `Front Counter`, `Mosaic Tile Floor`, `Mosaic Tile Wall` 는 32px 소스 타일 아트라서 씬에서 `scale 3.125` 로 월드 타일 크기를 맞춘다.
 - `Beach` 시각 루트는 `WorldVisualRoot/BeachTilemapRoot`, `WorldVisualRoot/BeachDecorRoot`를 기준으로 두고, 장식 오브젝트는 `BeachBoatRoot`, `BeachLandmarkRoot`, `BeachTreeRoot` 아래에 분류합니다.
-- UI 구조: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset`
+- UI 구조: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`
 
 ## 검증
 

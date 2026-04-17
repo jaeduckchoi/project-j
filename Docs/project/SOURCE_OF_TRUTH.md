@@ -21,10 +21,10 @@
 
 ### Canvas 관리 UI
 
-- 관리 대상 Canvas 레이아웃 정본은 `Assets/Resources/Generated/ui-layout-overrides.asset`다.
-- managed UI 이름과 런타임 read API 정본은 `PrototypeUISceneLayoutCatalog`다.
-- 에디터 sync/overlay/capture 흐름은 `PrototypeUISceneLayoutCatalog.Editor*.cs`가 맡는다.
-- 에디터 프리뷰와 저장 흐름은 `PrototypeUIDesignController`와 `UIManager.EditorPreview.cs`가 맡는다.
+- 관리 대상 Canvas 기본 레이아웃 정본은 `PrototypeUILayout*.cs` 코드 값이다.
+- managed UI 이름 catalog와 런타임 binding 적용 경로의 정본은 `PrototypeUISceneLayoutCatalog`다.
+- 에디터에서 조정한 런타임 반영 레이아웃은 UI 레이아웃 편집기가 관리 ID와 씬 오브젝트를 명시적으로 연결해 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다. 큰 팝업이 어느 월드 오브젝트와 연결되는지는 해당 오브젝트의 상호작용 컴포넌트가 정본이다.
+- 에디터 프리뷰 흐름은 `PrototypeUIDesignController`와 `UIManager.EditorPreview.cs`가 맡는다.
 - UI entry와 partial은 `UIManager.cs`와 `UIManager.*.cs` family를 기준으로 유지한다.
 - 레이아웃, 스타일, 팝업 콘텐츠는 각각 `PrototypeUILayout*.cs`, `PrototypeUISkin*.cs`, `PrototypeUIPopupCatalog.cs`를 기준으로 유지한다.
 - 팝업 일시정지 계산은 `PopupPauseStateUtility.cs`가 정본이고, `UIManager`는 결과만 반영한다.
@@ -62,7 +62,7 @@
 
 ## 함께 맞춰야 하는 결합 지점
 
-- UI 구조 변경: `UIManager.*.cs`, `PrototypeUISceneLayoutCatalog*.cs`, `PrototypeUISceneLayoutSettings.cs`, `PrototypeUILayout*.cs`, `PrototypeUISkin*.cs`, `PrototypeUIPopupCatalog.cs`, `PopupPauseStateUtility.cs`, `ui-layout-overrides.asset`, `Docs/ui/*`
+- UI 구조 변경: `UIManager.*.cs`, `PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUISkin*.cs`, `PrototypeUIPopupCatalog.cs`, `PopupPauseStateUtility.cs`, `Docs/ui/*`
 - TMP 폰트 변경: `UIManager.cs`, `PrototypeUISkin.cs`, `GAME_PROJECT_STRUCTURE.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - 씬 하이어라키 변경: `PrototypeSceneHierarchyCatalog.cs`, `PrototypeSceneHierarchyOrganizer.cs`, `Docs/scene/*`
 - generated 경로 변경: `PrototypeGeneratedAssetSettings.cs`, `GAME_PROJECT_STRUCTURE.md`, `Docs/build/GAME_BUILD_GUIDE.md`

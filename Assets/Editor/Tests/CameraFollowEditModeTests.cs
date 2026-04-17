@@ -4,6 +4,8 @@ using Exploration.Camera;
 using NUnit.Framework;
 using UnityEngine;
 
+namespace Editor.Tests
+{
 public class CameraFollowEditModeTests
 {
     private const float FloatTolerance = 0.0001f;
@@ -172,4 +174,5 @@ public class CameraFollowEditModeTests
         Assert.That(hasBounds, Is.True, "유효 bounds를 계산하지 못했습니다.");
         return (Bounds)arguments[0];
     }
+}
 }

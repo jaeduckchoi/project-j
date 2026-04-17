@@ -20,6 +20,12 @@ namespace Restaurant
         {
             get
             {
+                if (TryGetSiblingInteractable(out IInteractable siblingInteractable)
+                    && !string.IsNullOrWhiteSpace(siblingInteractable.InteractionPrompt))
+                {
+                    return siblingInteractable.InteractionPrompt;
+                }
+
                 if (RestaurantFlowController.TryGetLegacyPrompt(gameObject, promptLabel, out string kitchenPrompt))
                 {
                     return kitchenPrompt;
@@ -67,6 +73,11 @@ namespace Restaurant
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
+            if (TryGetSiblingInteractable(out IInteractable siblingInteractable))
+            {
+                return siblingInteractable.CanInteract(interactor);
+            }
+
             if (RestaurantFlowController.IsLegacyKitchenStation(gameObject, promptLabel))
             {
                 return true;
@@ -80,6 +91,12 @@ namespace Restaurant
         /// </summary>
         public void Interact(GameObject interactor)
         {
+            if (TryGetSiblingInteractable(out IInteractable siblingInteractable))
+            {
+                siblingInteractable.Interact(interactor);
+                return;
+            }
+
             if (RestaurantFlowController.TryHandleLegacyInteract(gameObject, promptLabel, interactor))
             {
                 return;
@@ -94,6 +111,31 @@ namespace Restaurant
             GameManager.Instance?.DayCycle?.ShowHintOnce(
                 "first_service_start",
                 "영업 결과는 하단 안내와 요리 패널에서 바로 확인할 수 있습니다.");
+        }
+
+        /// <summary>
+        /// 같은 오브젝트에 더 구체적인 상호작용 컴포넌트가 있으면 legacy 프록시보다 우선 사용합니다.
+        /// </summary>
+        private bool TryGetSiblingInteractable(out IInteractable interactable)
+        {
+            MonoBehaviour[] behaviours = GetComponents<MonoBehaviour>();
+            for (int index = 0; index < behaviours.Length; index++)
+            {
+                MonoBehaviour behaviour = behaviours[index];
+                if (behaviour == null || ReferenceEquals(behaviour, this))
+                {
+                    continue;
+                }
+
+                if (behaviour is IInteractable siblingInteractable)
+                {
+                    interactable = siblingInteractable;
+                    return true;
+                }
+            }
+
+            interactable = null;
+            return false;
         }
     }
 }

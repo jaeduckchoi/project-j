@@ -123,8 +123,13 @@ namespace UI
             Transform popupFrame = EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1);
             EnsureCanvasGroupRoot(popupRoot, PopupShellGroupName, 0);
             EnsureCanvasGroupRoot(popupRoot, PopupFrameHeaderGroupName, 2);
-            EnsurePopupLayoutContainer(popupFrame, PopupFrameLeftGroupName, 2);
-            EnsurePopupLayoutContainer(popupFrame, PopupFrameRightGroupName, 3);
+            Transform popupFrameLeft = EnsurePopupLayoutContainer(popupFrame, PopupFrameLeftGroupName, 2);
+            Transform popupFrameRight = EnsurePopupLayoutContainer(popupFrame, PopupFrameRightGroupName, 3);
+
+            if (!Application.isPlaying)
+            {
+                EnsureEditorPopupTypeGroupRoots(popupFrame, popupFrameLeft, popupFrameRight);
+            }
         }
 
         private void ReparentPopupCanvasObjects(Transform popupRoot)
@@ -155,6 +160,13 @@ namespace UI
             if (TryGetRefrigeratorPopupParent(objectName, popupRoot, out Transform refrigeratorParent))
             {
                 return refrigeratorParent;
+            }
+
+            if (!Application.isPlaying
+                && !suppressCanvasGroupingInEditorPreview
+                && TryGetEditorPopupTypeParent(objectName, popupRoot, out Transform editorPopupTypeParent))
+            {
+                return editorPopupTypeParent;
             }
 
             string subgroupName = GetPopupSubgroupName(objectName);
@@ -230,10 +242,15 @@ namespace UI
             {
                 "PopupOverlay" => PopupShellGroupName,
                 "PopupFrameLeft" or "PopupFrameRight" => PopupFrameGroupName,
-                PrototypeUIObjectNames.PopupTitle or PrototypeUIObjectNames.PopupLeftCaption or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
+                PrototypeUIObjectNames.PopupTitle => PopupFrameGroupName,
+                PrototypeUIObjectNames.PopupLeftCaption or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
                 "PopupCloseButton" or PrototypeUIObjectNames.PopupRightCaption or "PopupRightBody"
                     or "StorageText" or "SelectedRecipeText" or "UpgradeText" => PopupFrameRightGroupName,
                 PrototypeUIObjectNames.RefrigeratorStorage
+                    or PrototypeUIObjectNames.RefrigeratorInfoPanel
+                    or PrototypeUIObjectNames.RefrigeratorInfoIcon
+                    or PrototypeUIObjectNames.RefrigeratorItemNameText
+                    or PrototypeUIObjectNames.RefrigeratorItemDescriptionText
                     or PrototypeUIObjectNames.RefrigeratorSelectedSlot
                     or PrototypeUIObjectNames.RefrigeratorRemoveZone
                     or PrototypeUIObjectNames.RefrigeratorRemoveIcon
@@ -257,12 +274,30 @@ namespace UI
                 return false;
             }
 
+            if (!Application.isPlaying && !suppressCanvasGroupingInEditorPreview)
+            {
+                popupFrame = EnsurePopupEditorGroupRoot(popupFrame, PopupRefrigeratorEditorGroupName, 4);
+            }
+
             if (objectName == PrototypeUIObjectNames.RefrigeratorStorage
+                || objectName == PrototypeUIObjectNames.RefrigeratorInfoPanel
                 || objectName == PrototypeUIObjectNames.RefrigeratorRemoveZone
                 || objectName == PrototypeUIObjectNames.RefrigeratorDragGhost)
             {
                 parent = popupFrame;
                 return true;
+            }
+
+            if (objectName == PrototypeUIObjectNames.RefrigeratorInfoIcon
+                || objectName == PrototypeUIObjectNames.RefrigeratorItemNameText
+                || objectName == PrototypeUIObjectNames.RefrigeratorItemDescriptionText)
+            {
+                parent = EnsureRefrigeratorPopupContainer(
+                    popupFrame,
+                    PrototypeUIObjectNames.RefrigeratorInfoPanel,
+                    PrototypeUILayout.HubRefrigeratorInfoPanel,
+                    5);
+                return parent != null;
             }
 
             if (objectName == PrototypeUIObjectNames.RefrigeratorSelectedSlot
@@ -305,6 +340,116 @@ namespace UI
 
             return false;
         }
+
+        private void EnsureEditorPopupTypeGroupRoots(Transform popupFrame, Transform popupFrameLeft, Transform popupFrameRight)
+        {
+            if (popupFrame == null)
+            {
+                return;
+            }
+
+            EnsurePopupEditorGroupRoot(popupFrameLeft, PopupSharedLeftEditorGroupName, 0);
+            EnsurePopupEditorGroupRoot(popupFrameRight, PopupSharedRightEditorGroupName, 0);
+            EnsurePopupEditorGroupRoot(popupFrameRight, PopupStorageRightEditorGroupName, 1);
+            EnsurePopupEditorGroupRoot(popupFrameRight, PopupUpgradeRightEditorGroupName, 2);
+            EnsurePopupEditorGroupRoot(popupFrame, PopupRefrigeratorEditorGroupName, 4);
+        }
+
+        private Transform EnsurePopupEditorGroupRoot(Transform parent, string objectName, int siblingIndex)
+        {
+            if (parent == null || string.IsNullOrWhiteSpace(objectName))
+            {
+                return null;
+            }
+
+            Transform existing = parent.Find(objectName) ?? FindNamedUiTransform(objectName);
+            GameObject containerObject = existing != null
+                ? existing.gameObject
+                : new GameObject(objectName, typeof(RectTransform));
+            ApplyHubPopupObjectIdentity(containerObject);
+            if (containerObject.transform.parent != parent)
+            {
+                containerObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = containerObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = containerObject.AddComponent<RectTransform>();
+            }
+
+            ApplyManagedRectLayout(
+                rect,
+                Vector2.zero,
+                Vector2.one,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
+                preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, siblingIndex, preserveExistingLayout: existing != null);
+            return rect;
+        }
+
+        private bool TryGetEditorPopupTypeParent(string objectName, Transform popupRoot, out Transform parent)
+        {
+            parent = null;
+            if (popupRoot == null || string.IsNullOrWhiteSpace(objectName))
+            {
+                return false;
+            }
+
+            Transform popupFrame = EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1);
+            Transform popupFrameLeft = EnsurePopupLayoutContainer(popupFrame, PopupFrameLeftGroupName, 2);
+            Transform popupFrameRight = EnsurePopupLayoutContainer(popupFrame, PopupFrameRightGroupName, 3);
+            EnsureEditorPopupTypeGroupRoots(popupFrame, popupFrameLeft, popupFrameRight);
+
+            if (IsEditorSharedLeftPopupObject(objectName))
+            {
+                parent = EnsurePopupEditorGroupRoot(popupFrameLeft, PopupSharedLeftEditorGroupName, 0);
+                return parent != null;
+            }
+
+            if (IsEditorSharedRightPopupObject(objectName))
+            {
+                parent = EnsurePopupEditorGroupRoot(popupFrameRight, PopupSharedRightEditorGroupName, 0);
+                return parent != null;
+            }
+
+            if (string.Equals(objectName, "StorageText", StringComparison.Ordinal))
+            {
+                parent = EnsurePopupEditorGroupRoot(popupFrameRight, PopupStorageRightEditorGroupName, 1);
+                return parent != null;
+            }
+
+            if (string.Equals(objectName, "UpgradeText", StringComparison.Ordinal))
+            {
+                parent = EnsurePopupEditorGroupRoot(popupFrameRight, PopupUpgradeRightEditorGroupName, 2);
+                return parent != null;
+            }
+
+            return false;
+        }
+
+        private static bool IsEditorSharedLeftPopupObject(string objectName)
+        {
+            return objectName == PrototypeUIObjectNames.PopupLeftCaption
+                   || objectName == "PopupLeftBody"
+                   || objectName == "InventoryText"
+                   || objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
+                   || objectName.StartsWith("PopupLeftItemIcon", StringComparison.Ordinal)
+                   || objectName.StartsWith("PopupLeftItemText", StringComparison.Ordinal);
+        }
+
+        private static bool IsEditorSharedRightPopupObject(string objectName)
+        {
+            return objectName == PrototypeUIObjectNames.PopupRightCaption
+                   || objectName == "PopupRightBody"
+                   || objectName == "SelectedRecipeText"
+                   || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)
+                   || objectName.StartsWith("PopupRightItemIcon", StringComparison.Ordinal)
+                   || objectName.StartsWith("PopupRightItemText", StringComparison.Ordinal);
+        }
+
 
         private Transform EnsureRefrigeratorPopupContainer(Transform parent, string objectName, PrototypeUIRect layout, int siblingIndex)
         {

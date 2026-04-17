@@ -14,6 +14,7 @@ namespace Exploration.Interaction
     public class InteractionDetector : MonoBehaviour
     {
         private readonly List<IInteractable> nearbyInteractables = new();
+        private readonly Dictionary<IInteractable, float> nearbyInteractableDistances = new();
         private readonly Collider2D[] overlapBuffer = new Collider2D[32];
         private ContactFilter2D overlapFilter;
         private Collider2D triggerCollider;
@@ -42,7 +43,6 @@ namespace Exploration.Interaction
         private void Update()
         {
             RefreshNearbyOverlapCandidates();
-            CleanupMissingInteractables();
             RefreshCurrentInteractable();
         }
 
@@ -66,13 +66,7 @@ namespace Exploration.Interaction
         /// </summary>
         private void OnTriggerEnter2D(Collider2D other)
         {
-            IInteractable interactable = FindInteractable(other);
-            if (interactable == null || nearbyInteractables.Contains(interactable))
-            {
-                return;
-            }
-
-            nearbyInteractables.Add(interactable);
+            RefreshNearbyOverlapCandidates();
             RefreshCurrentInteractable();
         }
 
@@ -81,18 +75,15 @@ namespace Exploration.Interaction
         /// </summary>
         private void OnTriggerExit2D(Collider2D other)
         {
-            IInteractable interactable = FindInteractable(other);
-            if (interactable == null)
-            {
-                return;
-            }
-
-            nearbyInteractables.Remove(interactable);
+            RefreshNearbyOverlapCandidates();
             RefreshCurrentInteractable();
         }
 
         private void RefreshNearbyOverlapCandidates()
         {
+            nearbyInteractables.Clear();
+            nearbyInteractableDistances.Clear();
+
             if (triggerCollider == null)
             {
                 return;
@@ -101,8 +92,22 @@ namespace Exploration.Interaction
             int overlapCount = triggerCollider.Overlap(overlapFilter, overlapBuffer);
             for (int i = 0; i < overlapCount; i++)
             {
-                IInteractable interactable = FindInteractable(overlapBuffer[i]);
-                if (interactable != null && !nearbyInteractables.Contains(interactable))
+                Collider2D overlapCollider = overlapBuffer[i];
+                IInteractable interactable = FindInteractable(overlapCollider);
+                if (interactable == null || interactable.InteractionTransform == null)
+                {
+                    continue;
+                }
+
+                float candidateDistance = GetColliderDistance(overlapCollider);
+                if (nearbyInteractableDistances.TryGetValue(interactable, out float currentDistance)
+                    && candidateDistance >= currentDistance)
+                {
+                    continue;
+                }
+
+                nearbyInteractableDistances[interactable] = candidateDistance;
+                if (!nearbyInteractables.Contains(interactable))
                 {
                     nearbyInteractables.Add(interactable);
                 }
@@ -132,49 +137,58 @@ namespace Exploration.Interaction
         }
 
         /// <summary>
-        /// 파괴되었거나 기준 위치를 잃은 대상을 목록에서 정리한다.
+        /// 감지 범위 콜라이더와 후보 콜라이더 사이의 실제 거리를 구한다.
+        /// 겹친 상태면 음수가 되므로, 값이 더 작을수록 현재 플레이어와 더 직접 맞닿은 대상이다.
         /// </summary>
-        private void CleanupMissingInteractables()
+        private float GetColliderDistance(Collider2D targetCollider)
         {
-            for (int index = nearbyInteractables.Count - 1; index >= 0; index--)
+            if (triggerCollider == null || targetCollider == null)
             {
-                IInteractable interactable = nearbyInteractables[index];
-                if (interactable == null || interactable.InteractionTransform == null)
-                {
-                    nearbyInteractables.RemoveAt(index);
-                }
+                return float.MaxValue;
             }
+
+            return triggerCollider.Distance(targetCollider).distance;
         }
 
         /// <summary>
-        /// 프롬프트가 있는 후보 중 가장 가까운 대상을 현재 상호작용 대상으로 선택한다.
+        /// 프롬프트가 있는 후보 중 실제 콜라이더 거리가 가장 가까운 대상을 현재 상호작용 대상으로 선택한다.
         /// </summary>
         private void RefreshCurrentInteractable()
         {
+            Vector3 detectorPosition = transform.position;
             IInteractable bestInteractable = null;
             float bestDistance = float.MaxValue;
-            Vector3 detectorPosition = transform.position;
+            int bestPriority = int.MinValue;
+            float bestCenterDistance = float.MaxValue;
+
+            if (TryGetSelectionMetrics(CurrentInteractable, detectorPosition, out float currentDistance, out int currentPriority, out float currentCenterDistance))
+            {
+                bestInteractable = CurrentInteractable;
+                bestDistance = currentDistance;
+                bestPriority = currentPriority;
+                bestCenterDistance = currentCenterDistance;
+            }
 
             foreach (IInteractable interactable in nearbyInteractables)
             {
-                if (interactable == null || interactable.InteractionTransform == null)
+                if (ReferenceEquals(interactable, bestInteractable))
                 {
                     continue;
                 }
 
-                // 빈 프롬프트는 UI에 노출하지 않기 위해 선택 대상에서 제외한다.
-                if (string.IsNullOrWhiteSpace(interactable.InteractionPrompt))
+                if (!TryGetSelectionMetrics(interactable, detectorPosition, out float candidateDistance, out int candidatePriority, out float candidateCenterDistance))
                 {
                     continue;
                 }
 
-                float sqrDistance = (interactable.InteractionTransform.position - detectorPosition).sqrMagnitude;
-                if (sqrDistance >= bestDistance)
+                if (!IsBetterCandidate(candidateDistance, candidatePriority, candidateCenterDistance, bestDistance, bestPriority, bestCenterDistance))
                 {
                     continue;
                 }
 
-                bestDistance = sqrDistance;
+                bestDistance = candidateDistance;
+                bestPriority = candidatePriority;
+                bestCenterDistance = candidateCenterDistance;
                 bestInteractable = interactable;
             }
 
@@ -185,6 +199,72 @@ namespace Exploration.Interaction
 
             CurrentInteractable = bestInteractable;
             CurrentInteractableChanged?.Invoke(CurrentInteractable);
+        }
+
+        private bool TryGetSelectionMetrics(IInteractable interactable, Vector3 detectorPosition, out float colliderDistance, out int selectionPriority, out float centerSqrDistance)
+        {
+            colliderDistance = float.MaxValue;
+            selectionPriority = int.MinValue;
+            centerSqrDistance = float.MaxValue;
+
+            if (interactable == null || interactable.InteractionTransform == null)
+            {
+                return false;
+            }
+
+            // 빈 프롬프트는 UI에 노출하지 않기 위해 선택 대상에서 제외한다.
+            if (string.IsNullOrWhiteSpace(interactable.InteractionPrompt))
+            {
+                return false;
+            }
+
+            if (!nearbyInteractableDistances.TryGetValue(interactable, out colliderDistance))
+            {
+                return false;
+            }
+
+            selectionPriority = GetInteractionPriority(interactable);
+            centerSqrDistance = (interactable.InteractionTransform.position - detectorPosition).sqrMagnitude;
+            return true;
+        }
+
+        private static bool IsBetterCandidate(
+            float candidateDistance,
+            int candidatePriority,
+            float candidateCenterDistance,
+            float bestDistance,
+            int bestPriority,
+            float bestCenterDistance)
+        {
+            const float distanceEpsilon = 0.0001f;
+
+            if (candidateDistance < bestDistance - distanceEpsilon)
+            {
+                return true;
+            }
+
+            if (Mathf.Abs(candidateDistance - bestDistance) > distanceEpsilon)
+            {
+                return false;
+            }
+
+            if (candidatePriority != bestPriority)
+            {
+                return candidatePriority > bestPriority;
+            }
+
+            return candidateCenterDistance < bestCenterDistance - distanceEpsilon;
+        }
+
+        private static int GetInteractionPriority(IInteractable interactable)
+        {
+            return interactable switch
+            {
+                Restaurant.Kitchen.RefrigeratorStation => 3,
+                Restaurant.Kitchen.FrontCounterStation => 2,
+                Restaurant.ServiceCounterStation => 0,
+                _ => 1
+            };
         }
     }
 }
