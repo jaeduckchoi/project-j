@@ -3,7 +3,7 @@
 ## 문서 정본
 
 - 작업 시작 안내: `AGENTS.md`, `CLAUDE.md`
-- 규칙 허브: `.aiassistant/rules/README.md`
+- 작업 하네스: `Docs/README.md`
 - 프로젝트 규칙: `Docs/project/GAME_ASSISTANT_RULES.md`
 - 작업 절차: `Docs/project/AGENT_WORKFLOW.md`
 - 구조와 경로: `Docs/project/GAME_PROJECT_STRUCTURE.md`

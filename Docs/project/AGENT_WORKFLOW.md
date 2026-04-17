@@ -2,7 +2,7 @@
 
 ## 기본 루프
 
-1. 루트 엔트리와 `.aiassistant/rules/README.md`를 읽는다.
+1. 루트 엔트리와 `Docs/README.md`를 읽는다.
 2. `GAME_ASSISTANT_RULES.md`와 `GAME_DOCS_INDEX.md`에서 필요한 정본 문서만 고른다.
 3. 실제 코드, 씬, generated 경로 상태를 확인한다.
 4. 정본 경계를 먼저 정한 뒤 구현한다.

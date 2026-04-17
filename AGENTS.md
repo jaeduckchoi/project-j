@@ -5,7 +5,7 @@
 ## WHAT
 
 - Unity 기반 2D 탑다운 식당 운영 프로토타입이다.
-- 핵심 루트는 `Assets`(런타임/에디터/씬/리소스), `Docs`(정본 문서), `.aiassistant`(에이전트 규칙 허브)다.
+- 핵심 루트는 `Assets`(런타임/에디터/씬/리소스)와 `Docs`(정본 문서와 작업 하네스)다.
 - 구조와 경로의 정본은 `Docs/project/GAME_PROJECT_STRUCTURE.md`다.
 
 ## WHY
@@ -16,7 +16,7 @@
 
 ## HOW
 
-1. `.aiassistant/rules/README.md`를 읽어 규칙 허브와 작업별 진입점을 확인한다.
+1. `Docs/README.md`를 읽어 작업 하네스와 문서 계층을 확인한다.
 2. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽어 전역 가드레일과 읽기 제외 범위를 확인한다.
 3. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 정본 문서 1~2개만 추가로 읽는다.
 4. 코드, 씬, generated 자산을 바꿀 때는 `Docs/project/SOURCE_OF_TRUTH.md`의 정본 관계를 먼저 따른다.

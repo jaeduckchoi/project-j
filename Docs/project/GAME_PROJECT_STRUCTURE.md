@@ -4,7 +4,6 @@
 
 ```text
 .
-├─ .aiassistant
 ├─ Assets
 ├─ Docs
 ├─ Packages

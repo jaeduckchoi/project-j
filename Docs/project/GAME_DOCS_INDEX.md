@@ -5,7 +5,7 @@
 ## 최소 읽기 순서
 
 1. 루트 엔트리 `AGENTS.md` 또는 `CLAUDE.md`
-2. `.aiassistant/rules/README.md`
+2. `Docs/README.md`
 3. `Docs/project/GAME_ASSISTANT_RULES.md`
 4. 현재 작업에 필요한 정본 문서 1~2개
 
@@ -36,8 +36,8 @@
 - 씬 배치나 월드 오브젝트 수정: `SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`
 - generated 자산, 폰트, 빌더 경로 수정: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 - 로컬 데이터와 런타임 상태 변경: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `AGENT_WORKFLOW.md`
-- 문서/규칙 체계 정리: `GAME_ASSISTANT_RULES.md`, `AGENT_WORKFLOW.md`, 이 인덱스
-- 루트 엔트리 정리: `.aiassistant/rules/README.md`, `GAME_ASSISTANT_RULES.md`, `GAME_PROJECT_STRUCTURE.md`, `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`
+- 문서/규칙 체계 정리: `Docs/README.md`, `GAME_ASSISTANT_RULES.md`, `AGENT_WORKFLOW.md`, 이 인덱스
+- 루트 엔트리 정리: `Docs/README.md`, `GAME_ASSISTANT_RULES.md`, `GAME_PROJECT_STRUCTURE.md`, `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`
 - 주석/코드 가독성 정리: `GAME_ASSISTANT_RULES.md`, `AGENT_WORKFLOW.md`, `GAME_PROJECT_STRUCTURE.md`
 - 게임 의도 확인: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
 
