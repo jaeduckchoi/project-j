@@ -9,6 +9,14 @@ namespace UI
 {
     public partial class UIManager
     {
+        private const string KitchenReturnHeldKey = "return-held";
+        private const string KitchenFinalizeKey = "action:finalize";
+        private const string KitchenBundleKey = "action:bundle";
+        private const string KitchenReturnRawKey = "action:return-raw";
+        private const string KitchenBasicIngredientKeyPrefix = "basic:";
+        private const string KitchenInventoryIngredientKeyPrefix = "inventory:";
+        private const string KitchenFrontCounterSlotKeyPrefix = "slot:";
+
         private RestaurantFlowController cachedKitchenFlow;
         private string selectedKitchenPopupKey;
 
@@ -94,15 +102,15 @@ namespace UI
             if (heldItem != null && !heldItem.IsBundle && heldItem.State == KitchenItemState.Raw)
             {
                 entries.Add(new PopupListEntry(
-                    "return-held",
+                    KitchenReturnHeldKey,
                     "Return held ingredient",
                     heldItem.DisplayName,
                     BuildRefrigeratorDetailText(flow),
                     heldItem.Icon,
-                    selectedKitchenPopupKey == "return-held",
+                    selectedKitchenPopupKey == KitchenReturnHeldKey,
                     () =>
                     {
-                        selectedKitchenPopupKey = "return-held";
+                        selectedKitchenPopupKey = KitchenReturnHeldKey;
                         flow.TryReturnHeldItemToRefrigerator();
                         RefreshHubPopupContent();
                     }));
@@ -115,7 +123,7 @@ namespace UI
                     continue;
                 }
 
-                string key = $"basic:{basicResource.ResourceId}";
+                string key = BuildPopupEntryKey(KitchenBasicIngredientKeyPrefix, basicResource.ResourceId);
                 entries.Add(new PopupListEntry(
                     key,
                     $"{basicResource.DisplayName} x unlimited",
@@ -144,7 +152,7 @@ namespace UI
 
                     ResourceData resource = entry.resource;
                     int availableAmount = flow.Reservations.GetAvailableAmount(inventory, resource);
-                    string key = $"inventory:{resource.ResourceId}";
+                    string key = BuildPopupEntryKey(KitchenInventoryIngredientKeyPrefix, resource.ResourceId);
                     entries.Add(new PopupListEntry(
                         key,
                         $"{resource.DisplayName} x{availableAmount}/{entry.amount}",
@@ -176,47 +184,47 @@ namespace UI
 
             KitchenDishData finalizableDish = flow.FindFinalizableDish();
             entries.Add(new PopupListEntry(
-                "action:finalize",
+                KitchenFinalizeKey,
                 finalizableDish != null ? $"Finalize {finalizableDish.DisplayName}" : "Finalize",
                 finalizableDish != null && flow.Carry.IsEmpty ? "Create final dish" : "Requires exact current-menu signature and empty hands",
                 BuildFrontCounterDetailText(flow, finalizableDish),
                 finalizableDish != null && finalizableDish.FinalDishItem != null ? finalizableDish.FinalDishItem.Icon : null,
-                selectedKitchenPopupKey == "action:finalize",
+                selectedKitchenPopupKey == KitchenFinalizeKey,
                 finalizableDish != null && flow.Carry.IsEmpty
                     ? () =>
                     {
-                        selectedKitchenPopupKey = "action:finalize";
+                        selectedKitchenPopupKey = KitchenFinalizeKey;
                         flow.TryFinalizeFrontCounter();
                         RefreshHubPopupContent();
                     }
                     : null));
 
             entries.Add(new PopupListEntry(
-                "action:bundle",
+                KitchenBundleKey,
                 "Bundle slots",
                 flow.Carry.IsEmpty && flow.FrontWorkspace.HasAnyItem ? "Make one KitchenBundle for BackCounter" : "Requires filled slots and empty hands",
                 BuildFrontCounterDetailText(flow, finalizableDish),
                 null,
-                selectedKitchenPopupKey == "action:bundle",
+                selectedKitchenPopupKey == KitchenBundleKey,
                 flow.Carry.IsEmpty && flow.FrontWorkspace.HasAnyItem
                     ? () =>
                     {
-                        selectedKitchenPopupKey = "action:bundle";
+                        selectedKitchenPopupKey = KitchenBundleKey;
                         flow.TryBundleFrontCounter();
                         RefreshHubPopupContent();
                     }
                     : null));
 
             entries.Add(new PopupListEntry(
-                "action:return-raw",
+                KitchenReturnRawKey,
                 "Return raw inputs",
                 "Return raw ingredients from slots to refrigerator",
                 BuildFrontCounterDetailText(flow, finalizableDish),
                 null,
-                selectedKitchenPopupKey == "action:return-raw",
+                selectedKitchenPopupKey == KitchenReturnRawKey,
                 () =>
                 {
-                    selectedKitchenPopupKey = "action:return-raw";
+                    selectedKitchenPopupKey = KitchenReturnRawKey;
                     flow.TryReturnFrontCounterRawInputs();
                     RefreshHubPopupContent();
                 }));
@@ -226,7 +234,7 @@ namespace UI
             {
                 int slotIndex = i;
                 KitchenCarryItem slotItem = slots[i];
-                string key = $"slot:{slotIndex}";
+                string key = BuildPopupEntryKey(KitchenFrontCounterSlotKeyPrefix, slotIndex.ToString());
                 bool canPlace = slotItem == null && flow.Carry.HeldItem != null;
                 bool canPick = slotItem != null && flow.Carry.IsEmpty;
                 entries.Add(new PopupListEntry(
@@ -299,6 +307,11 @@ namespace UI
             }
 
             return flow.Carry.HeldItem.IsBundle ? "Click to unpack bundle" : "Click to place held item";
+        }
+
+        private static string BuildPopupEntryKey(string prefix, string id)
+        {
+            return $"{prefix}{id ?? string.Empty}";
         }
     }
 }

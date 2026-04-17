@@ -18,6 +18,9 @@ namespace UI
 {
     public partial class UIManager
     {
+        private const string UpgradeToolKeyPrefix = "tool:";
+        private const string UpgradeInventoryKeyPrefix = "inventory:";
+
         // 동적 텍스트, 상세 설명, 팝업 리스트 구성은 Refresh partial에서만 조립합니다.
         private void RefreshHubPopupContent()
         {
@@ -99,6 +102,8 @@ namespace UI
                         {
                             cachedRestaurant.SelectRecipeByIndex(recipeIndex);
                         }
+
+                        RefreshHubPopupContent();
                     }));
             }
 
@@ -221,7 +226,7 @@ namespace UI
                     continue;
                 }
 
-                string key = $"tool:{cost.toolType}";
+                string key = BuildPopupEntryKey(UpgradeToolKeyPrefix, cost.toolType.ToString());
                 ToolType toolType = cost.toolType;
                 rawEntries.Add(new PopupListEntry(
                     key,
@@ -246,7 +251,7 @@ namespace UI
                     continue;
                 }
 
-                string key = $"inventory:{i}";
+                string key = BuildPopupEntryKey(UpgradeInventoryKeyPrefix, i.ToString());
                 int upgradeIndex = i;
                 rawEntries.Add(new PopupListEntry(
                     key,
@@ -319,9 +324,9 @@ namespace UI
             return cachedUpgradeManager.GetPreferredAction() switch
             {
                 UpgradeWorkbenchAction.UnlockTool when cachedUpgradeManager.GetPreferredToolType() != ToolType.None
-                    => $"tool:{cachedUpgradeManager.GetPreferredToolType()}",
+                    => BuildPopupEntryKey(UpgradeToolKeyPrefix, cachedUpgradeManager.GetPreferredToolType().ToString()),
                 UpgradeWorkbenchAction.UpgradeInventory when inventory != null
-                    => $"inventory:{inventory.CapacityLevel}",
+                    => BuildPopupEntryKey(UpgradeInventoryKeyPrefix, inventory.CapacityLevel.ToString()),
                 _ => string.Empty
             };
         }

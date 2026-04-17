@@ -59,6 +59,7 @@ namespace Restaurant.Kitchen
 
         private PlayerController movementLockedPlayer;
         private ToolCookingSession movementLockSession;
+        private bool kitchenStateEventsBound;
 
         public static RestaurantFlowController Instance { get; private set; }
 
@@ -511,12 +512,7 @@ namespace Restaurant.Kitchen
                 restaurantManager = FindFirstObjectByType<RestaurantManager>();
             }
 
-            Carry.Changed -= HandleKitchenStateChanged;
-            Carry.Changed += HandleKitchenStateChanged;
-            FrontWorkspace.Changed -= HandleKitchenStateChanged;
-            FrontWorkspace.Changed += HandleKitchenStateChanged;
-            Reservations.Changed -= HandleKitchenStateChanged;
-            Reservations.Changed += HandleKitchenStateChanged;
+            EnsureKitchenStateEventBindings();
 
             foreach (KitchenToolType toolType in CookingToolTypes)
             {
@@ -525,6 +521,19 @@ namespace Restaurant.Kitchen
 
             EnsureBasicIngredients();
             EnsureFallbackRecipes();
+        }
+
+        private void EnsureKitchenStateEventBindings()
+        {
+            if (kitchenStateEventsBound)
+            {
+                return;
+            }
+
+            kitchenStateEventsBound = true;
+            Carry.Changed += HandleKitchenStateChanged;
+            FrontWorkspace.Changed += HandleKitchenStateChanged;
+            Reservations.Changed += HandleKitchenStateChanged;
         }
 
         private void InstallSceneStations()

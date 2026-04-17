@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-// Tools 네임스페이스
 namespace Management.Tools
 {
     /// <summary>
@@ -12,7 +11,6 @@ namespace Management.Tools
     [MovedFrom(false, sourceNamespace: "Tools", sourceAssembly: "Assembly-CSharp", sourceClassName: "ToolManager")]
     public class ToolManager : MonoBehaviour
     {
-        // 시작 시점에 열려 있는 도구 목록과 런타임 표시용 목록이다.
         [SerializeField] private List<ToolType> startingUnlockedTools = new()
         {
             ToolType.FishingRod,
@@ -32,186 +30,73 @@ namespace Management.Tools
         /// <summary>
         /// 시작 도구를 한 번만 해시셋에 적재하고 런타임 목록을 갱신한다.
         /// </summary>
-        public void InitializeIfNeeded
-        (
-        )
+        public void InitializeIfNeeded()
         {
-        if
-        (
-        initialized
-        )
-        {
-        return
-        ;
-        }
-        initialized
-        =
-        true
-        ;
-        unlockedTools
-        .
-        Clear
-        (
-        )
-        ;
-        foreach
-        (
-        ToolType
-        toolType
-        in
-        startingUnlockedTools
-        )
-        {
-        if
-        (
-        toolType
-        ==
-        ToolType
-        .
-        None
-        )
-        {
-        continue
-        ;
-        }
-        unlockedTools
-        .
-        Add
-        (
-        toolType
-        )
-        ;
-        }
-        RefreshRuntimeTools
-        (
-        )
-        ;
-        ToolsChanged
-        ?
-        .
-        Invoke();
+            if (initialized)
+            {
+                return;
+            }
+
+            initialized = true;
+            unlockedTools.Clear();
+
+            foreach (ToolType toolType in startingUnlockedTools)
+            {
+                if (toolType == ToolType.None)
+                {
+                    continue;
+                }
+
+                unlockedTools.Add(toolType);
+            }
+
+            RefreshRuntimeTools();
+            ToolsChanged?.Invoke();
         }
 
         /// <summary>
         /// 해당 도구가 이미 해금되었는지 확인한다.
         /// </summary>
-        public bool HasTool(ToolType toolType
-        )
+        public bool HasTool(ToolType toolType)
         {
-        InitializeIfNeeded
-        (
-        )
-        ;
-        return
-        toolType
-        ==
-        ToolType
-        .
-        None
-        ||
-        unlockedTools
-        .
-        Contains
-        (
-        toolType);
+            InitializeIfNeeded();
+            return toolType == ToolType.None || unlockedTools.Contains(toolType);
         }
 
         /// <summary>
         /// 새 도구를 해금하고 변경 이벤트를 보낸다.
         /// </summary>
-        public bool UnlockTool(ToolType toolType
-        )
+        public bool UnlockTool(ToolType toolType)
         {
-        if
-        (
-        toolType
-        ==
-        ToolType
-        .
-        None
-        )
-        {
-        return
-        false
-        ;
-        }
-        InitializeIfNeeded
-        (
-        )
-        ;
-        if
-        (
-        !
-        unlockedTools
-        .
-        Add
-        (
-        toolType
-        )
-        )
-        {
-        return
-        false
-        ;
-        }
-        RefreshRuntimeTools
-        (
-        )
-        ;
-        ToolsChanged
-        ?
-        .
-        Invoke
-        (
-        )
-        ;
-        return true;
+            if (toolType == ToolType.None)
+            {
+                return false;
+            }
+
+            InitializeIfNeeded();
+            if (!unlockedTools.Add(toolType))
+            {
+                return false;
+            }
+
+            RefreshRuntimeTools();
+            ToolsChanged?.Invoke();
+            return true;
         }
 
         /// <summary>
         /// UI 표시용 직렬화 목록을 정렬된 상태로 다시 만든다.
         /// </summary>
-        private void RefreshRuntimeTools
-        (
-        )
+        private void RefreshRuntimeTools()
         {
-        runtimeUnlockedTools
-        .
-        Clear
-        (
-        )
-        ;
-        foreach
-        (
-        ToolType
-        toolType
-        in
-        unlockedTools
-        )
-        {
-        runtimeUnlockedTools
-        .
-        Add
-        (
-        toolType
-        )
-        ;
+            runtimeUnlockedTools.Clear();
+
+            foreach (ToolType toolType in unlockedTools)
+            {
+                runtimeUnlockedTools.Add(toolType);
+            }
+
+            runtimeUnlockedTools.Sort((left, right) => left.CompareTo(right));
         }
-        runtimeUnlockedTools
-        .
-        Sort
-        (
-        (
-        left
-        ,
-        right
-        )
-        =>
-        left
-        .
-        CompareTo
-        (
-        right));
-       }
     }
 }

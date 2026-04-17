@@ -5,12 +5,11 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-// Data ?ㅼ엫?ㅽ럹?댁뒪
 namespace Shared.Data
 {
     /// <summary>
-    /// Generated 寃뚯엫 ?곗씠???먯뀑???대쫫?쇰줈 ?ㅼ떆 李얜뒗 ?대갚 濡쒕뜑??
-    /// ??李몄“媛 鍮꾩뼱 ?덉뼱???먮뵒???뚮젅?댁? 鍮뚮뱶?먯꽌 湲곕낯 ?덉떆?? ?먯썝 ?곗씠?곕? 蹂듦뎄?쒕떎.
+    /// generated 게임 데이터 에셋을 이름, id, 표시 이름 기준으로 다시 찾는 로더다.
+    /// 씬 참조가 비어 있어도 manifest 또는 런타임 fallback 데이터로 기본 상태를 복구한다.
     /// </summary>
     public static class GeneratedGameDataLocator
     {
@@ -27,7 +26,7 @@ namespace Shared.Data
         private static bool _fallbackAssetsCreated;
 
         /// <summary>
-        /// generated ?먯썝 ?먯뀑???대쫫, id, ?쒖떆 ?대쫫 湲곗??쇰줈 李얠븘 諛섑솚?⑸땲??
+        /// generated 자원 에셋을 이름, id, 표시 이름 기준으로 찾아 반환한다.
         /// </summary>
         public static ResourceData FindGeneratedResource(string assetName, params string[] alternateKeys)
         {
@@ -53,7 +52,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// generated ?덉떆???먯뀑???대쫫, id, ?쒖떆 ?대쫫 湲곗??쇰줈 李얠븘 諛섑솚?⑸땲??
+        /// generated 레시피 에셋을 이름, id, 표시 이름 기준으로 찾아 반환한다.
         /// </summary>
         public static RecipeData FindGeneratedRecipe(string assetName, params string[] alternateKeys)
         {
@@ -79,7 +78,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// ?꾩옱 濡쒕뱶???먯뀑怨?manifest ?먯꽌 李얠? ?먯뀑??罹먯떆???ㅼ떆 諛섏쁺?⑸땲??
+        /// 현재 로드된 에셋과 manifest 에셋을 캐시에 반영한다.
         /// </summary>
         private static void RefreshLoadedAssetCaches()
         {
@@ -98,7 +97,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// Resources ????generated ?곗씠??manifest 瑜???踰덈쭔 ?쎌뼱 罹먯떆??諛섏쁺?⑸땲??
+        /// Resources 아래 generated 데이터 manifest를 한 번만 읽어 캐시에 반영한다.
         /// </summary>
         private static void CacheManifestAssets()
         {
@@ -134,7 +133,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// 二??ㅼ? ?泥??ㅻ? ?쒖꽌?濡?議고쉶??罹먯떆?먯꽌 留ㅼ묶 ?먯뀑??李얠뒿?덈떎.
+        /// 기본 키와 대체 키를 순서대로 조회해 캐시에서 일치하는 에셋을 찾는다.
         /// </summary>
         private static T FindInCache<T>(Dictionary<string, T> cache, string primaryKey, params string[] alternateKeys)
             where T : UnityEngine.Object
@@ -161,7 +160,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// 怨듬갚怨???뚮Ц?먮? ?뺢퇋?뷀븳 ???ㅼ젣 罹먯떆 議고쉶瑜??섑뻾?⑸땲??
+        /// 공백과 대소문자를 정규화한 키로 실제 캐시 조회를 수행한다.
         /// </summary>
         private static bool TryGetFromCache<T>(Dictionary<string, T> cache, string key, out T value)
             where T : UnityEngine.Object
@@ -172,7 +171,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// ?먯썝 ?먯뀑???щ윭 ???뺥깭濡?罹먯떆???깅줉?⑸땲??
+        /// 자원 에셋을 여러 키 형태로 캐시에 등록한다.
         /// </summary>
         private static void CacheResource(ResourceData resource)
         {
@@ -187,7 +186,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// ?덉떆???먯뀑???щ윭 ???뺥깭濡?罹먯떆???깅줉?⑸땲??
+        /// 레시피 에셋을 여러 키 형태로 캐시에 등록한다.
         /// </summary>
         private static void CacheRecipe(RecipeData recipe)
         {
@@ -202,7 +201,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// ?⑥씪 ??媛믪쓣 ?뺢퇋?뷀빐 罹먯떆???ｌ뒿?덈떎.
+        /// 단일 키 값을 정규화해 캐시에 넣는다.
         /// </summary>
         private static void CacheValue<T>(Dictionary<string, T> cache, string key, T value)
             where T : UnityEngine.Object
@@ -217,7 +216,7 @@ namespace Shared.Data
         }
 
         /// <summary>
-        /// 怨듬갚怨???뚮Ц??李⑥씠瑜??쒓굅??鍮꾧탳???ㅻ? 留뚮벊?덈떎.
+        /// 공백, 구분자, 접두어 차이를 제거해 비교 가능한 키를 만든다.
         /// </summary>
         private static string NormalizeKey(string key)
         {
@@ -371,7 +370,7 @@ namespace Shared.Data
 
 #if UNITY_EDITOR
         /// <summary>
-        /// ?먮뵒???섍꼍?먯꽌 generated ?대뜑???먯뀑??吏곸젒 ?쎌뼱?듬땲??
+        /// 에디터 환경에서 generated 폴더의 에셋을 직접 읽는다.
         /// </summary>
         private static T LoadGeneratedAsset<T>(string assetName) where T : UnityEngine.Object
         {

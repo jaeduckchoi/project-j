@@ -1,4 +1,3 @@
-// Tools 네임스페이스
 namespace Management.Tools
 {
     /// <summary>
@@ -21,41 +20,16 @@ namespace Management.Tools
         /// <summary>
         /// 도구 종류를 화면 표시용 이름으로 변환한다.
         /// </summary>
-        public static string GetDisplayName(this ToolType toolType
-        )
+        public static string GetDisplayName(this ToolType toolType)
         {
-        return
-        toolType
-        switch
-        {
-        ToolType
-        .
-        Rake
-        =>
-        "갈퀴"
-        ,
-        ToolType
-        .
-        FishingRod
-        =>
-        "낚시대"
-        ,
-        ToolType
-        .
-        Sickle
-        =>
-        "낫"
-        ,
-        ToolType
-        .
-        Lantern
-        =>
-        "랜턴"
-        ,
-        _
-        =>
-        "도구 없음"
+            return toolType switch
+            {
+                ToolType.Rake => "갈퀴",
+                ToolType.FishingRod => "낚시대",
+                ToolType.Sickle => "낫",
+                ToolType.Lantern => "랜턴",
+                _ => "도구 없음"
             };
-       }
+        }
     }
 }
