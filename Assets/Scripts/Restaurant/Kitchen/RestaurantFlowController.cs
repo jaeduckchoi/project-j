@@ -16,6 +16,34 @@ namespace Restaurant.Kitchen
     {
         private const string RuntimeObjectName = "RestaurantFlowController";
 
+        private static readonly KitchenToolType[] CookingToolTypes =
+        {
+            KitchenToolType.CuttingBoard,
+            KitchenToolType.Pot,
+            KitchenToolType.FryingPan,
+            KitchenToolType.Fryer
+        };
+
+        private static readonly LegacyStationDefinition[] LegacyStationDefinitions =
+        {
+            new(KitchenToolType.Refrigerator, "Refrigerator", new[] { "Refrigerator" }, new[] { "refrigerator" }),
+            new(KitchenToolType.FrontCounter, "FrontCounter", new[] { "FrontCounter", "KitchenCounter" }, new[] { "front", "counter" }),
+            new(KitchenToolType.CuttingBoard, "CuttingBoard", new[] { "CuttingBoard" }, new[] { "cutting" }),
+            new(KitchenToolType.Fryer, "Fryer", new[] { "Fryer" }, new[] { "fryer" }),
+            new(KitchenToolType.FryingPan, "FryingPan", new[] { "FryingPan" }, new[] { "frying" }),
+            new(KitchenToolType.Pot, "Pot", new[] { "Pot" }, new[] { "pot" })
+        };
+
+        private static readonly SceneStationBinding[] SceneStationBindings =
+        {
+            new("FrontCounter", typeof(FrontCounterStation)),
+            new("FrontCounterCollider", typeof(FrontCounterStation)),
+            new("KitchenCounter ", typeof(FrontCounterStation)),
+            new("HubTableTopCollider", typeof(DiningTableStation)),
+            new("HubTableMiddleCollider", typeof(DiningTableStation)),
+            new("HubTableBottomCollider", typeof(DiningTableStation))
+        };
+
         private readonly Dictionary<KitchenToolType, ToolCookingSession> toolSessions = new();
         private readonly Dictionary<string, ResourceData> basicResources = new(StringComparer.OrdinalIgnoreCase);
         private readonly List<KitchenStageRuntimeDefinition> fallbackStages = new();
@@ -490,37 +518,37 @@ namespace Restaurant.Kitchen
             Reservations.Changed -= HandleKitchenStateChanged;
             Reservations.Changed += HandleKitchenStateChanged;
 
-            EnsureToolSession(KitchenToolType.CuttingBoard);
-            EnsureToolSession(KitchenToolType.Pot);
-            EnsureToolSession(KitchenToolType.FryingPan);
-            EnsureToolSession(KitchenToolType.Fryer);
+            foreach (KitchenToolType toolType in CookingToolTypes)
+            {
+                EnsureToolSession(toolType);
+            }
+
             EnsureBasicIngredients();
             EnsureFallbackRecipes();
         }
 
         private void InstallSceneStations()
         {
-            AddStationIfMissing<FrontCounterStation>("FrontCounter");
-            AddStationIfMissing<FrontCounterStation>("FrontCounterCollider");
-            AddStationIfMissing<FrontCounterStation>("KitchenCounter ");
-            AddStationIfMissing<DiningTableStation>("HubTableTopCollider");
-            AddStationIfMissing<DiningTableStation>("HubTableMiddleCollider");
-            AddStationIfMissing<DiningTableStation>("HubTableBottomCollider");
+            foreach (SceneStationBinding binding in SceneStationBindings)
+            {
+                AddStationIfMissing(binding.ObjectName, binding.ComponentType);
+            }
+
             if (GetComponent<CustomerServiceController>() == null)
             {
                 gameObject.AddComponent<CustomerServiceController>();
             }
         }
 
-        private static void AddStationIfMissing<T>(string objectName) where T : Component
+        private static void AddStationIfMissing(string objectName, Type componentType)
         {
             GameObject target = GameObject.Find(objectName);
-            if (target == null || target.GetComponent<T>() != null)
+            if (target == null || componentType == null || target.GetComponent(componentType) != null)
             {
                 return;
             }
 
-            target.AddComponent<T>();
+            target.AddComponent(componentType);
         }
 
         private bool IsBasicResource(ResourceData resource)
@@ -749,81 +777,8 @@ namespace Restaurant.Kitchen
         private bool TryResolveLegacyStationType(GameObject source, string promptLabel, out KitchenToolType stationType)
         {
             stationType = default;
-            string names = BuildLineageName(source);
-            if (ContainsOrdinal(names, "Refrigerator"))
-            {
-                stationType = KitchenToolType.Refrigerator;
-                return true;
-            }
-
-            if (ContainsOrdinal(names, "FrontCounter") || ContainsOrdinal(names, "KitchenCounter"))
-            {
-                stationType = KitchenToolType.FrontCounter;
-                return true;
-            }
-
-            if (ContainsOrdinal(names, "CuttingBoard"))
-            {
-                stationType = KitchenToolType.CuttingBoard;
-                return true;
-            }
-
-            if (ContainsOrdinal(names, "Fryer"))
-            {
-                stationType = KitchenToolType.Fryer;
-                return true;
-            }
-
-            if (ContainsOrdinal(names, "FryingPan"))
-            {
-                stationType = KitchenToolType.FryingPan;
-                return true;
-            }
-
-            if (ContainsOrdinal(names, "Pot"))
-            {
-                stationType = KitchenToolType.Pot;
-                return true;
-            }
-
-            string normalizedLabel = promptLabel ?? string.Empty;
-            if (ContainsOrdinal(normalizedLabel, "refrigerator"))
-            {
-                stationType = KitchenToolType.Refrigerator;
-                return true;
-            }
-
-            if (ContainsOrdinal(normalizedLabel, "front") || ContainsOrdinal(normalizedLabel, "counter"))
-            {
-                stationType = KitchenToolType.FrontCounter;
-                return true;
-            }
-
-            if (ContainsOrdinal(normalizedLabel, "cutting"))
-            {
-                stationType = KitchenToolType.CuttingBoard;
-                return true;
-            }
-
-            if (ContainsOrdinal(normalizedLabel, "fryer"))
-            {
-                stationType = KitchenToolType.Fryer;
-                return true;
-            }
-
-            if (ContainsOrdinal(normalizedLabel, "frying"))
-            {
-                stationType = KitchenToolType.FryingPan;
-                return true;
-            }
-
-            if (ContainsOrdinal(normalizedLabel, "pot"))
-            {
-                stationType = KitchenToolType.Pot;
-                return true;
-            }
-
-            return false;
+            return TryResolveStationType(BuildLineageName(source), StationTokenSource.Lineage, out stationType)
+                || TryResolveStationType(promptLabel ?? string.Empty, StationTokenSource.PromptLabel, out stationType);
         }
 
         private static string BuildLineageName(GameObject source)
@@ -851,16 +806,41 @@ namespace Restaurant.Kitchen
                 && value.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
+        private static bool TryResolveStationType(string value, StationTokenSource source, out KitchenToolType stationType)
+        {
+            stationType = default;
+            foreach (LegacyStationDefinition definition in LegacyStationDefinitions)
+            {
+                string[] tokens = source == StationTokenSource.Lineage
+                    ? definition.LineageTokens
+                    : definition.PromptTokens;
+
+                foreach (string token in tokens)
+                {
+                    if (!ContainsOrdinal(value, token))
+                    {
+                        continue;
+                    }
+
+                    stationType = definition.ToolType;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static string GetToolDisplayName(KitchenToolType toolType)
         {
-            return toolType switch
+            foreach (LegacyStationDefinition definition in LegacyStationDefinitions)
             {
-                KitchenToolType.CuttingBoard => "CuttingBoard",
-                KitchenToolType.Pot => "Pot",
-                KitchenToolType.FryingPan => "FryingPan",
-                KitchenToolType.Fryer => "Fryer",
-                _ => toolType.ToString()
-            };
+                if (definition.ToolType == toolType)
+                {
+                    return definition.DisplayName;
+                }
+            }
+
+            return toolType.ToString();
         }
 
         private void ApplyMovementLock(GameObject interactor, ToolCookingSession session)
@@ -917,6 +897,44 @@ namespace Restaurant.Kitchen
             {
                 KitchenStateChanged?.Invoke();
             }
+        }
+
+        private enum StationTokenSource
+        {
+            Lineage,
+            PromptLabel
+        }
+
+        private readonly struct LegacyStationDefinition
+        {
+            public LegacyStationDefinition(
+                KitchenToolType toolType,
+                string displayName,
+                string[] lineageTokens,
+                string[] promptTokens)
+            {
+                ToolType = toolType;
+                DisplayName = displayName ?? string.Empty;
+                LineageTokens = lineageTokens ?? Array.Empty<string>();
+                PromptTokens = promptTokens ?? Array.Empty<string>();
+            }
+
+            public KitchenToolType ToolType { get; }
+            public string DisplayName { get; }
+            public string[] LineageTokens { get; }
+            public string[] PromptTokens { get; }
+        }
+
+        private readonly struct SceneStationBinding
+        {
+            public SceneStationBinding(string objectName, Type componentType)
+            {
+                ObjectName = objectName ?? string.Empty;
+                ComponentType = componentType;
+            }
+
+            public string ObjectName { get; }
+            public Type ComponentType { get; }
         }
 
         private sealed class KitchenStageRuntimeDefinition

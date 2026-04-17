@@ -63,15 +63,7 @@ namespace Restaurant.Kitchen
 
         public bool TryPlaceFirst(KitchenCarryItem item)
         {
-            for (int i = 0; i < slots.Length; i++)
-            {
-                if (slots[i] == null)
-                {
-                    return TryPlace(i, item);
-                }
-            }
-
-            return false;
+            return TryPlaceFirst(item, true);
         }
 
         public bool TryPick(int slotIndex, out KitchenCarryItem item)
@@ -114,7 +106,7 @@ namespace Restaurant.Kitchen
 
             foreach (KitchenCarryItem item in bundle.Items)
             {
-                TryPlaceFirst(item);
+                TryPlaceFirst(item, false);
             }
 
             Changed?.Invoke();
@@ -176,6 +168,32 @@ namespace Restaurant.Kitchen
                     yield return item;
                 }
             }
+        }
+
+        private bool TryPlaceFirst(KitchenCarryItem item, bool notifyChanged)
+        {
+            if (item == null || item.IsBundle)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i] != null)
+                {
+                    continue;
+                }
+
+                slots[i] = item.Clone();
+                if (notifyChanged)
+                {
+                    Changed?.Invoke();
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
