@@ -4,6 +4,8 @@
 
 - 기본 응답 언어는 한국어다.
 - 루트 엔트리 파일(`AGENTS.md`, `CLAUDE.md`)은 맵이고, 세부 규칙 허브는 `.aiassistant/rules/README.md`, 실제 정본 문서는 `Docs/*`다.
+- 루트 엔트리 파일은 매 세션 자동 주입되는 온보딩 문서이므로 WHAT/WHY/HOW와 보편 가드레일만 담고, 작업별 세부 규칙은 정본 문서로 분리한다.
+- 루트 엔트리 파일은 자동 생성하지 않고 수작업으로 유지한다.
 - generated 결과물만 직접 고치지 말고 생성 경로 또는 정본 코드부터 수정한다.
 - 씬에 저장된 월드 직렬화 값은 정본이며 런타임 보강 코드는 누락분만 보충한다.
 - UI 변경은 `UIManager`, `PrototypeUISceneLayoutCatalog`, `PrototypeUISceneLayoutSettings`, `ui-layout-overrides.asset`를 함께 확인한다.
@@ -14,8 +16,12 @@
 ## 구현 규칙
 
 - Windows에서는 새 파일을 길게 한 번에 붙이지 말고 안전하게 작성한다.
+- Windows PowerShell 명령과 텍스트 파일 I/O는 UTF-8 인코딩을 명시한다.
 - 수동 편집은 `apply_patch`를 우선 사용한다.
 - 문서와 코드가 어긋나면 같은 변경 안에서 문서도 갱신한다.
+- 새 지침이 필요하면 먼저 정본 문서 하나를 정하고, 루트 엔트리와 인덱스에는 링크와 짧은 설명만 둔다.
+- 코드 스타일과 포맷팅은 에이전트 지시보다 자동 수정 가능한 린터, 훅, 검증 명령을 우선한다.
+- `js_repl`에서 Node 패키지나 로컬 파서를 불러올 때는 `require`보다 dynamic `import()`를 기본으로 사용한다.
 - 과거 빌더/감사 흐름을 현재 검증 기준처럼 문서화하지 않는다.
 - 폴더/partial 리팩토링은 public 타입명과 네임스페이스를 우선 유지하고, asmdef 범위와 `.meta`를 함께 정리한다.
 - UI처럼 family 단위로 나뉜 영역은 엔트리 파일과 역할별 하위 폴더를 구분해 유지한다.

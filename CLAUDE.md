@@ -1,28 +1,34 @@
 # Claude Entry
 
-이 파일은 Claude용 작업 맵이다. 세부 규칙 허브는 `.aiassistant/rules/README.md`이고, 실제 정본 문서는 `Docs` 아래 문서를 따른다.
+이 파일은 Claude가 매 세션 처음 받는 짧은 온보딩 맵이다. 모델은 세션 간 프로젝트 상태를 기억하지 않으므로, 여기에는 항상 유효한 WHAT/WHY/HOW만 둔다. 세부 규칙은 아래 문서로 점진 공개한다.
 
-먼저 읽을 문서:
+## WHAT
 
-1. `.aiassistant/rules/README.md`
-2. `Docs/project/GAME_ASSISTANT_RULES.md`
-3. `Docs/project/GAME_DOCS_INDEX.md`
-4. 작업 종류에 맞는 정본 문서 1~2개
+- Unity 기반 2D 탑다운 식당 운영 프로토타입이다.
+- 핵심 루트는 `Assets`(런타임/에디터/씬/리소스), `Docs`(정본 문서), `.aiassistant`(에이전트 규칙 허브)다.
+- 구조와 경로의 정본은 `Docs/project/GAME_PROJECT_STRUCTURE.md`다.
 
-절대 가드레일:
+## WHY
+
+- 플레이어는 탐험으로 재료를 모으고 식당 허브에서 메뉴 선정, 조리, 서빙, 성장 루프를 진행한다.
+- 주요 플레이 계약은 `FrontCounter -> BackCounter -> FrontCounter` 조리 흐름과 `Open/Close` 식당 상태다.
+- 게임 의도는 `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`에서 확인한다.
+
+## HOW
+
+1. `.aiassistant/rules/README.md`를 읽어 규칙 허브와 작업별 진입점을 확인한다.
+2. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽어 전역 가드레일과 읽기 제외 범위를 확인한다.
+3. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 정본 문서 1~2개만 추가로 읽는다.
+4. 코드, 씬, generated 자산을 바꿀 때는 `Docs/project/SOURCE_OF_TRUTH.md`의 정본 관계를 먼저 따른다.
+
+## Always
 
 - 기본 응답 언어는 한국어다.
-- `CLAUDE.md`는 맵이고, 세부 규칙 허브는 `.aiassistant/rules/README.md`, 실제 정본 문서는 `Docs/*`다.
-- generated 씬, generated 에셋, 런타임 출력물은 결과물만 직접 고치지 말고 생성 경로나 정본 코드부터 수정한다.
-- 지원 씬에 저장된 월드 직렬화 값은 정본이며, 런타임 보강 코드는 누락된 오브젝트·컴포넌트·참조만 보충해야 한다.
-- UI를 바꾸면 `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutSettings.cs`, `Assets/Resources/Generated/ui-layout-overrides.asset` 기준을 함께 확인한다.
-- 정적 이미지 자동 생성이나 통합 빌더/감사 흐름을 전제로 두지 않는다.
-- Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 그 사실과 남은 검증 단계를 적는다.
-- 커밋 메시지를 만들 때는 이 저장소 규칙만 따르고, 한국어 한 줄만 출력하며, 본문·불릿·설명은 금지하고, 형식은 `타입 : 내용`만 허용하며, 전체는 50자 이내로 제한한다.
-- 커밋 메시지의 상세 타입 표와 예시는 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
+- generated 결과물만 직접 고치지 말고 생성 경로 또는 정본 코드부터 수정한다.
+- Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 남은 검증 단계를 적는다.
+- 커밋 메시지 규칙은 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
 
-Claude 운영 기준:
+## Claude Harness
 
-- Claude 프로젝트 설정은 `.claude/settings.json`(팀 공유)과 `.claude/settings.local.json`(개인 전용, gitignore됨)으로 관리한다.
-- 읽기 범위와 제외 기준은 `Docs/project/GAME_ASSISTANT_RULES.md`의 "읽기 범위와 제외 기준" 섹션이 단일 정본이다. `.claude/settings.json`의 `permissions.deny`는 이 목록을 Read/Glob/Grep 수준에서 결정적으로 차단하는 구현이다. 정본 목록을 바꾸면 `.claude/settings.json`도 같은 변경에서 맞춘다.
-- `permissions.deny`는 Read/Glob/Grep에만 적용되고 Bash의 `cat`, `ls`, `find` 등은 별도 Bash deny 규칙이 없으면 우회 가능하다. 목적은 컨텍스트 절약과 실수 방지이며 보안용 완전 격리는 아니다.
+- Claude 설정은 `.claude/settings.json`(팀 공유)과 `.claude/settings.local.json`(개인 전용)으로 관리한다.
+- 읽기 범위와 제외 기준의 단일 정본은 `Docs/project/GAME_ASSISTANT_RULES.md`다. 이 목록을 바꾸면 `.claude/settings.json`도 같은 변경에서 맞춘다.

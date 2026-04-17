@@ -48,6 +48,8 @@
   `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 문서/규칙 체계 정리:
   `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, 이 인덱스
+- 루트 엔트리(`AGENTS.md`, `CLAUDE.md`) 정리:
+  `.aiassistant/rules/README.md`, `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`
 - 주석/코드 가독성 정리:
   `Docs/project/GAME_ASSISTANT_RULES.md`, `Docs/project/AGENT_WORKFLOW.md`, `Docs/project/GAME_PROJECT_STRUCTURE.md`
 - 게임 의도 확인:
