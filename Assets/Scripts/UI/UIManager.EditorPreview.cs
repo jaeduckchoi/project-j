@@ -191,6 +191,7 @@ namespace UI
             }
 
             RefreshPopupBodyItemBoxes(popupContent.Entries);
+            RefreshRefrigeratorPopupSlots(activeHubPanel == HubPopupPanel.Refrigerator ? popupContent.Entries : null);
         }
 
         private static PopupPanelContent BuildPreviewPopupContent(PrototypeUIPreviewContent previewContent)
@@ -232,6 +233,7 @@ namespace UI
             {
                 PrototypeUIPreviewPanel.None => HubPopupPanel.None,
                 PrototypeUIPreviewPanel.Storage => HubPopupPanel.Storage,
+                PrototypeUIPreviewPanel.Refrigerator => HubPopupPanel.Refrigerator,
                 PrototypeUIPreviewPanel.Recipe => HubPopupPanel.Recipe,
                 PrototypeUIPreviewPanel.Upgrade => HubPopupPanel.Upgrade,
                 PrototypeUIPreviewPanel.Materials => HubPopupPanel.Materials,

@@ -136,7 +136,8 @@ namespace UI
                         selectedKitchenPopupKey = key;
                         flow.TryTakeBasicIngredient(basicResource);
                         RefreshHubPopupContent();
-                    }));
+                    },
+                    basicResource));
             }
 
             InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
@@ -165,7 +166,10 @@ namespace UI
                             selectedKitchenPopupKey = key;
                             flow.TryTakeInventoryIngredient(resource);
                             RefreshHubPopupContent();
-                        }));
+                        },
+                        resource,
+                        entry.amount,
+                        true));
                 }
             }
 

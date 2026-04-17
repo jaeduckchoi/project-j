@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Restaurant.Kitchen
 {
+    /// <summary>
+    /// 조리 흐름에서 사용하는 원재료, 중간 결과물, 완성 요리 항목 데이터를 정의합니다.
+    /// </summary>
     [CreateAssetMenu(fileName = "kitchen-item-data", menuName = "Jonggu Restaurant/Restaurant/Kitchen Item", order = 20)]
     public class KitchenItemData : ScriptableObject
     {
@@ -21,6 +24,9 @@ namespace Restaurant.Kitchen
         public ResourceData Resource => resource;
         public string RecipeId => recipeId;
 
+        /// <summary>
+        /// generated 데이터나 런타임 fallback에서 주방 항목 값을 구성합니다.
+        /// </summary>
         public void ConfigureRuntime(
             string id,
             string itemName,
@@ -38,6 +44,9 @@ namespace Restaurant.Kitchen
         }
     }
 
+    /// <summary>
+    /// 조리 단계나 완성 요리 판정에 필요한 단일 항목 조건입니다.
+    /// </summary>
     [System.Serializable]
     public class KitchenItemRequirement
     {
@@ -51,6 +60,9 @@ namespace Restaurant.Kitchen
         public KitchenItemState State => state;
         public int Quantity => Mathf.Max(1, quantity);
 
+        /// <summary>
+        /// 아이템 데이터 또는 자원 데이터에서 조합 판정용 id를 해석합니다.
+        /// </summary>
         public string RequirementId
         {
             get
@@ -69,6 +81,9 @@ namespace Restaurant.Kitchen
             }
         }
 
+        /// <summary>
+        /// 런타임 fallback 레시피에서 요구 조건을 구성합니다.
+        /// </summary>
         public void ConfigureRuntime(KitchenItemData item, ResourceData resource, KitchenItemState itemState, int amount)
         {
             itemData = item;
@@ -78,6 +93,9 @@ namespace Restaurant.Kitchen
         }
     }
 
+    /// <summary>
+    /// 특정 BackCounter 기구에서 입력 묶음을 결과물로 바꾸는 단일 조리 단계를 정의합니다.
+    /// </summary>
     [CreateAssetMenu(fileName = "kitchen-stage-recipe", menuName = "Jonggu Restaurant/Restaurant/Kitchen Stage Recipe", order = 21)]
     public class KitchenStageRecipeData : ScriptableObject
     {
@@ -97,6 +115,9 @@ namespace Restaurant.Kitchen
         public string InputSignature => KitchenSignatureUtility.BuildSignature(inputItems);
     }
 
+    /// <summary>
+    /// FrontCounter 최종 조합 판정과 완성 요리 결과물을 정의합니다.
+    /// </summary>
     [CreateAssetMenu(fileName = "kitchen-dish-data", menuName = "Jonggu Restaurant/Restaurant/Kitchen Dish", order = 22)]
     public class KitchenDishData : ScriptableObject
     {
@@ -111,6 +132,9 @@ namespace Restaurant.Kitchen
         public KitchenItemData FinalDishItem => finalDishItem;
         public string FinalSignature => KitchenSignatureUtility.BuildSignature(finalSignatureItems);
 
+        /// <summary>
+        /// 런타임 fallback에서 완성 요리 데이터와 최종 시그니처 조건을 구성합니다.
+        /// </summary>
         public void ConfigureRuntime(
             string id,
             string dishName,

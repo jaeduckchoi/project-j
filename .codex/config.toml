@@ -30,6 +30,5 @@ network_access = false
 "Build" = "none"
 "Builds" = "none"
 ".utmp" = "none"
-".git" = "none"
 ".vs" = "none"
 ".idea" = "none"

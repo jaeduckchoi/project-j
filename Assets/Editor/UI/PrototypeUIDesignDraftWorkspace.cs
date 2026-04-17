@@ -112,6 +112,12 @@ namespace Editor.UI
                 "PopupFrameLeft" or "PopupFrameRight" => "PopupFrame",
                 "PopupTitle" or "PopupLeftCaption" or "PopupLeftBody" or "InventoryText" => "PopupFrameLeft",
                 "PopupCloseButton" or "PopupRightCaption" or "PopupRightBody" or "StorageText" or "SelectedRecipeText" or "UpgradeText" => "PopupFrameRight",
+                "RefrigeratorStorage" or "RefrigeratorRemoveZone" => "PopupFrame",
+                "RefrigeratorSelectedSlot" => "RefrigeratorStorage",
+                "RefrigeratorRemoveIcon" or "RefrigeratorRemoveText" => "RefrigeratorRemoveZone",
+                _ when objectName.StartsWith("RefrigeratorSlotIcon", StringComparison.Ordinal) => $"RefrigeratorSlot{objectName[^2..]}",
+                _ when objectName.StartsWith("RefrigeratorSlotAmount", StringComparison.Ordinal) => $"RefrigeratorSlot{objectName[^2..]}",
+                _ when objectName.StartsWith("RefrigeratorSlot", StringComparison.Ordinal) => "RefrigeratorStorage",
                 _ when objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal) => "PopupLeftBody",
                 _ when objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal) => "PopupRightBody",
                 _ when objectName.StartsWith("PopupLeftItemIcon", StringComparison.Ordinal) => $"PopupLeftItemBox{objectName[^2..]}",
@@ -317,6 +323,21 @@ namespace Editor.UI
                 return PrototypeUILayout.HubPopupBodyItemBox(leftBoxIndex);
             }
 
+            if (objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotIconPrefix, StringComparison.Ordinal))
+            {
+                return PrototypeUILayout.HubRefrigeratorSlotIcon;
+            }
+
+            if (objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix, StringComparison.Ordinal))
+            {
+                return PrototypeUILayout.HubRefrigeratorSlotAmount;
+            }
+
+            if (TryParsePopupItemIndex(objectName, PrototypeUIObjectNames.RefrigeratorSlotPrefix, out int refrigeratorSlotIndex))
+            {
+                return PrototypeUILayout.HubRefrigeratorSlot(refrigeratorSlotIndex);
+            }
+
             if (objectName.StartsWith("PopupLeftItemIcon", StringComparison.Ordinal)
                 || objectName.StartsWith("PopupRightItemIcon", StringComparison.Ordinal))
             {
@@ -361,6 +382,11 @@ namespace Editor.UI
                 "PopupLeftBody" or "PopupRightBody" => PrototypeUILayout.HubPopupFrameBody,
                 "InventoryText" => PrototypeUILayout.HubPopupFrameText,
                 "StorageText" or "SelectedRecipeText" or "UpgradeText" => PrototypeUILayout.HubPopupRightDetailText,
+                "RefrigeratorStorage" => PrototypeUILayout.HubRefrigeratorStorage,
+                "RefrigeratorSelectedSlot" => PrototypeUILayout.HubRefrigeratorSelectedSlot,
+                "RefrigeratorRemoveZone" => PrototypeUILayout.HubRefrigeratorRemoveZone,
+                "RefrigeratorRemoveIcon" => PrototypeUILayout.HubRefrigeratorRemoveIcon,
+                "RefrigeratorRemoveText" => PrototypeUILayout.HubRefrigeratorRemoveText,
                 _ => CenterRect(0f, 0f, 180f, 48f)
             };
         }
@@ -431,6 +457,9 @@ namespace Editor.UI
                    || objectName.Contains("Frame", StringComparison.Ordinal)
                    || objectName.Contains("Body", StringComparison.Ordinal)
                    || objectName.Contains("Box", StringComparison.Ordinal)
+                   || IsRefrigeratorSlotBoxName(objectName)
+                   || objectName.StartsWith("RefrigeratorSlotIcon", StringComparison.Ordinal)
+                   || objectName is "RefrigeratorStorage" or "RefrigeratorRemoveZone" or "RefrigeratorRemoveIcon" or "RefrigeratorSelectedSlot"
                    || objectName.Contains("Overlay", StringComparison.Ordinal)
                    || objectName.Contains("Dock", StringComparison.Ordinal)
                    || objectName.Contains("Accent", StringComparison.Ordinal);
@@ -439,13 +468,17 @@ namespace Editor.UI
         private static bool ShouldHaveButton(string objectName)
         {
             return objectName.EndsWith("Button", StringComparison.Ordinal)
-                   || objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal);
+                   || objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
+                   || IsRefrigeratorSlotBoxName(objectName)
+                   || string.Equals(objectName, "RefrigeratorRemoveZone", StringComparison.Ordinal);
         }
 
         private static bool ShouldHaveText(string objectName)
         {
             return objectName.EndsWith("Text", StringComparison.Ordinal)
                    || objectName.EndsWith("Caption", StringComparison.Ordinal)
+                   || objectName.StartsWith("RefrigeratorSlotAmount", StringComparison.Ordinal)
+                   || string.Equals(objectName, "RefrigeratorRemoveText", StringComparison.Ordinal)
                    || string.Equals(objectName, "PopupTitle", StringComparison.Ordinal);
         }
 
@@ -464,6 +497,12 @@ namespace Editor.UI
             if (ShouldHaveButton(objectName))
             {
                 return new Color(0.16f, 0.32f, 0.46f, 0.88f);
+            }
+
+            if (IsRefrigeratorSlotBoxName(objectName)
+                || string.Equals(objectName, "RefrigeratorRemoveZone", StringComparison.Ordinal))
+            {
+                return new Color(0.20f, 0.27f, 0.74f, 0.95f);
             }
 
             if (objectName.Contains("Frame", StringComparison.Ordinal)
@@ -510,6 +549,8 @@ namespace Editor.UI
                 "StorageText" => "보관 상세",
                 "SelectedRecipeText" => "메뉴 상세",
                 "UpgradeText" => "업그레이드 상세",
+                "RefrigeratorRemoveText" => "제거",
+                _ when objectName.StartsWith("RefrigeratorSlotAmount", StringComparison.Ordinal) => "x1",
                 _ when objectName.StartsWith("PopupLeftItemText", StringComparison.Ordinal) => "항목 이름\n짧은 설명",
                 _ when objectName.StartsWith("PopupRightItemText", StringComparison.Ordinal) => "상세 항목",
                 _ => objectName
@@ -533,6 +574,13 @@ namespace Editor.UI
 
             index = Mathf.Max(0, displayIndex - 1);
             return true;
+        }
+
+        private static bool IsRefrigeratorSlotBoxName(string objectName)
+        {
+            return objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotPrefix, StringComparison.Ordinal)
+                   && !objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotIconPrefix, StringComparison.Ordinal)
+                   && !objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix, StringComparison.Ordinal);
         }
 
         private static Transform FindChildRecursive(Transform root, string objectName)

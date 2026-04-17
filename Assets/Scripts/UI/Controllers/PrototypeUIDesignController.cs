@@ -8,11 +8,12 @@ namespace UI.Controllers
 
     public enum PrototypeUIPreviewPanel
     {
-        None,
-        Storage,
-        Recipe,
-        Upgrade,
-        Materials
+        None = 0,
+        Storage = 1,
+        Recipe = 2,
+        Upgrade = 3,
+        Materials = 4,
+        Refrigerator = 5
     }
 
     /// <summary>

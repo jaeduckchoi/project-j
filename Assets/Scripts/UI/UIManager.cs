@@ -164,7 +164,17 @@ namespace UI
 
         private sealed class PopupListEntry
         {
-            public PopupListEntry(string key, string title, string summary, string detail, Sprite icon, bool isSelected, Action onSelected)
+            public PopupListEntry(
+                string key,
+                string title,
+                string summary,
+                string detail,
+                Sprite icon,
+                bool isSelected,
+                Action onSelected,
+                ResourceData resource = null,
+                int amount = 0,
+                bool canRemoveFromInventory = false)
             {
                 Key = key;
                 Title = title;
@@ -173,6 +183,9 @@ namespace UI
                 Icon = icon;
                 IsSelected = isSelected;
                 OnSelected = onSelected;
+                Resource = resource;
+                Amount = amount;
+                CanRemoveFromInventory = canRemoveFromInventory;
             }
 
             public string Key { get; }
@@ -182,6 +195,9 @@ namespace UI
             public Sprite Icon { get; }
             public bool IsSelected { get; }
             public Action OnSelected { get; }
+            public ResourceData Resource { get; }
+            public int Amount { get; }
+            public bool CanRemoveFromInventory { get; }
         }
 
         private sealed class PopupPanelContent
@@ -202,7 +218,7 @@ namespace UI
             {
                 HubPopupPanel.None => PrototypeUIPreviewPanel.None,
                 HubPopupPanel.Storage => PrototypeUIPreviewPanel.Storage,
-                HubPopupPanel.Refrigerator => PrototypeUIPreviewPanel.Storage,
+                HubPopupPanel.Refrigerator => PrototypeUIPreviewPanel.Refrigerator,
                 HubPopupPanel.FrontCounter => PrototypeUIPreviewPanel.Materials,
                 HubPopupPanel.Recipe => PrototypeUIPreviewPanel.Recipe,
                 HubPopupPanel.Upgrade => PrototypeUIPreviewPanel.Upgrade,

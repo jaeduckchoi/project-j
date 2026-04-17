@@ -26,10 +26,8 @@
 - 기본 응답 언어는 한국어다.
 - generated 결과물만 직접 고치지 말고 생성 경로 또는 정본 코드부터 수정한다.
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 남은 검증 단계를 적는다.
-- 커밋 메시지 규칙은 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
 
 ## Codex Harness
 
-- Codex 설정은 `.codex/config.toml`, `.codex/rules/*.rules`, `AGENTS.md` 조합으로 관리한다.
+- Codex 설정은 `.codex/config.toml`, `AGENTS.md` 조합으로 관리한다.
 - 읽기 범위와 제외 기준의 단일 정본은 `Docs/project/GAME_ASSISTANT_RULES.md`다. Codex는 `.codex/config.toml`의 `project-j-read-scope` permission profile과 문서 지침으로 같은 범위를 지킨다.
-- 원격 반영(`git push`)과 파괴적 git 명령(`reset --hard`, `checkout --`, `clean -fd`, `clean -fdx`)은 명시적 사용자 승인 전제로만 다룬다. 구체 판정은 `.codex/rules/unity-safety.rules`를 따른다.

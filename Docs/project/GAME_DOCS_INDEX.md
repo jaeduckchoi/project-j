@@ -16,7 +16,6 @@
 - `GAME_PROJECT_STRUCTURE.md`: 저장소 구조, 책임 경계, 주요 경로
 - `AGENT_WORKFLOW.md`: 작업 루프와 유형별 체크포인트
 - `SOURCE_OF_TRUTH.md`: 씬, UI, generated 자산, 로컬 데이터의 정본 관계
-- `GIT_COMMIT_TEMPLATE.md`: 커밋 메시지 규칙의 유일한 정본
 
 ## 도메인 문서
 

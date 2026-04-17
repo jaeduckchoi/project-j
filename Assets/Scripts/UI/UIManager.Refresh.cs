@@ -42,6 +42,7 @@ namespace UI
             }
 
             RefreshPopupBodyItemBoxes(popupContent.Entries);
+            RefreshRefrigeratorPopupSlots(activeHubPanel == HubPopupPanel.Refrigerator ? popupContent.Entries : null);
         }
 
         private PopupPanelContent BuildCurrentHubPopupContent()
@@ -798,6 +799,7 @@ namespace UI
 
                 ApplyHubPopupFrameStyle(headingFont, theme.Text);
                 SetHubPopupDesignActive(showPopup);
+                SetRefrigeratorPopupDesignActive(showPopup && activeHubPanel == HubPopupPanel.Refrigerator);
                 SetHubHudVisible(!showPopup);
                 SetLegacyHubPopupObjectsActive(false);
 
@@ -810,7 +812,7 @@ namespace UI
 
                 if (selectedRecipeText != null)
                 {
-                    selectedRecipeText.gameObject.SetActive(showPopup);
+                    selectedRecipeText.gameObject.SetActive(showPopup && activeHubPanel != HubPopupPanel.Refrigerator);
                 }
 
                 if (storageText != null)

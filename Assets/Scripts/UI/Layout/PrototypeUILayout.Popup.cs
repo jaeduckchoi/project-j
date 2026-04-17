@@ -9,6 +9,9 @@ namespace UI.Layout
     {
         // 좌우 팝업 본문에서 반복적으로 쓰는 아이템 박스 개수다.
         public const int HubPopupBodyItemBoxCount = 4;
+        public const int RefrigeratorSlotColumnCount = 10;
+        public const int RefrigeratorSlotRowCount = 5;
+        public const int RefrigeratorSlotCount = RefrigeratorSlotColumnCount * RefrigeratorSlotRowCount;
 
         // Hub.unity 팝업 실측 배치값이다. 빌더와 런타임이 따로 어긋나지 않도록 이 값을 공용 기준으로 쓴다.
         public static readonly PrototypeUIRect HubPopupOverlay = new(Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
@@ -22,6 +25,12 @@ namespace UI.Layout
         public static readonly PrototypeUIRect HubPopupFrameBody = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -112f), new Vector2(820f, 520f));
         public static readonly PrototypeUIRect HubPopupFrameText = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-2f, -38f), new Vector2(780f, 344f));
         public static readonly PrototypeUIRect HubPopupRightDetailText = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -112f), new Vector2(780f, 488f));
+        public static readonly PrototypeUIRect HubRefrigeratorStorage = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-218f, 20f), new Vector2(1235f, 610f));
+        public static readonly PrototypeUIRect HubRefrigeratorSelectedSlot = new(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(375f, -250f), new Vector2(110f, 110f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveZone = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(780f, -232f), new Vector2(112f, 112f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(58f, 58f));
+        public static readonly PrototypeUIRect HubRefrigeratorRemoveText = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(0f, -12f), new Vector2(128f, 38f));
+        public static readonly PrototypeUIRect HubRefrigeratorDragGhost = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(72f, 72f));
 
         /// <summary>
         /// 아이템 박스는 세로 목록으로 균등 배치해 좌우 본문 구조를 고정한다.
@@ -42,5 +51,24 @@ namespace UI.Layout
                 new Vector2(0f, -topOffset),
                 new Vector2(-(horizontalPadding * 2f), itemHeight));
         }
+
+        public static PrototypeUIRect HubRefrigeratorSlot(int index)
+        {
+            const float slotSize = 110f;
+            const float slotGap = 15f;
+
+            int clampedIndex = Mathf.Clamp(index, 0, RefrigeratorSlotCount - 1);
+            int row = clampedIndex / RefrigeratorSlotColumnCount;
+            int column = clampedIndex % RefrigeratorSlotColumnCount;
+            return new PrototypeUIRect(
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(column * (slotSize + slotGap), -(row * (slotSize + slotGap))),
+                new Vector2(slotSize, slotSize));
+        }
+
+        public static readonly PrototypeUIRect HubRefrigeratorSlotIcon = new(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(64f, 64f));
+        public static readonly PrototypeUIRect HubRefrigeratorSlotAmount = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 8f), new Vector2(72f, 28f));
     }
 }

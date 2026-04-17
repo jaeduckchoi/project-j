@@ -30,7 +30,9 @@ namespace UI.Style
 
             if (!string.IsNullOrWhiteSpace(objectName)
                 && (objectName.StartsWith("PopupLeftItemBox", StringComparison.Ordinal)
-                    || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)))
+                    || objectName.StartsWith("PopupRightItemBox", StringComparison.Ordinal)
+                    || IsRefrigeratorSlotBoxName(objectName)
+                    || objectName == "RefrigeratorRemoveZone"))
             {
                 spriteSpec = BuildGeneratedUiPanelSpec("light_solid_panel");
                 return true;
@@ -38,6 +40,14 @@ namespace UI.Style
 
             spriteSpec = default;
             return false;
+        }
+
+        private static bool IsRefrigeratorSlotBoxName(string objectName)
+        {
+            return !string.IsNullOrWhiteSpace(objectName)
+                   && objectName.StartsWith("RefrigeratorSlot", StringComparison.Ordinal)
+                   && !objectName.StartsWith("RefrigeratorSlotIcon", StringComparison.Ordinal)
+                   && !objectName.StartsWith("RefrigeratorSlotAmount", StringComparison.Ordinal);
         }
 
         private static bool TryResolvePopupButton(string objectName, out PrototypeUISpriteSpec spriteSpec)

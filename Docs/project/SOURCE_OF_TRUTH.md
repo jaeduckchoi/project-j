@@ -7,7 +7,6 @@
 - 프로젝트 규칙: `Docs/project/GAME_ASSISTANT_RULES.md`
 - 작업 절차: `Docs/project/AGENT_WORKFLOW.md`
 - 구조와 경로: `Docs/project/GAME_PROJECT_STRUCTURE.md`
-- 커밋 메시지 규칙: `Docs/project/GIT_COMMIT_TEMPLATE.md`
 
 ## 코드와 자산 정본
 

@@ -63,6 +63,3 @@
 
 - `AGENTS.md`, `CLAUDE.md`, `.aiassistant/rules/README.md`, `Docs/project/*`, `Docs/gameplay/*`는 한국어를 기본으로 유지한다.
 - 코드 식별자, 경로, 씬 이름, 메뉴 이름처럼 번역하면 안 되는 고유 명칭은 원문 그대로 적는다.
-- 커밋 메시지 규칙은 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 정본으로 사용한다.
-- 커밋 메시지 생성, 수정, IntelliJ AI Assistant VCS 프롬프트 설정 작업에서는 `Docs/project/GIT_COMMIT_TEMPLATE.md`의 "커밋 메시지 생성 입력 템플릿"을 그대로 우선 적용한다.
-- 커밋 메시지 생성 결과는 `타입 : 한국어 내용` 형식만 사용하고, `refactor: ...`처럼 영어 내용이나 Conventional Commit 콜론 형식으로 만들지 않는다.

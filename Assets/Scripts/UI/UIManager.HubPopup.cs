@@ -1,16 +1,50 @@
 using System;
 using System.Collections.Generic;
+using CoreLoop.Core;
+using Management.Inventory;
+using Shared.Data;
 using TMPro;
 using UI.Content.Catalog;
 using UI.Layout;
 using UI.Style;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
 {
     public partial class UIManager
     {
+        private const int RefrigeratorNoSlot = -1;
+
+        private RefrigeratorSlotState[] refrigeratorSlotStates;
+        private bool refrigeratorWorkspaceInitialized;
+        private int selectedRefrigeratorSlotIndex = RefrigeratorNoSlot;
+        private int draggingRefrigeratorSlotIndex = RefrigeratorNoSlot;
+        private RectTransform refrigeratorDragGhostRect;
+        private Image refrigeratorDragGhostImage;
+
+        private sealed class RefrigeratorSlotState
+        {
+            public PopupListEntry Entry { get; private set; }
+            public bool HasEntry => Entry != null;
+            public string Key => Entry != null ? Entry.Key : string.Empty;
+            public Sprite Icon => Entry != null ? Entry.Icon : null;
+            public ResourceData Resource => Entry != null ? Entry.Resource : null;
+            public int Amount => Entry != null ? Entry.Amount : 0;
+            public bool CanRemoveFromInventory => Entry != null && Entry.CanRemoveFromInventory;
+
+            public void Set(PopupListEntry entry)
+            {
+                Entry = entry;
+            }
+
+            public void Clear()
+            {
+                Entry = null;
+            }
+        }
+
         private void ApplyCompactHudLayout(
             TMP_FontAsset bodyFont,
             TMP_FontAsset headingFont,
@@ -107,6 +141,7 @@ namespace UI
             ApplyPopupCloseButtonLayout(headingFont);
             NormalizeHubPopupHierarchyOrder();
             EnsurePopupBodyItemBoxes(bodyFont, textColor);
+            EnsureRefrigeratorPopupChrome(bodyFont, headingFont, textColor);
 
             ApplyManagedRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupFrameText, preserveExistingLayout: true);
             ApplyManagedRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText, preserveExistingLayout: true);
@@ -121,6 +156,7 @@ namespace UI
             ApplyHubMenuButtonLayout(recipePanelButton, headingFont, amberAccent, PrototypeUILayout.HubRecipePanelButton);
             ApplyHubMenuButtonLayout(upgradePanelButton, headingFont, goldAccent, PrototypeUILayout.HubUpgradePanelButton);
             ApplyHubMenuButtonLayout(materialPanelButton, headingFont, oceanAccent, PrototypeUILayout.HubMaterialPanelButton);
+            SetRefrigeratorPopupDesignActive(activeHubPanel == HubPopupPanel.Refrigerator);
             SetLegacyHubPopupObjectsActive(false);
         }
 
@@ -130,7 +166,10 @@ namespace UI
         private void ApplyHubPopupFrameStyle(TMP_FontAsset headingFont, Color textColor)
         {
             PrototypeUIPopupDefinition popupDefinition = PrototypeUIPopupCatalog.GetDefinition(ConvertRuntimePopupPanel(activeHubPanel));
-            EnsureHubPopupHeadings(popupDefinition, headingFont, textColor);
+            Color headingColor = activeHubPanel == HubPopupPanel.Refrigerator
+                ? new Color(1f, 0.78f, 0.27f, 1f)
+                : textColor;
+            EnsureHubPopupHeadings(popupDefinition, headingFont, headingColor);
         }
 
         /// <summary>
@@ -201,6 +240,7 @@ namespace UI
             }
 
             return objectName.StartsWith("Popup", StringComparison.Ordinal)
+                   || objectName.StartsWith("Refrigerator", StringComparison.Ordinal)
                    || objectName is "InventoryText" or "StorageText" or "SelectedRecipeText" or "UpgradeText";
         }
 
@@ -482,6 +522,269 @@ namespace UI
             }
         }
 
+        private void EnsureRefrigeratorPopupChrome(TMP_FontAsset bodyFont, TMP_FontAsset headingFont, Color textColor)
+        {
+            Transform popupFrame = FindNamedUiTransform(PopupFrameGroupName);
+            if (popupFrame == null)
+            {
+                return;
+            }
+
+            Image storageImage = EnsureRefrigeratorImage(
+                popupFrame,
+                PrototypeUIObjectNames.RefrigeratorStorage,
+                PrototypeUILayout.HubRefrigeratorStorage,
+                new Color(0f, 0f, 0f, 0f),
+                false);
+            Transform storageParent = storageImage != null ? storageImage.transform : popupFrame;
+
+            for (int index = 0; index < PrototypeUILayout.RefrigeratorSlotCount; index++)
+            {
+                string slotName = $"{PrototypeUIObjectNames.RefrigeratorSlotPrefix}{index + 1:00}";
+                Image slotImage = EnsureRefrigeratorImage(
+                    storageParent,
+                    slotName,
+                    PrototypeUILayout.HubRefrigeratorSlot(index),
+                    new Color(0.18f, 0.24f, 0.68f, 0.96f),
+                    true);
+                Transform slotParent = slotImage != null ? slotImage.transform : storageParent;
+                EnsureRefrigeratorSlotIcon(slotParent, $"{PrototypeUIObjectNames.RefrigeratorSlotIconPrefix}{index + 1:00}");
+                EnsureRefrigeratorSlotAmount(slotParent, $"{PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix}{index + 1:00}", bodyFont, textColor);
+                if (slotImage != null)
+                {
+                    ConfigureRefrigeratorSlotInteraction(slotImage.gameObject, index);
+                }
+            }
+
+            Image selectedImage = EnsureRefrigeratorImage(
+                storageParent,
+                PrototypeUIObjectNames.RefrigeratorSelectedSlot,
+                PrototypeUILayout.HubRefrigeratorSelectedSlot,
+                new Color(0.83f, 0.66f, 0.16f, 0.36f),
+                false);
+            if (selectedImage != null)
+            {
+                selectedImage.raycastTarget = false;
+            }
+
+            Image removeZoneImage = EnsureRefrigeratorImage(
+                popupFrame,
+                PrototypeUIObjectNames.RefrigeratorRemoveZone,
+                PrototypeUILayout.HubRefrigeratorRemoveZone,
+                new Color(0.17f, 0.20f, 0.46f, 0.92f),
+                true);
+            Transform removeParent = removeZoneImage != null ? removeZoneImage.transform : popupFrame;
+            EnsureRefrigeratorImage(
+                removeParent,
+                PrototypeUIObjectNames.RefrigeratorRemoveIcon,
+                PrototypeUILayout.HubRefrigeratorRemoveIcon,
+                new Color(0.58f, 0.60f, 0.68f, 1f),
+                false);
+            EnsureRefrigeratorRemoveText(removeParent, headingFont, textColor);
+
+            Image dragGhost = EnsureRefrigeratorImage(
+                popupFrame,
+                PrototypeUIObjectNames.RefrigeratorDragGhost,
+                PrototypeUILayout.HubRefrigeratorDragGhost,
+                Color.white,
+                false);
+            if (dragGhost != null)
+            {
+                refrigeratorDragGhostImage = dragGhost;
+                refrigeratorDragGhostRect = dragGhost.rectTransform;
+                dragGhost.raycastTarget = false;
+                dragGhost.preserveAspect = true;
+                dragGhost.enabled = false;
+                dragGhost.gameObject.SetActive(false);
+            }
+        }
+
+        private Image EnsureRefrigeratorImage(Transform parent, string objectName, PrototypeUIRect layout, Color fallbackColor, bool isInteractive)
+        {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
+            Transform existing = FindNamedUiTransform(objectName);
+            GameObject imageObject = existing != null ? existing.gameObject : new GameObject(objectName);
+            ApplyHubPopupObjectIdentity(imageObject);
+            if (existing == null || imageObject.transform.parent != parent)
+            {
+                imageObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = imageObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = imageObject.AddComponent<RectTransform>();
+            }
+
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
+
+            Image image = imageObject.GetComponent<Image>();
+            if (image == null)
+            {
+                image = imageObject.AddComponent<Image>();
+            }
+
+            bool hasSkin = PrototypeUISkin.ApplyPanel(image, objectName, fallbackColor);
+            bool hasOverride = PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
+            if (!hasOverride)
+            {
+                image.color = hasSkin ? Color.white : fallbackColor;
+            }
+            image.raycastTarget = isInteractive;
+            image.preserveAspect = objectName == PrototypeUIObjectNames.RefrigeratorRemoveIcon
+                                   || objectName == PrototypeUIObjectNames.RefrigeratorDragGhost;
+
+            Button button = imageObject.GetComponent<Button>();
+            if (isInteractive)
+            {
+                if (button == null)
+                {
+                    button = imageObject.AddComponent<Button>();
+                }
+
+                button.targetGraphic = image;
+                button.transition = Selectable.Transition.ColorTint;
+                Navigation navigation = button.navigation;
+                navigation.mode = Navigation.Mode.None;
+                button.navigation = navigation;
+            }
+            else if (button != null)
+            {
+                button.onClick.RemoveAllListeners();
+                button.interactable = false;
+            }
+
+            return image;
+        }
+
+        private void EnsureRefrigeratorSlotIcon(Transform parent, string objectName)
+        {
+            Image icon = EnsureRefrigeratorImage(parent, objectName, PrototypeUILayout.HubRefrigeratorSlotIcon, Color.white, false);
+            if (icon != null)
+            {
+                icon.sprite = null;
+                icon.enabled = false;
+                icon.preserveAspect = true;
+                icon.raycastTarget = false;
+            }
+        }
+
+        private void EnsureRefrigeratorSlotAmount(Transform parent, string objectName, TMP_FontAsset bodyFont, Color textColor)
+        {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return;
+            }
+
+            Transform existing = FindNamedUiTransform(objectName);
+            GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
+            ApplyHubPopupObjectIdentity(textObject);
+            if (existing == null || textObject.transform.parent != parent)
+            {
+                textObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = textObject.AddComponent<RectTransform>();
+            }
+
+            ApplyManagedRectLayout(rect, PrototypeUILayout.HubRefrigeratorSlotAmount, preserveExistingLayout: existing != null);
+
+            TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+            if (text == null)
+            {
+                text = textObject.AddComponent<TextMeshProUGUI>();
+            }
+
+            text.raycastTarget = false;
+            ApplyScreenTextStyle(text, bodyFont, 18f, Color.white, TextAlignmentOptions.BottomRight, false, 0f, Vector4.zero, false);
+            text.fontStyle = FontStyles.Bold;
+            text.overflowMode = TextOverflowModes.Truncate;
+            ApplySceneTextOverride(text);
+        }
+
+        private void EnsureRefrigeratorRemoveText(Transform parent, TMP_FontAsset headingFont, Color textColor)
+        {
+            if (parent == null || PrototypeUISceneLayoutCatalog.IsObjectRemoved(PrototypeUIObjectNames.RefrigeratorRemoveText))
+            {
+                return;
+            }
+
+            Transform existing = FindNamedUiTransform(PrototypeUIObjectNames.RefrigeratorRemoveText);
+            GameObject textObject = existing != null ? existing.gameObject : new GameObject(PrototypeUIObjectNames.RefrigeratorRemoveText);
+            ApplyHubPopupObjectIdentity(textObject);
+            if (existing == null || textObject.transform.parent != parent)
+            {
+                textObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = textObject.AddComponent<RectTransform>();
+            }
+
+            ApplyManagedRectLayout(rect, PrototypeUILayout.HubRefrigeratorRemoveText, preserveExistingLayout: existing != null);
+
+            TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+            if (text == null)
+            {
+                text = textObject.AddComponent<TextMeshProUGUI>();
+            }
+
+            text.text = "제거";
+            text.raycastTarget = false;
+            ApplyScreenTextStyle(text, headingFont, 24f, new Color(0.9f, 0.49f, 0.13f, 1f), TextAlignmentOptions.Center, false, 0f, Vector4.zero, false);
+            text.fontStyle = FontStyles.Bold;
+            ApplySceneTextOverride(text);
+        }
+
+        private void SetRefrigeratorPopupDesignActive(bool isActive)
+        {
+            SetImageComponentEnabled("PopupFrameLeft", !isActive);
+            SetImageComponentEnabled("PopupFrameRight", !isActive);
+            SetNamedObjectActive("PopupLeftBody", !isActive && activeHubPanel != HubPopupPanel.None);
+            SetNamedObjectActive("PopupRightBody", !isActive && activeHubPanel != HubPopupPanel.None);
+            SetNamedObjectActive(PrototypeUIObjectNames.PopupLeftCaption, !isActive && activeHubPanel != HubPopupPanel.None);
+            SetNamedObjectActive(PrototypeUIObjectNames.PopupRightCaption, !isActive && activeHubPanel != HubPopupPanel.None);
+            SetPopupBodyItemBoxSetActive("PopupLeftItemBox", "PopupLeftItemIcon", "PopupLeftItemText", !isActive && activeHubPanel != HubPopupPanel.None);
+
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorStorage, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorSelectedSlot, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorRemoveZone, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorRemoveIcon, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorRemoveText, isActive);
+            SetNamedObjectActive(PrototypeUIObjectNames.RefrigeratorDragGhost, false);
+            for (int index = 0; index < PrototypeUILayout.RefrigeratorSlotCount; index++)
+            {
+                SetNamedObjectActive($"{PrototypeUIObjectNames.RefrigeratorSlotPrefix}{index + 1:00}", isActive);
+                SetNamedObjectActive($"{PrototypeUIObjectNames.RefrigeratorSlotIconPrefix}{index + 1:00}", isActive);
+                SetNamedObjectActive($"{PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix}{index + 1:00}", isActive);
+            }
+
+            if (!isActive)
+            {
+                refrigeratorWorkspaceInitialized = false;
+                selectedRefrigeratorSlotIndex = RefrigeratorNoSlot;
+                draggingRefrigeratorSlotIndex = RefrigeratorNoSlot;
+            }
+        }
+
+        private void SetImageComponentEnabled(string objectName, bool isEnabled)
+        {
+            Transform target = FindNamedUiTransform(objectName);
+            if (target != null && target.TryGetComponent(out Image image))
+            {
+                image.enabled = isEnabled;
+            }
+        }
+
         private void RefreshPopupBodyItemBoxes(List<PopupListEntry> entries)
         {
             List<PopupListEntry> safeEntries = entries ?? new List<PopupListEntry>();
@@ -546,6 +849,564 @@ namespace UI
                     text.text = hasContent ? FormatPopupBodyEntryText(entry) : string.Empty;
                 }
             }
+        }
+
+        private void RefreshRefrigeratorPopupSlots(List<PopupListEntry> entries)
+        {
+            bool isActive = activeHubPanel == HubPopupPanel.Refrigerator;
+            SetRefrigeratorPopupDesignActive(isActive);
+            if (!isActive)
+            {
+                return;
+            }
+
+            SyncRefrigeratorWorkspace(entries ?? new List<PopupListEntry>());
+            RenderRefrigeratorPopupSlots();
+        }
+
+        private void RenderRefrigeratorPopupSlots()
+        {
+            EnsureRefrigeratorWorkspace();
+
+            for (int index = 0; index < PrototypeUILayout.RefrigeratorSlotCount; index++)
+            {
+                RefrigeratorSlotState slotState = refrigeratorSlotStates[index];
+                PopupListEntry entry = slotState.Entry;
+                bool hasEntry = slotState.HasEntry;
+                bool isSelected = index == selectedRefrigeratorSlotIndex && hasEntry;
+                string slotName = $"{PrototypeUIObjectNames.RefrigeratorSlotPrefix}{index + 1:00}";
+                string iconName = $"{PrototypeUIObjectNames.RefrigeratorSlotIconPrefix}{index + 1:00}";
+                string amountName = $"{PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix}{index + 1:00}";
+
+                Transform slotTransform = FindNamedUiTransform(slotName);
+                if (slotTransform != null)
+                {
+                    slotTransform.gameObject.SetActive(true);
+                    ConfigureRefrigeratorSlotInteraction(slotTransform.gameObject, index);
+                    if (slotTransform.TryGetComponent(out Image slotImage))
+                    {
+                        slotImage.color = isSelected
+                            ? new Color(0.83f, 0.66f, 0.16f, 0.44f)
+                            : new Color(0.18f, 0.24f, 0.68f, 0.96f);
+                    }
+
+                    if (slotTransform.TryGetComponent(out Button button))
+                    {
+                        button.onClick.RemoveAllListeners();
+                        button.interactable = true;
+                        int slotIndex = index;
+                        button.onClick.AddListener(() => HandleRefrigeratorSlotClicked(slotIndex));
+                    }
+                }
+
+                Transform iconTransform = FindNamedUiTransform(iconName);
+                if (iconTransform != null && iconTransform.TryGetComponent(out Image iconImage))
+                {
+                    bool hasIcon = hasEntry && entry.Icon != null;
+                    iconTransform.gameObject.SetActive(hasIcon);
+                    iconImage.sprite = hasIcon ? entry.Icon : null;
+                    iconImage.color = Color.white;
+                    iconImage.preserveAspect = true;
+                    iconImage.enabled = hasIcon;
+                }
+
+                Transform amountTransform = FindNamedUiTransform(amountName);
+                if (amountTransform != null && amountTransform.TryGetComponent(out TextMeshProUGUI amountText))
+                {
+                    amountTransform.gameObject.SetActive(hasEntry);
+                    amountText.text = hasEntry ? BuildRefrigeratorSlotAmountText(entry.Title) : string.Empty;
+                }
+            }
+
+            Transform selectedTransform = FindNamedUiTransform(PrototypeUIObjectNames.RefrigeratorSelectedSlot);
+            if (selectedTransform != null)
+            {
+                bool showSelected = IsValidRefrigeratorSlotIndex(selectedRefrigeratorSlotIndex)
+                                    && refrigeratorSlotStates[selectedRefrigeratorSlotIndex].HasEntry;
+                selectedTransform.gameObject.SetActive(showSelected);
+                if (showSelected && selectedTransform is RectTransform selectedRect)
+                {
+                    PrototypeUIRect selectedLayout = PrototypeUILayout.HubRefrigeratorSlot(selectedRefrigeratorSlotIndex);
+                    ApplyManagedRectLayout(selectedRect, selectedLayout, preserveExistingLayout: false);
+                }
+            }
+
+            Transform removeZoneTransform = FindNamedUiTransform(PrototypeUIObjectNames.RefrigeratorRemoveZone);
+            if (removeZoneTransform != null && removeZoneTransform.TryGetComponent(out Button removeButton))
+            {
+                removeButton.onClick.RemoveAllListeners();
+                removeButton.interactable = CanRemoveSelectedRefrigeratorSlot();
+                removeButton.onClick.AddListener(HandleRefrigeratorRemoveSelected);
+            }
+        }
+
+        private void EnsureRefrigeratorWorkspace()
+        {
+            if (refrigeratorSlotStates != null
+                && refrigeratorSlotStates.Length == PrototypeUILayout.RefrigeratorSlotCount)
+            {
+                return;
+            }
+
+            refrigeratorSlotStates = new RefrigeratorSlotState[PrototypeUILayout.RefrigeratorSlotCount];
+            for (int index = 0; index < refrigeratorSlotStates.Length; index++)
+            {
+                refrigeratorSlotStates[index] = new RefrigeratorSlotState();
+            }
+
+            selectedRefrigeratorSlotIndex = RefrigeratorNoSlot;
+            draggingRefrigeratorSlotIndex = RefrigeratorNoSlot;
+            refrigeratorWorkspaceInitialized = false;
+        }
+
+        private void SyncRefrigeratorWorkspace(List<PopupListEntry> entries)
+        {
+            EnsureRefrigeratorWorkspace();
+            Dictionary<string, PopupListEntry> entryByKey = new(StringComparer.Ordinal);
+            foreach (PopupListEntry entry in entries)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.Key))
+                {
+                    continue;
+                }
+
+                entryByKey[entry.Key] = entry;
+            }
+
+            if (!refrigeratorWorkspaceInitialized)
+            {
+                ClearRefrigeratorWorkspace();
+                AddRefrigeratorEntriesToWorkspace(entries, canRemoveFromInventory: true);
+                AddRefrigeratorEntriesToWorkspace(entries, canRemoveFromInventory: false);
+
+                selectedRefrigeratorSlotIndex = FindFirstOccupiedRefrigeratorSlot();
+                refrigeratorWorkspaceInitialized = true;
+                return;
+            }
+
+            HashSet<string> remainingKeys = new(entryByKey.Keys, StringComparer.Ordinal);
+            for (int index = 0; index < refrigeratorSlotStates.Length; index++)
+            {
+                RefrigeratorSlotState slotState = refrigeratorSlotStates[index];
+                if (!slotState.HasEntry)
+                {
+                    continue;
+                }
+
+                if (entryByKey.TryGetValue(slotState.Key, out PopupListEntry refreshedEntry))
+                {
+                    slotState.Set(refreshedEntry);
+                    remainingKeys.Remove(slotState.Key);
+                }
+                else
+                {
+                    slotState.Clear();
+                }
+            }
+
+            AddRemainingRefrigeratorEntries(entries, remainingKeys, canRemoveFromInventory: true);
+            AddRemainingRefrigeratorEntries(entries, remainingKeys, canRemoveFromInventory: false);
+
+            if (!IsValidRefrigeratorSlotIndex(selectedRefrigeratorSlotIndex)
+                || !refrigeratorSlotStates[selectedRefrigeratorSlotIndex].HasEntry)
+            {
+                selectedRefrigeratorSlotIndex = FindFirstOccupiedRefrigeratorSlot();
+            }
+        }
+
+        private void AddRefrigeratorEntriesToWorkspace(List<PopupListEntry> entries, bool canRemoveFromInventory)
+        {
+            foreach (PopupListEntry entry in entries)
+            {
+                if (entry == null || entry.CanRemoveFromInventory != canRemoveFromInventory)
+                {
+                    continue;
+                }
+
+                AddRefrigeratorEntryToFirstEmptySlot(entry);
+            }
+        }
+
+        private void AddRemainingRefrigeratorEntries(List<PopupListEntry> entries, HashSet<string> remainingKeys, bool canRemoveFromInventory)
+        {
+            foreach (PopupListEntry entry in entries)
+            {
+                if (entry == null
+                    || entry.CanRemoveFromInventory != canRemoveFromInventory
+                    || string.IsNullOrWhiteSpace(entry.Key)
+                    || !remainingKeys.Remove(entry.Key))
+                {
+                    continue;
+                }
+
+                AddRefrigeratorEntryToFirstEmptySlot(entry);
+            }
+        }
+
+        private void ClearRefrigeratorWorkspace()
+        {
+            EnsureRefrigeratorWorkspace();
+            for (int index = 0; index < refrigeratorSlotStates.Length; index++)
+            {
+                refrigeratorSlotStates[index].Clear();
+            }
+
+            selectedRefrigeratorSlotIndex = RefrigeratorNoSlot;
+            draggingRefrigeratorSlotIndex = RefrigeratorNoSlot;
+        }
+
+        private bool AddRefrigeratorEntryToFirstEmptySlot(PopupListEntry entry)
+        {
+            if (entry == null)
+            {
+                return false;
+            }
+
+            EnsureRefrigeratorWorkspace();
+            for (int index = 0; index < refrigeratorSlotStates.Length; index++)
+            {
+                if (refrigeratorSlotStates[index].HasEntry)
+                {
+                    continue;
+                }
+
+                refrigeratorSlotStates[index].Set(entry);
+                return true;
+            }
+
+            return false;
+        }
+
+        private int FindFirstOccupiedRefrigeratorSlot()
+        {
+            EnsureRefrigeratorWorkspace();
+            for (int index = 0; index < refrigeratorSlotStates.Length; index++)
+            {
+                if (refrigeratorSlotStates[index].HasEntry)
+                {
+                    return index;
+                }
+            }
+
+            return RefrigeratorNoSlot;
+        }
+
+        private static bool IsValidRefrigeratorSlotIndex(int slotIndex)
+        {
+            return slotIndex >= 0 && slotIndex < PrototypeUILayout.RefrigeratorSlotCount;
+        }
+
+        private void HandleRefrigeratorSlotClicked(int slotIndex)
+        {
+            if (!IsValidRefrigeratorSlotIndex(slotIndex))
+            {
+                return;
+            }
+
+            EnsureRefrigeratorWorkspace();
+            if (IsValidRefrigeratorSlotIndex(selectedRefrigeratorSlotIndex)
+                && selectedRefrigeratorSlotIndex != slotIndex
+                && refrigeratorSlotStates[selectedRefrigeratorSlotIndex].HasEntry)
+            {
+                MoveOrSwapRefrigeratorSlots(selectedRefrigeratorSlotIndex, slotIndex);
+                selectedRefrigeratorSlotIndex = slotIndex;
+            }
+            else
+            {
+                selectedRefrigeratorSlotIndex = refrigeratorSlotStates[slotIndex].HasEntry
+                    ? slotIndex
+                    : RefrigeratorNoSlot;
+            }
+
+            RenderRefrigeratorPopupSlots();
+        }
+
+        private void MoveOrSwapRefrigeratorSlots(int fromSlotIndex, int toSlotIndex)
+        {
+            if (!IsValidRefrigeratorSlotIndex(fromSlotIndex)
+                || !IsValidRefrigeratorSlotIndex(toSlotIndex)
+                || fromSlotIndex == toSlotIndex)
+            {
+                return;
+            }
+
+            RefrigeratorSlotState fromSlot = refrigeratorSlotStates[fromSlotIndex];
+            RefrigeratorSlotState toSlot = refrigeratorSlotStates[toSlotIndex];
+            PopupListEntry fromEntry = fromSlot.Entry;
+            PopupListEntry toEntry = toSlot.Entry;
+            fromSlot.Set(toEntry);
+
+            if (fromEntry != null)
+            {
+                toSlot.Set(fromEntry);
+            }
+            else
+            {
+                toSlot.Clear();
+            }
+        }
+
+        private void ConfigureRefrigeratorSlotInteraction(GameObject slotObject, int slotIndex)
+        {
+            if (slotObject == null)
+            {
+                return;
+            }
+
+            EventTrigger trigger = slotObject.GetComponent<EventTrigger>();
+            if (trigger == null)
+            {
+                trigger = slotObject.AddComponent<EventTrigger>();
+            }
+
+            trigger.triggers.Clear();
+            AddRefrigeratorEventTrigger(trigger, EventTriggerType.BeginDrag, eventData => HandleRefrigeratorBeginDrag(slotIndex, eventData));
+            AddRefrigeratorEventTrigger(trigger, EventTriggerType.Drag, HandleRefrigeratorDrag);
+            AddRefrigeratorEventTrigger(trigger, EventTriggerType.EndDrag, HandleRefrigeratorEndDrag);
+        }
+
+        private static void AddRefrigeratorEventTrigger(EventTrigger trigger, EventTriggerType eventType, Action<BaseEventData> callback)
+        {
+            if (trigger == null || callback == null)
+            {
+                return;
+            }
+
+            EventTrigger.Entry entry = new()
+            {
+                eventID = eventType
+            };
+            entry.callback.AddListener(eventData => callback(eventData));
+            trigger.triggers.Add(entry);
+        }
+
+        private void HandleRefrigeratorBeginDrag(int slotIndex, BaseEventData eventData)
+        {
+            if (!IsValidRefrigeratorSlotIndex(slotIndex))
+            {
+                return;
+            }
+
+            EnsureRefrigeratorWorkspace();
+            RefrigeratorSlotState slotState = refrigeratorSlotStates[slotIndex];
+            if (!slotState.HasEntry)
+            {
+                return;
+            }
+
+            selectedRefrigeratorSlotIndex = slotIndex;
+            draggingRefrigeratorSlotIndex = slotIndex;
+            ShowRefrigeratorDragGhost(slotState.Icon, eventData as PointerEventData);
+            RenderRefrigeratorPopupSlots();
+        }
+
+        private void HandleRefrigeratorDrag(BaseEventData eventData)
+        {
+            UpdateRefrigeratorDragGhostPosition(eventData as PointerEventData);
+        }
+
+        private void HandleRefrigeratorEndDrag(BaseEventData eventData)
+        {
+            int sourceSlotIndex = draggingRefrigeratorSlotIndex;
+            draggingRefrigeratorSlotIndex = RefrigeratorNoSlot;
+            HideRefrigeratorDragGhost();
+
+            if (!IsValidRefrigeratorSlotIndex(sourceSlotIndex)
+                || !refrigeratorSlotStates[sourceSlotIndex].HasEntry)
+            {
+                RenderRefrigeratorPopupSlots();
+                return;
+            }
+
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (IsPointerOverRefrigeratorRemoveZone(pointerEventData))
+            {
+                TryRemoveRefrigeratorSlot(sourceSlotIndex);
+                return;
+            }
+
+            if (TryGetPointerRefrigeratorSlotIndex(pointerEventData, out int targetSlotIndex)
+                && targetSlotIndex != sourceSlotIndex)
+            {
+                MoveOrSwapRefrigeratorSlots(sourceSlotIndex, targetSlotIndex);
+                selectedRefrigeratorSlotIndex = targetSlotIndex;
+            }
+
+            RenderRefrigeratorPopupSlots();
+        }
+
+        private void ShowRefrigeratorDragGhost(Sprite sprite, PointerEventData eventData)
+        {
+            if (refrigeratorDragGhostImage == null || refrigeratorDragGhostRect == null)
+            {
+                Transform existing = FindNamedUiTransform(PrototypeUIObjectNames.RefrigeratorDragGhost);
+                if (existing != null)
+                {
+                    refrigeratorDragGhostImage = existing.GetComponent<Image>();
+                    refrigeratorDragGhostRect = existing as RectTransform;
+                }
+            }
+
+            if (refrigeratorDragGhostImage == null || refrigeratorDragGhostRect == null || sprite == null)
+            {
+                return;
+            }
+
+            refrigeratorDragGhostImage.sprite = sprite;
+            refrigeratorDragGhostImage.color = new Color(1f, 1f, 1f, 0.82f);
+            refrigeratorDragGhostImage.preserveAspect = true;
+            refrigeratorDragGhostImage.raycastTarget = false;
+            refrigeratorDragGhostImage.enabled = true;
+            refrigeratorDragGhostImage.gameObject.SetActive(true);
+            refrigeratorDragGhostRect.SetAsLastSibling();
+            UpdateRefrigeratorDragGhostPosition(eventData);
+        }
+
+        private void UpdateRefrigeratorDragGhostPosition(PointerEventData eventData)
+        {
+            if (refrigeratorDragGhostRect == null || eventData == null)
+            {
+                return;
+            }
+
+            RectTransform parentRect = refrigeratorDragGhostRect.parent as RectTransform;
+            if (parentRect != null
+                && RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parentRect,
+                    eventData.position,
+                    eventData.pressEventCamera,
+                    out Vector2 localPoint))
+            {
+                refrigeratorDragGhostRect.anchoredPosition = localPoint;
+            }
+            else
+            {
+                refrigeratorDragGhostRect.position = eventData.position;
+            }
+        }
+
+        private void HideRefrigeratorDragGhost()
+        {
+            if (refrigeratorDragGhostImage != null)
+            {
+                refrigeratorDragGhostImage.sprite = null;
+                refrigeratorDragGhostImage.enabled = false;
+                refrigeratorDragGhostImage.gameObject.SetActive(false);
+            }
+        }
+
+        private bool TryGetPointerRefrigeratorSlotIndex(PointerEventData eventData, out int slotIndex)
+        {
+            slotIndex = RefrigeratorNoSlot;
+            Transform current = eventData != null && eventData.pointerEnter != null
+                ? eventData.pointerEnter.transform
+                : null;
+            while (current != null)
+            {
+                if (TryParseRefrigeratorSlotIndex(current.name, PrototypeUIObjectNames.RefrigeratorSlotPrefix, out slotIndex))
+                {
+                    return true;
+                }
+
+                current = current.parent;
+            }
+
+            return false;
+        }
+
+        private bool IsPointerOverRefrigeratorRemoveZone(PointerEventData eventData)
+        {
+            Transform current = eventData != null && eventData.pointerEnter != null
+                ? eventData.pointerEnter.transform
+                : null;
+            while (current != null)
+            {
+                if (current.name == PrototypeUIObjectNames.RefrigeratorRemoveZone)
+                {
+                    return true;
+                }
+
+                current = current.parent;
+            }
+
+            return false;
+        }
+
+        private bool CanRemoveSelectedRefrigeratorSlot()
+        {
+            return IsValidRefrigeratorSlotIndex(selectedRefrigeratorSlotIndex)
+                   && refrigeratorSlotStates != null
+                   && refrigeratorSlotStates[selectedRefrigeratorSlotIndex].HasEntry
+                   && refrigeratorSlotStates[selectedRefrigeratorSlotIndex].CanRemoveFromInventory;
+        }
+
+        private void HandleRefrigeratorRemoveSelected()
+        {
+            if (IsValidRefrigeratorSlotIndex(selectedRefrigeratorSlotIndex))
+            {
+                TryRemoveRefrigeratorSlot(selectedRefrigeratorSlotIndex);
+            }
+        }
+
+        private bool TryRemoveRefrigeratorSlot(int slotIndex)
+        {
+            if (!IsValidRefrigeratorSlotIndex(slotIndex)
+                || refrigeratorSlotStates == null
+                || !refrigeratorSlotStates[slotIndex].HasEntry)
+            {
+                return false;
+            }
+
+            RefrigeratorSlotState slotState = refrigeratorSlotStates[slotIndex];
+            ResourceData resource = slotState.Resource;
+            if (!slotState.CanRemoveFromInventory || resource == null)
+            {
+                RenderRefrigeratorPopupSlots();
+                return false;
+            }
+
+            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            bool removed = inventory != null && inventory.TryRemove(resource, 1);
+            if (!removed)
+            {
+                RefreshHubPopupContent();
+                return false;
+            }
+
+            if (slotState.Amount <= 1)
+            {
+                slotState.Clear();
+                if (selectedRefrigeratorSlotIndex == slotIndex)
+                {
+                    selectedRefrigeratorSlotIndex = RefrigeratorNoSlot;
+                }
+            }
+
+            RefreshHubPopupContent();
+            return true;
+        }
+
+        private static string BuildRefrigeratorSlotAmountText(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return string.Empty;
+            }
+
+            int markerIndex = title.LastIndexOf('x');
+            if (markerIndex < 0 || markerIndex >= title.Length - 1)
+            {
+                return string.Empty;
+            }
+
+            string suffix = title[(markerIndex + 1)..].Trim();
+            int separatorIndex = suffix.IndexOf('/');
+            if (separatorIndex >= 0)
+            {
+                suffix = suffix[..separatorIndex].Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(suffix) ? string.Empty : $"x{suffix}";
         }
 
         private static int GetPopupBodyWindowStartIndex(int entryCount, int selectedIndex, int visibleCount)

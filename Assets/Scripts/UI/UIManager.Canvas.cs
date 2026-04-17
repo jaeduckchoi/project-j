@@ -152,6 +152,11 @@ namespace UI
                 return savedParent;
             }
 
+            if (TryGetRefrigeratorPopupParent(objectName, popupRoot, out Transform refrigeratorParent))
+            {
+                return refrigeratorParent;
+            }
+
             string subgroupName = GetPopupSubgroupName(objectName);
             if (string.IsNullOrWhiteSpace(subgroupName))
             {
@@ -228,8 +233,138 @@ namespace UI
                 PrototypeUIObjectNames.PopupTitle or PrototypeUIObjectNames.PopupLeftCaption or "PopupLeftBody" or "InventoryText" => PopupFrameLeftGroupName,
                 "PopupCloseButton" or PrototypeUIObjectNames.PopupRightCaption or "PopupRightBody"
                     or "StorageText" or "SelectedRecipeText" or "UpgradeText" => PopupFrameRightGroupName,
+                PrototypeUIObjectNames.RefrigeratorStorage
+                    or PrototypeUIObjectNames.RefrigeratorSelectedSlot
+                    or PrototypeUIObjectNames.RefrigeratorRemoveZone
+                    or PrototypeUIObjectNames.RefrigeratorRemoveIcon
+                    or PrototypeUIObjectNames.RefrigeratorRemoveText
+                    or PrototypeUIObjectNames.RefrigeratorDragGhost => PopupFrameGroupName,
                 _ => null
             };
+        }
+
+        private bool TryGetRefrigeratorPopupParent(string objectName, Transform popupRoot, out Transform parent)
+        {
+            parent = null;
+            if (popupRoot == null || string.IsNullOrWhiteSpace(objectName))
+            {
+                return false;
+            }
+
+            Transform popupFrame = EnsurePopupLayoutContainer(popupRoot, PopupFrameGroupName, 1);
+            if (popupFrame == null)
+            {
+                return false;
+            }
+
+            if (objectName == PrototypeUIObjectNames.RefrigeratorStorage
+                || objectName == PrototypeUIObjectNames.RefrigeratorRemoveZone
+                || objectName == PrototypeUIObjectNames.RefrigeratorDragGhost)
+            {
+                parent = popupFrame;
+                return true;
+            }
+
+            if (objectName == PrototypeUIObjectNames.RefrigeratorSelectedSlot
+                || TryParseRefrigeratorSlotIndex(objectName, PrototypeUIObjectNames.RefrigeratorSlotPrefix, out _))
+            {
+                parent = EnsureRefrigeratorPopupContainer(
+                    popupFrame,
+                    PrototypeUIObjectNames.RefrigeratorStorage,
+                    PrototypeUILayout.HubRefrigeratorStorage,
+                    4);
+                return parent != null;
+            }
+
+            if (TryParseRefrigeratorSlotIndex(objectName, PrototypeUIObjectNames.RefrigeratorSlotIconPrefix, out int iconIndex)
+                || TryParseRefrigeratorSlotIndex(objectName, PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix, out iconIndex))
+            {
+                Transform storage = EnsureRefrigeratorPopupContainer(
+                    popupFrame,
+                    PrototypeUIObjectNames.RefrigeratorStorage,
+                    PrototypeUILayout.HubRefrigeratorStorage,
+                    4);
+                parent = EnsureRefrigeratorPopupContainer(
+                    storage,
+                    $"{PrototypeUIObjectNames.RefrigeratorSlotPrefix}{iconIndex + 1:00}",
+                    PrototypeUILayout.HubRefrigeratorSlot(iconIndex),
+                    iconIndex);
+                return parent != null;
+            }
+
+            if (objectName == PrototypeUIObjectNames.RefrigeratorRemoveIcon
+                || objectName == PrototypeUIObjectNames.RefrigeratorRemoveText)
+            {
+                parent = EnsureRefrigeratorPopupContainer(
+                    popupFrame,
+                    PrototypeUIObjectNames.RefrigeratorRemoveZone,
+                    PrototypeUILayout.HubRefrigeratorRemoveZone,
+                    5);
+                return parent != null;
+            }
+
+            return false;
+        }
+
+        private Transform EnsureRefrigeratorPopupContainer(Transform parent, string objectName, PrototypeUIRect layout, int siblingIndex)
+        {
+            if (parent == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
+            {
+                return null;
+            }
+
+            Transform existing = parent.Find(objectName) ?? FindNamedUiTransform(objectName);
+            GameObject containerObject = existing != null
+                ? existing.gameObject
+                : new GameObject(objectName, typeof(RectTransform));
+            ApplyHubPopupObjectIdentity(containerObject);
+            if (containerObject.transform.parent != parent)
+            {
+                containerObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = containerObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = containerObject.AddComponent<RectTransform>();
+            }
+
+            PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(objectName, layout);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
+            SetManagedSiblingIndex(rect, siblingIndex, preserveExistingLayout: existing != null);
+            return rect;
+        }
+
+        private static bool TryParseRefrigeratorSlotIndex(string objectName, string prefix, out int index)
+        {
+            index = 0;
+            if (string.IsNullOrWhiteSpace(objectName)
+                || string.IsNullOrWhiteSpace(prefix)
+                || !objectName.StartsWith(prefix, StringComparison.Ordinal)
+                || objectName.Length < prefix.Length + 2)
+            {
+                return false;
+            }
+
+            if (prefix == PrototypeUIObjectNames.RefrigeratorSlotPrefix
+                && (objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotIconPrefix, StringComparison.Ordinal)
+                    || objectName.StartsWith(PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix, StringComparison.Ordinal)))
+            {
+                return false;
+            }
+
+            string suffix = objectName[^2..];
+            if (!int.TryParse(suffix, out int displayIndex)
+                || displayIndex < 1
+                || displayIndex > PrototypeUILayout.RefrigeratorSlotCount)
+            {
+                return false;
+            }
+
+            index = displayIndex - 1;
+            return true;
         }
 
         private static int GetHudSubgroupSiblingIndex(string subgroupName)

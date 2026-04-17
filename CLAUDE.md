@@ -26,7 +26,6 @@
 - 기본 응답 언어는 한국어다.
 - generated 결과물만 직접 고치지 말고 생성 경로 또는 정본 코드부터 수정한다.
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 최종 결과에 남은 검증 단계를 적는다.
-- 커밋 메시지 규칙은 `Docs/project/GIT_COMMIT_TEMPLATE.md`만 따른다.
 
 ## Claude Harness
 

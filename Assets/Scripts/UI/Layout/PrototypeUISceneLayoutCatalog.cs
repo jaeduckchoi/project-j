@@ -245,7 +245,13 @@ namespace UI.Layout
                 PrototypeUIObjectNames.PopupRightCaption,
                 "StorageText",
                 "SelectedRecipeText",
-                "UpgradeText"
+                "UpgradeText",
+                PrototypeUIObjectNames.RefrigeratorStorage,
+                PrototypeUIObjectNames.RefrigeratorSelectedSlot,
+                PrototypeUIObjectNames.RefrigeratorRemoveZone,
+                PrototypeUIObjectNames.RefrigeratorRemoveIcon,
+                PrototypeUIObjectNames.RefrigeratorRemoveText,
+                PrototypeUIObjectNames.RefrigeratorDragGhost
             };
 
             for (int index = 0; index < PrototypeUILayout.HubPopupBodyItemBoxCount; index++)
@@ -257,6 +263,14 @@ namespace UI.Layout
                 objectNames.Add($"PopupRightItemBox{displayIndex:00}");
                 objectNames.Add($"PopupRightItemIcon{displayIndex:00}");
                 objectNames.Add($"PopupRightItemText{displayIndex:00}");
+            }
+
+            for (int index = 0; index < PrototypeUILayout.RefrigeratorSlotCount; index++)
+            {
+                int displayIndex = index + 1;
+                objectNames.Add($"{PrototypeUIObjectNames.RefrigeratorSlotPrefix}{displayIndex:00}");
+                objectNames.Add($"{PrototypeUIObjectNames.RefrigeratorSlotIconPrefix}{displayIndex:00}");
+                objectNames.Add($"{PrototypeUIObjectNames.RefrigeratorSlotAmountPrefix}{displayIndex:00}");
             }
 
             return objectNames;

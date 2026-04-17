@@ -54,6 +54,7 @@ namespace UI.Content.Catalog
             return panel switch
             {
                 PrototypeUIPreviewPanel.Storage => new PrototypeUIPopupDefinition("창고", "보관 목록", "보관 상세"),
+                PrototypeUIPreviewPanel.Refrigerator => new PrototypeUIPopupDefinition("냉장고", "재료 보관", "조리 손"),
                 PrototypeUIPreviewPanel.Recipe => new PrototypeUIPopupDefinition("요리 메뉴", "메뉴 목록", "메뉴 상세"),
                 PrototypeUIPreviewPanel.Upgrade => new PrototypeUIPopupDefinition("업그레이드", "업그레이드 목록", "업그레이드 상세"),
                 _ => new PrototypeUIPopupDefinition("재료", "재료 목록", "재료 상세")
@@ -70,6 +71,9 @@ namespace UI.Content.Catalog
                 PrototypeUIPreviewPanel.Storage => new PrototypeUIPreviewContent(
                     "말린 허브 x6\n- 조개 x9\n- 버섯 x3",
                     "현재 선택: 말린 허브 x6\n후반부에 안정적으로 보관 중\n\n맡기기 후보: 허브 x2\nW 맡기기\n\n꺼내기 후보: 조개 x1\nS 꺼내기"),
+                PrototypeUIPreviewPanel.Refrigerator => new PrototypeUIPreviewContent(
+                    "조개 x4\n허브 x2\n버섯 x1\n생선 x3",
+                    "냉장고\n재료를 원하는 칸에 올려 조리 준비 상태를 확인합니다.\n\n선택 칸: 2행 4열\n제거 영역: 우측 하단"),
                 PrototypeUIPreviewPanel.Recipe => new PrototypeUIPreviewContent(
                     "[선택] 허브 조개찜\n- 버섯 수프\n- 바다 샐러드",
                     "허브 조개찜\n해변 허브를 넣어 만드는 대표 메뉴입니다.\n\n판매가 24골드 / 평판 +2\n가방 소모량 2\n\n필요 재료\n조개 4/2\n허브 2/1"),

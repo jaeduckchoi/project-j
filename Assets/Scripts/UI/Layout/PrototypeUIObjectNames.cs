@@ -8,5 +8,14 @@ namespace UI.Layout
         public const string PopupTitle = "PopupTitle";
         public const string PopupLeftCaption = "PopupLeftCaption";
         public const string PopupRightCaption = "PopupRightCaption";
+        public const string RefrigeratorStorage = "RefrigeratorStorage";
+        public const string RefrigeratorSelectedSlot = "RefrigeratorSelectedSlot";
+        public const string RefrigeratorRemoveZone = "RefrigeratorRemoveZone";
+        public const string RefrigeratorRemoveIcon = "RefrigeratorRemoveIcon";
+        public const string RefrigeratorRemoveText = "RefrigeratorRemoveText";
+        public const string RefrigeratorDragGhost = "RefrigeratorDragGhost";
+        public const string RefrigeratorSlotPrefix = "RefrigeratorSlot";
+        public const string RefrigeratorSlotIconPrefix = "RefrigeratorSlotIcon";
+        public const string RefrigeratorSlotAmountPrefix = "RefrigeratorSlotAmount";
     }
 }
