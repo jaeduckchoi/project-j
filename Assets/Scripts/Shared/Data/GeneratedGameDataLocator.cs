@@ -389,6 +389,11 @@ namespace Shared.Data
                 }
             }
 
+            if (!AssetDatabase.IsValidFolder(GeneratedDataRoot))
+            {
+                return null;
+            }
+
             string[] guids = AssetDatabase.FindAssets($"{assetName} t:{typeof(T).Name}", new[] { GeneratedDataRoot });
             foreach (string guid in guids)
             {

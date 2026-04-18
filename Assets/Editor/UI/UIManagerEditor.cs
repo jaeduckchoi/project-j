@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Management.Storage;
 using Restaurant.Kitchen;
+using Shared;
 using TMPro;
 using UI;
 using UI.Controllers;
@@ -129,11 +130,6 @@ namespace Editor.UI
             new("FrontCounter", "프런트 카운터 팝업", typeof(FrontCounterStation), "FrontCounterStation을 가진 월드 오브젝트가 상호작용 시 프런트 카운터 팝업을 엽니다.")
         };
 
-        private static readonly PopupConnectionDef[] TypedPopupConnections =
-        {
-            new("Refrigerator", "냉장고 팝업", typeof(RefrigeratorStation), "RefrigeratorStation 오브젝트가 PopupFrame + RefrigeratorUI 조합과 연결됩니다.")
-        };
-
         private readonly List<string> managedNames = new();
         private readonly HashSet<string> managedNameSet = new(StringComparer.Ordinal);
         private readonly Dictionary<string, bool> folds = new(StringComparer.Ordinal)
@@ -148,6 +144,7 @@ namespace Editor.UI
 
         private Scene activeScene;
         private PrototypeUILayoutBindingSettings settings;
+        private PopupInteractionBindingSettings popupSettings;
         private UIManager uiManager;
         private PrototypeUIDesignController designController;
         private Vector2 treeScroll;
@@ -187,7 +184,7 @@ namespace Editor.UI
         {
             EditorGUILayout.LabelField("UI 레이아웃 편집기", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "왼쪽 트리에서 팝업 연결이나 Canvas UI 오브젝트를 선택합니다. 팝업 연결은 런타임 컴포넌트와 실제 씬 오브젝트의 관계를 보여주고, 레이아웃 바인딩은 선택한 오브젝트의 표시값을 저장합니다.",
+                "왼쪽 트리에서 팝업 연결이나 Canvas UI 오브젝트를 선택합니다. 팝업 연결은 popup-interaction-bindings 자산을 정본으로 편집하고 씬 station 컴포넌트를 동기화하며, 레이아웃 바인딩은 선택한 오브젝트의 표시값을 저장합니다.",
                 MessageType.Info);
 
             if (!activeScene.IsValid() || !activeScene.isLoaded)
@@ -276,16 +273,25 @@ namespace Editor.UI
                     continue;
                 }
 
+                TryGetPopupBinding(def.Key, out PopupInteractionBindingEntry entry);
                 List<Component> components = FindConnectionComponents(def);
-                bool isConnected = components.Count > 0;
-                TreeButton(def.Label, BuildConnectionStatusLabel(isConnected), SelectionKind.PopupConnection, def.Key, 1);
+                TreeButton(def.Label, BuildPopupConnectionStatusLabel(def, entry, components), SelectionKind.PopupConnection, def.Key, 1);
+
+                if (entry != null && !string.IsNullOrWhiteSpace(entry.SceneObjectPath))
+                {
+                    Label($"자산: {entry.SceneObjectPath}", 2);
+                }
 
                 for (int componentIndex = 0; componentIndex < components.Count; componentIndex++)
                 {
                     Component component = components[componentIndex];
                     if (component != null)
                     {
-                        Label(BuildSceneObjectPath(component.transform), 2);
+                        string scenePath = BuildSceneObjectPath(component.transform);
+                        if (entry == null || !string.Equals(entry.SceneObjectPath, scenePath, StringComparison.Ordinal))
+                        {
+                            Label($"씬: {scenePath}", 2);
+                        }
                     }
                 }
             }
@@ -294,12 +300,7 @@ namespace Editor.UI
 
         private PopupConnectionDef[] GetActivePopupConnections()
         {
-            return UsesTypedPopupUi() ? TypedPopupConnections : PopupConnections;
-        }
-
-        private bool UsesTypedPopupUi()
-        {
-            return uiManager != null && uiManager.GetComponentInChildren<HubPopupUIRegistry>(true) != null;
+            return PopupConnections;
         }
 
         private void DrawCanvasGroups()
@@ -637,28 +638,55 @@ namespace Editor.UI
 
             EditorGUILayout.LabelField(def.Label, EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(def.Help, MessageType.Info);
-            List<Component> connected = FindConnectionComponents(def);
-            GameObject current = connected.Count > 0 ? connected[0].gameObject : null;
+            TryGetPopupBinding(def.Key, out PopupInteractionBindingEntry entry);
+            GameObject current = ResolveSceneObject(entry?.SceneObjectPath);
 
             EditorGUI.BeginChangeCheck();
             GameObject next = EditorGUILayout.ObjectField("팝업 연결 오브젝트", current, typeof(GameObject), true) as GameObject;
             if (EditorGUI.EndChangeCheck())
             {
                 SetPopupConnectionObject(def, next);
-                connected = FindConnectionComponents(def);
+                TryGetPopupBinding(def.Key, out entry);
+                current = ResolveSceneObject(entry?.SceneObjectPath);
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("현재 연결", EditorStyles.boldLabel);
-            if (connected.Count == 0)
+            EditorGUILayout.LabelField("메모", EditorStyles.miniBoldLabel);
+            EditorGUI.BeginChangeCheck();
+            string nextMemo = EditorGUILayout.TextArea(entry?.Memo ?? string.Empty, GUILayout.MinHeight(52f));
+            if (EditorGUI.EndChangeCheck())
             {
-                EditorGUILayout.HelpBox("현재 씬에서 연결 컴포넌트를 찾지 못했습니다.", MessageType.Warning);
-                return;
+                UpdatePopupConnectionMemo(def.Key, nextMemo);
+                TryGetPopupBinding(def.Key, out entry);
+                current = ResolveSceneObject(entry?.SceneObjectPath);
             }
 
-            if (connected.Count > 1)
+            List<Component> connected = FindConnectionComponents(def);
+            bool isSynced = TryBuildPopupSyncMessage(def, entry, current, connected, out string syncMessage, out MessageType syncType);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("자산 기준 대상", EditorStyles.boldLabel);
+            if (entry == null || string.IsNullOrWhiteSpace(entry.SceneObjectPath))
             {
-                EditorGUILayout.HelpBox("같은 팝업에 연결된 오브젝트가 여러 개 있습니다.", MessageType.Warning);
+                EditorGUILayout.HelpBox("현재 popup-interaction-bindings 자산에 대상이 지정되지 않았습니다.", MessageType.Warning);
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Scene Path", entry.SceneObjectPath);
+                if (current == null)
+                {
+                    EditorGUILayout.HelpBox("자산 경로가 현재 활성 씬에서 resolve되지 않습니다.", MessageType.Warning);
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("현재 씬 동기화 상태", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(syncMessage, syncType);
+
+            if (connected.Count > 0)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("현재 씬 컴포넌트", EditorStyles.boldLabel);
             }
 
             for (int i = 0; i < connected.Count; i++)
@@ -680,6 +708,11 @@ namespace Editor.UI
                 }
             }
 
+            if (!isSynced && connected.Count == 0)
+            {
+                EditorGUILayout.HelpBox("현재 씬에 연결된 station 컴포넌트가 없습니다.", MessageType.None);
+            }
+
             DrawSceneHierarchyPreview("연결 오브젝트 구조", current != null ? current.transform : null, $"connection-tree:{def.Key}");
         }
 
@@ -692,7 +725,7 @@ namespace Editor.UI
             }
 
             EditorGUILayout.LabelField(selectedRuntimeName, EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("상세 오브젝트는 씬 오브젝트 연결 대신 메모와 스프라이트 override만 관리합니다. 월드 팝업 연결은 '팝업 연결'에서 설정하세요.", MessageType.None);
+            EditorGUILayout.HelpBox("상세 오브젝트는 씬 오브젝트 연결 대신 메모와 스프라이트 override만 관리합니다. 월드 팝업 연결은 popup-interaction-bindings 자산을 정본으로 하는 '팝업 연결'에서 설정하세요.", MessageType.None);
 
             settings.TryGetEntry(selectedRuntimeName, out PrototypeUILayoutBindingEntry entry);
             DrawLayoutMemoField(entry);
@@ -764,8 +797,10 @@ namespace Editor.UI
         {
             activeScene = SceneManager.GetActiveScene();
             settings = PrototypeUILayoutBindingSettings.LoadOrCreateAsset();
+            popupSettings = PopupInteractionBindingSettings.LoadOrCreateAsset();
             uiManager = FindComponentInScene<UIManager>(activeScene);
             designController = FindComponentInScene<PrototypeUIDesignController>(activeScene);
+            SeedPopupBindingsFromScene();
             managedNames.Clear();
             managedNameSet.Clear();
             foreach (string managedName in PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(IsHubScene(activeScene)))
@@ -786,31 +821,81 @@ namespace Editor.UI
 
         private void SetPopupConnectionObject(PopupConnectionDef def, GameObject target)
         {
-            if (target == null)
+            if (popupSettings == null)
             {
+                popupSettings = PopupInteractionBindingSettings.LoadOrCreateAsset();
+            }
+
+            if (popupSettings == null)
+            {
+                status = "팝업 연결 자산을 불러오지 못했습니다.";
+                statusType = MessageType.Warning;
                 return;
             }
 
-            if (EditorUtility.IsPersistent(target) || target.scene != activeScene)
+            if (target != null && (EditorUtility.IsPersistent(target) || target.scene != activeScene))
             {
                 status = "활성 씬에 있는 GameObject만 팝업 연결 오브젝트로 사용할 수 있습니다.";
                 statusType = MessageType.Warning;
                 return;
             }
 
-            if (target.GetComponent(def.ComponentType) == null)
+            Undo.RecordObject(popupSettings, "Edit Popup Interaction Binding");
+            if (target == null)
+            {
+                popupSettings.RemoveBinding(def.Key);
+                SyncPopupConnectionComponents(def, null);
+                SavePopupSettings($"{def.Label} 연결을 해제했습니다.", MessageType.Info);
+                return;
+            }
+
+            popupSettings.SetBindingSource(def.Key, BuildSceneObjectPath(target.transform));
+            SyncPopupConnectionComponents(def, target);
+            Selection.activeObject = target;
+            SavePopupSettings($"{target.name}을(를) {def.Label} 대상으로 저장했습니다.", MessageType.Info);
+        }
+
+        private void SyncPopupConnectionComponents(PopupConnectionDef def, GameObject target)
+        {
+            List<Component> connected = FindConnectionComponents(def);
+            if (target != null && target.GetComponent(def.ComponentType) == null)
             {
                 Undo.AddComponent(target, def.ComponentType);
                 MarkSceneDirty(target);
-                status = $"{target.name}에 {def.ComponentType.Name} 컴포넌트를 추가했습니다.";
-            }
-            else
-            {
-                Selection.activeObject = target;
-                status = $"{target.name}은 이미 {def.ComponentType.Name}로 연결되어 있습니다.";
             }
 
-            statusType = MessageType.Info;
+            for (int i = 0; i < connected.Count; i++)
+            {
+                Component component = connected[i];
+                if (component == null)
+                {
+                    continue;
+                }
+
+                if (target != null && component.gameObject == target)
+                {
+                    continue;
+                }
+
+                GameObject owner = component.gameObject;
+                Undo.DestroyObjectImmediate(component);
+                if (owner != null)
+                {
+                    MarkSceneDirty(owner);
+                }
+            }
+        }
+
+        private void UpdatePopupConnectionMemo(string popupKey, string memoText)
+        {
+            if (popupSettings == null || string.IsNullOrWhiteSpace(popupKey))
+            {
+                return;
+            }
+
+            Undo.RecordObject(popupSettings, "Edit Popup Interaction Memo");
+            popupSettings.SetBindingMemo(popupKey, memoText);
+            SavePopupSettings("팝업 연결 메모를 저장했습니다.", MessageType.Info);
         }
 
         private void UpdateSelectedBindingMemo(string memoText)
@@ -915,10 +1000,32 @@ namespace Editor.UI
             }
         }
 
+        private void SavePopupSettings(string message, MessageType type)
+        {
+            if (popupSettings == null)
+            {
+                return;
+            }
+
+            MarkPopupSettingsDirty();
+            AssetDatabase.SaveAssets();
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                status = message;
+                statusType = type;
+            }
+        }
+
         private void MarkSettingsDirty()
         {
             settings.SortBindings();
             EditorUtility.SetDirty(settings);
+        }
+
+        private void MarkPopupSettingsDirty()
+        {
+            popupSettings.SortBindings();
+            EditorUtility.SetDirty(popupSettings);
         }
 
         private void MarkSceneDirty(GameObject target)
@@ -944,6 +1051,131 @@ namespace Editor.UI
 
             def = default;
             return false;
+        }
+
+        private bool TryGetPopupBinding(string popupKey, out PopupInteractionBindingEntry entry)
+        {
+            if (popupSettings != null && popupSettings.TryGetEntry(popupKey, out entry))
+            {
+                return true;
+            }
+
+            entry = null;
+            return false;
+        }
+
+        private string BuildPopupConnectionStatusLabel(PopupConnectionDef def, PopupInteractionBindingEntry entry, List<Component> connected)
+        {
+            GameObject assetTarget = ResolveSceneObject(entry?.SceneObjectPath);
+            if (entry == null || string.IsNullOrWhiteSpace(entry.SceneObjectPath))
+            {
+                return connected.Count > 1 ? "경고" : "미연결";
+            }
+
+            return TryBuildPopupSyncMessage(def, entry, assetTarget, connected, out _, out _)
+                ? "연결"
+                : "불일치";
+        }
+
+        private bool TryBuildPopupSyncMessage(
+            PopupConnectionDef def,
+            PopupInteractionBindingEntry entry,
+            GameObject assetTarget,
+            List<Component> connected,
+            out string message,
+            out MessageType messageType)
+        {
+            if (entry == null || string.IsNullOrWhiteSpace(entry.SceneObjectPath))
+            {
+                if (connected.Count > 1)
+                {
+                    message = "자산이 비어 있고 씬에 후보가 여러 개 있어 자동으로 선택하지 않았습니다.";
+                    messageType = MessageType.Warning;
+                    return false;
+                }
+
+                message = "자산 기준 대상이 아직 지정되지 않았습니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            if (assetTarget == null)
+            {
+                message = "자산 기준 대상 경로가 현재 활성 씬에서 resolve되지 않습니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            if (assetTarget.GetComponent(def.ComponentType) == null)
+            {
+                message = "자산 기준 대상에 필요한 station 컴포넌트가 없습니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            if (connected.Count == 0)
+            {
+                message = "현재 씬에는 연결된 station 컴포넌트가 없습니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            if (connected.Count > 1)
+            {
+                message = "같은 popupKey의 station 컴포넌트가 여러 오브젝트에 남아 있습니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            Component component = connected[0];
+            if (component == null || component.gameObject != assetTarget)
+            {
+                message = "자산 기준 대상과 현재 씬 station 컴포넌트 대상이 다릅니다.";
+                messageType = MessageType.Warning;
+                return false;
+            }
+
+            message = "자산 기준 대상과 현재 씬 station 컴포넌트가 동기화되어 있습니다.";
+            messageType = MessageType.Info;
+            return true;
+        }
+
+        private void SeedPopupBindingsFromScene()
+        {
+            if (popupSettings == null || !activeScene.IsValid() || !activeScene.isLoaded)
+            {
+                return;
+            }
+
+            bool changed = false;
+            for (int i = 0; i < PopupConnections.Length; i++)
+            {
+                PopupConnectionDef def = PopupConnections[i];
+                if (TryGetPopupBinding(def.Key, out PopupInteractionBindingEntry existing)
+                    && !string.IsNullOrWhiteSpace(existing.SceneObjectPath))
+                {
+                    continue;
+                }
+
+                List<Component> connected = FindConnectionComponents(def);
+                if (connected.Count != 1 || connected[0] == null)
+                {
+                    continue;
+                }
+
+                if (!changed)
+                {
+                    Undo.RecordObject(popupSettings, "Seed Popup Interaction Bindings");
+                }
+
+                popupSettings.SetBindingSource(def.Key, BuildSceneObjectPath(connected[0].transform));
+                changed = true;
+            }
+
+            if (changed)
+            {
+                SavePopupSettings(null, MessageType.None);
+            }
         }
 
         private List<Component> FindConnectionComponents(PopupConnectionDef def)

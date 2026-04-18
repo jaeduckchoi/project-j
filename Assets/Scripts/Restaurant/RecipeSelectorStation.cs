@@ -24,6 +24,11 @@ namespace Restaurant
                     return "등록된 메뉴 없음";
                 }
 
+                if (restaurantManager.IsRestaurantOpen)
+                {
+                    return "영업 중에는 메뉴 변경 불가";
+                }
+
                 return $"[E] {promptLabel}";
             }
         }
@@ -46,7 +51,9 @@ namespace Restaurant
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
-            return restaurantManager != null && restaurantManager.AvailableRecipes.Count > 0;
+            return restaurantManager != null
+                && !restaurantManager.IsRestaurantOpen
+                && restaurantManager.AvailableRecipes.Count > 0;
         }
 
         /// <summary>
@@ -56,6 +63,12 @@ namespace Restaurant
         {
             if (restaurantManager == null || restaurantManager.AvailableRecipes.Count == 0)
             {
+                return;
+            }
+
+            if (restaurantManager.IsRestaurantOpen)
+            {
+                GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업 중에는 오늘의 메뉴를 바꿀 수 없습니다.");
                 return;
             }
 

@@ -1,6 +1,7 @@
 using CoreLoop.Core;
 using Exploration.Player;
 using Restaurant;
+using Restaurant.Kitchen;
 using UI.Layout;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace UI
             BindEconomy();
             BindTools();
             BindRestaurant();
+            BindCustomerService();
             BindDayCycle();
             BindUpgradeManager();
         }
@@ -133,6 +135,8 @@ namespace UI
             {
                 cachedRestaurant.SelectedRecipeChanged += RefreshSelectedRecipeText;
                 cachedRestaurant.ServiceResultChanged += RefreshRestaurantResultText;
+                cachedRestaurant.TodayMenuChanged += HandleTodayMenuChanged;
+                cachedRestaurant.ServiceStateChanged += HandleRestaurantServiceStateChanged;
             }
         }
 
@@ -142,7 +146,33 @@ namespace UI
             {
                 cachedRestaurant.SelectedRecipeChanged -= RefreshSelectedRecipeText;
                 cachedRestaurant.ServiceResultChanged -= RefreshRestaurantResultText;
+                cachedRestaurant.TodayMenuChanged -= HandleTodayMenuChanged;
+                cachedRestaurant.ServiceStateChanged -= HandleRestaurantServiceStateChanged;
                 cachedRestaurant = null;
+            }
+        }
+
+        private void BindCustomerService()
+        {
+            UnbindCustomerService();
+            if (Application.isPlaying && IsHubScene())
+            {
+                RestaurantFlowController.GetOrCreate();
+            }
+
+            cachedCustomerService = FindFirstObjectByType<CustomerServiceController>();
+            if (cachedCustomerService != null)
+            {
+                cachedCustomerService.TicketsChanged += HandleCustomerTicketsChanged;
+            }
+        }
+
+        private void UnbindCustomerService()
+        {
+            if (cachedCustomerService != null)
+            {
+                cachedCustomerService.TicketsChanged -= HandleCustomerTicketsChanged;
+                cachedCustomerService = null;
             }
         }
 
@@ -204,6 +234,8 @@ namespace UI
                 recipePanelButton = null;
                 upgradePanelButton = null;
                 materialPanelButton = null;
+                openRestaurantButton = null;
+                closeRestaurantButton = null;
                 popupCloseButton = popupFrameUi != null ? popupFrameUi.CloseButton : null;
             }
             else
@@ -211,6 +243,8 @@ namespace UI
                 ResolveOptionalComponentReference(ref recipePanelButton, "RecipePanelButton");
                 ResolveOptionalComponentReference(ref upgradePanelButton, "UpgradePanelButton");
                 ResolveOptionalComponentReference(ref materialPanelButton, "MaterialPanelButton");
+                ResolveOptionalComponentReference(ref openRestaurantButton, "OpenRestaurantButton");
+                ResolveOptionalComponentReference(ref closeRestaurantButton, "CloseRestaurantButton");
                 ResolveOptionalComponentReference(ref popupCloseButton, "PopupCloseButton");
             }
 
@@ -265,6 +299,16 @@ namespace UI
                 materialPanelButton.onClick.AddListener(HandleMaterialPanelClicked);
             }
 
+            if (!ShouldUseTypedPopupUi() && openRestaurantButton != null)
+            {
+                openRestaurantButton.onClick.AddListener(HandleOpenRestaurantButtonClicked);
+            }
+
+            if (!ShouldUseTypedPopupUi() && closeRestaurantButton != null)
+            {
+                closeRestaurantButton.onClick.AddListener(HandleCloseRestaurantButtonClicked);
+            }
+
             if (popupCloseButton != null)
             {
                 popupCloseButton.onClick.AddListener(HandlePopupCloseButtonClicked);
@@ -294,6 +338,16 @@ namespace UI
             if (!ShouldUseTypedPopupUi() && materialPanelButton != null)
             {
                 materialPanelButton.onClick.RemoveListener(HandleMaterialPanelClicked);
+            }
+
+            if (!ShouldUseTypedPopupUi() && openRestaurantButton != null)
+            {
+                openRestaurantButton.onClick.RemoveListener(HandleOpenRestaurantButtonClicked);
+            }
+
+            if (!ShouldUseTypedPopupUi() && closeRestaurantButton != null)
+            {
+                closeRestaurantButton.onClick.RemoveListener(HandleCloseRestaurantButtonClicked);
             }
 
             if (popupCloseButton != null)
@@ -331,6 +385,44 @@ namespace UI
         {
             showGuideHelpOverlay = !showGuideHelpOverlay;
             RefreshGuideText();
+        }
+
+        private void HandleOpenRestaurantButtonClicked()
+        {
+            if (cachedRestaurant != null && cachedRestaurant.TryOpenRestaurant())
+            {
+                RefreshAll();
+                return;
+            }
+
+            RefreshAll();
+        }
+
+        private void HandleCloseRestaurantButtonClicked()
+        {
+            int activeTicketCount = cachedCustomerService != null ? cachedCustomerService.ActiveTicketCount : 0;
+            if (cachedRestaurant != null && cachedRestaurant.TryCloseRestaurant(activeTicketCount))
+            {
+                RefreshAll();
+                return;
+            }
+
+            RefreshAll();
+        }
+
+        private void HandleTodayMenuChanged()
+        {
+            RefreshAll();
+        }
+
+        private void HandleRestaurantServiceStateChanged(bool _)
+        {
+            RefreshAll();
+        }
+
+        private void HandleCustomerTicketsChanged()
+        {
+            RefreshAll();
         }
     }
 }

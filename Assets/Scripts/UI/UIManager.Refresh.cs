@@ -77,11 +77,24 @@ namespace UI
             List<PopupListEntry> entries = new();
             if (cachedRestaurant == null)
             {
-                return new PopupPanelContent(entries, "선택된 메뉴가 없습니다.");
+                return new PopupPanelContent(entries, "식당 정보를 찾지 못했습니다.");
             }
 
             IReadOnlyList<RecipeData> recipes = cachedRestaurant.AvailableRecipes;
+            IReadOnlyList<RecipeData> todayMenuRecipes = cachedRestaurant.TodayMenuRecipes;
             RecipeData detailRecipe = cachedRestaurant.SelectedRecipe;
+            if (detailRecipe == null)
+            {
+                for (int i = 0; i < todayMenuRecipes.Count; i++)
+                {
+                    if (todayMenuRecipes[i] != null)
+                    {
+                        detailRecipe = todayMenuRecipes[i];
+                        break;
+                    }
+                }
+            }
+
             if (detailRecipe == null)
             {
                 for (int i = 0; i < recipes.Count; i++)
@@ -94,6 +107,32 @@ namespace UI
                 }
             }
 
+            for (int i = 0; i < Restaurant.TodayMenuState.SlotCount; i++)
+            {
+                RecipeData assignedRecipe = i < todayMenuRecipes.Count ? todayMenuRecipes[i] : null;
+                int slotIndex = i;
+                entries.Add(new PopupListEntry(
+                    $"today-menu-slot-{i}",
+                    $"오늘의 메뉴 {i + 1}",
+                    BuildPopupItemSummary(
+                        assignedRecipe != null ? assignedRecipe.DisplayName : "비어 있음",
+                        cachedRestaurant.IsRestaurantOpen ? "OPEN 중에는 수정 불가" : "클릭해 활성 슬롯 선택"),
+                    BuildRecipePopupDetailText(detailRecipe),
+                    ResolveRecipePopupIcon(assignedRecipe),
+                    cachedRestaurant.SelectedTodayMenuSlotIndex == i,
+                    cachedRestaurant.IsRestaurantOpen
+                        ? null
+                        : () =>
+                        {
+                            if (cachedRestaurant != null)
+                            {
+                                cachedRestaurant.SelectTodayMenuSlot(slotIndex);
+                            }
+
+                            RefreshHubPopupContent();
+                        }));
+            }
+
             for (int i = 0; i < recipes.Count; i++)
             {
                 RecipeData recipe = recipes[i];
@@ -103,18 +142,32 @@ namespace UI
                 }
 
                 int recipeIndex = i;
+                int assignedSlotIndex = FindTodayMenuSlotIndex(recipe);
                 entries.Add(new PopupListEntry(
                     recipe.RecipeId,
                     recipe.DisplayName,
-                    BuildPopupItemSummary(recipe.Description, $"판매가 {recipe.SellPrice} · 가능 {cachedRestaurant.GetCookableServings(recipe)}"),
+                    BuildPopupItemSummary(
+                        recipe.Description,
+                        assignedSlotIndex >= 0
+                            ? $"오늘의 메뉴 {assignedSlotIndex + 1} 배치됨"
+                            : $"판매가 {recipe.SellPrice} · 가능 {cachedRestaurant.GetCookableServings(recipe)}"),
                     BuildRecipePopupDetailText(recipe),
                     ResolveRecipePopupIcon(recipe),
                     recipe == detailRecipe,
                     () =>
                     {
-                        if (cachedRestaurant != null)
+                        if (cachedRestaurant == null)
+                        {
+                            return;
+                        }
+
+                        if (cachedRestaurant.IsRestaurantOpen)
                         {
                             cachedRestaurant.SelectRecipeByIndex(recipeIndex);
+                        }
+                        else
+                        {
+                            cachedRestaurant.AssignSelectedTodayMenuRecipe(recipe);
                         }
 
                         RefreshHubPopupContent();
@@ -417,12 +470,33 @@ namespace UI
 
         private string BuildRecipePopupDetailText(RecipeData recipe)
         {
-            if (cachedRestaurant == null || recipe == null)
+            if (cachedRestaurant == null)
             {
                 return "선택된 메뉴가 없습니다.";
             }
 
             StringBuilder builder = new();
+            builder.AppendLine(cachedRestaurant.IsRestaurantOpen ? "영업 상태: OPEN" : "영업 상태: CLOSE");
+            builder.AppendLine("- 오늘의 메뉴");
+
+            IReadOnlyList<RecipeData> todayMenuRecipes = cachedRestaurant.TodayMenuRecipes;
+            for (int slotIndex = 0; slotIndex < Restaurant.TodayMenuState.SlotCount; slotIndex++)
+            {
+                RecipeData assignedRecipe = slotIndex < todayMenuRecipes.Count ? todayMenuRecipes[slotIndex] : null;
+                string marker = cachedRestaurant.SelectedTodayMenuSlotIndex == slotIndex ? "[활성] " : string.Empty;
+                builder.AppendLine($"  {marker}{slotIndex + 1}. {(assignedRecipe != null ? assignedRecipe.DisplayName : "비어 있음")}");
+            }
+
+            builder.AppendLine();
+
+            if (recipe == null)
+            {
+                builder.Append(cachedRestaurant.IsRestaurantOpen
+                    ? "영업 중에는 오늘의 메뉴를 읽기 전용으로 확인합니다."
+                    : "왼쪽 슬롯을 고른 뒤 아래 레시피를 눌러 배치하세요.");
+                return builder.ToString().TrimEnd();
+            }
+
             builder.AppendLine(recipe.DisplayName);
 
             if (!string.IsNullOrWhiteSpace(recipe.Description))
@@ -448,6 +522,12 @@ namespace UI
             }
 
             builder.AppendLine($"- 가능 수량: {cachedRestaurant.GetCookableServings(recipe)}");
+            int assignedSlotIndex = FindTodayMenuSlotIndex(recipe);
+            if (assignedSlotIndex >= 0)
+            {
+                builder.AppendLine($"- 배치 슬롯: 오늘의 메뉴 {assignedSlotIndex + 1}");
+            }
+
             builder.AppendLine();
             builder.AppendLine("- 필요 재료");
 
@@ -476,7 +556,45 @@ namespace UI
                 builder.AppendLine($"  {displayName} {ownedAmount}/{ingredientAmount}");
             }
 
+            builder.AppendLine();
+            builder.AppendLine("- 배치 안내");
+            if (cachedRestaurant.IsRestaurantOpen)
+            {
+                builder.Append("  영업 중에는 메뉴를 수정할 수 없습니다.");
+            }
+            else
+            {
+                builder.AppendLine($"  현재 활성 슬롯: 오늘의 메뉴 {cachedRestaurant.SelectedTodayMenuSlotIndex + 1}");
+                builder.Append("  이미 다른 슬롯에 있는 메뉴를 고르면 중복되지 않고 현재 슬롯으로 이동합니다.");
+            }
+
             return builder.ToString().TrimEnd();
+        }
+
+        private int FindTodayMenuSlotIndex(RecipeData recipe)
+        {
+            if (cachedRestaurant == null || recipe == null || string.IsNullOrWhiteSpace(recipe.RecipeId))
+            {
+                return -1;
+            }
+
+            IReadOnlyList<RecipeData> todayMenuRecipes = cachedRestaurant.TodayMenuRecipes;
+            for (int slotIndex = 0; slotIndex < todayMenuRecipes.Count; slotIndex++)
+            {
+                RecipeData assignedRecipe = todayMenuRecipes[slotIndex];
+                if (assignedRecipe == null)
+                {
+                    continue;
+                }
+
+                if (assignedRecipe == recipe
+                    || string.Equals(assignedRecipe.RecipeId, recipe.RecipeId, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return slotIndex;
+                }
+            }
+
+            return -1;
         }
 
         private string BuildMaterialPopupDetailText(ResourceData resource, int amount)
@@ -1322,6 +1440,26 @@ namespace UI
         private void RefreshButtonStates()
         {
             HideLegacyDayRoutineObjects();
+
+            bool showActionButtons = IsHubScene() && activeHubPanel == HubPopupPanel.None && !ShouldUseTypedPopupUi();
+            SetNamedObjectActive("ActionDock", showActionButtons);
+            SetNamedObjectActive("ActionAccent", showActionButtons);
+            SetNamedObjectActive("ActionCaption", showActionButtons);
+            SetButtonGameObjectActive(openRestaurantButton, showActionButtons);
+            SetButtonGameObjectActive(closeRestaurantButton, showActionButtons);
+
+            if (openRestaurantButton != null)
+            {
+                openRestaurantButton.interactable = cachedRestaurant != null && cachedRestaurant.CanOpenRestaurant;
+            }
+
+            if (closeRestaurantButton != null)
+            {
+                bool hasActiveTickets = cachedCustomerService != null && cachedCustomerService.HasActiveTickets;
+                closeRestaurantButton.interactable = cachedRestaurant != null
+                    && cachedRestaurant.IsRestaurantOpen
+                    && !hasActiveTickets;
+            }
         }
     }
 }

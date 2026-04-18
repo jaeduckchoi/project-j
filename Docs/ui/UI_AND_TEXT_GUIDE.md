@@ -8,6 +8,7 @@
 - 에디터 UI 프리뷰/설정은 `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`, `Assets/Scripts/UI/UIManager.EditorPreview.cs`, `Assets/Editor/UI/*`에서 관리하며, 빈 Canvas도 에디터에서 관리 UI를 생성해 조정할 수 있어야 한다.
 - 레이아웃 catalog 정본은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`이며, 관리 대상 Canvas 이름 목록과 명시적 레이아웃 binding 적용 경로를 유지한다.
 - 기본 레이아웃 정본은 `Assets/Scripts/UI/Layout/PrototypeUILayout*.cs` 코드 값이고, 에디터에서 연결한 씬 오브젝트 값은 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다.
+- 큰 팝업이 어느 월드 오브젝트에서 열리는지는 `Assets/Resources/Generated/popup-interaction-bindings.asset`가 정본이고, UI 레이아웃 편집기의 `팝업 연결` 섹션이 이 자산과 씬 station 컴포넌트를 함께 동기화한다.
 - 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
 - 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames`)
 - 팝업 타이틀/캡션 공용 상수: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
@@ -36,7 +37,7 @@ Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountT
 
 - 씬에 직접 저장된 popup 텍스트, 이미지, 폰트, 배치 값은 명시적 요청 없이는 덮어쓰지 않습니다.
 - Canvas 그룹 재정리는 `UIManager`와 `PrototypeUIDesignController` 기반 편집 도구를 사용합니다.
-- 에디터에서 UI가 보이지 않는 변경은 완료 상태로 보지 않습니다. `PrototypeUIDesignController`의 `Apply Preview`로 관리 UI를 수동 생성·갱신하고, UI 레이아웃 편집기에서는 선택한 관리 ID에 메모와 스프라이트 override를 저장합니다. 상세 오브젝트는 현재 씬에서 같은 이름의 UI 오브젝트를 찾아 Image 컴포넌트가 있을 때만 스프라이트를 연결합니다. 편집기 좌측 트리는 HUD/큰 팝업 구조와 함께 창고/요리/업그레이드/재료/프론트 카운터/냉장고 같은 팝업 유형별 그룹으로 정리합니다. 큰 팝업 연결은 `StorageStation`, `RefrigeratorStation`, `FrontCounterStation` 같은 월드 상호작용 컴포넌트 기준으로 확인합니다.
+- 에디터에서 UI가 보이지 않는 변경은 완료 상태로 보지 않습니다. `PrototypeUIDesignController`의 `Apply Preview`로 관리 UI를 수동 생성·갱신하고, UI 레이아웃 편집기에서는 선택한 관리 ID에 메모와 스프라이트 override를 저장합니다. 상세 오브젝트는 현재 씬에서 같은 이름의 UI 오브젝트를 찾아 Image 컴포넌트가 있을 때만 스프라이트를 연결합니다. 편집기 좌측 트리는 HUD/큰 팝업 구조와 함께 창고/요리/업그레이드/재료/프론트 카운터/냉장고 같은 팝업 유형별 그룹으로 정리합니다. 큰 팝업 연결은 `popup-interaction-bindings.asset`의 `popupKey -> sceneObjectPath`를 기준으로 보고, 선택한 오브젝트에 필요한 `StorageStation`, `RefrigeratorStation`, `FrontCounterStation` 컴포넌트를 단일 연결 상태로 맞춥니다.
 - `Canvas 그룹 정리`와 에디터 프리뷰 계층 생성은 `PopupSharedLeftGroup`, `PopupSharedRightGroup`, `PopupStorageRightGroup`, `PopupUpgradeRightGroup`, `PopupRefrigeratorGroup` 같은 에디터용 그룹을 만들어 팝업 관련 오브젝트를 유형별로 묶습니다. 이 그룹은 에디터 정리용이며, 런타임 오브젝트 이름 정본은 그대로 유지합니다.
 - 현재 코드 밖의 별도 자동 동기화/감사 흐름을 전제로 작업하지 않습니다.
 
@@ -44,6 +45,7 @@ Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountT
 
 - `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
 - `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`
+- `Assets/Scripts/Shared/PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/popup-interaction-bindings.asset`
 - `Assets/Scripts/UI/PopupPauseStateUtility.cs`
 - `Assets/Scripts/UI/Layout/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
 - `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`

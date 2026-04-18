@@ -1,7 +1,9 @@
 using CoreLoop.Core;
 using Exploration.Interaction;
 using Management.Tools;
+using Restaurant;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
@@ -110,6 +112,17 @@ namespace Exploration.World
                 && GameManager.Instance.Economy.CurrentReputation < requiredReputation)
             {
                 return $"평판 {requiredReputation} 필요";
+            }
+
+            string hubSceneName = !string.IsNullOrWhiteSpace(GameManager.Instance.HubSceneName)
+                ? GameManager.Instance.HubSceneName
+                : "Hub";
+            RestaurantManager restaurantManager = FindFirstObjectByType<RestaurantManager>();
+            if (string.Equals(SceneManager.GetActiveScene().name, hubSceneName, System.StringComparison.Ordinal)
+                && restaurantManager != null
+                && restaurantManager.IsRestaurantOpen)
+            {
+                return "영업 중에는 이동할 수 없습니다.";
             }
 
             return string.Empty;

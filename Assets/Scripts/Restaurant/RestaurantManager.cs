@@ -2,44 +2,53 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CoreLoop.Core;
-using Shared.Data;
 using Management.Economy;
 using Management.Inventory;
+using Shared.Data;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-// Restaurant 네임스페이스
 namespace Restaurant
 {
     /// <summary>
-    /// 메뉴 선택과 영업 결과를 관리한다. 씬 참조와 generated 게임 데이터를 기준으로 레시피 목록을 유지한다.
+    /// 레시피 카탈로그 포커스, 오늘의 메뉴 3칸, OPEN/CLOSE 상태와 영업 보상을 관리한다.
+    /// 정적 데이터는 RecipeData를 그대로 쓰고, 변하는 상태는 런타임 필드와 TodayMenuState에 둔다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RestaurantManager")]
     public class RestaurantManager : MonoBehaviour
     {
+        private static readonly (string RecipeId, string DisplayName, string Method, string FirstIngredientId, string FirstIngredientName, string SecondIngredientId, string SecondIngredientName, int SellPrice, int ReputationDelta)[] FallbackRecipeDefinitions =
+        {
+            ("kimchi_fried_rice", "김치볶음밥", "후라이팬", "kimchi", "김치", "rice", "밥", 28, 1),
+            ("kimchi_stew", "김치찌개", "냄비", "kimchi", "김치", "gochugaru", "고춧가루", 32, 1),
+            ("kimchi_pancake", "김치전", "후라이팬", "kimchi", "김치", "flour", "밀가루", 24, 1)
+        };
+
         [SerializeField] private List<RecipeData> availableRecipes = new();
         [SerializeField, Min(1)] private int serviceCapacity = 3;
         [SerializeField] private int selectedRecipeIndex;
+        [SerializeField] private List<string> todayMenuRecipeIds = new();
+        [SerializeField] private int selectedTodayMenuSlotIndex;
 
+        private readonly Dictionary<string, ResourceData> runtimeBasicResources = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, RecipeData> runtimeFallbackRecipes = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<RecipeData> resolvedTodayMenuRecipes = new();
+
+        private TodayMenuState todayMenuState;
         private string selectedRecipeId = string.Empty;
 
         public event Action<RecipeData> SelectedRecipeChanged;
         public event Action<string> ServiceResultChanged;
+        public event Action TodayMenuChanged;
+        public event Action<bool> ServiceStateChanged;
 
         public RecipeData SelectedRecipe { get; private set; }
         public string SelectedRecipeId => selectedRecipeId;
-        public string LastServiceResult { get; private set; } = "메뉴를 고르고 영업을 시작하세요.";
+        public string LastServiceResult { get; private set; } = "오늘의 메뉴 3칸을 정한 뒤 OPEN 하세요.";
 
         /// <summary>
-        /// 시작 시 기본 레시피 목록을 복구하고 현재 선택 메뉴를 확정합니다.
+        /// 현재 허브에서 고를 수 있는 전체 레시피 목록이다.
         /// </summary>
-        private void Start()
-        {
-            EnsureRecipeList();
-            RefreshSelectedRecipe();
-            BroadcastState();
-        }
-
         public IReadOnlyList<RecipeData> AvailableRecipes
         {
             get
@@ -50,7 +59,62 @@ namespace Restaurant
         }
 
         /// <summary>
-        /// 레시피 인덱스를 기준으로 현재 메뉴를 바꿉니다.
+        /// 오늘의 메뉴 슬롯에 배치된 레시피 3칸을 순서대로 반환한다.
+        /// 비어 있는 칸은 null이다.
+        /// </summary>
+        public IReadOnlyList<RecipeData> TodayMenuRecipes
+        {
+            get
+            {
+                EnsureTodayMenuState();
+                return resolvedTodayMenuRecipes;
+            }
+        }
+
+        /// <summary>
+        /// 현재 활성화된 오늘의 메뉴 슬롯 인덱스다.
+        /// </summary>
+        public int SelectedTodayMenuSlotIndex
+        {
+            get
+            {
+                EnsureTodayMenuState();
+                return todayMenuState.SelectedSlotIndex;
+            }
+        }
+
+        /// <summary>
+        /// OPEN 가능한지 여부다.
+        /// 오늘의 메뉴 3칸이 모두 유효한 레시피로 채워져 있어야 한다.
+        /// </summary>
+        public bool CanOpenRestaurant
+        {
+            get
+            {
+                EnsureTodayMenuState();
+                return !IsRestaurantOpen && HasCompleteTodayMenu();
+            }
+        }
+
+        /// <summary>
+        /// 현재 식당 영업 상태다.
+        /// </summary>
+        public bool IsRestaurantOpen { get; private set; }
+
+        /// <summary>
+        /// 시작 시 레시피 목록과 오늘의 메뉴 상태를 복구한다.
+        /// </summary>
+        private void Start()
+        {
+            EnsureRecipeList();
+            EnsureTodayMenuState();
+            RefreshSelectedRecipe();
+            BroadcastState();
+        }
+
+        /// <summary>
+        /// 레시피 인덱스를 기준으로 카탈로그 포커스를 바꾼다.
+        /// 오늘의 메뉴 슬롯 배치는 바꾸지 않는다.
         /// </summary>
         public void SelectRecipeByIndex(int recipeIndex)
         {
@@ -71,47 +135,139 @@ namespace Restaurant
         }
 
         /// <summary>
-        /// 해당 레시피를 현재 재료로 한 번 이상 판매할 수 있는지 확인합니다.
+        /// 오늘의 메뉴 활성 슬롯을 바꾼다.
+        /// 영업 중에는 수정할 수 없다.
+        /// </summary>
+        public bool SelectTodayMenuSlot(int slotIndex)
+        {
+            EnsureTodayMenuState();
+            if (IsRestaurantOpen || !todayMenuState.SelectSlot(slotIndex))
+            {
+                return false;
+            }
+
+            PersistTodayMenuState();
+            RefreshResolvedTodayMenuRecipes();
+            TodayMenuChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 현재 선택된 레시피를 활성 슬롯에 배치한다.
+        /// 이미 다른 슬롯에 있으면 중복 생성하지 않고 현재 슬롯으로 이동한다.
+        /// </summary>
+        public bool AssignSelectedTodayMenuRecipe(RecipeData recipe)
+        {
+            EnsureRecipeList();
+            EnsureTodayMenuState();
+
+            if (IsRestaurantOpen || recipe == null || !ContainsRecipe(recipe))
+            {
+                return false;
+            }
+
+            SetSelectedRecipe(recipe);
+            bool changed = todayMenuState.AssignRecipeToSelectedSlot(recipe.RecipeId);
+            PersistTodayMenuState();
+            RefreshResolvedTodayMenuRecipes();
+            BroadcastState();
+            return changed;
+        }
+
+        /// <summary>
+        /// OPEN 상태로 전환한다.
+        /// 오늘의 메뉴 3칸이 모두 채워져 있어야 한다.
+        /// </summary>
+        public bool TryOpenRestaurant()
+        {
+            EnsureTodayMenuState();
+
+            if (IsRestaurantOpen)
+            {
+                SetResult("이미 영업 중입니다.");
+                BroadcastState();
+                return false;
+            }
+
+            if (!HasCompleteTodayMenu())
+            {
+                SetResult("오늘의 메뉴 3칸을 모두 채워야 OPEN 할 수 있습니다.");
+                BroadcastState();
+                return false;
+            }
+
+            IsRestaurantOpen = true;
+            SetResult("영업을 시작했습니다. FrontCounter와 BackCounter를 사용할 수 있습니다.");
+            BroadcastState();
+            return true;
+        }
+
+        /// <summary>
+        /// CLOSE 상태로 전환한다.
+        /// 활성 주문이 남아 있으면 실패한다.
+        /// </summary>
+        public bool TryCloseRestaurant(int activeOrderCount)
+        {
+            if (!IsRestaurantOpen)
+            {
+                SetResult("이미 CLOSE 상태입니다.");
+                BroadcastState();
+                return false;
+            }
+
+            if (activeOrderCount > 0)
+            {
+                SetResult("진행 중인 주문이 남아 있어 CLOSE 할 수 없습니다.");
+                BroadcastState();
+                return false;
+            }
+
+            IsRestaurantOpen = false;
+            SetResult("영업을 종료했습니다. 오늘의 메뉴를 다시 조정할 수 있습니다.");
+            BroadcastState();
+            return true;
+        }
+
+        /// <summary>
+        /// 현재 재료 기준으로 해당 레시피를 조리 가능한지 확인한다.
+        /// 기본 냉장고 재료는 serviceCapacity 범위에서 무한으로 취급한다.
         /// </summary>
         public bool CanServe(RecipeData recipe)
         {
-            EnsureRecipeList();
             return GetCookableServings(recipe) > 0;
         }
 
         /// <summary>
-        /// UI 에 표시할 메뉴 목록과 선택 메뉴 상세 문구를 조합합니다.
+        /// UI 요약용으로 오늘의 메뉴 상태와 현재 선택 레시피 정보를 조합한다.
         /// </summary>
         public string BuildRecipeSelectionSummary()
         {
             EnsureRecipeList();
+            EnsureTodayMenuState();
             RefreshSelectedRecipe();
 
-            if (availableRecipes.Count == 0)
-            {
-                return "- 등록된 메뉴가 없습니다.";
-            }
-
             StringBuilder builder = new();
+            builder.AppendLine(IsRestaurantOpen ? "영업 상태: OPEN" : "영업 상태: CLOSE");
+            builder.AppendLine("- 오늘의 메뉴");
 
-            foreach (RecipeData recipe in availableRecipes)
+            for (int slotIndex = 0; slotIndex < TodayMenuState.SlotCount; slotIndex++)
             {
-                if (recipe == null)
-                {
-                    continue;
-                }
-
-                string selectedMark = recipe == SelectedRecipe ? "[선택] " : string.Empty;
-                builder.AppendLine($"- {selectedMark}{recipe.DisplayName} (가능 {GetCookableServings(recipe)})");
+                RecipeData recipe = resolvedTodayMenuRecipes[slotIndex];
+                string marker = slotIndex == SelectedTodayMenuSlotIndex ? "[활성] " : string.Empty;
+                builder.AppendLine($"  {marker}{slotIndex + 1}. {(recipe != null ? recipe.DisplayName : "비어 있음")}");
             }
 
             if (SelectedRecipe == null)
             {
+                builder.AppendLine();
+                builder.Append(IsRestaurantOpen
+                    ? "영업 중에는 오늘의 메뉴를 수정할 수 없습니다."
+                    : "왼쪽 슬롯을 고른 뒤 레시피를 눌러 배치하세요.");
                 return builder.ToString().TrimEnd();
             }
 
             builder.AppendLine();
-            builder.AppendLine($"현재 메뉴: {SelectedRecipe.DisplayName}");
+            builder.AppendLine($"선택 레시피: {SelectedRecipe.DisplayName}");
 
             if (!string.IsNullOrWhiteSpace(SelectedRecipe.Description))
             {
@@ -119,129 +275,103 @@ namespace Restaurant
             }
 
             builder.AppendLine($"- 판매가: {SelectedRecipe.SellPrice}");
-            if (!string.IsNullOrWhiteSpace(SelectedRecipe.SupplySource))
-            {
-                builder.AppendLine($"- 공급처: {SelectedRecipe.SupplySource}");
-            }
-
             if (!string.IsNullOrWhiteSpace(SelectedRecipe.CookingMethod))
             {
                 builder.AppendLine($"- 조리법: {SelectedRecipe.CookingMethod}");
             }
 
-            builder.AppendLine("- 필요 재료");
-
-            foreach (RecipeIngredient ingredient in SelectedRecipe.Ingredients)
-            {
-                string line = BuildIngredientRequirementLine(ingredient);
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    builder.AppendLine(line);
-                }
-            }
-
+            builder.AppendLine($"- 가능 수량: {GetCookableServings(SelectedRecipe)}");
+            builder.Append(IsRestaurantOpen
+                ? "- 영업 중에는 메뉴를 읽기 전용으로 확인합니다."
+                : "- 활성 슬롯을 고른 뒤 이 레시피를 배치할 수 있습니다.");
             return builder.ToString().TrimEnd();
         }
 
         /// <summary>
-        /// 현재 보유 재료로 몇 인분까지 판매 가능한지 계산합니다.
+        /// 현재 재료로 몇 인분까지 조리 가능한지 계산한다.
+        /// 기본 냉장고 재료만 쓰는 레시피는 serviceCapacity 만큼 가능하다고 본다.
         /// </summary>
         public int GetCookableServings(RecipeData recipe)
         {
             EnsureRecipeList();
+            EnsureRuntimeFallbackRecipes();
+
+            if (recipe == null || recipe.Ingredients == null || recipe.Ingredients.Count == 0)
+            {
+                return 0;
+            }
 
             InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-            if (recipe == null || inventory == null)
-            {
-                return 0;
-            }
+            int servings = Mathf.Max(1, serviceCapacity);
 
-            IReadOnlyList<RecipeIngredient> ingredients = recipe.Ingredients;
-            if (ingredients == null || ingredients.Count == 0)
+            foreach (RecipeIngredient ingredient in recipe.Ingredients)
             {
-                return 0;
-            }
-
-            int servings = int.MaxValue;
-
-            foreach (RecipeIngredient ingredient in ingredients)
-            {
-                if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
+                if (ingredient == null)
                 {
                     return 0;
                 }
 
-                int ownedAmount = inventory.GetAmount(resource);
-                servings = Mathf.Min(servings, ownedAmount / ingredientAmount);
-            }
-
-            return servings == int.MaxValue ? 0 : servings;
-        }
-
-        /// <summary>
-        /// 현재 선택 메뉴를 기준으로 재료를 소모하고 판매 결과를 계산합니다.
-        /// </summary>
-        public void RunServiceForSelectedRecipe()
-        {
-            EnsureRecipeList();
-            RefreshSelectedRecipe();
-
-            if (SelectedRecipe == null)
-            {
-                SetResult("선택된 메뉴가 없습니다.");
-                return;
-            }
-
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-            if (inventory == null)
-            {
-                SetResult("영업을 진행할 인벤토리를 찾을 수 없습니다.");
-                return;
-            }
-
-            int cookableServings = GetCookableServings(SelectedRecipe);
-            int servingsToSell = Mathf.Min(serviceCapacity, cookableServings);
-
-            if (servingsToSell <= 0)
-            {
-                SetResult($"{SelectedRecipe.DisplayName} 재료가 부족합니다.");
-                return;
-            }
-
-            foreach (RecipeIngredient ingredient in SelectedRecipe.Ingredients)
-            {
                 if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
+                {
+                    if (IsBasicIngredient(ingredient.IngredientId))
+                    {
+                        continue;
+                    }
+
+                    return 0;
+                }
+
+                if (IsBasicIngredient(resource) || IsBasicIngredient(ingredient.IngredientId))
                 {
                     continue;
                 }
 
-                inventory.TryRemove(resource, ingredientAmount * servingsToSell);
+                if (inventory == null)
+                {
+                    return 0;
+                }
+
+                servings = Mathf.Min(servings, inventory.GetAmount(resource) / ingredientAmount);
+                if (servings <= 0)
+                {
+                    return 0;
+                }
             }
 
-            int revenue = SelectedRecipe.SellPrice * servingsToSell;
-            int reputationGain = Mathf.Max(0, SelectedRecipe.ReputationDelta * servingsToSell);
+            return Mathf.Max(0, servings);
+        }
 
-            EconomyManager economy = GameManager.Instance != null ? GameManager.Instance.Economy : null;
-            if (economy != null)
-            {
-                economy.AddGold(revenue);
-                economy.AddReputation(reputationGain);
-            }
-
-            StringBuilder builder = new();
-            builder.AppendLine("영업 결과");
-            builder.AppendLine($"- 판매 메뉴: {SelectedRecipe.DisplayName} x{servingsToSell}");
-            builder.AppendLine($"- 소모 재료: {BuildIngredientUsageText(SelectedRecipe, servingsToSell)}");
-            builder.AppendLine($"- 획득 골드: +{revenue}");
-            builder.Append($"- 평판 변화: +{reputationGain}");
-
-            SetResult(builder.ToString());
+        /// <summary>
+        /// 직접 영업 시작 경로는 더 이상 사용하지 않는다.
+        /// OPEN 후 조리와 서빙 흐름으로 진행하도록 안내만 갱신한다.
+        /// </summary>
+        public void RunServiceForSelectedRecipe()
+        {
+            SetResult("직접 영업 시작은 지원하지 않습니다. 오늘의 메뉴를 정하고 OPEN 후 조리와 서빙을 진행하세요.");
             BroadcastState();
         }
 
         /// <summary>
-        /// 현재 인덱스와 레시피 목록을 기준으로 선택 메뉴를 다시 맞춥니다.
+        /// 서빙 성공 시 보상과 결과 문구를 1회 반영한다.
+        /// 재료는 여기서 다시 소모하지 않는다.
         /// </summary>
+        public bool TryRecordCompletedOrder(string recipeId)
+        {
+            if (!IsRestaurantOpen || string.IsNullOrWhiteSpace(recipeId))
+            {
+                return false;
+            }
+
+            RecipeData servedRecipe = FindRecipeById(recipeId);
+            if (servedRecipe == null)
+            {
+                return false;
+            }
+
+            ApplyServiceOutcome(servedRecipe, 1);
+            return true;
+        }
+
         private void RefreshSelectedRecipe()
         {
             EnsureRecipeList();
@@ -257,25 +387,113 @@ namespace Restaurant
             if (!string.IsNullOrWhiteSpace(selectedRecipeId))
             {
                 RecipeData recipeById = FindRecipeById(selectedRecipeId);
-                if (recipeById != null)
+                if (recipeById != null && ContainsRecipe(recipeById))
                 {
-                    SelectedRecipe = recipeById;
-                    selectedRecipeIndex = Mathf.Max(availableRecipes.IndexOf(SelectedRecipe), 0);
+                    SetSelectedRecipe(recipeById);
                     return;
                 }
             }
 
             selectedRecipeIndex = Mathf.Clamp(selectedRecipeIndex, 0, availableRecipes.Count - 1);
-            SelectedRecipe = availableRecipes[selectedRecipeIndex];
-            selectedRecipeId = SelectedRecipe != null ? SelectedRecipe.RecipeId : string.Empty;
+            SetSelectedRecipe(availableRecipes[selectedRecipeIndex]);
+        }
+
+        private void SetSelectedRecipe(RecipeData recipe)
+        {
+            SelectedRecipe = recipe;
+            selectedRecipeId = recipe != null ? recipe.RecipeId : string.Empty;
+            selectedRecipeIndex = recipe != null ? Mathf.Max(availableRecipes.IndexOf(recipe), 0) : 0;
+        }
+
+        private bool ContainsRecipe(RecipeData recipe)
+        {
+            if (recipe == null)
+            {
+                return false;
+            }
+
+            foreach (RecipeData availableRecipe in availableRecipes)
+            {
+                if (availableRecipe == recipe)
+                {
+                    return true;
+                }
+
+                if (availableRecipe != null
+                    && !string.IsNullOrWhiteSpace(availableRecipe.RecipeId)
+                    && string.Equals(availableRecipe.RecipeId, recipe.RecipeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnsureTodayMenuState()
+        {
+            EnsureRecipeList();
+
+            if (todayMenuState == null)
+            {
+                todayMenuState = new TodayMenuState(todayMenuRecipeIds, selectedTodayMenuSlotIndex);
+            }
+
+            PersistTodayMenuState();
+            RefreshResolvedTodayMenuRecipes();
+        }
+
+        private void PersistTodayMenuState()
+        {
+            todayMenuRecipeIds ??= new List<string>(TodayMenuState.SlotCount);
+            todayMenuRecipeIds.Clear();
+
+            for (int slotIndex = 0; slotIndex < TodayMenuState.SlotCount; slotIndex++)
+            {
+                todayMenuRecipeIds.Add(todayMenuState != null ? todayMenuState.GetRecipeId(slotIndex) : string.Empty);
+            }
+
+            selectedTodayMenuSlotIndex = todayMenuState != null ? todayMenuState.SelectedSlotIndex : 0;
+        }
+
+        private void RefreshResolvedTodayMenuRecipes()
+        {
+            resolvedTodayMenuRecipes.Clear();
+
+            for (int slotIndex = 0; slotIndex < TodayMenuState.SlotCount; slotIndex++)
+            {
+                string recipeId = todayMenuState != null ? todayMenuState.GetRecipeId(slotIndex) : string.Empty;
+                resolvedTodayMenuRecipes.Add(FindRecipeById(recipeId));
+            }
+        }
+
+        private bool HasCompleteTodayMenu()
+        {
+            if (resolvedTodayMenuRecipes.Count < TodayMenuState.SlotCount)
+            {
+                RefreshResolvedTodayMenuRecipes();
+            }
+
+            for (int slotIndex = 0; slotIndex < TodayMenuState.SlotCount; slotIndex++)
+            {
+                if (slotIndex >= resolvedTodayMenuRecipes.Count || resolvedTodayMenuRecipes[slotIndex] == null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private RecipeData FindRecipeById(string recipeId)
         {
-            if (string.IsNullOrWhiteSpace(recipeId))
+            string normalizedRecipeId = string.IsNullOrWhiteSpace(recipeId) ? string.Empty : recipeId.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedRecipeId))
             {
                 return null;
             }
+
+            EnsureRuntimeFallbackRecipes();
 
             foreach (RecipeData recipe in availableRecipes)
             {
@@ -284,118 +502,189 @@ namespace Restaurant
                     continue;
                 }
 
-                if (string.Equals(recipe.RecipeId, recipeId, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(recipe.name, recipeId, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(recipe.RecipeId, normalizedRecipeId, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(recipe.name, normalizedRecipeId, StringComparison.OrdinalIgnoreCase))
                 {
                     return recipe;
                 }
             }
 
-            return GeneratedGameDataLocator.FindGeneratedRecipe(recipeId);
+            if (runtimeFallbackRecipes.TryGetValue(normalizedRecipeId, out RecipeData runtimeFallbackRecipe))
+            {
+                return runtimeFallbackRecipe;
+            }
+
+            return GeneratedGameDataLocator.FindGeneratedRecipe(normalizedRecipeId);
         }
 
-        /// <summary>
-        /// 씬 참조가 비어 있어도 기본 레시피 에셋을 런타임에 다시 채웁니다.
-        /// </summary>
         private void EnsureRecipeList()
         {
             availableRecipes ??= new List<RecipeData>();
             availableRecipes.RemoveAll(recipe => recipe == null);
 
-            TryAddDefaultRecipe("SushiSet", "스시 세트");
-            TryAddDefaultRecipe("SeafoodSoup", "해물탕");
-            TryAddDefaultRecipe("HerbFishSoup", "약초 생선탕");
-            TryAddDefaultRecipe("ForestBasket", "숲 바구니");
-            TryAddDefaultRecipe("GlowMossStew", "발광 이끼 수프");
-            TryAddDefaultRecipe("WindHerbSalad", "향초 샐러드");
-        }
-
-        /// <summary>
-        /// generated 데이터에서 레시피를 찾아 목록에 중복 없이 추가합니다.
-        /// </summary>
-        private void TryAddDefaultRecipe(string assetName, params string[] alternateKeys)
-        {
-            RecipeData recipe = GeneratedGameDataLocator.FindGeneratedRecipe(assetName, alternateKeys);
-            if (recipe != null && !availableRecipes.Contains(recipe))
+            if (availableRecipes.Count > 0)
             {
-                availableRecipes.Add(recipe);
+                return;
+            }
+
+            EnsureRuntimeFallbackRecipes();
+            foreach (var definition in FallbackRecipeDefinitions)
+            {
+                if (runtimeFallbackRecipes.TryGetValue(definition.RecipeId, out RecipeData recipe))
+                {
+                    availableRecipes.Add(recipe);
+                }
             }
         }
 
-        /// <summary>
-        /// 선택 메뉴와 결과 텍스트 변경 이벤트를 한 번에 전달합니다.
-        /// </summary>
+        private void EnsureRuntimeFallbackRecipes()
+        {
+            if (runtimeFallbackRecipes.Count > 0)
+            {
+                return;
+            }
+
+            EnsureRuntimeBasicResource("kimchi", "김치");
+            EnsureRuntimeBasicResource("rice", "밥");
+            EnsureRuntimeBasicResource("gochugaru", "고춧가루");
+            EnsureRuntimeBasicResource("flour", "밀가루");
+
+            foreach (var definition in FallbackRecipeDefinitions)
+            {
+                RecipeData generatedRecipe = GeneratedGameDataLocator.FindGeneratedRecipe(definition.RecipeId, definition.DisplayName);
+                if (generatedRecipe != null)
+                {
+                    runtimeFallbackRecipes[definition.RecipeId] = generatedRecipe;
+                    continue;
+                }
+
+                runtimeFallbackRecipes[definition.RecipeId] = CreateRuntimeFallbackRecipe(
+                    definition.RecipeId,
+                    definition.DisplayName,
+                    definition.Method,
+                    definition.SellPrice,
+                    definition.ReputationDelta,
+                    definition.FirstIngredientId,
+                    definition.FirstIngredientName,
+                    definition.SecondIngredientId,
+                    definition.SecondIngredientName);
+            }
+        }
+
+        private void EnsureRuntimeBasicResource(string id, string displayName)
+        {
+            if (runtimeBasicResources.ContainsKey(id))
+            {
+                return;
+            }
+
+            ResourceData generatedResource = GeneratedGameDataLocator.FindGeneratedResource(id, displayName);
+            if (generatedResource != null)
+            {
+                runtimeBasicResources[id] = generatedResource;
+                return;
+            }
+
+            ResourceData resource = ScriptableObject.CreateInstance<ResourceData>();
+            resource.name = $"runtime-resource-{id}";
+            resource.hideFlags = HideFlags.HideAndDontSave;
+            resource.ConfigureRuntime(id, displayName, "기본 냉장고 재료", "기본 냉장고", 0, ResourceRarity.Common);
+            runtimeBasicResources[id] = resource;
+        }
+
+        private RecipeData CreateRuntimeFallbackRecipe(
+            string recipeId,
+            string displayName,
+            string cookingMethod,
+            int sellPrice,
+            int reputationDelta,
+            string firstIngredientId,
+            string firstIngredientName,
+            string secondIngredientId,
+            string secondIngredientName)
+        {
+            RecipeData recipe = ScriptableObject.CreateInstance<RecipeData>();
+            recipe.name = $"runtime-recipe-{recipeId}";
+            recipe.hideFlags = HideFlags.HideAndDontSave;
+            recipe.ConfigureRuntime(
+                recipeId,
+                displayName,
+                "기본 허브 주방 레시피",
+                sellPrice,
+                reputationDelta,
+                string.Empty,
+                0,
+                cookingMethod,
+                string.Empty,
+                new[]
+                {
+                    RecipeIngredient.CreateRuntime(firstIngredientId, firstIngredientName, 1, runtimeBasicResources[firstIngredientId]),
+                    RecipeIngredient.CreateRuntime(secondIngredientId, secondIngredientName, 1, runtimeBasicResources[secondIngredientId])
+                });
+            return recipe;
+        }
+
+        private bool IsBasicIngredient(ResourceData resource)
+        {
+            if (resource == null)
+            {
+                return false;
+            }
+
+            foreach (ResourceData basicResource in runtimeBasicResources.Values)
+            {
+                if (basicResource == resource)
+                {
+                    return true;
+                }
+            }
+
+            return IsBasicIngredient(resource.ResourceId);
+        }
+
+        private bool IsBasicIngredient(string resourceId)
+        {
+            return !string.IsNullOrWhiteSpace(resourceId) && runtimeBasicResources.ContainsKey(resourceId.Trim());
+        }
+
+        private void ApplyServiceOutcome(RecipeData recipe, int servings)
+        {
+            if (recipe == null || servings <= 0)
+            {
+                return;
+            }
+
+            int revenue = recipe.SellPrice * servings;
+            int reputationGain = Mathf.Max(0, recipe.ReputationDelta * servings);
+
+            EconomyManager economy = GameManager.Instance != null ? GameManager.Instance.Economy : null;
+            if (economy != null)
+            {
+                economy.AddGold(revenue);
+                economy.AddReputation(reputationGain);
+            }
+
+            StringBuilder builder = new();
+            builder.AppendLine("서빙 완료");
+            builder.AppendLine($"- 판매 메뉴: {recipe.DisplayName} x{servings}");
+            builder.AppendLine($"- 획득 골드: +{revenue}");
+            builder.Append($"- 평판 변화: +{reputationGain}");
+
+            SetResult(builder.ToString());
+            BroadcastState();
+        }
+
         private void BroadcastState()
         {
             SelectedRecipeChanged?.Invoke(SelectedRecipe);
+            TodayMenuChanged?.Invoke();
+            ServiceStateChanged?.Invoke(IsRestaurantOpen);
             ServiceResultChanged?.Invoke(LastServiceResult);
         }
 
-        /// <summary>
-        /// 마지막 장사 결과 문자열을 저장하고 구독자에게 알립니다.
-        /// </summary>
         private void SetResult(string result)
         {
-            LastServiceResult = result;
-            ServiceResultChanged?.Invoke(LastServiceResult);
-        }
-
-        private static string BuildIngredientRequirementLine(RecipeIngredient ingredient)
-        {
-            if (ingredient == null)
-            {
-                return string.Empty;
-            }
-
-            string displayName = ingredient.BuildDisplayNameWithCatalogSummary();
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                return string.Empty;
-            }
-
-            if (!RecipeIngredient.TryResolve(ingredient, out ResourceData resource, out int ingredientAmount))
-            {
-                return $"  {displayName} x{ingredient.Quantity}";
-            }
-
-            int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
-                ? GameManager.Instance.Inventory.GetAmount(resource)
-                : 0;
-
-            return $"  {displayName} {ownedAmount}/{ingredientAmount}";
-        }
-
-        /// <summary>
-        /// 결과 화면용 재료 소모 문자열을 생성합니다.
-        /// </summary>
-        private static string BuildIngredientUsageText(RecipeData recipe, int servings)
-        {
-            if (recipe == null || servings <= 0 || recipe.Ingredients == null || recipe.Ingredients.Count == 0)
-            {
-                return "없음";
-            }
-
-            List<string> parts = new();
-
-            foreach (RecipeIngredient ingredient in recipe.Ingredients)
-            {
-                if (ingredient == null)
-                {
-                    continue;
-                }
-
-                string ingredientName = string.IsNullOrWhiteSpace(ingredient.IngredientName)
-                    ? ingredient.IngredientId
-                    : ingredient.IngredientName;
-                if (string.IsNullOrWhiteSpace(ingredientName))
-                {
-                    continue;
-                }
-
-                parts.Add($"{ingredientName} x{ingredient.Quantity * servings}");
-            }
-
-            return parts.Count > 0 ? string.Join(", ", parts) : "없음";
+            LastServiceResult = result ?? string.Empty;
         }
     }
 }

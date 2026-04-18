@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Management.Storage;
 using Restaurant.Kitchen;
+using Shared;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -13,9 +16,29 @@ namespace UI
 {
     public partial class UIManager
     {
+        private readonly struct PopupStationBindingDef
+        {
+            public PopupStationBindingDef(string popupKey, Type componentType)
+            {
+                PopupKey = popupKey;
+                ComponentType = componentType;
+            }
+
+            public string PopupKey { get; }
+            public Type ComponentType { get; }
+        }
+
+        private static readonly PopupStationBindingDef[] PopupStationBindings =
+        {
+            new("Storage", typeof(StorageStation)),
+            new("Refrigerator", typeof(RefrigeratorStation)),
+            new("FrontCounter", typeof(FrontCounterStation))
+        };
+
         private void Awake()
         {
             EnsureEventSystemExists();
+            ApplyPopupInteractionBindings(SceneManager.GetActiveScene());
         }
 
         /// <summary>
@@ -24,7 +47,9 @@ namespace UI
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
+            StorageStation.StoragePanelRequested += HandleStoragePanelRequested;
             RefrigeratorStation.PanelRequested += HandleRefrigeratorPanelRequested;
+            FrontCounterStation.PanelRequested += HandleFrontCounterPanelRequested;
             RefrigeratorStation.RuntimePanelOpener = ShowRefrigeratorPanel;
         }
 
@@ -33,6 +58,7 @@ namespace UI
         /// </summary>
         private void Start()
         {
+            ApplyPopupInteractionBindings(SceneManager.GetActiveScene());
             BindSceneReferences();
             ApplyTextPresentation();
             BindButtons();
@@ -57,7 +83,9 @@ namespace UI
         {
             RestorePopupPauseIfNeeded();
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+            StorageStation.StoragePanelRequested -= HandleStoragePanelRequested;
             RefrigeratorStation.PanelRequested -= HandleRefrigeratorPanelRequested;
+            FrontCounterStation.PanelRequested -= HandleFrontCounterPanelRequested;
             if (ReferenceEquals(RefrigeratorStation.RuntimePanelOpener, (System.Action)ShowRefrigeratorPanel))
             {
                 RefrigeratorStation.RuntimePanelOpener = null;
@@ -68,6 +96,7 @@ namespace UI
             UnbindEconomy();
             UnbindTools();
             UnbindRestaurant();
+            UnbindCustomerService();
             UnbindDayCycle();
             UnbindUpgradeManager();
             UnbindButtons();
@@ -87,11 +116,133 @@ namespace UI
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             EnsureEventSystemExists();
+            ApplyPopupInteractionBindings(scene);
             activeHubPanel = HubPopupPanel.None;
             BindSceneReferences();
             ApplyTextPresentation();
             BindButtons();
             RefreshAll();
+        }
+
+        private static void ApplyPopupInteractionBindings(Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return;
+            }
+
+            PopupInteractionBindingSettings settings = PopupInteractionBindingSettings.GetCurrent();
+            if (settings == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < PopupStationBindings.Length; i++)
+            {
+                ApplyPopupInteractionBinding(scene, settings, PopupStationBindings[i]);
+            }
+        }
+
+        private static void ApplyPopupInteractionBinding(Scene scene, PopupInteractionBindingSettings settings, PopupStationBindingDef def)
+        {
+            if (def.ComponentType == null
+                || !settings.TryGetEntry(def.PopupKey, out PopupInteractionBindingEntry entry)
+                || string.IsNullOrWhiteSpace(entry.SceneObjectPath))
+            {
+                return;
+            }
+
+            GameObject target = ResolvePopupBindingTarget(scene, entry.SceneObjectPath);
+            if (target == null)
+            {
+                return;
+            }
+
+            if (target.GetComponent(def.ComponentType) == null)
+            {
+                target.AddComponent(def.ComponentType);
+            }
+
+            List<Component> components = FindPopupBindingComponents(scene, def.ComponentType);
+            for (int i = 0; i < components.Count; i++)
+            {
+                Component component = components[i];
+                if (component == null || component.gameObject == target)
+                {
+                    continue;
+                }
+
+                DestroyPopupBindingComponent(component);
+            }
+        }
+
+        private static List<Component> FindPopupBindingComponents(Scene scene, Type componentType)
+        {
+            List<Component> result = new();
+            if (componentType == null)
+            {
+                return result;
+            }
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                GameObject root = roots[i];
+                if (root != null)
+                {
+                    result.AddRange(root.GetComponentsInChildren(componentType, true));
+                }
+            }
+
+            return result;
+        }
+
+        private static GameObject ResolvePopupBindingTarget(Scene scene, string sceneObjectPath)
+        {
+            if (string.IsNullOrWhiteSpace(sceneObjectPath))
+            {
+                return null;
+            }
+
+            string[] parts = sceneObjectPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int rootIndex = 0; rootIndex < roots.Length; rootIndex++)
+            {
+                GameObject root = roots[rootIndex];
+                if (root == null || parts.Length == 0 || !string.Equals(root.name, parts[0], StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Transform current = root.transform;
+                for (int i = 1; i < parts.Length && current != null; i++)
+                {
+                    current = current.Find(parts[i]);
+                }
+
+                if (current != null)
+                {
+                    return current.gameObject;
+                }
+            }
+
+            return null;
+        }
+
+        private static void DestroyPopupBindingComponent(Component component)
+        {
+            if (component == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(component);
+                return;
+            }
+
+            UnityEngine.Object.DestroyImmediate(component);
         }
 
         private static void EnsureEventSystemExists()

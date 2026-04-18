@@ -8,7 +8,7 @@ namespace UI.Layout
     public static partial class PrototypeUILayout
     {
         // 좌우 팝업 본문에서 반복적으로 쓰는 아이템 박스 개수다.
-        public const int HubPopupBodyItemBoxCount = 4;
+        public const int HubPopupBodyItemBoxCount = 6;
         public const int RefrigeratorSlotColumnCount = 10;
         public const int RefrigeratorSlotRowCount = 5;
         public const int RefrigeratorSlotCount = RefrigeratorSlotColumnCount * RefrigeratorSlotRowCount;
@@ -42,9 +42,9 @@ namespace UI.Layout
         public static PrototypeUIRect HubPopupBodyItemBox(int index)
         {
             const float horizontalPadding = 18f;
-            const float topPadding = 16f;
-            const float spacing = 10f;
-            const float itemHeight = 78f;
+            const float topPadding = 12f;
+            const float spacing = 8f;
+            const float itemHeight = 72f;
 
             int clampedIndex = Mathf.Clamp(index, 0, HubPopupBodyItemBoxCount - 1);
             float topOffset = topPadding + (clampedIndex * (itemHeight + spacing));

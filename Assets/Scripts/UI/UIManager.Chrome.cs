@@ -58,6 +58,8 @@ namespace UI
                 recipePanelButton = EnsureHubMenuButton(recipePanelButton, "RecipePanelButton", "요리", PrototypeUILayout.HubRecipePanelButton);
                 upgradePanelButton = EnsureHubMenuButton(upgradePanelButton, "UpgradePanelButton", "업그레이드", PrototypeUILayout.HubUpgradePanelButton);
                 materialPanelButton = EnsureHubMenuButton(materialPanelButton, "MaterialPanelButton", "재료", PrototypeUILayout.HubMaterialPanelButton);
+                openRestaurantButton = EnsureHubMenuButton(openRestaurantButton, "OpenRestaurantButton", "OPEN", PrototypeUILayout.HubOpenRestaurantButton);
+                closeRestaurantButton = EnsureHubMenuButton(closeRestaurantButton, "CloseRestaurantButton", "CLOSE", PrototypeUILayout.HubCloseRestaurantButton);
                 EnsureHubHudChrome(headingFont, theme.Paper, theme.Dock, theme.AmberAccent, theme.ActionText);
             }
 

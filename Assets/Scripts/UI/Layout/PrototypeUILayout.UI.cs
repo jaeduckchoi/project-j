@@ -41,9 +41,11 @@ namespace UI.Layout
         public static readonly PrototypeUIRect ExploreInventoryText = new(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -94f), new Vector2(382f, 174f));
 
         public static readonly PrototypeUIRect HubPanelButtonGroup = new(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(610f, 70f));
-        public static readonly PrototypeUIRect HubActionDock = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 18f), new Vector2(198f, 86f));
-        public static readonly PrototypeUIRect HubActionAccent = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 98f), new Vector2(198f, 6f));
-        public static readonly PrototypeUIRect HubActionCaption = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 74f), new Vector2(120f, 22f));
+        public static readonly PrototypeUIRect HubActionDock = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 18f), new Vector2(198f, 126f));
+        public static readonly PrototypeUIRect HubActionAccent = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-18f, 138f), new Vector2(198f, 6f));
+        public static readonly PrototypeUIRect HubActionCaption = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 114f), new Vector2(120f, 22f));
+        public static readonly PrototypeUIRect HubOpenRestaurantButton = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 64f), new Vector2(170f, 32f));
+        public static readonly PrototypeUIRect HubCloseRestaurantButton = new(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 24f), new Vector2(170f, 32f));
 
         public static readonly PrototypeUIRect HubStorageCard = HubInventoryCard;
         public static readonly PrototypeUIRect HubRecipeCard = HubInventoryCard;

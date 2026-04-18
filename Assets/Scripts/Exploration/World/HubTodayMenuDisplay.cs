@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Shared.Data;
 using Restaurant;
+using Shared.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -9,8 +9,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace Exploration.World
 {
     /// <summary>
-    /// 허브 상단 메뉴판의 제목과 슬롯 강조 상태를 현재 레시피 선택 상태에 맞춰 갱신한다.
-    /// 아이콘 자체는 고정 아트로 두고, 슬롯 배경과 표시 여부만 런타임에서 조정한다.
+    /// 허브 상단 메뉴판의 3칸 표시를 오늘의 메뉴 상태 기준으로 갱신한다.
     /// </summary>
     [MovedFrom(false, sourceNamespace: "World", sourceAssembly: "Assembly-CSharp", sourceClassName: "HubTodayMenuDisplay")]
     public class HubTodayMenuDisplay : MonoBehaviour
@@ -57,8 +56,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 이후 금일 판매 메뉴를 별도 로직으로 고정하고 싶을 때 외부에서 표시 목록만 따로 주입할 수 있게 둔다.
-        /// 목록을 주지 않으면 RestaurantManager 앞 3개 레시피를 그대로 사용한다.
+        /// 외부 주입 목록이 있으면 그것을, 없으면 RestaurantManager.TodayMenuRecipes를 사용한다.
         /// </summary>
         public void SetDisplayRecipes(IReadOnlyList<RecipeData> recipes)
         {
@@ -67,7 +65,7 @@ namespace Exploration.World
         }
 
         /// <summary>
-        /// 현재 선택된 메뉴와 표시 가능한 메뉴 수에 맞춰 메뉴판 슬롯 색과 아이콘 표시 상태를 조정한다.
+        /// 현재 오늘의 메뉴 3칸과 활성 슬롯 강조 상태를 다시 그린다.
         /// </summary>
         public void RefreshDisplay()
         {
@@ -77,32 +75,46 @@ namespace Exploration.World
             }
 
             IReadOnlyList<RecipeData> recipes = ResolveDisplayRecipes();
-            int slotCount = Mathf.Max(
-                menuBackdrops != null ? menuBackdrops.Length : 0,
-                menuIcons != null ? menuIcons.Length : 0);
+            int slotCount = Mathf.Max(menuBackdrops != null ? menuBackdrops.Length : 0, menuIcons != null ? menuIcons.Length : 0);
+            int selectedSlotIndex = restaurantManager != null ? restaurantManager.SelectedTodayMenuSlotIndex : -1;
 
-            for (int i = 0; i < slotCount; i++)
+            for (int slotIndex = 0; slotIndex < slotCount; slotIndex++)
             {
-                RecipeData recipe = i < recipes.Count ? recipes[i] : null;
-                bool isSelected = restaurantManager != null && recipe != null && recipe == restaurantManager.SelectedRecipe;
+                RecipeData recipe = slotIndex < recipes.Count ? recipes[slotIndex] : null;
+                bool isSelectedSlot = slotIndex == selectedSlotIndex;
 
-                if (menuBackdrops != null && i < menuBackdrops.Length && menuBackdrops[i] != null)
+                if (menuBackdrops != null && slotIndex < menuBackdrops.Length && menuBackdrops[slotIndex] != null)
                 {
-                    menuBackdrops[i].color = recipe == null
+                    menuBackdrops[slotIndex].color = recipe == null
                         ? HubRoomLayout.TodayMenuEmptyBackdropColor
-                        : isSelected
+                        : isSelectedSlot
                             ? HubRoomLayout.TodayMenuSelectedBackdropColor
                             : HubRoomLayout.TodayMenuBackdropColor;
                 }
 
-                if (menuIcons != null && i < menuIcons.Length && menuIcons[i] != null)
+                if (menuIcons == null || slotIndex >= menuIcons.Length || menuIcons[slotIndex] == null)
                 {
-                    bool hasRecipe = recipe != null && menuIcons[i].sprite != null;
-                    menuIcons[i].enabled = hasRecipe;
-                    menuIcons[i].color = hasRecipe
-                        ? HubRoomLayout.TodayMenuIconColor
-                        : HubRoomLayout.TodayMenuEmptyIconColor;
+                    continue;
                 }
+
+                SpriteRenderer iconRenderer = menuIcons[slotIndex];
+                if (recipe == null)
+                {
+                    iconRenderer.enabled = false;
+                    continue;
+                }
+
+                Sprite resolvedSprite = LoadRecipeSprite(recipe);
+                if (resolvedSprite != null)
+                {
+                    iconRenderer.sprite = resolvedSprite;
+                }
+
+                bool hasSprite = iconRenderer.sprite != null;
+                iconRenderer.enabled = hasSprite;
+                iconRenderer.color = hasSprite
+                    ? HubRoomLayout.TodayMenuIconColor
+                    : HubRoomLayout.TodayMenuEmptyIconColor;
             }
         }
 
@@ -127,7 +139,8 @@ namespace Exploration.World
                 return;
             }
 
-            subscribedRestaurant.SelectedRecipeChanged += HandleSelectedRecipeChanged;
+            subscribedRestaurant.TodayMenuChanged += HandleTodayMenuChanged;
+            subscribedRestaurant.ServiceStateChanged += HandleServiceStateChanged;
         }
 
         private void UnbindRestaurant()
@@ -137,11 +150,17 @@ namespace Exploration.World
                 return;
             }
 
-            subscribedRestaurant.SelectedRecipeChanged -= HandleSelectedRecipeChanged;
+            subscribedRestaurant.TodayMenuChanged -= HandleTodayMenuChanged;
+            subscribedRestaurant.ServiceStateChanged -= HandleServiceStateChanged;
             subscribedRestaurant = null;
         }
 
-        private void HandleSelectedRecipeChanged(RecipeData _)
+        private void HandleTodayMenuChanged()
+        {
+            RefreshDisplay();
+        }
+
+        private void HandleServiceStateChanged(bool _)
         {
             RefreshDisplay();
         }
@@ -154,8 +173,20 @@ namespace Exploration.World
             }
 
             return restaurantManager != null
-                ? restaurantManager.AvailableRecipes
+                ? restaurantManager.TodayMenuRecipes
                 : Array.Empty<RecipeData>();
+        }
+
+        private static Sprite LoadRecipeSprite(RecipeData recipe)
+        {
+            if (recipe == null || string.IsNullOrWhiteSpace(recipe.RecipeId))
+            {
+                return null;
+            }
+
+            string recipeId = recipe.RecipeId.Trim();
+            return Resources.Load<Sprite>($"Generated/Sprites/Recipes/{recipeId}")
+                ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{recipeId}");
         }
     }
 }

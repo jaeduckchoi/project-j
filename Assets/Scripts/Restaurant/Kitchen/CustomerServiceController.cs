@@ -54,64 +54,165 @@ namespace Restaurant.Kitchen
         [SerializeField, Min(0.1f)] private float patienceSeconds = 10f;
 
         private readonly List<OrderTicket> tickets = new();
+
         private RestaurantFlowController flowController;
+        private RestaurantManager restaurantManager;
+        private RestaurantManager subscribedRestaurant;
         private float nextOrderTimer;
 
+        public event Action TicketsChanged;
+
         public IReadOnlyList<OrderTicket> Tickets => tickets;
+        public int ActiveTicketCount => tickets.Count;
+        public bool HasActiveTickets => ActiveTicketCount > 0;
+
+        private void Awake()
+        {
+            BindDependencies();
+            ResetOrderTimer();
+        }
+
+        private void OnEnable()
+        {
+            BindDependencies();
+        }
+
+        private void OnDisable()
+        {
+            UnbindRestaurant();
+        }
 
         public bool TryServeHeldDish()
+        {
+            BindDependencies();
+            if (flowController == null)
+            {
+                return false;
+            }
+
+            for (int index = 0; index < tickets.Count; index++)
+            {
+                OrderTicket ticket = tickets[index];
+                if (ticket == null || !flowController.TryServeHeldDish(ticket))
+                {
+                    continue;
+                }
+
+                restaurantManager?.TryRecordCompletedOrder(ticket.Dish != null ? ticket.Dish.RecipeId : string.Empty);
+                tickets.RemoveAt(index);
+                RaiseTicketsChanged();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void Update()
+        {
+            BindDependencies();
+            if (flowController == null || !flowController.IsOpen)
+            {
+                return;
+            }
+
+            float deltaSeconds = Time.unscaledDeltaTime;
+            bool removedAnyTicket = false;
+
+            for (int index = tickets.Count - 1; index >= 0; index--)
+            {
+                OrderTicket ticket = tickets[index];
+                if (ticket == null)
+                {
+                    tickets.RemoveAt(index);
+                    removedAnyTicket = true;
+                    continue;
+                }
+
+                ticket.Tick(deltaSeconds);
+                if (!ticket.IsCompleted && !ticket.IsExpired)
+                {
+                    continue;
+                }
+
+                tickets.RemoveAt(index);
+                removedAnyTicket = true;
+            }
+
+            if (removedAnyTicket)
+            {
+                RaiseTicketsChanged();
+            }
+
+            nextOrderTimer -= deltaSeconds;
+            if (nextOrderTimer > 0f || tickets.Count >= 3)
+            {
+                return;
+            }
+
+            KitchenDishData dish = flowController.GetRandomTodayDish();
+            if (dish != null)
+            {
+                tickets.Add(new OrderTicket(Guid.NewGuid().ToString("N"), dish, patienceSeconds));
+                RaiseTicketsChanged();
+            }
+
+            ResetOrderTimer();
+        }
+
+        private void BindDependencies()
         {
             if (flowController == null)
             {
                 flowController = RestaurantFlowController.GetOrCreate();
             }
 
-            for (int i = 0; i < tickets.Count; i++)
+            RestaurantManager targetRestaurant = restaurantManager != null
+                ? restaurantManager
+                : FindFirstObjectByType<RestaurantManager>();
+
+            if (targetRestaurant == subscribedRestaurant)
             {
-                if (tickets[i] != null && flowController.TryServeHeldDish(tickets[i]))
-                {
-                    tickets.RemoveAt(i);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void Awake()
-        {
-            flowController = RestaurantFlowController.GetOrCreate();
-            nextOrderTimer = orderDelaySeconds;
-        }
-
-        private void Update()
-        {
-            if (flowController == null || !flowController.IsOpen)
-            {
+                restaurantManager = targetRestaurant;
                 return;
             }
 
-            float delta = Time.unscaledDeltaTime;
-            for (int i = tickets.Count - 1; i >= 0; i--)
+            UnbindRestaurant();
+            restaurantManager = targetRestaurant;
+            subscribedRestaurant = targetRestaurant;
+
+            if (subscribedRestaurant != null)
             {
-                tickets[i].Tick(delta);
-                if (tickets[i].IsCompleted || tickets[i].IsExpired)
-                {
-                    tickets.RemoveAt(i);
-                }
+                subscribedRestaurant.ServiceStateChanged += HandleServiceStateChanged;
+            }
+        }
+
+        private void UnbindRestaurant()
+        {
+            if (subscribedRestaurant != null)
+            {
+                subscribedRestaurant.ServiceStateChanged -= HandleServiceStateChanged;
             }
 
-            nextOrderTimer -= delta;
-            if (nextOrderTimer <= 0f && tickets.Count < 3)
-            {
-                KitchenDishData dish = flowController.GetRandomTodayDish();
-                if (dish != null)
-                {
-                    tickets.Add(new OrderTicket(Guid.NewGuid().ToString("N"), dish, patienceSeconds));
-                }
+            subscribedRestaurant = null;
+        }
 
-                nextOrderTimer = orderDelaySeconds;
+        private void HandleServiceStateChanged(bool isOpen)
+        {
+            ResetOrderTimer();
+            if (!isOpen && tickets.Count == 0)
+            {
+                RaiseTicketsChanged();
             }
+        }
+
+        private void ResetOrderTimer()
+        {
+            nextOrderTimer = orderDelaySeconds;
+        }
+
+        private void RaiseTicketsChanged()
+        {
+            TicketsChanged?.Invoke();
         }
     }
 }

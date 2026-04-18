@@ -78,7 +78,12 @@ namespace UI
             {
                 ApplyNamedRectLayout("ActionDock", PrototypeUILayout.HubActionDock);
                 ApplyNamedRectLayout("ActionAccent", PrototypeUILayout.HubActionAccent);
+                ApplyNamedRectLayout("ActionCaption", PrototypeUILayout.HubActionCaption);
                 ApplyNamedRectLayout(HudPanelButtonGroupObjectName, PrototypeUILayout.HubPanelButtonGroup);
+                ApplyButtonLayout(openRestaurantButton, PrototypeUILayout.HubOpenRestaurantButton);
+                ApplyButtonLayout(closeRestaurantButton, PrototypeUILayout.HubCloseRestaurantButton);
+                ApplyButtonPresentation(openRestaurantButton, headingFont, amberAccent);
+                ApplyButtonPresentation(closeRestaurantButton, headingFont, goldAccent);
             }
 
             SetNamedObjectActive(HudPanelButtonGroupObjectName, isHubScene);
@@ -133,6 +138,8 @@ namespace UI
             SetButtonGameObjectActive(recipePanelButton, showLegacyHubButtons);
             SetButtonGameObjectActive(upgradePanelButton, showLegacyHubButtons);
             SetButtonGameObjectActive(materialPanelButton, showLegacyHubButtons);
+            SetButtonGameObjectActive(openRestaurantButton, false);
+            SetButtonGameObjectActive(closeRestaurantButton, false);
         }
 
         /// <summary>
@@ -1186,14 +1193,37 @@ namespace UI
         {
             List<PopupListEntry> safeEntries = entries ?? new List<PopupListEntry>();
             int selectedIndex = safeEntries.FindIndex(entry => entry != null && entry.IsSelected);
-            int windowStart = GetPopupBodyWindowStartIndex(safeEntries.Count, selectedIndex, PrototypeUILayout.HubPopupBodyItemBoxCount);
+            bool pinTodayMenuSlots = activeHubPanel == HubPopupPanel.Recipe && safeEntries.Count > Restaurant.TodayMenuState.SlotCount;
+            int pinnedSlotCount = pinTodayMenuSlots ? Restaurant.TodayMenuState.SlotCount : 0;
+            int remainingEntryCount = Mathf.Max(0, safeEntries.Count - pinnedSlotCount);
+            int visibleRecipeCount = Mathf.Max(0, PrototypeUILayout.HubPopupBodyItemBoxCount - pinnedSlotCount);
+            int recipeSelectedIndex = selectedIndex >= pinnedSlotCount ? selectedIndex - pinnedSlotCount : -1;
+            int recipeWindowStart = pinTodayMenuSlots
+                ? GetPopupBodyWindowStartIndex(remainingEntryCount, recipeSelectedIndex, visibleRecipeCount)
+                : 0;
+            int windowStart = pinTodayMenuSlots
+                ? 0
+                : GetPopupBodyWindowStartIndex(safeEntries.Count, selectedIndex, PrototypeUILayout.HubPopupBodyItemBoxCount);
 
             for (int i = 0; i < PrototypeUILayout.HubPopupBodyItemBoxCount; i++)
             {
                 string boxName = $"PopupLeftItemBox{i + 1:00}";
                 string iconName = $"PopupLeftItemIcon{i + 1:00}";
                 string textName = $"PopupLeftItemText{i + 1:00}";
-                int entryIndex = windowStart + i;
+                int entryIndex;
+                if (pinTodayMenuSlots && i < pinnedSlotCount)
+                {
+                    entryIndex = i;
+                }
+                else if (pinTodayMenuSlots)
+                {
+                    entryIndex = pinnedSlotCount + recipeWindowStart + (i - pinnedSlotCount);
+                }
+                else
+                {
+                    entryIndex = windowStart + i;
+                }
+
                 bool hasContent = entryIndex >= 0 && entryIndex < safeEntries.Count;
                 PopupListEntry entry = hasContent ? safeEntries[entryIndex] : null;
 
@@ -1991,11 +2021,12 @@ namespace UI
 
         private void SetHubHudVisible(bool isVisible)
         {
+            bool showActionHud = isVisible && IsHubScene() && !ShouldUseTypedPopupUi();
             SetNamedObjectActive(HubResourcePanelObjectName, isVisible);
             SetNamedObjectActive(HudPanelButtonGroupObjectName, isVisible);
-            SetNamedObjectActive("ActionDock", false);
-            SetNamedObjectActive("ActionAccent", false);
-            SetNamedObjectActive("ActionCaption", false);
+            SetNamedObjectActive("ActionDock", showActionHud);
+            SetNamedObjectActive("ActionAccent", showActionHud);
+            SetNamedObjectActive("ActionCaption", showActionHud);
             HideLegacyDayRoutineObjects();
 
             if (goldText != null)
@@ -2015,6 +2046,8 @@ namespace UI
             SetButtonGameObjectActive(recipePanelButton, showLegacyHubButtons);
             SetButtonGameObjectActive(upgradePanelButton, showLegacyHubButtons);
             SetButtonGameObjectActive(materialPanelButton, showLegacyHubButtons);
+            SetButtonGameObjectActive(openRestaurantButton, showActionHud);
+            SetButtonGameObjectActive(closeRestaurantButton, showActionHud);
         }
     }
 }

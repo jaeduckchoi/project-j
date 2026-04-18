@@ -2,7 +2,8 @@
     "name": "Jonggu.Gameplay.EditModeTests",
     "rootNamespace": "",
     "references": [
-        "Jonggu.Gameplay"
+        "Jonggu.Gameplay",
+        "Jonggu.Shared"
     ],
     "includePlatforms": [
         "Editor"

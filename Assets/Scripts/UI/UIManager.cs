@@ -15,6 +15,7 @@ using Management.Upgrade;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
+using Restaurant.Kitchen;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -80,7 +81,9 @@ namespace UI
             "UpgradeAccent",
             "StorageCaption",
             "RecipeCaption",
-            "UpgradeCaption"
+            "UpgradeCaption",
+            "OpenRestaurantButton",
+            "CloseRestaurantButton"
         };
 
         // managed 이름 정본은 Layout catalog가 들고, 런타임 전용 HUD 보조 오브젝트만 엔트리에서 추가합니다.
@@ -110,6 +113,8 @@ namespace UI
         [SerializeField] private Button recipePanelButton;
         [SerializeField] private Button upgradePanelButton;
         [SerializeField] private Button materialPanelButton;
+        [SerializeField] private Button openRestaurantButton;
+        [SerializeField] private Button closeRestaurantButton;
         [SerializeField] private Button guideHelpButton;
         [SerializeField] private Button popupCloseButton;
         [SerializeField] private string defaultPromptText = "이동: WASD / 방향키   상호작용: E";
@@ -120,6 +125,7 @@ namespace UI
         private EconomyManager cachedEconomy;
         private ToolManager cachedToolManager;
         private RestaurantManager cachedRestaurant;
+        private CustomerServiceController cachedCustomerService;
         private DayCycleManager cachedDayCycle;
         private UpgradeManager cachedUpgradeManager;
         private HubPopupPanel activeHubPanel = HubPopupPanel.None;

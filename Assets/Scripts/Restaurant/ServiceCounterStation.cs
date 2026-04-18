@@ -36,17 +36,9 @@ namespace Restaurant
                     return "영업대를 준비 중입니다";
                 }
 
-                if (restaurantManager.SelectedRecipe == null)
-                {
-                    return "메뉴를 먼저 고르세요";
-                }
-
-                if (!restaurantManager.CanServe(restaurantManager.SelectedRecipe))
-                {
-                    return "재료가 부족합니다";
-                }
-
-                return $"[E] {promptLabel}";
+                return restaurantManager.IsRestaurantOpen
+                    ? "직접 영업 시작은 비활성화되었습니다"
+                    : "OPEN/CLOSE는 HUD에서 진행하세요";
             }
         }
 
@@ -83,7 +75,7 @@ namespace Restaurant
                 return true;
             }
 
-            return restaurantManager != null;
+            return false;
         }
 
         /// <summary>
@@ -107,10 +99,8 @@ namespace Restaurant
                 return;
             }
 
-            restaurantManager.RunServiceForSelectedRecipe();
-            GameManager.Instance?.DayCycle?.ShowHintOnce(
-                "first_service_start",
-                "영업 결과는 하단 안내와 요리 패널에서 바로 확인할 수 있습니다.");
+            GameManager.Instance?.DayCycle?.ShowTemporaryGuide(
+                "직접 영업 시작은 사용하지 않습니다. 오늘의 메뉴를 정하고 OPEN 후 조리와 서빙을 진행하세요.");
         }
 
         /// <summary>

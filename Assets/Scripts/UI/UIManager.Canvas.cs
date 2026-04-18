@@ -229,7 +229,7 @@ namespace UI
                     or ExploreEconomyTextObjectName
                     or HubResourcePanelObjectName
                     or HubResourceAmountTextObjectName => HudStatusGroupName,
-                "ActionDock" or "ActionAccent" or "ActionCaption" => HudActionGroupName,
+                "ActionDock" or "ActionAccent" or "ActionCaption" or "OpenRestaurantButton" or "CloseRestaurantButton" => HudActionGroupName,
                 "RecipePanelButton" or "UpgradePanelButton" or "MaterialPanelButton" => HudPanelButtonGroupObjectName,
                 "GuideBackdrop" or "GuideText" or "ResultBackdrop" or "RestaurantResultText" or "GuideHelpButton" => HudOverlayGroupName,
                 _ => null
