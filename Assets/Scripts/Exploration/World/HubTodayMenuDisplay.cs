@@ -185,7 +185,10 @@ namespace Exploration.World
             }
 
             string recipeId = recipe.RecipeId.Trim();
-            return Resources.Load<Sprite>($"Generated/Sprites/Recipes/{recipeId}")
+            return recipe.Icon != null
+                ? recipe.Icon
+                : Resources.Load<Sprite>($"Generated/Sprites/Item/Food/{recipeId}")
+                ?? Resources.Load<Sprite>($"Generated/Sprites/Recipes/{recipeId}")
                 ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{recipeId}");
         }
     }

@@ -417,6 +417,11 @@ namespace UI
                 return null;
             }
 
+            if (recipe.Icon != null)
+            {
+                return recipe.Icon;
+            }
+
             Sprite recipeSprite = LoadRecipeSpriteById(recipe.RecipeId);
             if (recipeSprite != null)
             {
@@ -448,7 +453,8 @@ namespace UI
             }
 
             string normalizedRecipeId = recipeId.Trim();
-            return Resources.Load<Sprite>($"Generated/Sprites/Recipes/{normalizedRecipeId}")
+            return Resources.Load<Sprite>($"Generated/Sprites/Item/Food/{normalizedRecipeId}")
+                ?? Resources.Load<Sprite>($"Generated/Sprites/Recipes/{normalizedRecipeId}")
                 ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{normalizedRecipeId}");
         }
 

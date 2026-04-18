@@ -78,6 +78,70 @@ namespace Shared.Data
         }
 
         /// <summary>
+        /// manifest 또는 generated 폴더에 있는 ResourceData만 반환한다.
+        /// 런타임 fallback 데이터는 CSV 정본이 아니므로 포함하지 않는다.
+        /// </summary>
+        public static IReadOnlyList<ResourceData> GetGeneratedResources()
+        {
+            List<ResourceData> results = new();
+
+            GeneratedGameDataManifest manifest = LoadGeneratedManifest();
+            if (manifest != null && manifest.Resources != null)
+            {
+                foreach (ResourceData resource in manifest.Resources)
+                {
+                    AddUniqueGeneratedResource(results, resource);
+                }
+            }
+
+#if UNITY_EDITOR
+            foreach (ResourceData resource in LoadGeneratedFolderAssets<ResourceData>(GeneratedResourceDataRoot))
+            {
+                AddUniqueGeneratedResource(results, resource);
+            }
+#endif
+
+            foreach (ResourceData resource in results)
+            {
+                CacheResource(resource);
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// manifest 또는 generated 폴더에 있는 RecipeData만 반환한다.
+        /// 런타임 fallback 데이터는 CSV 정본이 아니므로 포함하지 않는다.
+        /// </summary>
+        public static IReadOnlyList<RecipeData> GetGeneratedRecipes()
+        {
+            List<RecipeData> results = new();
+
+            GeneratedGameDataManifest manifest = LoadGeneratedManifest();
+            if (manifest != null && manifest.Recipes != null)
+            {
+                foreach (RecipeData recipe in manifest.Recipes)
+                {
+                    AddUniqueGeneratedRecipe(results, recipe);
+                }
+            }
+
+#if UNITY_EDITOR
+            foreach (RecipeData recipe in LoadGeneratedFolderAssets<RecipeData>(GeneratedRecipeDataRoot))
+            {
+                AddUniqueGeneratedRecipe(results, recipe);
+            }
+#endif
+
+            foreach (RecipeData recipe in results)
+            {
+                CacheRecipe(recipe);
+            }
+
+            return results;
+        }
+
+        /// <summary>
         /// 현재 로드된 에셋과 manifest 에셋을 캐시에 반영한다.
         /// </summary>
         private static void RefreshLoadedAssetCaches()
@@ -108,7 +172,7 @@ namespace Shared.Data
 
             _manifestLoadAttempted = true;
 
-            GeneratedGameDataManifest manifest = Resources.Load<GeneratedGameDataManifest>(GeneratedDataManifestPath);
+            GeneratedGameDataManifest manifest = LoadGeneratedManifest();
             if (manifest == null)
             {
                 BootstrapFallbackAssets();
@@ -130,6 +194,53 @@ namespace Shared.Data
                     CacheRecipe(recipe);
                 }
             }
+        }
+
+        private static GeneratedGameDataManifest LoadGeneratedManifest()
+        {
+            return Resources.Load<GeneratedGameDataManifest>(GeneratedDataManifestPath);
+        }
+
+        private static void AddUniqueGeneratedResource(List<ResourceData> results, ResourceData resource)
+        {
+            if (resource == null)
+            {
+                return;
+            }
+
+            string resourceId = NormalizeKey(resource.ResourceId);
+            foreach (ResourceData existing in results)
+            {
+                if (existing == resource
+                    || (!string.IsNullOrWhiteSpace(resourceId)
+                        && string.Equals(NormalizeKey(existing != null ? existing.ResourceId : string.Empty), resourceId, StringComparison.Ordinal)))
+                {
+                    return;
+                }
+            }
+
+            results.Add(resource);
+        }
+
+        private static void AddUniqueGeneratedRecipe(List<RecipeData> results, RecipeData recipe)
+        {
+            if (recipe == null)
+            {
+                return;
+            }
+
+            string recipeId = NormalizeKey(recipe.RecipeId);
+            foreach (RecipeData existing in results)
+            {
+                if (existing == recipe
+                    || (!string.IsNullOrWhiteSpace(recipeId)
+                        && string.Equals(NormalizeKey(existing != null ? existing.RecipeId : string.Empty), recipeId, StringComparison.Ordinal)))
+                {
+                    return;
+                }
+            }
+
+            results.Add(recipe);
         }
 
         /// <summary>
@@ -369,6 +480,25 @@ namespace Shared.Data
         }
 
 #if UNITY_EDITOR
+        private static IEnumerable<T> LoadGeneratedFolderAssets<T>(string folderPath) where T : UnityEngine.Object
+        {
+            if (string.IsNullOrWhiteSpace(folderPath) || !AssetDatabase.IsValidFolder(folderPath))
+            {
+                yield break;
+            }
+
+            string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folderPath });
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                if (asset != null)
+                {
+                    yield return asset;
+                }
+            }
+        }
+
         /// <summary>
         /// 에디터 환경에서 generated 폴더의 에셋을 직접 읽는다.
         /// </summary>

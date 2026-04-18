@@ -1,0 +1,27 @@
+ingredient_id,ingredient_name,description,region_tag,rarity,difficulty,supply_source,acquisition_source,acquisition_method,acquisition_tool,buy_price,sell_price,memo,active
+ingredient_001,김치,,기본,Common,0,기본,매장,상시구비,없음,0,0,영업 종료 시 사용량만큼 비용 차감,true
+ingredient_002,밥,,기본,Common,0,기본,매장,상시구비,없음,0,0,영업 종료 시 사용량만큼 비용 차감,true
+ingredient_003,밀가루,,기본,Common,0,기본,매장,상시구비,없음,0,0,영업 종료 시 사용량만큼 비용 차감,true
+ingredient_004,고춧가루,,기본,Common,0,기본,매장,상시구비,없음,0,0,영업 종료 시 사용량만큼 비용 차감,true
+ingredient_005,파,,기본,Common,1,기본,땅,일반 채집지,호미,0,0,허브/광산 제외 3개 탐험맵 출현,true
+ingredient_021,김,,바닷가,Common,1,바닷가,갯바위,해안 채집지,호미,0,0,,true
+ingredient_022,바지락,,바닷가,Common,1,바닷가,갯바위,해안 채집지,호미,0,0,,true
+ingredient_023,홍합,,바닷가,Uncommon,2,바닷가,갯바위,해안 채집지,호미,0,0,호미 2단계로 채집 가능,true
+ingredient_024,우럭,,바닷가,Common,1,바닷가,바다,어망 포인트,어망,0,0,,true
+ingredient_025,고등어,,바닷가,Common,1,바닷가,바다,어망 포인트,어망,0,0,,true
+ingredient_026,새우,,바닷가,Uncommon,2,바닷가,바다,어망 포인트,어망,0,0,어망 2단계로 채집 가능,true
+ingredient_027,꽃게,,바닷가,Uncommon,2,바닷가,바다,어망 포인트,어망,0,0,,true
+ingredient_028,오징어,,바닷가,Rare,3,바닷가,바다,어망 포인트,어망,0,0,,true
+ingredient_041,콩,,깊은 숲,Common,1,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_042,깻잎,,깊은 숲,Common,1,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_043,당근,,깊은 숲,Common,1,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_044,감자,,깊은 숲,Common,1,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_045,더덕,,깊은 숲,Uncommon,2,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_046,시금치,,깊은 숲,Uncommon,2,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_047,버섯,,깊은 숲,Uncommon,2,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_048,양파,,깊은 숲,Uncommon,2,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_049,고사리,,깊은 숲,Rare,3,깊은 숲,땅,일반 채집지,낫,0,0,,true
+ingredient_061,닭고기,,바람언덕,Common,1,바람언덕,목장,사육 재료,없음,0,0,레시피표 참조로 임시 추가,true
+ingredient_062,소고기,,바람언덕,Uncommon,1,바람언덕,목장,사육 재료,없음,0,0,레시피표 참조로 임시 추가,true
+ingredient_063,계란,,바람언덕,Common,1,바람언덕,목장,사육 재료,없음,0,0,레시피표 참조로 임시 추가,true
+ingredient_064,돼지고기,,바람언덕,Uncommon,1,바람언덕,목장,사육 재료,없음,0,0,레시피표 참조로 임시 추가,true

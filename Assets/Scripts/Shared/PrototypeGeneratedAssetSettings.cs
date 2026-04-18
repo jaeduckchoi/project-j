@@ -36,6 +36,7 @@ namespace Shared
         private static PrototypeGeneratedAssetSettings _cachedSettings;
 
         public string ResourcesGeneratedRoot => resourcesGeneratedRoot;
+        public string GeneratedGameDataManifestPath => CombineAssetPath(ResourcesGeneratedRoot, "generated-game-data-manifest.asset");
         public float PlayerSpritePixelsPerUnit => playerSpritePixelsPerUnit;
         public float PlayerVisualScale => playerVisualScale;
         public Vector3 DefaultPlayerRootScale => defaultPlayerRootScale;
@@ -50,6 +51,9 @@ namespace Shared
         public string SpriteRoot => CombineAssetPath(ResourcesGeneratedRoot, "Sprites");
         public string PlayerSpriteRoot => CombineAssetPath(SpriteRoot, "Player");
         public string UiSpriteRoot => CombineAssetPath(SpriteRoot, "UI");
+        public string ItemSpriteRoot => CombineAssetPath(SpriteRoot, "Item");
+        public string FoodSpriteRoot => CombineAssetPath(ItemSpriteRoot, "Food");
+        public string IngredientSpriteRoot => CombineAssetPath(ItemSpriteRoot, "Ingredient");
         public string UiButtonSpriteRoot => CombineAssetPath(UiSpriteRoot, "Buttons");
         public string UiMessageBoxSpriteRoot => CombineAssetPath(UiSpriteRoot, "MessageBoxes");
         public string UiPanelSpriteRoot => CombineAssetPath(UiSpriteRoot, "Panels");
@@ -74,6 +78,8 @@ namespace Shared
         public string PlayerFrontIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerFrontIdleFrame2SpritePath);
         public string PlayerBackIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerBackIdleFrame2SpritePath);
         public string PlayerSideIdleFrame2SpriteResourcePath => ToResourcesLoadPath(PlayerSideIdleFrame2SpritePath);
+        public string FoodSpriteResourceRoot => ToResourcesLoadPath(FoodSpriteRoot);
+        public string IngredientSpriteResourceRoot => ToResourcesLoadPath(IngredientSpriteRoot);
         public string RecipeSpriteResourceRoot => ToResourcesLoadPath(RecipeSpriteRoot);
         public string GeneratedUiResourceRoot => ToResourcesLoadPath(UiSpriteRoot);
         public string GeneratedUiButtonResourceRoot => ToResourcesLoadPath(UiButtonSpriteRoot);

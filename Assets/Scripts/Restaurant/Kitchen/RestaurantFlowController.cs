@@ -587,16 +587,23 @@ namespace Restaurant.Kitchen
 
         private void EnsureBasicIngredients()
         {
-            EnsureBasicResource("kimchi", "김치");
-            EnsureBasicResource("rice", "밥");
-            EnsureBasicResource("gochugaru", "고춧가루");
-            EnsureBasicResource("flour", "밀가루");
+            EnsureBasicResource("ingredient_001", "김치");
+            EnsureBasicResource("ingredient_002", "밥");
+            EnsureBasicResource("ingredient_003", "밀가루");
+            EnsureBasicResource("ingredient_004", "고춧가루");
         }
 
         private void EnsureBasicResource(string id, string displayName)
         {
             if (basicResources.ContainsKey(id))
             {
+                return;
+            }
+
+            ResourceData generatedResource = GeneratedGameDataLocator.FindGeneratedResource(id, displayName);
+            if (generatedResource != null)
+            {
+                basicResources[id] = generatedResource;
                 return;
             }
 
@@ -614,9 +621,9 @@ namespace Restaurant.Kitchen
                 return;
             }
 
-            CreateFallbackRecipe("kimchi_fried_rice", "김치볶음밥", KitchenToolType.FryingPan, "kimchi", "rice");
-            CreateFallbackRecipe("kimchi_stew", "김치찌개", KitchenToolType.Pot, "kimchi", "gochugaru");
-            CreateFallbackRecipe("kimchi_pancake", "김치전", KitchenToolType.FryingPan, "kimchi", "flour");
+            CreateFallbackRecipe("food_001", "김치볶음밥", KitchenToolType.FryingPan, "ingredient_001", "ingredient_002");
+            CreateFallbackRecipe("food_002", "김치찌개", KitchenToolType.Pot, "ingredient_001", "ingredient_004");
+            CreateFallbackRecipe("food_003", "김치전", KitchenToolType.FryingPan, "ingredient_001", "ingredient_003");
         }
 
         private void CreateFallbackRecipe(string recipeId, string displayName, KitchenToolType toolType, string firstIngredientId, string secondIngredientId)

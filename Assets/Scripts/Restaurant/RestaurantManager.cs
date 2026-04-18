@@ -19,9 +19,9 @@ namespace Restaurant
     {
         private static readonly (string RecipeId, string DisplayName, string Method, string FirstIngredientId, string FirstIngredientName, string SecondIngredientId, string SecondIngredientName, int SellPrice, int ReputationDelta)[] FallbackRecipeDefinitions =
         {
-            ("kimchi_fried_rice", "김치볶음밥", "후라이팬", "kimchi", "김치", "rice", "밥", 28, 1),
-            ("kimchi_stew", "김치찌개", "냄비", "kimchi", "김치", "gochugaru", "고춧가루", 32, 1),
-            ("kimchi_pancake", "김치전", "후라이팬", "kimchi", "김치", "flour", "밀가루", 24, 1)
+            ("food_001", "김치볶음밥", "후라이팬", "ingredient_001", "김치", "ingredient_002", "밥", 28, 1),
+            ("food_002", "김치찌개", "냄비", "ingredient_001", "김치", "ingredient_004", "고춧가루", 32, 1),
+            ("food_003", "김치전", "후라이팬", "ingredient_001", "김치", "ingredient_003", "밀가루", 24, 1)
         };
 
         [SerializeField] private List<RecipeData> availableRecipes = new();
@@ -522,6 +522,11 @@ namespace Restaurant
             availableRecipes ??= new List<RecipeData>();
             availableRecipes.RemoveAll(recipe => recipe == null);
 
+            if (TryUseGeneratedRecipes())
+            {
+                return;
+            }
+
             if (availableRecipes.Count > 0)
             {
                 return;
@@ -537,6 +542,32 @@ namespace Restaurant
             }
         }
 
+        private bool TryUseGeneratedRecipes()
+        {
+            IReadOnlyList<RecipeData> generatedRecipes = GeneratedGameDataLocator.GetGeneratedRecipes();
+            if (generatedRecipes == null || generatedRecipes.Count == 0)
+            {
+                return false;
+            }
+
+            availableRecipes.Clear();
+            HashSet<string> usedRecipeIds = new(StringComparer.OrdinalIgnoreCase);
+            foreach (RecipeData recipe in generatedRecipes)
+            {
+                if (recipe == null || string.IsNullOrWhiteSpace(recipe.RecipeId))
+                {
+                    continue;
+                }
+
+                if (usedRecipeIds.Add(recipe.RecipeId.Trim()))
+                {
+                    availableRecipes.Add(recipe);
+                }
+            }
+
+            return availableRecipes.Count > 0;
+        }
+
         private void EnsureRuntimeFallbackRecipes()
         {
             if (runtimeFallbackRecipes.Count > 0)
@@ -544,10 +575,10 @@ namespace Restaurant
                 return;
             }
 
-            EnsureRuntimeBasicResource("kimchi", "김치");
-            EnsureRuntimeBasicResource("rice", "밥");
-            EnsureRuntimeBasicResource("gochugaru", "고춧가루");
-            EnsureRuntimeBasicResource("flour", "밀가루");
+            EnsureRuntimeBasicResource("ingredient_001", "김치");
+            EnsureRuntimeBasicResource("ingredient_002", "밥");
+            EnsureRuntimeBasicResource("ingredient_003", "밀가루");
+            EnsureRuntimeBasicResource("ingredient_004", "고춧가루");
 
             foreach (var definition in FallbackRecipeDefinitions)
             {

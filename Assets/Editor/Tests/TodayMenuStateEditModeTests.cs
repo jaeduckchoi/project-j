@@ -23,15 +23,15 @@ namespace Editor.Tests
         {
             TodayMenuState state = new();
 
-            Assert.That(state.AssignRecipeToSelectedSlot("kimchi_fried_rice"), Is.True);
+            Assert.That(state.AssignRecipeToSelectedSlot("food_001"), Is.True);
             Assert.That(state.SelectSlot(1), Is.True);
-            Assert.That(state.AssignRecipeToSelectedSlot("kimchi_stew"), Is.True);
+            Assert.That(state.AssignRecipeToSelectedSlot("food_002"), Is.True);
             Assert.That(state.SelectSlot(2), Is.True);
-            Assert.That(state.AssignRecipeToSelectedSlot("kimchi_fried_rice"), Is.True);
+            Assert.That(state.AssignRecipeToSelectedSlot("food_001"), Is.True);
 
             Assert.That(state.GetRecipeId(0), Is.Empty);
-            Assert.That(state.GetRecipeId(1), Is.EqualTo("kimchi_stew"));
-            Assert.That(state.GetRecipeId(2), Is.EqualTo("kimchi_fried_rice"));
+            Assert.That(state.GetRecipeId(1), Is.EqualTo("food_002"));
+            Assert.That(state.GetRecipeId(2), Is.EqualTo("food_001"));
             Assert.That(state.IsComplete, Is.False);
         }
 
@@ -50,14 +50,14 @@ namespace Editor.Tests
         {
             TodayMenuState state = new();
 
-            state.AssignRecipeToSelectedSlot("kimchi_fried_rice");
+            state.AssignRecipeToSelectedSlot("food_001");
             state.SelectSlot(1);
-            state.AssignRecipeToSelectedSlot("kimchi_stew");
+            state.AssignRecipeToSelectedSlot("food_002");
             state.SelectSlot(2);
 
             Assert.That(state.IsComplete, Is.False);
 
-            state.AssignRecipeToSelectedSlot("kimchi_pancake");
+            state.AssignRecipeToSelectedSlot("food_003");
 
             Assert.That(state.IsComplete, Is.True);
         }

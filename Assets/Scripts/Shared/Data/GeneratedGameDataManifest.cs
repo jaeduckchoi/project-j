@@ -23,5 +23,37 @@ namespace Shared.Data
 
         public IReadOnlyList<ResourceData> Resources => resources;
         public IReadOnlyList<RecipeData> Recipes => recipes;
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// CSV importer가 활성 generated 데이터 참조만 manifest에 다시 기록할 때 사용한다.
+        /// </summary>
+        public void ConfigureGeneratedAssets(IEnumerable<ResourceData> generatedResources, IEnumerable<RecipeData> generatedRecipes)
+        {
+            resources.Clear();
+            if (generatedResources != null)
+            {
+                foreach (ResourceData resource in generatedResources)
+                {
+                    if (resource != null)
+                    {
+                        resources.Add(resource);
+                    }
+                }
+            }
+
+            recipes.Clear();
+            if (generatedRecipes != null)
+            {
+                foreach (RecipeData recipe in generatedRecipes)
+                {
+                    if (recipe != null)
+                    {
+                        recipes.Add(recipe);
+                    }
+                }
+            }
+        }
+#endif
     }
 }

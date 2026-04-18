@@ -27,6 +27,7 @@ namespace Shared.Data
         [SerializeField] private int difficulty;
         [SerializeField] private string cookingMethod = string.Empty;
         [SerializeField] private string memo = string.Empty;
+        [SerializeField] private Sprite icon;
 
         // 장사 계산에 사용할 재료 목록이다.
         [SerializeField] private List<RecipeIngredient> ingredients = new();
@@ -40,6 +41,7 @@ namespace Shared.Data
         public int Difficulty => difficulty;
         public string CookingMethod => cookingMethod;
         public string Memo => memo;
+        public Sprite Icon => icon;
         public IReadOnlyList<RecipeIngredient> Ingredients => ingredients;
 
         /// <summary>
@@ -55,7 +57,8 @@ namespace Shared.Data
             int recipeDifficulty,
             string method,
             string note,
-            IEnumerable<RecipeIngredient> recipeIngredients)
+            IEnumerable<RecipeIngredient> recipeIngredients,
+            Sprite recipeIcon = null)
         {
             recipeId = string.IsNullOrWhiteSpace(id) ? string.Empty : id;
             displayName = string.IsNullOrWhiteSpace(recipeName) ? recipeId : recipeName;
@@ -66,6 +69,7 @@ namespace Shared.Data
             difficulty = Mathf.Max(0, recipeDifficulty);
             cookingMethod = string.IsNullOrWhiteSpace(method) ? string.Empty : method;
             memo = string.IsNullOrWhiteSpace(note) ? string.Empty : note;
+            icon = recipeIcon;
 
             ingredients.Clear();
             if (recipeIngredients == null)
