@@ -15,7 +15,7 @@
 - `GAME_DOCS_INDEX.md`: 작업별 문서 진입점
 - `GAME_PROJECT_STRUCTURE.md`: 저장소 구조, 책임 경계, 주요 경로
 - `AGENT_WORKFLOW.md`: 작업 루프와 유형별 체크포인트
-- `SOURCE_OF_TRUTH.md`: 씬, UI, generated 자산, 로컬 데이터의 정본 관계
+- `SOURCE_OF_TRUTH.md`: 씬, UI, generated 자산, `scene-integrated metadata`, 로컬 데이터의 정본 관계
 
 ## 도메인 문서
 
@@ -34,7 +34,8 @@
 - UI 수정: `AGENT_WORKFLOW.md`, `SOURCE_OF_TRUTH.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - UI 구조/탐색성 리팩토링: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - 씬 배치나 월드 오브젝트 수정: `SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`
-- generated 자산, 폰트, 빌더 경로 수정: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
+- 씬/에디터 프리뷰 동기화: `SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
+- generated 자산, import metadata, 빌더 경로 수정: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 - 로컬 데이터와 런타임 상태 변경: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `AGENT_WORKFLOW.md`
 - 문서/규칙 체계 정리: `Docs/README.md`, `GAME_ASSISTANT_RULES.md`, `AGENT_WORKFLOW.md`, 이 인덱스
 - 루트 엔트리 정리: `Docs/README.md`, `GAME_ASSISTANT_RULES.md`, `GAME_PROJECT_STRUCTURE.md`, `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`

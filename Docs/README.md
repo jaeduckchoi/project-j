@@ -14,7 +14,7 @@
 2. 이 문서에서 문서 계층과 작업별 진입점을 확인한다.
 3. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽어 전역 가드레일과 읽기 제외 범위를 확인한다.
 4. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 필요한 정본 문서 1~2개를 고른다.
-5. 코드, 씬, generated 자산을 바꿀 때는 `Docs/project/SOURCE_OF_TRUTH.md`의 정본 관계를 먼저 따른다.
+5. 코드, 씬, generated 자산이나 Unity 메타데이터를 바꿀 때는 `Docs/project/SOURCE_OF_TRUTH.md`의 정본 관계를 먼저 따른다.
 
 ## 문서 계층
 
@@ -32,6 +32,7 @@
 - UI 변경: `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - UI 구조 리팩토링/탐색성 정리: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - 씬/월드 변경: `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
+- 씬/에디터 프리뷰 동기화: `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - 빌더/생성 자산 변경: `Docs/build/GAME_BUILD_GUIDE.md`
 - Unity API 연동: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`
 - 플레이 의도 확인: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`와 관련 gameplay 문서
@@ -43,6 +44,7 @@
 - 같은 규칙은 한 문서만 정본으로 두고, 다른 문서에는 링크와 짧은 설명만 남긴다.
 - 포맷팅과 스타일 검사는 에이전트 지시보다 린터, 훅, 검증 명령을 우선한다.
 - generated 결과물보다 생성 경로와 정본 관계를 먼저 수정한다.
+- generated 결과물 본문과 `scene-integrated metadata`를 같은 것으로 취급하지 말고, 씬 직렬화가 직접 기대는 메타데이터는 `SOURCE_OF_TRUTH.md` 기준으로 함께 본다.
 - 폴더 리팩토링은 파일 이동만으로 끝내지 말고 asmdef 범위, `.meta`, 직접 경로를 적은 문서까지 같은 변경에서 정리한다.
 - 작업이 끝나면 관련 문서와 오래된 경로, 중복 규칙, 드리프트를 함께 정리한다.
 

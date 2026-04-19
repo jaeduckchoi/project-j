@@ -15,7 +15,11 @@ namespace Restaurant.Kitchen
         {
             get
             {
-                RestaurantFlowController flowController = RestaurantFlowController.GetOrCreate();
+                if (!RestaurantFlowController.TryGetExisting(out RestaurantFlowController flowController))
+                {
+                    return "OPEN 후 사용 가능";
+                }
+
                 return flowController.IsOpen ? flowController.BuildToolPrompt(ToolType) : "OPEN 후 사용 가능";
             }
         }
@@ -26,8 +30,9 @@ namespace Restaurant.Kitchen
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
-            RestaurantFlowController flowController = RestaurantFlowController.GetOrCreate();
-            return flowController.IsOpen && flowController.CanUseTool(ToolType);
+            return RestaurantFlowController.TryGetExisting(out RestaurantFlowController flowController)
+                && flowController.IsOpen
+                && flowController.CanUseTool(ToolType);
         }
 
         /// <summary>
@@ -36,6 +41,11 @@ namespace Restaurant.Kitchen
         public void Interact(GameObject interactor)
         {
             RestaurantFlowController flowController = RestaurantFlowController.GetOrCreate();
+            if (flowController == null)
+            {
+                return;
+            }
+
             if (!flowController.IsOpen)
             {
                 CoreLoop.Core.GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
@@ -102,7 +112,11 @@ namespace Restaurant.Kitchen
         /// </summary>
         public void Interact(GameObject interactor)
         {
-            RestaurantFlowController.GetOrCreate();
+            if (RestaurantFlowController.GetOrCreate() == null)
+            {
+                return;
+            }
+
             NotifyPanelRequested();
         }
 
@@ -131,7 +145,15 @@ namespace Restaurant.Kitchen
     {
         public static event Action PanelRequested;
 
-        public string InteractionPrompt => RestaurantFlowController.GetOrCreate().IsOpen ? "[E] FrontCounter" : "OPEN 후 사용 가능";
+        public string InteractionPrompt
+        {
+            get
+            {
+                bool isOpen = RestaurantFlowController.TryGetExisting(out RestaurantFlowController flowController)
+                    && flowController.IsOpen;
+                return isOpen ? "[E] FrontCounter" : "OPEN 후 사용 가능";
+            }
+        }
         public Transform InteractionTransform => transform;
 
         /// <summary>
@@ -139,7 +161,8 @@ namespace Restaurant.Kitchen
         /// </summary>
         public bool CanInteract(GameObject interactor)
         {
-            return RestaurantFlowController.GetOrCreate().IsOpen;
+            return RestaurantFlowController.TryGetExisting(out RestaurantFlowController flowController)
+                && flowController.IsOpen;
         }
 
         /// <summary>
@@ -148,6 +171,11 @@ namespace Restaurant.Kitchen
         public void Interact(GameObject interactor)
         {
             RestaurantFlowController flowController = RestaurantFlowController.GetOrCreate();
+            if (flowController == null)
+            {
+                return;
+            }
+
             if (!flowController.IsOpen)
             {
                 CoreLoop.Core.GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");

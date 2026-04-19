@@ -94,6 +94,21 @@ namespace Editor.Tests
         }
 
         [Test]
+        public void RestaurantFlowController_AddStationIfMissing_InstallsStationOnInactiveSceneObject()
+        {
+            GameObject tableCollider = CreateGameObject("HubTableTopCollider");
+            tableCollider.SetActive(false);
+
+            InvokePrivateStaticMethod(
+                typeof(RestaurantFlowController),
+                "AddStationIfMissing",
+                "HubTableTopCollider",
+                typeof(DiningTableStation));
+
+            Assert.That(tableCollider.GetComponent<DiningTableStation>(), Is.Not.Null);
+        }
+
+        [Test]
         public void TryRecordCompletedOrder_AddsRewardsWithoutConsumingIngredientsAgain()
         {
             GameManager gameManager = CreateConfiguredGameManager();
@@ -190,6 +205,13 @@ namespace Editor.Tests
             FieldInfo field = target.GetType().GetField(fieldName, PrivateInstanceFlags);
             Assert.That(field, Is.Not.Null, $"{fieldName} 필드를 찾을 수 없습니다.");
             field.SetValue(target, value);
+        }
+
+        private static void InvokePrivateStaticMethod(System.Type targetType, string methodName, params object[] args)
+        {
+            MethodInfo method = targetType.GetMethod(methodName, PrivateStaticFlags);
+            Assert.That(method, Is.Not.Null, $"{methodName} 를 찾을 수 없습니다.");
+            method.Invoke(null, args);
         }
 
         private static void ResetSingleton(System.Type targetType)

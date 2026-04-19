@@ -9,7 +9,11 @@ namespace Restaurant.Kitchen
         {
             get
             {
-                RestaurantFlowController flow = RestaurantFlowController.GetOrCreate();
+                if (!RestaurantFlowController.TryGetExisting(out RestaurantFlowController flow))
+                {
+                    return string.Empty;
+                }
+
                 KitchenCarryItem heldItem = flow.Carry.HeldItem;
                 return heldItem != null && heldItem.State == KitchenItemState.FinalDish
                     ? "[E] Serve dish"

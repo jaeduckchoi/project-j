@@ -14,6 +14,8 @@
 
 - `Assets/Scenes` 아래 실제 씬 직렬화 값이 월드 구조의 정본이다.
 - 런타임 보강 코드는 누락된 오브젝트, 컴포넌트, 참조만 보충한다.
+- 씬에 저장된 보조 렌더러, 분할 조각, 동기화용 자식 오브젝트처럼 저장을 의도한 `authored helper object`가 있으면 그것도 씬 직렬화 계약의 일부다.
+- 씬용 에디터 프리뷰/동기화 컴포넌트는 저장된 authored 상태에 수렴해야 하며, 씬 로드, 도메인 리로드, `OnValidate`에서 자동으로 scene dirty를 만들지 않는다. 이 기준을 `editor preview dirty contract`로 부른다.
 - `SceneWorldRoot`는 월드 계층 정리용 루트다.
 - MainCamera 하드 경계 정본은 `WorldBoundsRoot/CameraBounds`다.
 - `HubRoomLayout.cs`는 허브의 32x18 논리 타일 계약과 1타일 = 1유닛 기준을 담는다.
@@ -42,6 +44,12 @@
 - 플레이어 리소스는 `Assets/Resources/Generated/Sprites/Player`에 둔다.
 - generated 게임 데이터는 `Assets/Resources/Generated/GameData`에 둔다.
 
+### scene-integrated metadata
+
+- Unity가 scene/prefab 직렬화에서 직접 기대는 import 메타데이터는 `scene-integrated metadata`로 본다. 예: sub-sprite ID, sprite reference를 성립시키는 `.meta`의 직렬화 정보.
+- `scene-integrated metadata`는 generated 출력물 본문과 구분해서 다룬다. 생성 경로나 import 정책을 먼저 확인하되, 직렬화 계약을 유지하려면 해당 metadata와 scene reference를 같은 변경에서 함께 관리한다.
+- 이 경계는 build 자동화의 소유가 아니라 scene serialization contract의 일부이며, authored helper object와 같은 수준으로 문서화한다.
+
 ### authored 아트 import
 
 - authored 스프라이트 원본은 `Assets/Art/*`다.
@@ -56,14 +64,18 @@
 
 ## 정본이 아닌 것
 
-- generated PNG와 generated 출력물 자체
+- generated PNG 본문과 generated 출력물 자체
 - 임시 복구 메모
 - 과거 자동 생성·감사 흐름이나 그에 대한 문서 설명
+
+다만 `scene-integrated metadata`처럼 scene/prefab 직렬화 계약을 직접 성립시키는 Unity 메타데이터는 예외로 두고, 이 문서와 관련 scene 문서 기준으로 함께 관리한다.
 
 ## 함께 맞춰야 하는 결합 지점
 
 - UI 구조 변경: `UIManager.*.cs`, `PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUISkin*.cs`, `PrototypeUIPopupCatalog.cs`, `PopupPauseStateUtility.cs`, `PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/popup-interaction-bindings.asset`, `Docs/ui/*`
 - TMP 폰트 변경: `UIManager.cs`, `PrototypeUISkin.cs`, `GAME_PROJECT_STRUCTURE.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - 씬 하이어라키 변경: `PrototypeSceneHierarchyCatalog.cs`, `PrototypeSceneHierarchyOrganizer.cs`, `Docs/scene/*`
+- 씬/에디터 프리뷰 동기화 변경: 관련 `Exploration/World` 또는 에디터 동기화 코드, `Docs/scene/*`, 필요 시 `Docs/build/GAME_BUILD_GUIDE.md`
 - generated 경로 변경: `PrototypeGeneratedAssetSettings.cs`, `GAME_PROJECT_STRUCTURE.md`, `Docs/build/GAME_BUILD_GUIDE.md`
+- `scene-integrated metadata` 변경: import 정책 또는 관련 `.meta`, 해당 scene/prefab 직렬화 값, `Docs/scene/*`, `Docs/build/GAME_BUILD_GUIDE.md`
 - 로컬 데이터와 런타임 상태 변경: `GameManager.cs`, `GeneratedGameDataLocator.cs`, 관련 manager 초기화와 자원 흐름

@@ -5,6 +5,7 @@ using Exploration.Player;
 using Management.Inventory;
 using Shared.Data;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -56,6 +57,7 @@ namespace Restaurant.Kitchen
         private bool kitchenStateEventsBound;
 
         public static RestaurantFlowController Instance { get; private set; }
+        private static bool isRuntimeShuttingDown;
 
         public event Action KitchenStateChanged;
 
@@ -72,17 +74,46 @@ namespace Restaurant.Kitchen
         public InventoryReservationService Reservations { get; } = new();
         public IReadOnlyList<KitchenDishData> FallbackDishes => fallbackDishes;
 
-        public static RestaurantFlowController GetOrCreate()
+        /// <summary>
+        /// 현재 씬에 이미 존재하는 식당 흐름 컨트롤러를 찾되 새 런타임 오브젝트는 만들지 않습니다.
+        /// </summary>
+        public static bool TryGetExisting(out RestaurantFlowController controller)
         {
-            if (Instance != null)
+            controller = null;
+            if (isRuntimeShuttingDown)
             {
-                return Instance;
+                return false;
             }
 
-            Instance = FindFirstObjectByType<RestaurantFlowController>();
             if (Instance != null)
             {
-                return Instance;
+                controller = Instance;
+                return true;
+            }
+
+            controller = FindFirstObjectByType<RestaurantFlowController>();
+            if (controller == null)
+            {
+                return false;
+            }
+
+            Instance = controller;
+            return true;
+        }
+
+        /// <summary>
+        /// 플레이 중 식당 흐름 컨트롤러를 찾거나 생성합니다. 플레이 종료 중에는 새 오브젝트를 만들지 않습니다.
+        /// </summary>
+        public static RestaurantFlowController GetOrCreate()
+        {
+            if (TryGetExisting(out RestaurantFlowController controller))
+            {
+                return controller;
+            }
+
+            if (!CanCreateRuntimeController())
+            {
+                return null;
             }
 
             GameObject controllerObject = new(RuntimeObjectName);
@@ -98,7 +129,11 @@ namespace Restaurant.Kitchen
                 return false;
             }
 
-            RestaurantFlowController controller = GetOrCreate();
+            if (!TryGetExisting(out RestaurantFlowController controller))
+            {
+                return false;
+            }
+
             if (!controller.TryResolveLegacyStationType(source, promptLabel, out KitchenToolType stationType))
             {
                 return false;
@@ -115,7 +150,8 @@ namespace Restaurant.Kitchen
                 return false;
             }
 
-            return GetOrCreate().TryResolveLegacyStationType(source, promptLabel, out _);
+            return TryGetExisting(out RestaurantFlowController controller)
+                && controller.TryResolveLegacyStationType(source, promptLabel, out _);
         }
 
         public static bool TryHandleLegacyInteract(GameObject source, string promptLabel, GameObject interactor)
@@ -126,7 +162,7 @@ namespace Restaurant.Kitchen
             }
 
             RestaurantFlowController controller = GetOrCreate();
-            if (!controller.TryResolveLegacyStationType(source, promptLabel, out KitchenToolType stationType))
+            if (controller == null || !controller.TryResolveLegacyStationType(source, promptLabel, out KitchenToolType stationType))
             {
                 return false;
             }
@@ -146,6 +182,25 @@ namespace Restaurant.Kitchen
             Instance = this;
             EnsureServices();
             InstallSceneStations();
+        }
+
+        /// <summary>
+        /// 플레이 종료 중 지연된 상호작용 조회가 새 컨트롤러를 만들지 않도록 차단합니다.
+        /// </summary>
+        private void OnApplicationQuit()
+        {
+            isRuntimeShuttingDown = true;
+        }
+
+        /// <summary>
+        /// 씬 종료 뒤 파괴된 싱글턴 참조가 다음 조회에서 새 런타임 오브젝트 생성을 유발하지 않도록 정리합니다.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void Start()
@@ -563,13 +618,64 @@ namespace Restaurant.Kitchen
 
         private static void AddStationIfMissing(string objectName, Type componentType)
         {
-            GameObject target = GameObject.Find(objectName);
+            GameObject target = FindSceneObjectByName(objectName);
             if (target == null || componentType == null || target.GetComponent(componentType) != null)
             {
                 return;
             }
 
             target.AddComponent(componentType);
+        }
+
+        /// <summary>
+        /// Unity의 활성 오브젝트 전용 이름 검색을 피하고, 씬에 직렬화된 비활성 후보까지 안전하게 찾습니다.
+        /// </summary>
+        private static GameObject FindSceneObjectByName(string objectName)
+        {
+            if (string.IsNullOrWhiteSpace(objectName))
+            {
+                return null;
+            }
+
+            GameObject[] sceneObjects = FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (GameObject candidate in sceneObjects)
+            {
+                if (candidate == null
+                    || !candidate.scene.IsValid()
+                    || !candidate.scene.isLoaded
+                    || !string.Equals(candidate.name, objectName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                return candidate;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 씬이 유효하게 로드된 플레이 상태에서만 런타임 보강 오브젝트를 새로 만들도록 제한합니다.
+        /// </summary>
+        private static bool CanCreateRuntimeController()
+        {
+            if (!Application.isPlaying || isRuntimeShuttingDown)
+            {
+                return false;
+            }
+
+            Scene activeScene = SceneManager.GetActiveScene();
+            return activeScene.IsValid() && activeScene.isLoaded;
+        }
+
+        /// <summary>
+        /// 도메인 리로드가 꺼져 있어도 플레이 시작마다 런타임 싱글턴 상태를 초기화합니다.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRuntimeState()
+        {
+            Instance = null;
+            isRuntimeShuttingDown = false;
         }
 
         private bool IsBasicResource(ResourceData resource)

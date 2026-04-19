@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Exploration.Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // Interaction 네임스페이스
 namespace Exploration.Interaction
@@ -13,11 +17,19 @@ namespace Exploration.Interaction
     [MovedFrom(false, sourceNamespace: "Interaction", sourceAssembly: "Assembly-CSharp", sourceClassName: "InteractionDetector")]
     public class InteractionDetector : MonoBehaviour
     {
+        [Header("Directional Interaction")]
+        [SerializeField, Range(1f, 180f), Tooltip("플레이어가 바라보는 방향을 중심으로 상호작용 가능한 전방 반각입니다. 70이면 전방 140도 안의 콜라이더 접점만 선택합니다.")]
+        private float facingConeHalfAngleDegrees = 70f;
+        [SerializeField, Min(0.1f), Tooltip("Scene 뷰에서 선택했을 때 표시할 전방 상호작용 방향선 길이입니다.")]
+        private float facingGizmoLength = 1.35f;
+
         private readonly List<IInteractable> nearbyInteractables = new();
         private readonly Dictionary<IInteractable, float> nearbyInteractableDistances = new();
+        private readonly Dictionary<IInteractable, Vector2> nearbyInteractablePoints = new();
         private readonly Collider2D[] overlapBuffer = new Collider2D[32];
         private ContactFilter2D overlapFilter;
         private Collider2D triggerCollider;
+        private PlayerController playerController;
 
         public event Action<IInteractable> CurrentInteractableChanged;
 
@@ -29,6 +41,7 @@ namespace Exploration.Interaction
         private void Awake()
         {
             overlapFilter = ContactFilter2D.noFilter;
+            CachePlayerController();
 
             triggerCollider = GetComponent<Collider2D>();
             if (triggerCollider != null)
@@ -44,6 +57,16 @@ namespace Exploration.Interaction
         {
             RefreshNearbyOverlapCandidates();
             RefreshCurrentInteractable();
+        }
+
+        private void OnDrawGizmos()
+        {
+#if UNITY_EDITOR
+            if (ShouldDrawDirectionalInteractionGizmo())
+            {
+                DrawDirectionalInteractionGizmo();
+            }
+#endif
         }
 
         /// <summary>
@@ -83,6 +106,7 @@ namespace Exploration.Interaction
         {
             nearbyInteractables.Clear();
             nearbyInteractableDistances.Clear();
+            nearbyInteractablePoints.Clear();
 
             if (triggerCollider == null)
             {
@@ -99,7 +123,11 @@ namespace Exploration.Interaction
                     continue;
                 }
 
-                float candidateDistance = GetColliderDistance(overlapCollider);
+                if (!TryGetColliderMetrics(overlapCollider, out float candidateDistance, out Vector2 candidatePoint))
+                {
+                    continue;
+                }
+
                 if (nearbyInteractableDistances.TryGetValue(interactable, out float currentDistance)
                     && candidateDistance >= currentDistance)
                 {
@@ -107,6 +135,7 @@ namespace Exploration.Interaction
                 }
 
                 nearbyInteractableDistances[interactable] = candidateDistance;
+                nearbyInteractablePoints[interactable] = candidatePoint;
                 if (!nearbyInteractables.Contains(interactable))
                 {
                     nearbyInteractables.Add(interactable);
@@ -140,14 +169,39 @@ namespace Exploration.Interaction
         /// 감지 범위 콜라이더와 후보 콜라이더 사이의 실제 거리를 구한다.
         /// 겹친 상태면 음수가 되므로, 값이 더 작을수록 현재 플레이어와 더 직접 맞닿은 대상이다.
         /// </summary>
-        private float GetColliderDistance(Collider2D targetCollider)
+        private bool TryGetColliderMetrics(Collider2D targetCollider, out float colliderDistance, out Vector2 interactionPoint)
         {
+            colliderDistance = float.MaxValue;
+            interactionPoint = GetDetectorPosition();
+
             if (triggerCollider == null || targetCollider == null)
             {
-                return float.MaxValue;
+                return false;
             }
 
-            return triggerCollider.Distance(targetCollider).distance;
+            ColliderDistance2D distance = triggerCollider.Distance(targetCollider);
+            colliderDistance = distance.distance;
+            interactionPoint = ResolveInteractionPoint(targetCollider, distance);
+            return true;
+        }
+
+        private Vector2 ResolveInteractionPoint(Collider2D targetCollider, ColliderDistance2D distance)
+        {
+            Vector2 detectorPosition = GetDetectorPosition();
+            if (IsFinite(distance.pointB)
+                && (distance.pointB - detectorPosition).sqrMagnitude > 0.0001f)
+            {
+                return distance.pointB;
+            }
+
+            Vector2 closestPoint = targetCollider.ClosestPoint(detectorPosition);
+            if (IsFinite(closestPoint)
+                && (closestPoint - detectorPosition).sqrMagnitude > 0.0001f)
+            {
+                return closestPoint;
+            }
+
+            return targetCollider.bounds.center;
         }
 
         /// <summary>
@@ -155,7 +209,7 @@ namespace Exploration.Interaction
         /// </summary>
         private void RefreshCurrentInteractable()
         {
-            Vector3 detectorPosition = transform.position;
+            Vector2 detectorPosition = GetDetectorPosition();
             IInteractable bestInteractable = null;
             float bestDistance = float.MaxValue;
             int bestPriority = int.MinValue;
@@ -201,7 +255,7 @@ namespace Exploration.Interaction
             CurrentInteractableChanged?.Invoke(CurrentInteractable);
         }
 
-        private bool TryGetSelectionMetrics(IInteractable interactable, Vector3 detectorPosition, out float colliderDistance, out int selectionPriority, out float centerSqrDistance)
+        private bool TryGetSelectionMetrics(IInteractable interactable, Vector2 detectorPosition, out float colliderDistance, out int selectionPriority, out float centerSqrDistance)
         {
             colliderDistance = float.MaxValue;
             selectionPriority = int.MinValue;
@@ -223,9 +277,157 @@ namespace Exploration.Interaction
                 return false;
             }
 
+            if (!nearbyInteractablePoints.TryGetValue(interactable, out Vector2 interactionPoint))
+            {
+                interactionPoint = interactable.InteractionTransform.position;
+            }
+
+            if (!IsFacingInteractionPoint(interactionPoint, detectorPosition))
+            {
+                return false;
+            }
+
             selectionPriority = GetInteractionPriority(interactable);
-            centerSqrDistance = (interactable.InteractionTransform.position - detectorPosition).sqrMagnitude;
+            centerSqrDistance = (interactionPoint - detectorPosition).sqrMagnitude;
             return true;
+        }
+
+        private Vector2 GetDetectorPosition()
+        {
+            return triggerCollider != null ? triggerCollider.bounds.center : transform.position;
+        }
+
+        private void CachePlayerController()
+        {
+            if (playerController != null)
+            {
+                return;
+            }
+
+            playerController = GetComponentInParent<PlayerController>();
+        }
+
+        private bool IsFacingInteractionPoint(Vector2 interactionPoint, Vector2 detectorPosition)
+        {
+            if (!TryGetFacingDirection(out Vector2 facingDirection))
+            {
+                return true;
+            }
+
+            Vector2 directionToTarget = interactionPoint - detectorPosition;
+            if (directionToTarget.sqrMagnitude <= 0.0001f)
+            {
+                return true;
+            }
+
+            return Vector2.Dot(facingDirection, directionToTarget.normalized) >= GetFacingConeDotThreshold();
+        }
+
+        private static bool IsFinite(Vector2 value)
+        {
+            return !float.IsNaN(value.x)
+                && !float.IsInfinity(value.x)
+                && !float.IsNaN(value.y)
+                && !float.IsInfinity(value.y);
+        }
+
+        private bool TryGetFacingDirection(out Vector2 facingDirection)
+        {
+            CachePlayerController();
+            facingDirection = Vector2.zero;
+
+            if (playerController == null)
+            {
+                return false;
+            }
+
+            facingDirection = playerController.LastMoveDirection;
+            if (facingDirection.sqrMagnitude <= 0.0001f)
+            {
+                return false;
+            }
+
+            facingDirection.Normalize();
+            return true;
+        }
+
+        private float GetFacingConeDotThreshold()
+        {
+            float halfAngle = Mathf.Clamp(facingConeHalfAngleDegrees, 1f, 180f);
+            return Mathf.Cos(halfAngle * Mathf.Deg2Rad);
+        }
+
+        private void DrawDirectionalInteractionGizmo()
+        {
+            Vector2 detectorPosition = GetDetectorPositionForGizmo();
+            Vector2 facingDirection = TryGetFacingDirection(out Vector2 playerFacingDirection)
+                ? playerFacingDirection
+                : Vector2.down;
+            float gizmoLength = Mathf.Max(0.1f, facingGizmoLength);
+            float halfAngle = Mathf.Clamp(facingConeHalfAngleDegrees, 1f, 180f);
+
+            Vector2 leftDirection = Rotate(facingDirection, halfAngle);
+            Vector2 rightDirection = Rotate(facingDirection, -halfAngle);
+            Vector3 origin = detectorPosition;
+
+            Gizmos.color = new Color(0.28f, 1f, 0.35f, 0.85f);
+            Gizmos.DrawLine(origin, origin + (Vector3)(facingDirection * gizmoLength));
+            Gizmos.color = new Color(0.28f, 1f, 0.35f, 0.55f);
+            Gizmos.DrawLine(origin, origin + (Vector3)(leftDirection * gizmoLength));
+            Gizmos.DrawLine(origin, origin + (Vector3)(rightDirection * gizmoLength));
+
+#if UNITY_EDITOR
+            Handles.color = new Color(0.28f, 1f, 0.35f, 0.16f);
+            Handles.DrawSolidArc(origin, Vector3.forward, rightDirection, halfAngle * 2f, gizmoLength);
+            Handles.color = new Color(0.28f, 1f, 0.35f, 0.65f);
+            Handles.DrawWireArc(origin, Vector3.forward, rightDirection, halfAngle * 2f, gizmoLength);
+#endif
+        }
+
+#if UNITY_EDITOR
+        private bool ShouldDrawDirectionalInteractionGizmo()
+        {
+            Transform playerTransform = GetComponentInParent<PlayerController>()?.transform;
+            foreach (GameObject selectedObject in Selection.gameObjects)
+            {
+                if (selectedObject == null)
+                {
+                    continue;
+                }
+
+                Transform selectedTransform = selectedObject.transform;
+                if (selectedTransform == transform
+                    || transform.IsChildOf(selectedTransform)
+                    || selectedTransform.IsChildOf(transform))
+                {
+                    return true;
+                }
+
+                if (playerTransform != null
+                    && (selectedTransform == playerTransform || selectedTransform.IsChildOf(playerTransform)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+#endif
+
+        private Vector2 GetDetectorPositionForGizmo()
+        {
+            Collider2D detectorCollider = triggerCollider != null ? triggerCollider : GetComponent<Collider2D>();
+            return detectorCollider != null ? detectorCollider.bounds.center : transform.position;
+        }
+
+        private static Vector2 Rotate(Vector2 direction, float degrees)
+        {
+            float radians = degrees * Mathf.Deg2Rad;
+            float sin = Mathf.Sin(radians);
+            float cos = Mathf.Cos(radians);
+            return new Vector2(
+                (direction.x * cos) - (direction.y * sin),
+                (direction.x * sin) + (direction.y * cos));
         }
 
         private static bool IsBetterCandidate(
