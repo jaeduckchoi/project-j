@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf3c0b34e20e1ff4388f7b0572fe3155, type: 3}
+  m_Name: recipe-food-066
+  m_EditorClassIdentifier: Jonggu.Shared::Shared.Data.RecipeData
+  recipeId: food_066
+  displayName: "\uBD88\uACE0\uAE30"
+  description: "\uB3FC\uC9C0\uACE0\uAE30\uC640 \uC591\uD30C\uC640 \uBC84\uC12F\uACFC
+    \uACC4\uB780\uC744 \uBCF6\uC740 \uBA54\uB274"
+  sellPrice: 58
+  reputationDelta: 1
+  supplySource: "\uBC14\uB78C\uC5B8\uB355"
+  difficulty: 1
+  cookingMethod: "\uD504\uB77C\uC774\uD32C"
+  memo: "\uAC00\uACA9\uC740 \uC784\uC2DC \uC0B0\uC815"
+  icon: {fileID: 0}
+  ingredients:
+  - ingredientId: ingredient_064
+    ingredientName: "\uB3FC\uC9C0\uACE0\uAE30"
+    difficulty: 1
+    supplySource: "\uBC14\uB78C\uC5B8\uB355"
+    acquisitionSource: "\uBAA9\uC7A5"
+    acquisitionMethod: "\uC0AC\uC721 \uC7AC\uB8CC"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uB808\uC2DC\uD53C\uD45C \uCC38\uC870\uB85C \uC784\uC2DC \uCD94\uAC00"
+    resource: {fileID: 11400000, guid: 84c1430f1262c43468a3d7c01fe09c2f, type: 2}
+    amount: 1
+  - ingredientId: ingredient_048
+    ingredientName: "\uC591\uD30C"
+    difficulty: 2
+    supplySource: "\uAE4A\uC740 \uC232"
+    acquisitionSource: "\uB545"
+    acquisitionMethod: "\uC77C\uBC18 \uCC44\uC9D1\uC9C0"
+    acquisitionTool: "\uB0AB"
+    buyPrice: 0
+    sellPrice: 0
+    memo: 
+    resource: {fileID: 11400000, guid: 10926b374595b334e8be5c443b4a925e, type: 2}
+    amount: 1
+  - ingredientId: ingredient_047
+    ingredientName: "\uBC84\uC12F"
+    difficulty: 2
+    supplySource: "\uAE4A\uC740 \uC232"
+    acquisitionSource: "\uB545"
+    acquisitionMethod: "\uC77C\uBC18 \uCC44\uC9D1\uC9C0"
+    acquisitionTool: "\uB0AB"
+    buyPrice: 0
+    sellPrice: 0
+    memo: 
+    resource: {fileID: 11400000, guid: 210f2481a0fd53d46b08a250aa3ac261, type: 2}
+    amount: 1
+  - ingredientId: ingredient_063
+    ingredientName: "\uACC4\uB780"
+    difficulty: 1
+    supplySource: "\uBC14\uB78C\uC5B8\uB355"
+    acquisitionSource: "\uBAA9\uC7A5"
+    acquisitionMethod: "\uC0AC\uC721 \uC7AC\uB8CC"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uB808\uC2DC\uD53C\uD45C \uCC38\uC870\uB85C \uC784\uC2DC \uCD94\uAC00"
+    resource: {fileID: 11400000, guid: 779367bc2bea58040afd98082dd168e5, type: 2}
+    amount: 1

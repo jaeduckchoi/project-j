@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf3c0b34e20e1ff4388f7b0572fe3155, type: 3}
+  m_Name: recipe-food-065
+  m_EditorClassIdentifier: Jonggu.Shared::Shared.Data.RecipeData
+  recipeId: food_065
+  displayName: "\uB9CC\uB450"
+  description: "\uB3FC\uC9C0\uACE0\uAE30\uC640 \uD30C\uC640 \uBC00\uAC00\uB8E8\uB85C
+    \uB9CC\uB4E0 \uBA54\uB274"
+  sellPrice: 44
+  reputationDelta: 1
+  supplySource: "\uBC14\uB78C\uC5B8\uB355"
+  difficulty: 1
+  cookingMethod: "\uB0C4\uBE44"
+  memo: "\uAC00\uACA9\uC740 \uC784\uC2DC \uC0B0\uC815"
+  icon: {fileID: 0}
+  ingredients:
+  - ingredientId: ingredient_064
+    ingredientName: "\uB3FC\uC9C0\uACE0\uAE30"
+    difficulty: 1
+    supplySource: "\uBC14\uB78C\uC5B8\uB355"
+    acquisitionSource: "\uBAA9\uC7A5"
+    acquisitionMethod: "\uC0AC\uC721 \uC7AC\uB8CC"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uB808\uC2DC\uD53C\uD45C \uCC38\uC870\uB85C \uC784\uC2DC \uCD94\uAC00"
+    resource: {fileID: 11400000, guid: 84c1430f1262c43468a3d7c01fe09c2f, type: 2}
+    amount: 1
+  - ingredientId: ingredient_005
+    ingredientName: "\uD30C"
+    difficulty: 1
+    supplySource: "\uAE30\uBCF8"
+    acquisitionSource: "\uB545"
+    acquisitionMethod: "\uC77C\uBC18 \uCC44\uC9D1\uC9C0"
+    acquisitionTool: "\uD638\uBBF8"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uD5C8\uBE0C/\uAD11\uC0B0 \uC81C\uC678 3\uAC1C \uD0D0\uD5D8\uB9F5 \uCD9C\uD604"
+    resource: {fileID: 11400000, guid: ff313019c48c3a948919a5b5d8cc24de, type: 2}
+    amount: 1
+  - ingredientId: ingredient_003
+    ingredientName: "\uBC00\uAC00\uB8E8"
+    difficulty: 0
+    supplySource: "\uAE30\uBCF8"
+    acquisitionSource: "\uB9E4\uC7A5"
+    acquisitionMethod: "\uC0C1\uC2DC\uAD6C\uBE44"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uC601\uC5C5 \uC885\uB8CC \uC2DC \uC0AC\uC6A9\uB7C9\uB9CC\uD07C \uBE44\uC6A9
+      \uCC28\uAC10"
+    resource: {fileID: 11400000, guid: 432f07c55dac0a54b9bf20086ccc117c, type: 2}
+    amount: 1

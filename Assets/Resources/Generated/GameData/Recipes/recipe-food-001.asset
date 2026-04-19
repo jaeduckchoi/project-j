@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf3c0b34e20e1ff4388f7b0572fe3155, type: 3}
+  m_Name: recipe-food-001
+  m_EditorClassIdentifier: Jonggu.Shared::Shared.Data.RecipeData
+  recipeId: food_001
+  displayName: "\uAE40\uCE58\uBCF6\uC74C\uBC25"
+  description: "\uAE40\uCE58\uC640 \uBC25\uC744 \uD504\uB77C\uC774\uD32C\uC5D0 \uBCF6\uC740
+    \uAE30\uBCF8 \uBA54\uB274"
+  sellPrice: 28
+  reputationDelta: 1
+  supplySource: "\uAE30\uBCF8"
+  difficulty: 0
+  cookingMethod: "\uD504\uB77C\uC774\uD32C"
+  memo: "\uAC00\uACA9\uC740 \uC784\uC2DC \uC0B0\uC815"
+  icon: {fileID: 1428670397636999168, guid: 584800f01e0894c46842f0d1faf4052e, type: 3}
+  ingredients:
+  - ingredientId: ingredient_001
+    ingredientName: "\uAE40\uCE58"
+    difficulty: 0
+    supplySource: "\uAE30\uBCF8"
+    acquisitionSource: "\uB9E4\uC7A5"
+    acquisitionMethod: "\uC0C1\uC2DC\uAD6C\uBE44"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uC601\uC5C5 \uC885\uB8CC \uC2DC \uC0AC\uC6A9\uB7C9\uB9CC\uD07C \uBE44\uC6A9
+      \uCC28\uAC10"
+    resource: {fileID: 11400000, guid: b4d2d16eda4234043b2463304a2f38d5, type: 2}
+    amount: 1
+  - ingredientId: ingredient_002
+    ingredientName: "\uBC25"
+    difficulty: 0
+    supplySource: "\uAE30\uBCF8"
+    acquisitionSource: "\uB9E4\uC7A5"
+    acquisitionMethod: "\uC0C1\uC2DC\uAD6C\uBE44"
+    acquisitionTool: "\uC5C6\uC74C"
+    buyPrice: 0
+    sellPrice: 0
+    memo: "\uC601\uC5C5 \uC885\uB8CC \uC2DC \uC0AC\uC6A9\uB7C9\uB9CC\uD07C \uBE44\uC6A9
+      \uCC28\uAC10"
+    resource: {fileID: 11400000, guid: 7c5b79990e21f6c47b3e6458c7b855cf, type: 2}
+    amount: 1

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415bc834912f7604696f1429b76f6905, type: 3}
+  m_Name: resource-ingredient-063
+  m_EditorClassIdentifier: Jonggu.Shared::Shared.Data.ResourceData
+  resourceId: ingredient_063
+  displayName: "\uACC4\uB780"
+  description: 
+  regionTag: "\uBC14\uB78C\uC5B8\uB355"
+  icon: {fileID: 0}
+  rarity: 0
+  baseSellPrice: 0
