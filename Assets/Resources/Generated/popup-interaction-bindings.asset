@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bindings:
   - popupKey: FrontCounter
-    sceneObjectPath: SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/FrontCounter
-    memo: FrontCounter popup source uses the FrontCounter object directly.
+    sceneObjectPath: SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter
+    memo: FrontCounter popup source uses the PassCounter object directly.
   - popupKey: Refrigerator
     sceneObjectPath: SceneGameplayRoot/InteractionRoot/Refrigerator
     memo: Refrigerator popup source uses the Refrigerator object directly.

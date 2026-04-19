@@ -1,0 +1,20 @@
+{
+    "name": "Jonggu.Gameplay.PlayModeTests",
+    "rootNamespace": "",
+    "references": [
+        "Jonggu.Gameplay",
+        "Jonggu.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

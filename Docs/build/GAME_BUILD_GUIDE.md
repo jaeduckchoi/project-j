@@ -7,7 +7,7 @@
 
 ## 유지되는 기준
 
-- generated 경로의 정본은 `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- generated 경로의 정본은 `Assets/Code/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - UI generated 리소스 경로는 `Assets/Resources/Generated/Sprites/UI/{Buttons,MessageBoxes,Panels}`
 - 플레이어 generated 리소스 경로는 `Assets/Resources/Generated/Sprites/Player`
 - 게임 데이터 generated 경로는 `Assets/Resources/Generated/GameData`
@@ -23,9 +23,9 @@
 
 ## 검증
 
-- UI 변경: `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Scripts/Shared/PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`, `Assets/Resources/Generated/popup-interaction-bindings.asset`
-- generated 경로 변경: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- UI 변경: `Assets/Code/Scripts/UI/UIManager.cs`, `Assets/Code/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayout*.cs`, `PrototypeUIObjectNames.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Code/Scripts/Shared/PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`, `Assets/Resources/Generated/popup-interaction-bindings.asset`
+- generated 경로 변경: `Assets/Code/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 - `scene-integrated metadata` 변경: 관련 import metadata, scene/prefab 직렬화 값, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`
-- 로컬 상태/게임 데이터 변경: `Assets/Scripts/CoreLoop/Core/GameManager.cs`, `Assets/Scripts/Shared/Data/GeneratedGameDataLocator.cs`, 관련 runtime manager
+- 로컬 상태/게임 데이터 변경: `Assets/Code/Scripts/CoreLoop/Core/GameManager.cs`, `Assets/Code/Scripts/Shared/Data/GeneratedGameDataLocator.cs`, 관련 runtime manager
 
 Unity 실행이나 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 결과에 함께 적습니다.

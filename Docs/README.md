@@ -8,6 +8,13 @@
 - `Docs/README.md`는 작업자가 다음에 어떤 정본 문서를 읽어야 하는지 안내하는 공통 하네스다.
 - 세부 규칙은 `Docs/project/*`, 게임 의도는 `Docs/gameplay/*`, UI/씬/빌더 기준은 각 도메인 문서가 정본이다.
 
+## 게임 기획 개요 진입
+
+- 형식화된 게임 기획 개요 정본: `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`
+- 허브 코어 루프와 `OPEN/CLOSE`: `Docs/gameplay/GAMEPLAY_CORE_LOOP.md`
+- 식당 허브, 조리, 성장: `Docs/gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md`
+- 탐험 축과 후속 지역 방향: `Docs/gameplay/GAMEPLAY_EXPLORATION.md`
+
 ## 최소 읽기 순서
 
 1. 사용하는 에이전트의 루트 엔트리(`AGENTS.md` 또는 `CLAUDE.md`)를 읽는다.
@@ -32,6 +39,7 @@
 - UI 변경: `Docs/ui/UI_AND_TEXT_GUIDE.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - UI 구조 리팩토링/탐색성 정리: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - 씬/월드 변경: `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
+- 허브/바닷가 크기와 화면 연출 기준 확인: `Docs/scene/HUB_WHITEBOX.md`, `Docs/scene/BEACH_WHITEBOX.md`, `Docs/project/SOURCE_OF_TRUTH.md`
 - 씬/에디터 프리뷰 동기화: `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - 빌더/생성 자산 변경: `Docs/build/GAME_BUILD_GUIDE.md`
 - Unity API 연동: `Docs/project/GAME_PROJECT_STRUCTURE.md`, `Docs/project/SOURCE_OF_TRUTH.md`, `Docs/project/AGENT_WORKFLOW.md`

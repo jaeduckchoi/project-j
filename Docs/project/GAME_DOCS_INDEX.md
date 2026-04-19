@@ -26,6 +26,8 @@
 - `Docs/ui/UI_AND_TEXT_GUIDE.md`: HUD/팝업 구조, UI 정본 관계, generated UI 경로
 - `Docs/ui/UI_GROUPING_RULES.md`: Canvas 그룹 구조와 이름 기준
 - `Docs/scene/GAME_SCENE_AND_SETUP.md`: 지원 씬 역할, 주요 직렬화 포인트
+- `Docs/scene/HUB_WHITEBOX.md`: 허브 맵 크기, 화면 연출 목표, 이동 경계 기준
+- `Docs/scene/BEACH_WHITEBOX.md`: 바닷가 맵 크기, 화면 연출 목표, 정합성 점검 기준
 - `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`: 월드 계층 구조와 그룹 배치 기준
 - `Docs/build/GAME_BUILD_GUIDE.md`: 빌더 흐름, generated 에셋 비생성 원칙, 감사 기준
 
@@ -34,6 +36,7 @@
 - UI 수정: `AGENT_WORKFLOW.md`, `SOURCE_OF_TRUTH.md`, `Docs/ui/UI_AND_TEXT_GUIDE.md`
 - UI 구조/탐색성 리팩토링: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/ui/UI_GROUPING_RULES.md`
 - 씬 배치나 월드 오브젝트 수정: `SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`
+- 허브/바닷가 크기와 화면 연출 확인: `Docs/scene/HUB_WHITEBOX.md`, `Docs/scene/BEACH_WHITEBOX.md`, `SOURCE_OF_TRUTH.md`
 - 씬/에디터 프리뷰 동기화: `SOURCE_OF_TRUTH.md`, `Docs/scene/GAME_SCENE_AND_SETUP.md`, `Docs/scene/SCENE_HIERARCHY_GROUPING_RULES.md`
 - generated 자산, import metadata, 빌더 경로 수정: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `Docs/build/GAME_BUILD_GUIDE.md`
 - 로컬 데이터와 런타임 상태 변경: `GAME_PROJECT_STRUCTURE.md`, `SOURCE_OF_TRUTH.md`, `AGENT_WORKFLOW.md`

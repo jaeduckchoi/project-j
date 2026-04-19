@@ -1,0 +1,105 @@
+using CoreLoop.Core;
+using Exploration.Interaction;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
+// Restaurant 네임스페이스
+namespace Restaurant
+{
+    /// <summary>
+    /// 허브에서 상호작용 시 다음 메뉴로 전환하는 최소 메뉴 선택 오브젝트다.
+    /// </summary>
+    [MovedFrom(false, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "RecipeSelectorStation")]
+    public class RecipeSelectorStation : MonoBehaviour, IInteractable
+    {
+        [SerializeField] private RestaurantManager restaurantManager;
+        [SerializeField] private string promptLabel = "메뉴 바꾸기";
+
+        public string InteractionPrompt
+        {
+            get
+            {
+                if (restaurantManager == null || restaurantManager.AvailableRecipes.Count == 0)
+                {
+                    return "등록된 메뉴 없음";
+                }
+
+                if (restaurantManager.IsRestaurantOpen)
+                {
+                    return "영업 중에는 메뉴 변경 불가";
+                }
+
+                return $"[E] {promptLabel}";
+            }
+        }
+
+        public Transform InteractionTransform => transform;
+
+        /// <summary>
+        /// 허브 컨텍스트가 있으면 명시적 참조를 사용합니다.
+        /// </summary>
+        private void Awake()
+        {
+            if (restaurantManager == null && HubRuntimeContext.Active != null)
+            {
+                restaurantManager = HubRuntimeContext.Active.RestaurantManager;
+            }
+        }
+
+        /// <summary>
+        /// 메뉴가 하나라도 있으면 상호작용 대상으로 취급합니다.
+        /// </summary>
+        public bool CanInteract(GameObject interactor)
+        {
+            return restaurantManager != null
+                && !restaurantManager.IsRestaurantOpen
+                && restaurantManager.AvailableRecipes.Count > 0;
+        }
+
+        /// <summary>
+        /// 다음 메뉴로 순환하고 첫 메뉴 선택 힌트를 노출합니다.
+        /// </summary>
+        public void Interact(GameObject interactor)
+        {
+            if (restaurantManager == null || restaurantManager.AvailableRecipes.Count == 0)
+            {
+                return;
+            }
+
+            if (restaurantManager.IsRestaurantOpen)
+            {
+                GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업 중에는 오늘의 메뉴를 바꿀 수 없습니다.");
+                return;
+            }
+
+            int currentIndex = GetCurrentRecipeIndex();
+            int nextIndex = (currentIndex + 1) % restaurantManager.AvailableRecipes.Count;
+
+            restaurantManager.SelectRecipeByIndex(nextIndex);
+            GameManager.Instance?.DayCycle?.ShowHintOnce(
+                "first_recipe_select",
+                "메뉴를 바꾸면 오른쪽 패널에서 필요 재료와 가능한 수량을 바로 확인할 수 있습니다.");
+        }
+
+        /// <summary>
+        /// 현재 선택된 레시피가 목록의 몇 번째인지 반환합니다.
+        /// </summary>
+        private int GetCurrentRecipeIndex()
+        {
+            if (restaurantManager == null || restaurantManager.SelectedRecipe == null)
+            {
+                return -1;
+            }
+
+            for (int index = 0; index < restaurantManager.AvailableRecipes.Count; index++)
+            {
+                if (restaurantManager.AvailableRecipes[index] == restaurantManager.SelectedRecipe)
+                {
+                    return index;
+                }
+            }
+
+            return -1;
+        }
+    }
+}

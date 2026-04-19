@@ -3,17 +3,17 @@
 ## 현재 UI 기준
 
 - Canvas 최상위 공용 루트는 `HUDRoot`, `PopupRoot`
-- UI 코드는 엔트리/루트 파일은 `Assets/Scripts/UI`, family별 세부 구현은 `Assets/Scripts/UI`, `Assets/Scripts/UI/Layout`, `Assets/Scripts/UI/Style`, `Assets/Scripts/UI/Content/Catalog` 아래에 둔다.
-- 런타임 UI 동작의 중심은 `Assets/Scripts/UI/UIManager.cs`(엔트리)와 `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- 에디터 UI 프리뷰/설정은 `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`, `Assets/Scripts/UI/UIManager.EditorPreview.cs`, `Assets/Editor/UI/*`에서 관리하며, 빈 Canvas도 에디터에서 관리 UI를 생성해 조정할 수 있어야 한다.
-- 레이아웃 catalog 정본은 `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`이며, 관리 대상 Canvas 이름 목록과 명시적 레이아웃 binding 적용 경로를 유지한다.
-- 기본 레이아웃 정본은 `Assets/Scripts/UI/Layout/PrototypeUILayout*.cs` 코드 값이고, 에디터에서 연결한 씬 오브젝트 값은 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다.
+- UI 코드는 엔트리/루트 파일은 `Assets/Code/Scripts/UI`, family별 세부 구현은 `Assets/Code/Scripts/UI`, `Assets/Code/Scripts/UI/Layout`, `Assets/Code/Scripts/UI/Style`, `Assets/Code/Scripts/UI/Content/Catalog` 아래에 둔다.
+- 런타임 UI 동작의 중심은 `Assets/Code/Scripts/UI/UIManager.cs`(엔트리)와 `Assets/Code/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- 에디터 UI 프리뷰/설정은 `Assets/Code/Scripts/UI/Controllers/PrototypeUIDesignController.cs`, `Assets/Code/Scripts/UI/UIManager.EditorPreview.cs`, `Assets/Code/Editor/UI/*`에서 관리하며, 빈 Canvas도 에디터에서 관리 UI를 생성해 조정할 수 있어야 한다.
+- 레이아웃 catalog 정본은 `Assets/Code/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`이며, 관리 대상 Canvas 이름 목록과 명시적 레이아웃 binding 적용 경로를 유지한다.
+- 기본 레이아웃 정본은 `Assets/Code/Scripts/UI/Layout/PrototypeUILayout*.cs` 코드 값이고, 에디터에서 연결한 씬 오브젝트 값은 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다.
 - 큰 팝업이 어느 월드 오브젝트에서 열리는지는 `Assets/Resources/Generated/popup-interaction-bindings.asset`가 정본이고, UI 레이아웃 편집기의 `팝업 연결` 섹션이 이 자산과 씬 station 컴포넌트를 함께 동기화한다.
-- 레이아웃 partial: `Assets/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
-- 관리 대상 오브젝트 이름 catalog: `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames`)
-- 팝업 타이틀/캡션 공용 상수: `Assets/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
-- 스타일 catalog: `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
-- 팝업 콘텐츠 catalog: `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
+- 레이아웃 partial: `Assets/Code/Scripts/UI/Layout/PrototypeUILayout.cs`(엔트리), `PrototypeUILayout.UI.cs`, `PrototypeUILayout.Popup.cs`
+- 관리 대상 오브젝트 이름 catalog: `Assets/Code/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs` (`GetManagedCanvasObjectNames`, `EnumerateHudCanvasObjectNames`, `EnumeratePopupCanvasObjectNames`)
+- 팝업 타이틀/캡션 공용 상수: `Assets/Code/Scripts/UI/Layout/PrototypeUIObjectNames.cs`
+- 스타일 catalog: `Assets/Code/Scripts/UI/Style/PrototypeUISkinCatalog.cs`(엔트리), `PrototypeUISkinCatalog.UI.cs`, `PrototypeUISkinCatalog.Popup.cs`, `Assets/Code/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- 팝업 콘텐츠 catalog: `Assets/Code/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
 - 프로젝트 원본 폰트 소스: 본문 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, 제목 `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`
 - 프로젝트 TMP Font Asset: 본문 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11 SDF.asset`, 제목 `Assets/TextMesh Pro/Resources/Fonts & Materials/Galmuri11-Bold SDF.asset`
 
@@ -31,7 +31,7 @@ Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountT
 
 - 루트: `Assets/Resources/Generated/Sprites/UI`
 - 하위: `Buttons`, `MessageBoxes`, `Panels`
-- 경로 정본: `Assets/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
+- 경로 정본: `Assets/Code/Scripts/Shared/PrototypeGeneratedAssetSettings.cs`
 
 ## 편집 규칙
 
@@ -43,14 +43,14 @@ Hub의 우측 상단 코인 자원 패널은 `ResourcePanel`과 `ResourceAmountT
 
 ## 함께 확인할 코드
 
-- `Assets/Scripts/UI/UIManager.cs`, `Assets/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
-- `Assets/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`
-- `Assets/Scripts/Shared/PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/popup-interaction-bindings.asset`
-- `Assets/Scripts/UI/PopupPauseStateUtility.cs`
-- `Assets/Scripts/UI/Layout/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
-- `Assets/Scripts/UI/Style/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `Assets/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
-- `Assets/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
-- `Assets/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
-- `Assets/Editor/UI/UIManagerEditor.cs`
-- `Assets/Editor/UI/PrototypeUIDesignControllerEditor.cs`
-- `Assets/Editor/UI/UIManagerEditor.cs` (UI 레이아웃 편집기 포함)
+- `Assets/Code/Scripts/UI/UIManager.cs`, `Assets/Code/Scripts/UI/UIManager.Lifecycle.cs`, `UIManager.EditorPreview.cs`, `UIManager.Bindings.cs`, `UIManager.Input.cs`, `UIManager.Canvas.cs`, `UIManager.Chrome.cs`, `UIManager.HubPopup.cs`, `UIManager.Refresh.cs`
+- `Assets/Code/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`, `PrototypeUILayoutBindingSettings.cs`, `Assets/Resources/Generated/ui-layout-bindings.asset`
+- `Assets/Code/Scripts/Shared/PopupInteractionBindingSettings.cs`, `Assets/Resources/Generated/popup-interaction-bindings.asset`
+- `Assets/Code/Scripts/UI/PopupPauseStateUtility.cs`
+- `Assets/Code/Scripts/UI/Layout/PrototypeUILayout.cs` 및 `.UI.cs`, `.Popup.cs`, `PrototypeUIObjectNames.cs`
+- `Assets/Code/Scripts/UI/Style/PrototypeUISkinCatalog.cs` 및 `.UI.cs`, `.Popup.cs`, `Assets/Code/Scripts/UI/Style/PrototypeUISkin.cs`, `PrototypeUITheme.cs`
+- `Assets/Code/Scripts/UI/Content/Catalog/PrototypeUIPopupCatalog.cs`
+- `Assets/Code/Scripts/UI/Controllers/PrototypeUIDesignController.cs`
+- `Assets/Code/Editor/UI/UIManagerEditor.cs`
+- `Assets/Code/Editor/UI/PrototypeUIDesignControllerEditor.cs`
+- `Assets/Code/Editor/UI/UIManagerEditor.cs` (UI 레이아웃 편집기 포함)

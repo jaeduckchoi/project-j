@@ -27,7 +27,7 @@
 
 ### 씬/하이어라키 변경
 
-- `Assets/Scenes` 직렬화 값을 정본으로 본다.
+- `Assets/Level/Scenes` 직렬화 값을 정본으로 본다.
 - 런타임 보강 코드는 누락된 오브젝트, 컴포넌트, 참조만 보충한다.
 - 씬에 저장된 `authored helper object`가 있으면 hierarchy, 이름, 참조도 scene contract로 취급한다.
 - 씬용 에디터 프리뷰/동기화 컴포넌트는 로드, 도메인 리로드, `OnValidate`에서 scene dirty를 만들지 않게 유지한다.
