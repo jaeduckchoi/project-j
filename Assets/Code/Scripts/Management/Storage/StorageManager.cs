@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CoreLoop.Core;
-using Shared.Data;
-using Management.Inventory;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Shared.Data;
+using Code.Scripts.Management.Inventory;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Storage 네임스페이스
-namespace Management.Storage
+namespace Code.Scripts.Management.Storage
 {
     /// <summary>
     /// 허브 창고의 보관 목록과 선택형 맡기기, 꺼내기 상태를 관리한다.

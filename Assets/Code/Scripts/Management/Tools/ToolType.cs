@@ -1,4 +1,4 @@
-namespace Management.Tools
+namespace Code.Scripts.Management.Tools
 {
     /// <summary>
     /// 탐험에서 사용하는 상시 해금형 도구 종류다.

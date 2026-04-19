@@ -5,7 +5,7 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
 // Data 네임스페이스
-namespace Shared.Data
+namespace Code.Scripts.Shared.Data
 {
     /// <summary>
     /// 식당에서 판매 가능한 메뉴의 이름, 설명, 가격과 필요 재료를 담는 데이터 에셋이다.

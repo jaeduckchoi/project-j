@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Generic;
-using Shared.Data;
-using Management.Economy;
-using CoreLoop.Flow;
-using Management.Inventory;
-using Exploration.Player;
-using Restaurant;
-using Management.Storage;
+using Code.Scripts.Shared.Data;
+using Code.Scripts.Management.Economy;
+using Code.Scripts.CoreLoop.Flow;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Management.Storage;
 using TMPro;
-using Management.Tools;
-using UI.Controllers;
-using UI.Layout;
-using Management.Upgrade;
+using Code.Scripts.Management.Tools;
+using Code.Scripts.UI.Controllers;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.Management.Upgrade;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
-using Restaurant.Kitchen;
+using Code.Scripts.Restaurant.Kitchen;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
 // UI 네임스페이스
-namespace UI
+namespace Code.Scripts.UI
 {
     /// <summary>
     /// 현재 HUD, 허브 팝업, 창고 패널을 한곳에서 갱신하는 최소 UI 관리자입니다.
@@ -138,6 +138,7 @@ namespace UI
         private float popupPausePreviousTimeScale = 1f;
         private bool suppressCanvasGroupingInEditorPreview;
         private bool preserveExistingEditorLayoutDuringPreview;
+        private bool didApplyInitialCanvasActiveContracts;
 
 #if ENABLE_INPUT_SYSTEM
         private static InputActionAsset _runtimeUiActionsAsset;
@@ -225,14 +226,5 @@ namespace UI
             public string DetailText { get; }
         }
 
-        private static PrototypeUIPreviewPanel ConvertRuntimePopupPanel(HubPopupPanel popupPanel)
-        {
-            return popupPanel switch
-            {
-                HubPopupPanel.None => PrototypeUIPreviewPanel.None,
-                HubPopupPanel.Refrigerator => PrototypeUIPreviewPanel.Refrigerator,
-                _ => PrototypeUIPreviewPanel.None
-            };
-        }
     }
 }

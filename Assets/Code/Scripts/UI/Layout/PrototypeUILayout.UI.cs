@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// 일반 HUD와 허브 기본 UI 배치를 따로 모아 관리합니다.

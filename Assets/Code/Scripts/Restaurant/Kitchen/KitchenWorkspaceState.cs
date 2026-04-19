@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// PassCounter로 노출되는 보관 슬롯 상태를 관리합니다.

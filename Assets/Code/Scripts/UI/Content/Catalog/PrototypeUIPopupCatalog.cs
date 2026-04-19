@@ -1,6 +1,6 @@
-using UI.Controllers;
+using Code.Scripts.UI.Controllers;
 
-namespace UI.Content.Catalog
+namespace Code.Scripts.UI.Content.Catalog
 {
     /// <summary>
     /// 팝업 제목과 좌우 캡션 묶음을 에디터 프리뷰용으로 전달한다.

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Shared;
+using Code.Scripts.Shared;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 #if UNITY_EDITOR
@@ -10,7 +11,7 @@ using System.IO;
 using UnityEditor;
 #endif
 
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// Serializable RectTransform values used by the runtime layout binding asset.
@@ -319,6 +320,10 @@ namespace UI.Layout
         [SerializeField] private string runtimeObjectName;
         [SerializeField] private string sceneObjectPath;
         [SerializeField] private string memo;
+        [SerializeField] private bool applyHierarchy;
+        [SerializeField] private string hierarchyParentScenePath;
+        [SerializeField] private int hierarchySiblingIndex;
+        [SerializeField, FormerlySerializedAs("hierarchyActiveSelf")] private bool hierarchyInitialActiveSelf;
         [SerializeField] private bool applyRect;
         [SerializeField] private PrototypeUILayoutBindingRect rect;
         [SerializeField] private bool applyImage;
@@ -328,9 +333,13 @@ namespace UI.Layout
         [SerializeField] private bool applyButton;
         [SerializeField] private PrototypeUILayoutBindingButtonOverride button;
 
-        public string RuntimeObjectName => runtimeObjectName;
-        public string SceneObjectPath => sceneObjectPath;
-        public string Memo => memo;
+        public string RuntimeObjectName => runtimeObjectName ?? string.Empty;
+        public string SceneObjectPath => sceneObjectPath ?? string.Empty;
+        public string Memo => memo ?? string.Empty;
+        public bool ApplyHierarchy => applyHierarchy;
+        public string HierarchyParentScenePath => hierarchyParentScenePath ?? string.Empty;
+        public int HierarchySiblingIndex => hierarchySiblingIndex;
+        public bool HierarchyInitialActiveSelf => hierarchyInitialActiveSelf;
         public bool ApplyRect => applyRect;
         public bool ApplyImage => applyImage;
         public bool ApplyText => applyText;
@@ -393,11 +402,27 @@ namespace UI.Layout
             return true;
         }
 
+        public bool TryGetHierarchyOverride(out string parentScenePath, out int siblingIndex, out bool initialActiveSelf)
+        {
+            if (applyHierarchy)
+            {
+                parentScenePath = HierarchyParentScenePath;
+                siblingIndex = hierarchySiblingIndex;
+                initialActiveSelf = hierarchyInitialActiveSelf;
+                return true;
+            }
+
+            parentScenePath = string.Empty;
+            siblingIndex = 0;
+            initialActiveSelf = false;
+            return false;
+        }
+
 #if UNITY_EDITOR
         public void Configure(string runtimeName, string scenePath)
         {
-            runtimeObjectName = runtimeName;
-            sceneObjectPath = scenePath;
+            runtimeObjectName = runtimeName?.Trim() ?? string.Empty;
+            sceneObjectPath = NormalizeScenePath(scenePath);
         }
 
         /// <summary>
@@ -422,6 +447,10 @@ namespace UI.Layout
         public void ClearBinding()
         {
             sceneObjectPath = string.Empty;
+            applyHierarchy = false;
+            hierarchyParentScenePath = string.Empty;
+            hierarchySiblingIndex = 0;
+            hierarchyInitialActiveSelf = false;
             applyRect = false;
             rect = default;
             applyImage = false;
@@ -464,6 +493,7 @@ namespace UI.Layout
                 return;
             }
 
+            CaptureHierarchy(sourceRect);
             rect = PrototypeUILayoutBindingRect.Capture(sourceRect);
             applyRect = true;
 
@@ -487,6 +517,50 @@ namespace UI.Layout
             {
                 button = PrototypeUILayoutBindingButtonOverride.Capture(sourceButton);
             }
+        }
+
+        private void CaptureHierarchy(Transform sourceTransform)
+        {
+            if (sourceTransform == null)
+            {
+                applyHierarchy = false;
+                hierarchyParentScenePath = string.Empty;
+                hierarchySiblingIndex = 0;
+                hierarchyInitialActiveSelf = false;
+                return;
+            }
+
+            applyHierarchy = true;
+            hierarchyParentScenePath = NormalizeScenePath(BuildSceneObjectPath(sourceTransform.parent));
+            hierarchySiblingIndex = sourceTransform.GetSiblingIndex();
+            hierarchyInitialActiveSelf = sourceTransform.gameObject.activeSelf;
+        }
+
+        private static string BuildSceneObjectPath(Transform transform)
+        {
+            if (transform == null)
+            {
+                return string.Empty;
+            }
+
+            Stack<string> segments = new();
+            for (Transform current = transform; current != null; current = current.parent)
+            {
+                segments.Push(current.name);
+            }
+
+            return string.Join("/", segments);
+        }
+
+        private static string NormalizeScenePath(string path)
+        {
+            string normalized = path?.Trim().Replace('\\', '/') ?? string.Empty;
+            while (normalized.Contains("//"))
+            {
+                normalized = normalized.Replace("//", "/");
+            }
+
+            return normalized.Trim('/');
         }
 #endif
     }
@@ -673,6 +747,7 @@ namespace UI.Layout
             return entry != null
                 && string.IsNullOrWhiteSpace(entry.SceneObjectPath)
                 && string.IsNullOrWhiteSpace(entry.Memo)
+                && !entry.ApplyHierarchy
                 && !entry.ApplyRect
                 && !entry.ApplyImage
                 && !entry.ApplyText

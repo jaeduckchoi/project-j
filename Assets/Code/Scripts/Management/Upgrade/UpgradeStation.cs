@@ -1,11 +1,11 @@
-using CoreLoop.Core;
-using Exploration.Interaction;
-using Management.Tools;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Upgrade 네임스페이스
-namespace Management.Upgrade
+namespace Code.Scripts.Management.Upgrade
 {
     /// <summary>
     /// 허브 작업대에서 현재 우선순위 업그레이드를 실행하는 상호작용 지점입니다.

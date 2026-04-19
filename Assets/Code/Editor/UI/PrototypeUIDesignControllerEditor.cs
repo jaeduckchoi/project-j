@@ -1,6 +1,6 @@
-using UI.Controllers;
-using UI.Layout;
-using Shared;
+using Code.Scripts.UI.Controllers;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.Shared;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

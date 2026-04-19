@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using UI.Layout;
+using Code.Scripts.UI.Layout;
 using UnityEngine;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {
@@ -31,6 +31,7 @@ namespace UI
             ReparentPopupCanvasObjects(popupRoot);
             ReparentCanvasObject("InventoryText", IsHubScene() ? GetPopupCanvasGroupParent("InventoryText", popupRoot) : GetHudCanvasGroupParent("InventoryText", hudRoot));
             ApplySavedCanvasHierarchyOverrides();
+            ApplyInitialCanvasActiveContractsOnce();
             RemoveDeletedCanvasObjects();
         }
 
@@ -63,9 +64,14 @@ namespace UI
                 existing = FindNamedUiTransformRecursive(parent, groupName);
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(groupName))
+            {
+                return null;
+            }
+
             GameObject rootObject = existing != null ? existing.gameObject : new GameObject(groupName, typeof(RectTransform));
             ApplyHubPopupObjectIdentity(rootObject);
-            if (existing == null)
+            if (rootObject.transform.parent != parent)
             {
                 rootObject.transform.SetParent(parent, false);
             }
@@ -363,6 +369,11 @@ namespace UI
             }
 
             Transform existing = parent.Find(objectName) ?? FindNamedUiTransform(objectName);
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return null;
+            }
+
             GameObject containerObject = existing != null
                 ? existing.gameObject
                 : new GameObject(objectName, typeof(RectTransform));
@@ -461,6 +472,11 @@ namespace UI
             }
 
             Transform existing = parent.Find(objectName) ?? FindNamedUiTransform(objectName);
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return null;
+            }
+
             GameObject containerObject = existing != null
                 ? existing.gameObject
                 : new GameObject(objectName, typeof(RectTransform));
@@ -570,6 +586,11 @@ namespace UI
                 existing = FindNamedUiTransform(objectName);
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return null;
+            }
+
             GameObject containerObject = existing != null
                 ? existing.gameObject
                 : new GameObject(objectName, typeof(RectTransform));
@@ -612,6 +633,16 @@ namespace UI
 
             Transform target = FindNamedUiTransform(objectName);
             if (target == null || target == transform || target == targetParent)
+            {
+                return;
+            }
+
+            if (TryApplyBoundCanvasHierarchy(target, objectName))
+            {
+                return;
+            }
+
+            if (ShouldPreserveAuthoredCanvasParent(target, objectName))
             {
                 return;
             }
@@ -672,6 +703,16 @@ namespace UI
                 return;
             }
 
+            if (TryApplyBoundCanvasHierarchy(target, objectName))
+            {
+                return;
+            }
+
+            if (ShouldPreserveAuthoredCanvasParent(target, objectName))
+            {
+                return;
+            }
+
             Transform groupParent = GetCanvasGroupParent(objectName);
             if (groupParent != null && target.parent != groupParent)
             {
@@ -679,37 +720,80 @@ namespace UI
             }
         }
 
+        private bool ShouldPreserveAuthoredCanvasParent(Transform target, string objectName)
+        {
+            if (target == null)
+            {
+                return false;
+            }
+
+            if (TryGetResolvedHierarchyOverride(objectName, out Transform contractParent, out _, out _))
+            {
+                return target.parent == contractParent;
+            }
+
+            return target.parent != null
+                   && ((string.Equals(objectName, "InteractionPromptText", StringComparison.Ordinal)
+                        && string.Equals(target.parent.name, "InteractionPromptBackdrop", StringComparison.Ordinal))
+                       || (string.Equals(objectName, "GuideText", StringComparison.Ordinal)
+                           && string.Equals(target.parent.name, "GuideBackdrop", StringComparison.Ordinal))
+                       || (string.Equals(objectName, "RestaurantResultText", StringComparison.Ordinal)
+                           && string.Equals(target.parent.name, "ResultBackdrop", StringComparison.Ordinal))
+                       || (string.Equals(objectName, "PopupCloseButton", StringComparison.Ordinal)
+                           && string.Equals(target.parent.name, "PopupFrame", StringComparison.Ordinal)));
+        }
+
         private void ApplySavedCanvasHierarchyOverrides()
         {
-            if (transform == null || ShouldPreserveRuntimeAuthoredHierarchy())
+            if (transform == null)
             {
                 return;
             }
 
-            Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
-            CollectNamedUiTransforms(transform, transformMap);
-
-            List<Transform> existingTransforms = new(transformMap.Values);
-            for (int index = 0; index < existingTransforms.Count; index++)
+            List<Transform> orderedTransforms = new();
+            foreach (string objectName in PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(IsHubScene()))
             {
-                Transform current = existingTransforms[index];
-                if (current == null || string.IsNullOrWhiteSpace(current.name))
+                if (!PrototypeUISceneLayoutCatalog.HasHierarchyOverride(objectName))
                 {
                     continue;
                 }
 
-                EnsureSavedHierarchyTransform(current.name, transformMap, new HashSet<string>(StringComparer.Ordinal));
+                Transform target = FindNamedUiTransform(objectName);
+                if (target != null)
+                {
+                    orderedTransforms.Add(target);
+                }
             }
 
-            transformMap.Clear();
-            CollectNamedUiTransforms(transform, transformMap);
-
-            List<Transform> orderedTransforms = new(transformMap.Values);
             orderedTransforms.Sort((left, right) => CompareTransformDepth(left, right));
             for (int index = 0; index < orderedTransforms.Count; index++)
             {
-                ApplySavedCanvasHierarchyOverride(orderedTransforms[index], transformMap);
+                ApplySavedCanvasHierarchyOverride(orderedTransforms[index]);
             }
+        }
+
+        private void ApplyInitialCanvasActiveContractsOnce()
+        {
+            if (!Application.isPlaying || didApplyInitialCanvasActiveContracts || transform == null)
+            {
+                return;
+            }
+
+            foreach (string objectName in PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(IsHubScene()))
+            {
+                if (!PrototypeUISceneLayoutCatalog.TryGetHierarchyInitialActiveSelf(objectName, out bool initialActiveSelf))
+                {
+                    continue;
+                }
+
+                Transform target = FindNamedUiTransform(objectName);
+                if (target != null)
+                {
+                    target.gameObject.SetActive(initialActiveSelf);
+                }
+            }
+
+            didApplyInitialCanvasActiveContracts = true;
         }
 
         private void RemoveDeletedCanvasObjects()
@@ -778,123 +862,30 @@ namespace UI
             if (transform == null
                 || string.IsNullOrWhiteSpace(objectName)
                 || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName)
-                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentName, out _)
-                || string.IsNullOrWhiteSpace(parentName))
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentScenePath, out _)
+                || string.IsNullOrWhiteSpace(parentScenePath))
             {
                 return false;
             }
 
-            if (string.Equals(parentName, transform.name, StringComparison.Ordinal))
-            {
-                targetParent = transform;
-                return true;
-            }
-
-            if (!Application.isPlaying && suppressCanvasGroupingInEditorPreview)
-            {
-                targetParent = FindNamedUiTransform(parentName);
-                return targetParent != null;
-            }
-
-            Dictionary<string, Transform> transformMap = new(StringComparer.Ordinal);
-            CollectNamedUiTransforms(transform, transformMap);
-            targetParent = EnsureSavedHierarchyTransform(parentName, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            targetParent = ResolveUiScenePath(parentScenePath);
             return targetParent != null;
         }
 
-        private Transform EnsureSavedHierarchyTransform(
-            string objectName,
-            IDictionary<string, Transform> transformMap,
-            ISet<string> visiting)
-        {
-            if (transform == null)
-            {
-                return null;
-            }
-
-            if (PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName))
-            {
-                return null;
-            }
-
-            if (string.IsNullOrWhiteSpace(objectName) || string.Equals(objectName, transform.name, StringComparison.Ordinal))
-            {
-                return transform;
-            }
-
-            if (transformMap.TryGetValue(objectName, out Transform existing))
-            {
-                return existing;
-            }
-
-            if (visiting == null || !visiting.Add(objectName))
-            {
-                return transform;
-            }
-
-            Transform parent = ResolveSavedHierarchyParent(objectName, transformMap, visiting);
-            if (parent == null)
-            {
-                visiting.Remove(objectName);
-                return null;
-            }
-
-            GameObject groupObject = new(objectName, typeof(RectTransform));
-            ApplyHubPopupObjectIdentity(groupObject);
-            groupObject.transform.SetParent(parent != null ? parent : transform, false);
-
-            RectTransform rect = groupObject.GetComponent<RectTransform>();
-            ApplySavedHierarchyLayout(rect, objectName);
-            if (PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out _, out int siblingIndex))
-            {
-                rect.SetSiblingIndex(ClampSiblingIndex(rect.parent, siblingIndex));
-            }
-
-            transformMap[objectName] = rect;
-            visiting.Remove(objectName);
-            return rect;
-        }
-
-        private Transform ResolveSavedHierarchyParent(
-            string objectName,
-            IDictionary<string, Transform> transformMap,
-            ISet<string> visiting)
-        {
-            if (transform == null)
-            {
-                return null;
-            }
-
-            if (!PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentName, out _)
-                || string.IsNullOrWhiteSpace(parentName))
-            {
-                return transform;
-            }
-
-            if (string.Equals(parentName, transform.name, StringComparison.Ordinal))
-            {
-                return transform;
-            }
-
-            return EnsureSavedHierarchyTransform(parentName, transformMap, visiting);
-        }
-
-        private void ApplySavedCanvasHierarchyOverride(Transform target, IDictionary<string, Transform> transformMap)
+        private void ApplySavedCanvasHierarchyOverride(Transform target)
         {
             if (transform == null
                 || target == null
                 || target == transform
                 || string.IsNullOrWhiteSpace(target.name)
                 || PrototypeUISceneLayoutCatalog.IsObjectRemoved(target.name)
-                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(target.name, out string parentName, out int siblingIndex)
-                || string.IsNullOrWhiteSpace(parentName))
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(target.name, out string parentScenePath, out int siblingIndex, out _)
+                || string.IsNullOrWhiteSpace(parentScenePath))
             {
                 return;
             }
 
-            Transform targetParent = string.Equals(parentName, transform.name, StringComparison.Ordinal)
-                ? transform
-                : EnsureSavedHierarchyTransform(parentName, transformMap, new HashSet<string>(StringComparer.Ordinal));
+            Transform targetParent = ResolveUiScenePath(parentScenePath);
             if (targetParent == null || targetParent == target)
             {
                 return;
@@ -907,21 +898,6 @@ namespace UI
 
             ApplySavedHierarchyLayout(target as RectTransform, target.name);
             target.SetSiblingIndex(ClampSiblingIndex(target.parent, siblingIndex));
-            transformMap[target.name] = target;
-        }
-
-        private static void CollectNamedUiTransforms(Transform current, IDictionary<string, Transform> transformMap)
-        {
-            if (current == null || transformMap == null || string.IsNullOrWhiteSpace(current.name))
-            {
-                return;
-            }
-
-            transformMap[current.name] = current;
-            for (int index = 0; index < current.childCount; index++)
-            {
-                CollectNamedUiTransforms(current.GetChild(index), transformMap);
-            }
         }
 
         private static void ApplySavedHierarchyLayout(RectTransform rect, string objectName)
@@ -981,6 +957,11 @@ namespace UI
                 return null;
             }
 
+            if (TryResolveBoundUiTransform(objectName, out Transform bound))
+            {
+                return bound;
+            }
+
             Transform direct = transform.Find(objectName);
             if (direct != null)
             {
@@ -988,6 +969,99 @@ namespace UI
             }
 
             return FindNamedUiTransformRecursive(transform, objectName);
+        }
+
+        private bool TryApplyBoundCanvasHierarchy(Transform target, string objectName)
+        {
+            if (target == null || !TryGetResolvedHierarchyOverride(objectName, out Transform targetParent, out int siblingIndex, out _))
+            {
+                return false;
+            }
+
+            if (targetParent == target)
+            {
+                return true;
+            }
+
+            if (target.parent != targetParent)
+            {
+                target.SetParent(targetParent, false);
+            }
+
+            target.SetSiblingIndex(ClampSiblingIndex(target.parent, siblingIndex));
+            return true;
+        }
+
+        private bool TryGetResolvedHierarchyOverride(
+            string objectName,
+            out Transform targetParent,
+            out int siblingIndex,
+            out bool initialActiveSelf)
+        {
+            targetParent = null;
+            siblingIndex = 0;
+            initialActiveSelf = false;
+
+            if (transform == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || PrototypeUISceneLayoutCatalog.IsObjectRemoved(objectName)
+                || !PrototypeUISceneLayoutCatalog.TryGetHierarchyOverride(objectName, out string parentScenePath, out siblingIndex, out initialActiveSelf)
+                || string.IsNullOrWhiteSpace(parentScenePath))
+            {
+                return false;
+            }
+
+            targetParent = ResolveUiScenePath(parentScenePath);
+            return targetParent != null;
+        }
+
+        private bool TryResolveBoundUiTransform(string objectName, out Transform target)
+        {
+            target = null;
+            if (transform == null
+                || string.IsNullOrWhiteSpace(objectName)
+                || !PrototypeUISceneLayoutCatalog.TryGetSceneObjectPath(objectName, out string sceneObjectPath)
+                || string.IsNullOrWhiteSpace(sceneObjectPath))
+            {
+                return false;
+            }
+
+            target = ResolveUiScenePath(sceneObjectPath);
+            return target != null;
+        }
+
+        private Transform ResolveUiScenePath(string scenePath)
+        {
+            if (transform == null || string.IsNullOrWhiteSpace(scenePath))
+            {
+                return null;
+            }
+
+            string normalizedPath = scenePath.Trim().Replace('\\', '/');
+            while (normalizedPath.Contains("//"))
+            {
+                normalizedPath = normalizedPath.Replace("//", "/");
+            }
+
+            normalizedPath = normalizedPath.Trim('/');
+            if (string.IsNullOrWhiteSpace(normalizedPath))
+            {
+                return null;
+            }
+
+            string[] parts = normalizedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0 || !string.Equals(parts[0], transform.name, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            Transform current = transform;
+            for (int index = 1; index < parts.Length && current != null; index++)
+            {
+                current = current.Find(parts[index]);
+            }
+
+            return current;
         }
 
         private static Transform FindNamedUiTransformRecursive(Transform parent, string objectName)

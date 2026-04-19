@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Flow 네임스페이스
-namespace CoreLoop.Flow
+namespace Code.Scripts.CoreLoop.Flow
 {
     /// <summary>
     /// 날짜/단계 루틴 없이 현재 플레이 상황에 맞는 안내 문구와 1회성 힌트만 관리한다.

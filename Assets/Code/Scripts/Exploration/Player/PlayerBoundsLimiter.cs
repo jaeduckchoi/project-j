@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Player 네임스페이스
-namespace Exploration.Player
+namespace Code.Scripts.Exploration.Player
 {
     /// <summary>
     /// 플레이어가 맵 경계를 벗어나지 않도록 위치와 속도를 보정한다.

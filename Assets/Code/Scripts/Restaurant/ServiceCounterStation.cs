@@ -1,11 +1,11 @@
-using CoreLoop.Core;
-using Exploration.Interaction;
-using Restaurant.Kitchen;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Restaurant.Kitchen;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Restaurant 네임스페이스
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// 허브에서 현재 선택된 메뉴로 영업을 실행하는 상호작용 지점이다.

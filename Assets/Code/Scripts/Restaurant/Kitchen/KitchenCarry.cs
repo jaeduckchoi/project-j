@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Shared.Data;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 플레이어가 손에 들고 있거나 PassCounter 슬롯에 올려 둔 단일 주방 항목을 나타냅니다.

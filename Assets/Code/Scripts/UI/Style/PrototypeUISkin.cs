@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UIVectorImage = UnityEngine.UIElements.VectorImage;
 
-namespace UI.Style
+namespace Code.Scripts.UI.Style
 {
     /// <summary>
     /// SVG를 실제 UI Sprite로 렌더링하고 캐시하는 역할만 담당합니다.

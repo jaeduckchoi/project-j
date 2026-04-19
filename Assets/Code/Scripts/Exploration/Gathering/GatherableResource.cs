@@ -1,13 +1,13 @@
 using System.Collections;
-using CoreLoop.Core;
-using Shared.Data;
-using Exploration.Interaction;
-using Management.Tools;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Shared.Data;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Gathering 네임스페이스
-namespace Exploration.Gathering
+namespace Code.Scripts.Exploration.Gathering
 {
     /// <summary>
     /// 맵 위의 채집 지점이다. 필요한 도구를 확인하고 상호작용 시 인벤토리에 자원을 추가한다.

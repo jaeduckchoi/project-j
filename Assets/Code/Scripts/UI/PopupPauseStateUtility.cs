@@ -1,4 +1,4 @@
-namespace UI
+namespace Code.Scripts.UI
 {
     /// <summary>
     /// 허브 팝업 열림 상태에 맞춰 시간 정지 적용 여부와 복구 값을 계산합니다.

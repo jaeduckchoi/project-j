@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// 오늘의 메뉴 3칸과 현재 활성 슬롯을 관리하는 런타임 상태다.

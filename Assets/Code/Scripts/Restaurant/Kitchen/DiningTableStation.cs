@@ -1,7 +1,7 @@
-using Exploration.Interaction;
+using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 허브 테이블 하나와 1:1로 연결된 서빙 상호작용 지점이다.

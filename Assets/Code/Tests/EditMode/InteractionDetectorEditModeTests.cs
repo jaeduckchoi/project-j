@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
-using Exploration.Interaction;
-using Exploration.Player;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Exploration.Player;
 using NUnit.Framework;
 using UnityEngine;
 

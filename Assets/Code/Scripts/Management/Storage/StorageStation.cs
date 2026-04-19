@@ -1,14 +1,14 @@
 using System;
 using TMPro;
-using CoreLoop.Core;
-using Exploration.Interaction;
-using Management.Inventory;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Management.Inventory;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 // Storage 네임스페이스
-namespace Management.Storage
+namespace Code.Scripts.Management.Storage
 {
     /// <summary>
     /// 허브 창고 팝업을 여는 단일 상호작용 지점이다.

@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 미리 슬라이스된 FrontCounter 스프라이트 조각을 서로 다른 정렬값의 렌더러로 배치합니다.

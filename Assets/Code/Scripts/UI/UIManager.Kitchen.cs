@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Text;
-using CoreLoop.Core;
-using Management.Inventory;
-using Restaurant;
-using Restaurant.Kitchen;
-using Shared.Data;
-using UI.Content.Catalog;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.Shared.Data;
+using Code.Scripts.UI.Content.Catalog;
 using UnityEngine;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

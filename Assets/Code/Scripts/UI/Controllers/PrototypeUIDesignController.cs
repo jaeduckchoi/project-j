@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // UI.Controllers 네임스페이스
-namespace UI.Controllers
+namespace Code.Scripts.UI.Controllers
 {
-    using UI;
+    using Code.Scripts.UI;
 
     public enum PrototypeUIPreviewPanel
     {

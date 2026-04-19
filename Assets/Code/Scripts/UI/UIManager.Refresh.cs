@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using System.Text;
-using CoreLoop.Core;
-using Exploration.Interaction;
-using Exploration.Player;
-using Management.Inventory;
-using Management.Storage;
-using Management.Tools;
-using Management.Upgrade;
-using Shared.Data;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Management.Storage;
+using Code.Scripts.Management.Tools;
+using Code.Scripts.Management.Upgrade;
+using Code.Scripts.Shared.Data;
 using TMPro;
-using UI.Layout;
-using UI.Style;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.UI.Style;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {
@@ -935,7 +935,38 @@ namespace UI
         {
             if (ShouldUseTypedPopupUi())
             {
+                bool showTypedRefrigeratorPopup = activeHubPanel == HubPopupPanel.Refrigerator;
+                TMP_FontAsset preferredFont = bodyFontAsset
+                                              ?? headingFontAsset
+                                              ?? (interactionPromptText != null ? interactionPromptText.font : null)
+                                              ?? TMP_Settings.defaultFontAsset;
+                TMP_FontAsset headingFont = headingFontAsset ?? bodyFontAsset ?? preferredFont ?? TMP_Settings.defaultFontAsset;
+                TMP_FontAsset bodyFont = bodyFontAsset ?? headingFont ?? preferredFont ?? TMP_Settings.defaultFontAsset;
+                SetHubPopupDesignActive(showTypedRefrigeratorPopup);
+                SetRefrigeratorPopupDesignActive(showTypedRefrigeratorPopup);
+                ApplyTypedHubPopupLayout(bodyFont, headingFont);
                 ApplyTypedPopupState();
+                SetLegacyHubPopupObjectsActive(false);
+                if (inventoryText != null)
+                {
+                    inventoryText.gameObject.SetActive(false);
+                }
+
+                if (selectedRecipeText != null)
+                {
+                    selectedRecipeText.gameObject.SetActive(false);
+                }
+
+                if (storageText != null)
+                {
+                    storageText.gameObject.SetActive(false);
+                }
+
+                if (upgradeText != null)
+                {
+                    upgradeText.gameObject.SetActive(false);
+                }
+
                 SetHubHudVisible(activeHubPanel == HubPopupPanel.None);
                 RefreshHubPopupOverlay();
                 RefreshGuideText();

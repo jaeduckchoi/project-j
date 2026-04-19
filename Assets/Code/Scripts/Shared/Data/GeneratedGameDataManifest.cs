@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Data 네임스페이스
-namespace Shared.Data
+namespace Code.Scripts.Shared.Data
 {
     /// <summary>
     /// 빌드에서 generated 게임 데이터 에셋이 유지되도록 참조를 묶어두는 manifest다.

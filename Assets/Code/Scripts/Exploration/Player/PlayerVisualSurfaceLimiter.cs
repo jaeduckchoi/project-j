@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Tilemaps;
 
-namespace Exploration.Player
+namespace Code.Scripts.Exploration.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [DisallowMultipleComponent]

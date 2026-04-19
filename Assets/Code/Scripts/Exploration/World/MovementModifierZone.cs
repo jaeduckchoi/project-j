@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using CoreLoop.Core;
-using Exploration.Player;
-using Management.Tools;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 플레이어가 영역 안에 있는 동안 이동 속도 배율을 변경한다.

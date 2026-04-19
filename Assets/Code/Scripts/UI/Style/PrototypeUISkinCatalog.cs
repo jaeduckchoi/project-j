@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Shared;
+using Code.Scripts.Shared;
 
-namespace UI.Style
+namespace Code.Scripts.UI.Style
 {
     /// <summary>
     /// 어떤 SVG를 어떤 슬라이스와 여백으로 쓸지 한 번에 넘기는 스킨 정의값이다.

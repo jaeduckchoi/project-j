@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Exploration.Player;
+using Code.Scripts.Exploration.Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 #if UNITY_EDITOR
@@ -8,7 +8,7 @@ using UnityEditor;
 #endif
 
 // Interaction 네임스페이스
-namespace Exploration.Interaction
+namespace Code.Scripts.Exploration.Interaction
 {
     /// <summary>
     /// 플레이어 주변의 상호작용 후보를 관리하고 가장 가까운 대상을 현재 대상으로 선택한다.

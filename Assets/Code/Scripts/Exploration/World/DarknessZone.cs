@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using CoreLoop.Core;
-using Exploration.Player;
-using Management.Tools;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 랜턴 보유 여부에 따라 어두운 구역의 이동 페널티를 적용합니다.

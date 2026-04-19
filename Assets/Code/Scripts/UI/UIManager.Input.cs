@@ -1,13 +1,13 @@
 using System;
-using CoreLoop.Core;
-using Management.Inventory;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Management.Inventory;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 #endif
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

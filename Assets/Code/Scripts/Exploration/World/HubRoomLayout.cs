@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 허브 씬의 논리 타일 좌표와 직렬화된 월드 좌표를 한 곳에서 관리한다.

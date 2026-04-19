@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CoreLoop.Core;
-using Management.Economy;
-using Management.Inventory;
-using Shared.Data;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Management.Economy;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// 레시피 카탈로그 포커스, 오늘의 메뉴 3칸, OPEN/CLOSE 상태와 영업 보상을 관리한다.

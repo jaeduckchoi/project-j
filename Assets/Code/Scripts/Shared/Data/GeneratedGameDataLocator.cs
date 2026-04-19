@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Shared.Data
+namespace Code.Scripts.Shared.Data
 {
     /// <summary>
     /// generated 게임 데이터 에셋을 이름, id, 표시 이름 기준으로 다시 찾는 로더다.

@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Management.Storage;
-using Restaurant.Kitchen;
-using Shared;
+using Code.Scripts.Management.Storage;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.Shared;
 using TMPro;
-using UI;
-using UI.Controllers;
-using UI.Layout;
+using Code.Scripts.UI;
+using Code.Scripts.UI.Controllers;
+using Code.Scripts.UI.Layout;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -661,7 +661,11 @@ namespace Editor.UI
             }
 
             EditorGUILayout.LabelField(selectedRuntimeName, EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("씬 UI 오브젝트를 연결하거나 현재 값을 캡처하면 ui-layout-bindings.asset에 RectTransform, Image, TMP, Button 표시값이 저장됩니다. 월드 팝업 연결은 popup-interaction-bindings 자산을 정본으로 하는 '팝업 연결'에서 설정하세요.", MessageType.None);
+            EditorGUILayout.HelpBox("씬 UI 오브젝트를 연결하거나 현재 값을 캡처하면 ui-layout-bindings.asset에 RectTransform, Image, TMP, Button 표시값과 parent/sibling/initial active baseline hierarchy 계약이 함께 저장됩니다. 월드 팝업 연결은 popup-interaction-bindings 자산을 정본으로 하는 '팝업 연결'에서 설정하세요.", MessageType.None);
+            if (PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName(selectedRuntimeName))
+            {
+                EditorGUILayout.HelpBox("이 이름은 runtime-only whitelist 대상이라 scene path와 hierarchy 값이 런타임 구조 계약으로 사용되지 않습니다.", MessageType.None);
+            }
 
             settings.TryGetEntry(selectedRuntimeName, out PrototypeUILayoutBindingEntry entry);
             GameObject current = PrototypeUILayoutBindingSyncUtility.ResolveLayoutPreviewObject(activeScene, settings, selectedRuntimeName);
@@ -705,6 +709,7 @@ namespace Editor.UI
 
                 using (new EditorGUI.DisabledScope(entry == null
                                                    || (string.IsNullOrWhiteSpace(entry.SceneObjectPath)
+                                                       && !entry.ApplyHierarchy
                                                        && !entry.ApplyRect
                                                        && !entry.ApplyImage
                                                        && !entry.ApplyText
@@ -720,10 +725,42 @@ namespace Editor.UI
             if (entry != null && !string.IsNullOrWhiteSpace(entry.SceneObjectPath))
             {
                 EditorGUILayout.LabelField("Scene Path", entry.SceneObjectPath);
+                if (entry.ApplyHierarchy)
+                {
+                    EditorGUILayout.LabelField("Hierarchy Parent", string.IsNullOrWhiteSpace(entry.HierarchyParentScenePath) ? "<root>" : entry.HierarchyParentScenePath);
+                    EditorGUILayout.LabelField("Hierarchy Sibling", entry.HierarchySiblingIndex.ToString());
+                    EditorGUILayout.LabelField("Hierarchy Initial Active", entry.HierarchyInitialActiveSelf ? "true" : "false");
+                }
+
+                GameObject explicitTarget = ResolveSceneObject(entry.SceneObjectPath);
+                if (explicitTarget == null)
+                {
+                    EditorGUILayout.HelpBox("저장된 Scene Path가 현재 씬에서 resolve되지 않습니다. 런타임은 fallback grouping으로 내려가므로 silent drift가 생길 수 있습니다.", MessageType.Warning);
+                }
+                else if (entry.ApplyHierarchy)
+                {
+                    string currentParentPath = explicitTarget.transform.parent != null
+                        ? BuildSceneObjectPath(explicitTarget.transform.parent)
+                        : string.Empty;
+                    if (!string.Equals(currentParentPath, entry.HierarchyParentScenePath, StringComparison.Ordinal)
+                        || explicitTarget.transform.GetSiblingIndex() != entry.HierarchySiblingIndex
+                        || explicitTarget.activeSelf != entry.HierarchyInitialActiveSelf)
+                    {
+                        EditorGUILayout.HelpBox("현재 씬 hierarchy가 저장된 contract와 다릅니다. 씬 값을 다시 캡처하거나 hierarchy를 자산 기준으로 정리하세요.", MessageType.Warning);
+                    }
+                }
             }
             else if (current != null)
             {
                 EditorGUILayout.HelpBox("현재 씬에서 같은 이름의 UI 오브젝트를 찾았습니다. 씬 저장 시 이 오브젝트 값이 ui-layout-bindings.asset으로 자동 동기화됩니다.", MessageType.Info);
+            }
+            else if (PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName(selectedRuntimeName))
+            {
+                EditorGUILayout.HelpBox("이 이름은 명시적 runtime-only whitelist 예외 대상입니다. 구조 계약 없이 런타임 생성이 허용됩니다.", MessageType.None);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("이 이름은 runtime-only 예외 대상이 아닙니다. 씬 authored 구조를 유지하려면 씬 오브젝트를 연결하고 binding contract를 저장하세요.", MessageType.Info);
             }
         }
 
@@ -1105,7 +1142,8 @@ namespace Editor.UI
             }
 
             if (settings.TryGetEntry(runtimeName, out PrototypeUILayoutBindingEntry entry)
-                && (entry.ApplyRect
+                && (entry.ApplyHierarchy
+                    || entry.ApplyRect
                     || entry.ApplyImage
                     || entry.ApplyText
                     || entry.ApplyButton

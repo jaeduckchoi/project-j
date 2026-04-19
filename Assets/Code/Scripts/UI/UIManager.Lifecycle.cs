@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Management.Storage;
-using Restaurant.Kitchen;
-using Shared;
+using Code.Scripts.Management.Storage;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.Shared;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 #endif
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

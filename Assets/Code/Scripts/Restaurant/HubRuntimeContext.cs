@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Restaurant.Kitchen;
+using Code.Scripts.Restaurant.Kitchen;
 using UnityEngine;
 
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// Hub 씬 런타임이 사용하는 핵심 참조와 공유 카탈로그를 한 곳에서 제공하는 명시적 컨텍스트다.

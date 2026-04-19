@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using CoreLoop.Core;
-using Management.Inventory;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Management.Inventory;
 using NUnit.Framework;
-using Restaurant;
-using Restaurant.Kitchen;
-using Shared.Data;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 using UnityEngine.TestTools;
 

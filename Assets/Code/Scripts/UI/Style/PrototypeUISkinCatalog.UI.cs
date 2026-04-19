@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UI.Style
+namespace Code.Scripts.UI.Style
 {
     /// <summary>
     /// 일반 HUD와 버튼 스킨 매핑을 따로 모아 관리합니다.

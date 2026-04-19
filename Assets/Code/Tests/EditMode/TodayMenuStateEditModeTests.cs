@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Restaurant;
+using Code.Scripts.Restaurant;
 
 namespace Editor.Tests
 {

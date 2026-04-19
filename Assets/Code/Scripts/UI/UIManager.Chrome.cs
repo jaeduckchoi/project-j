@@ -1,20 +1,21 @@
-using Exploration.Gathering;
-using Exploration.Player;
-using Exploration.World;
-using Management.Storage;
-using Management.Upgrade;
-using Restaurant;
-using Shared;
+using System;
+using Code.Scripts.Exploration.Gathering;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Exploration.World;
+using Code.Scripts.Management.Storage;
+using Code.Scripts.Management.Upgrade;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Shared;
 using TMPro;
-using UI.Content.Catalog;
-using UI.Controllers;
-using UI.Layout;
-using UI.Style;
+using Code.Scripts.UI.Content.Catalog;
+using Code.Scripts.UI.Controllers;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.UI.Style;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {
@@ -45,13 +46,13 @@ namespace UI
                 EnsureCanvasGroups();
             }
             ResolveOptionalUiReferences();
-            interactionPromptText = EnsureScreenText(interactionPromptText, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
             goldText = EnsureHudStatusText(goldText, EconomyTextObjectName(isHubScene));
-            guideText = EnsureOverlayText(guideText, "GuideText");
-            resultText = EnsureOverlayText(resultText, "RestaurantResultText");
             PrototypeUITheme theme = PrototypeUIThemePalette.GetForScene(SceneManager.GetActiveScene().name);
 
             EnsureCommonHudChrome(isHubScene, preferredFont, theme.Parchment, theme.Paper);
+            interactionPromptText = EnsureScreenText(interactionPromptText, "InteractionPromptText", PrototypeUILayout.PromptText(isHubScene));
+            guideText = EnsureOverlayText(guideText, "GuideText");
+            resultText = EnsureOverlayText(resultText, "RestaurantResultText");
             if (isHubScene && !useTypedPopupUi)
             {
                 EnsureHubPopupTextReferences();
@@ -261,6 +262,11 @@ namespace UI
                 return;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return;
+            }
+
             GameObject accentObject = existing != null ? existing.gameObject : new GameObject(objectName);
             if (existing == null)
             {
@@ -333,6 +339,11 @@ namespace UI
             Transform existing = FindNamedUiTransform(objectName);
             Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
             if (existing == null && targetParent == null)
+            {
+                return;
+            }
+
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
             {
                 return;
             }
@@ -422,6 +433,11 @@ namespace UI
                 return null;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return null;
+            }
+
             GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(textObject);
             if (existing == null)
@@ -461,6 +477,11 @@ namespace UI
             Transform existing = current != null ? current.transform : FindNamedUiTransform(objectName);
             Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
             if (existing == null && targetParent == null)
+            {
+                return null;
+            }
+
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
             {
                 return null;
             }
@@ -605,6 +626,11 @@ namespace UI
             Transform existing = FindNamedUiTransform(objectName);
             Transform targetParent = existing == null ? GetCanvasGroupParent(objectName) : null;
             if (existing == null && targetParent == null)
+            {
+                return null;
+            }
+
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
             {
                 return null;
             }
@@ -844,6 +870,12 @@ namespace UI
                 return;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject("PopupCloseButton"))
+            {
+                popupCloseButton = null;
+                return;
+            }
+
             GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("PopupCloseButton");
             ApplyHubPopupObjectIdentity(buttonObject);
             if (existing == null)
@@ -992,11 +1024,6 @@ namespace UI
                    && !PrototypeUISceneLayoutCatalog.HasLayoutOverride(objectName);
         }
 
-        private static bool ShouldPreserveRuntimeAuthoredHierarchy()
-        {
-            return Application.isPlaying && RuntimeAuthoredSceneUiObjectNames.Count > 0;
-        }
-
         private static bool IsRuntimeAuthoredSceneUiObject(string objectName)
         {
             return Application.isPlaying
@@ -1022,21 +1049,20 @@ namespace UI
                    && !PrototypeUISceneLayoutCatalog.HasButtonOverride(objectName);
         }
 
-        private static bool ShouldSkipCreatingMissingManagedObject(string objectName)
+        private bool ShouldSkipCreatingMissingManagedObject(string objectName)
         {
-            return Application.isPlaying
-                   && IsOptionalOverlayObject(objectName)
-                   && !IsRuntimeAuthoredSceneUiObject(objectName)
-                   && !PrototypeUISceneLayoutCatalog.HasAnyOverride(objectName);
-        }
+            if (!Application.isPlaying || string.IsNullOrWhiteSpace(objectName))
+            {
+                return false;
+            }
 
-        private static bool IsOptionalOverlayObject(string objectName)
-        {
-            return objectName is "GuideBackdrop"
-                or "GuideText"
-                or "ResultBackdrop"
-                or "RestaurantResultText"
-                or "GuideHelpButton";
+            if (PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName(objectName))
+            {
+                return false;
+            }
+
+            return PrototypeUISceneLayoutCatalog.HasHierarchyOverride(objectName)
+                   && !TryResolveBoundUiTransform(objectName, out _);
         }
 
         private void ApplyManagedRectLayout(RectTransform rect, PrototypeUIRect layout, bool preserveExistingLayout)
@@ -1068,7 +1094,7 @@ namespace UI
 
         private void SetManagedSiblingIndex(Transform target, int siblingIndex, bool preserveExistingLayout)
         {
-            if (target == null || ShouldPreserveManagedRectLayout(target.name, preserveExistingLayout))
+            if (target == null || ShouldPreserveManagedSiblingOrder(target, preserveExistingLayout))
             {
                 return;
             }
@@ -1078,12 +1104,54 @@ namespace UI
 
         private void SetManagedAsLastSibling(Transform target, bool preserveExistingLayout)
         {
-            if (target == null || ShouldPreserveManagedRectLayout(target.name, preserveExistingLayout))
+            if (target == null || ShouldPreserveManagedSiblingOrder(target, preserveExistingLayout))
             {
                 return;
             }
 
             target.SetAsLastSibling();
+        }
+
+        private bool ShouldPreserveManagedSiblingOrder(Transform target, bool preserveExistingLayout)
+        {
+            if (target == null)
+            {
+                return true;
+            }
+
+            if (PrototypeUISceneLayoutCatalog.HasHierarchyOverride(target.name))
+            {
+                return true;
+            }
+
+            if (target.parent != null)
+            {
+                if (string.Equals(target.name, "InteractionPromptText", StringComparison.Ordinal)
+                    && string.Equals(target.parent.name, "InteractionPromptBackdrop", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+
+                if (string.Equals(target.name, "GuideText", StringComparison.Ordinal)
+                    && string.Equals(target.parent.name, "GuideBackdrop", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+
+                if (string.Equals(target.name, "RestaurantResultText", StringComparison.Ordinal)
+                    && string.Equals(target.parent.name, "ResultBackdrop", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+
+                if (string.Equals(target.name, "PopupCloseButton", StringComparison.Ordinal)
+                    && string.Equals(target.parent.name, "PopupFrame", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return ShouldPreserveManagedRectLayout(target.name, preserveExistingLayout);
         }
 
         private static void ApplyRectLayout(RectTransform rect, PrototypeUIRect layout)

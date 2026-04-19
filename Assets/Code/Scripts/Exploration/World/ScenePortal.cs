@@ -1,13 +1,13 @@
-using CoreLoop.Core;
-using Exploration.Interaction;
-using Management.Tools;
-using Restaurant;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
+using Code.Scripts.Management.Tools;
+using Code.Scripts.Restaurant;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 허브와 탐험 지역 사이의 이동을 처리하고, 잠금 조건을 검사한다.

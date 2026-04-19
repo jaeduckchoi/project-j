@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Shared
+namespace Code.Scripts.Shared
 {
     /// <summary>
     /// 런타임이 직접 사용하는 generated 리소스 경로와 기본 표시 값을 관리한다.

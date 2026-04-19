@@ -1,8 +1,8 @@
 using System;
-using Exploration.Interaction;
+using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 냉장고 팝업을 열도록 UI 계층에 요청하는 상호작용 지점입니다.

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using CoreLoop.Core;
-using Exploration.Player;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Player;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // World 네임스페이스
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 주기에 따라 켜지고 꺼지는 강풍 구간이다. 활성 상태에서는 플레이어를 한 방향으로 밀어낸다.

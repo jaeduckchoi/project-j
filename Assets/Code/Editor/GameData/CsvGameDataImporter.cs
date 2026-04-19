@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Shared;
-using Shared.Data;
+using Code.Scripts.Shared;
+using Code.Scripts.Shared.Data;
 using UnityEditor;
 using UnityEngine;
 

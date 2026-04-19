@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UI;
-using UI.Layout;
+using Code.Scripts.UI;
+using Code.Scripts.UI.Layout;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -22,7 +22,20 @@ namespace Editor.UI
             int capturedCount = 0;
             foreach (string runtimeName in PrototypeUISceneLayoutCatalog.GetManagedCanvasObjectNames(IsHubScene(scene)))
             {
-                if (!TryResolveBindingRect(scene, settings, rectLookup, runtimeName, out RectTransform rect, out string sceneObjectPath))
+                if (PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName(runtimeName))
+                {
+                    settings.RemoveBinding(runtimeName);
+                    continue;
+                }
+
+                if (!TryResolveBindingRect(
+                        scene,
+                        settings,
+                        rectLookup,
+                        runtimeName,
+                        out RectTransform rect,
+                        out string sceneObjectPath,
+                        logUnresolvedBindingWarning: true))
                 {
                     continue;
                 }
@@ -57,7 +70,8 @@ namespace Editor.UI
                 BuildRectTransformLookup(scene),
                 runtimeName,
                 out rect,
-                out sceneObjectPath);
+                out sceneObjectPath,
+                logUnresolvedBindingWarning: false);
         }
 
         private static bool TryResolveBindingRect(
@@ -66,7 +80,8 @@ namespace Editor.UI
             IReadOnlyDictionary<string, List<RectTransform>> rectLookup,
             string runtimeName,
             out RectTransform rect,
-            out string sceneObjectPath)
+            out string sceneObjectPath,
+            bool logUnresolvedBindingWarning)
         {
             rect = null;
             sceneObjectPath = string.Empty;
@@ -85,6 +100,13 @@ namespace Editor.UI
                     rect = boundRect;
                     sceneObjectPath = entry.SceneObjectPath;
                     return true;
+                }
+
+                if (logUnresolvedBindingWarning)
+                {
+                    Debug.LogWarning(
+                        $"[PrototypeUILayoutBindingSync] '{runtimeName}' binding path '{entry.SceneObjectPath}' could not be resolved in scene '{scene.name}'. Runtime fallback grouping will be used until the binding is fixed.",
+                        FindComponentInScene<UIManager>(scene));
                 }
             }
 

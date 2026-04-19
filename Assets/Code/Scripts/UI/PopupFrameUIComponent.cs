@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     /// <summary>
     /// 허브 팝업의 공통 shell 오브젝트 묶음을 제공합니다.

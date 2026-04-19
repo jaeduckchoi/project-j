@@ -1,4 +1,4 @@
-namespace Shared
+namespace Code.Scripts.Shared
 {
     /// <summary>
     /// 프로젝트 1st-party Unity 자산 경로의 정본을 제공한다.
@@ -30,6 +30,7 @@ namespace Shared
         public const string PrototypeGeneratedAssetSettingsAssetPath = GeneratedResourcesRoot + "/prototype-generated-asset-settings.asset";
         public const string PopupInteractionBindingSettingsAssetPath = GeneratedResourcesRoot + "/popup-interaction-bindings.asset";
         public const string UiLayoutBindingSettingsAssetPath = GeneratedResourcesRoot + "/ui-layout-bindings.asset";
+        public const string SceneHierarchyContractSettingsAssetPath = GeneratedResourcesRoot + "/scene-hierarchy-contracts.asset";
 
         public const string SettingsRoot = AssetsRoot + "/Settings";
         public const string DefaultVolumeProfileAssetPath = SettingsRoot + "/DefaultVolumeProfile.asset";

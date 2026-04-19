@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-using Exploration.Player;
+using Code.Scripts.Exploration.Player;
 using CameraComponent = UnityEngine.Camera;
 
 // GameCamera 네임스페이스
-namespace Exploration.Camera
+namespace Code.Scripts.Exploration.Camera
 {
     /// <summary>
     /// 플레이어를 부드럽게 따라가고, 필요할 때는 맵 바깥으로 카메라가 벗어나지 않게 제한한다.

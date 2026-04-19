@@ -1,9 +1,9 @@
 using TMPro;
-using UI.Layout;
+using Code.Scripts.UI.Layout;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     /// <summary>
     /// 냉장고 팝업 콘텐츠 루트와 전용 자식 참조를 제공합니다.

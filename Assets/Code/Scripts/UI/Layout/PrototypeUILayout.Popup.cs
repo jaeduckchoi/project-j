@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// 허브 Popup 프레임과 좌우 반프레임 배치를 따로 모아 관리합니다.

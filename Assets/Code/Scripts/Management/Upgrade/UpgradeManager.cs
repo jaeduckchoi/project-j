@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CoreLoop.Core;
-using Shared.Data;
-using Management.Economy;
-using Management.Inventory;
-using Management.Tools;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Shared.Data;
+using Code.Scripts.Management.Economy;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Management.Tools;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Upgrade 네임스페이스
-namespace Management.Upgrade
+namespace Code.Scripts.Management.Upgrade
 {
     /// <summary>
     /// 작업대 업그레이드 비용과 적용 결과를 관리한다.

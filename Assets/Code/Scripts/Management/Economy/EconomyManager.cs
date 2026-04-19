@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Economy 네임스페이스
-namespace Management.Economy
+namespace Code.Scripts.Management.Economy
 {
     /// <summary>
     /// 골드와 평판을 관리하는 최소 경제 시스템이다.

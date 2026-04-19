@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// UI와 Popup 레이아웃이 공통으로 쓰는 RectTransform 좌표 타입입니다.

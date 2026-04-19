@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using Shared;
+using Code.Scripts.Shared;
 using UnityEditor;
 
 namespace Editor

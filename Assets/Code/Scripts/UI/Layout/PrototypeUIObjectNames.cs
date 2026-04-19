@@ -1,4 +1,4 @@
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// 허브 팝업 공용 오브젝트 이름을 한 곳에 모아 빌더와 런타임이 같은 식별자를 사용하도록 맞춥니다.

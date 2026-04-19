@@ -1,8 +1,8 @@
 using System;
-using Exploration.Interaction;
+using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// CookingUtensils 조리기구 상호작용의 공통 프롬프트와 사용 흐름을 제공합니다.

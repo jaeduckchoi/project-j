@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UI.Style
+namespace Code.Scripts.UI.Style
 {
     /// <summary>
     /// 씬 이름만으로 HUD 기본색과 강조색을 고를 수 있게 공용 테마 팔레트를 둡니다.

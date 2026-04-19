@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace Management.Tools
+namespace Code.Scripts.Management.Tools
 {
     /// <summary>
     /// 인벤토리와 별개로 상시 해금된 도구 목록을 관리한다.

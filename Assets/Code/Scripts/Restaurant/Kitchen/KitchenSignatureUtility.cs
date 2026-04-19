@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 슬롯 순서와 입력 순서에 흔들리지 않는 주방 조합 시그니처를 생성합니다.

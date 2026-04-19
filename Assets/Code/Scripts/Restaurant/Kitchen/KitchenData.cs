@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Shared.Data;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 조리 흐름에서 사용하는 원재료, 중간 결과물, 완성 요리 항목 데이터를 정의합니다.

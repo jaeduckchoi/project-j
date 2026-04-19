@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using CoreLoop.Core;
-using Management.Inventory;
-using Shared.Data;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Shared.Data;
 using TMPro;
-using UI.Content.Catalog;
-using UI.Layout;
-using UI.Style;
+using Code.Scripts.UI.Content.Catalog;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.UI.Style;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {
@@ -306,7 +306,7 @@ namespace UI
 
         private void NormalizeHubPopupHierarchyOrder()
         {
-            if (transform == null || ShouldPreserveRuntimeAuthoredHierarchy())
+            if (transform == null)
             {
                 return;
             }
@@ -321,29 +321,32 @@ namespace UI
             Transform popupFrame = popupRoot.Find(PopupFrameGroupName);
             Transform popupFrameHeader = popupRoot.Find(PopupFrameHeaderGroupName);
 
-            if (popupShellGroup != null)
+            if (popupShellGroup != null && !PrototypeUISceneLayoutCatalog.HasHierarchyOverride(popupShellGroup.name))
             {
                 popupShellGroup.SetSiblingIndex(0);
             }
 
             if (popupFrame != null)
             {
-                popupFrame.SetSiblingIndex(Mathf.Clamp(1, 0, Mathf.Max(0, popupRoot.childCount - 1)));
+                if (!PrototypeUISceneLayoutCatalog.HasHierarchyOverride(popupFrame.name))
+                {
+                    popupFrame.SetSiblingIndex(Mathf.Clamp(1, 0, Mathf.Max(0, popupRoot.childCount - 1)));
+                }
 
                 Transform popupFrameLeft = popupFrame.Find(PopupFrameLeftGroupName);
                 Transform popupFrameRight = popupFrame.Find(PopupFrameRightGroupName);
-                if (popupFrameLeft != null)
+                if (popupFrameLeft != null && !PrototypeUISceneLayoutCatalog.HasHierarchyOverride(popupFrameLeft.name))
                 {
                     popupFrameLeft.SetSiblingIndex(0);
                 }
 
-                if (popupFrameRight != null)
+                if (popupFrameRight != null && !PrototypeUISceneLayoutCatalog.HasHierarchyOverride(popupFrameRight.name))
                 {
                     popupFrameRight.SetSiblingIndex(1);
                 }
             }
 
-            if (popupFrameHeader != null)
+            if (popupFrameHeader != null && !PrototypeUISceneLayoutCatalog.HasHierarchyOverride(popupFrameHeader.name))
             {
                 popupFrameHeader.SetSiblingIndex(Mathf.Clamp(2, 0, Mathf.Max(0, popupRoot.childCount - 1)));
             }

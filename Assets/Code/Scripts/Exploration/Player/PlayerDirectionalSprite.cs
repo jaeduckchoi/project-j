@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-using Shared;
+using Code.Scripts.Shared;
 
 // Player 네임스페이스
-namespace Exploration.Player
+namespace Code.Scripts.Exploration.Player
 {
     [RequireComponent(typeof(PlayerController))]
     [MovedFrom(false, sourceNamespace: "Player", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerDirectionalSprite")]

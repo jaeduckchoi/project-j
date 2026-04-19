@@ -1,17 +1,17 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
-using Management.Economy;
-using CoreLoop.Flow;
-using Management.Inventory;
-using Exploration.Player;
-using Management.Storage;
-using Management.Tools;
-using Management.Upgrade;
-using Exploration.World;
+using Code.Scripts.Management.Economy;
+using Code.Scripts.CoreLoop.Flow;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Management.Storage;
+using Code.Scripts.Management.Tools;
+using Code.Scripts.Management.Upgrade;
+using Code.Scripts.Exploration.World;
 
 // Core 네임스페이스
-namespace CoreLoop.Core
+namespace Code.Scripts.CoreLoop.Core
 {
     /// <summary>
     /// 인벤토리, 창고, 업그레이드, 도구, 안내 흐름, 경제, 씬 이동 상태를 유지하는 전역 게임 진입점이다.

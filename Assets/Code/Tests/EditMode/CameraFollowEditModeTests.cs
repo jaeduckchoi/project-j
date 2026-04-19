@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
-using Exploration.Camera;
+using Code.Scripts.Exploration.Camera;
 using NUnit.Framework;
 using UnityEngine;
 

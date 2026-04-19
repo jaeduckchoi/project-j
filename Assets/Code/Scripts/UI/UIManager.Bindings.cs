@@ -1,11 +1,11 @@
-using CoreLoop.Core;
-using Exploration.Player;
-using Restaurant;
-using Restaurant.Kitchen;
-using UI.Layout;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.UI.Layout;
 using UnityEngine;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

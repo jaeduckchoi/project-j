@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Restaurant.Kitchen;
-using Shared.Data;
+using Code.Scripts.Restaurant.Kitchen;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// 카탈로그 생성 시 씬 직렬화 레시피만 사용할지, generated fallback까지 허용할지 구분합니다.
@@ -330,7 +330,7 @@ namespace Restaurant
                     continue;
                 }
 
-                ResourceData resolvedResource = null;
+                ResourceData resolvedResource;
                 if (!RecipeIngredient.TryResolve(ingredient, out resolvedResource, out int amount))
                 {
                     if (!IsBasicIngredient(ingredient.IngredientId))

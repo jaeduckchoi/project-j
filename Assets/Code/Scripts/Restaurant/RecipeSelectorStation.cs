@@ -1,10 +1,10 @@
-using CoreLoop.Core;
-using Exploration.Interaction;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Restaurant 네임스페이스
-namespace Restaurant
+namespace Code.Scripts.Restaurant
 {
     /// <summary>
     /// 허브에서 상호작용 시 다음 메뉴로 전환하는 최소 메뉴 선택 오브젝트다.

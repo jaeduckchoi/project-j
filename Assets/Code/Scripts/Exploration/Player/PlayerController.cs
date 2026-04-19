@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Exploration.Interaction;
+using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 #if ENABLE_INPUT_SYSTEM
@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 #endif
 
 // Player 네임스페이스
-namespace Exploration.Player
+namespace Code.Scripts.Exploration.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [MovedFrom(false, sourceNamespace: "Player", sourceAssembly: "Assembly-CSharp", sourceClassName: "PlayerController")]

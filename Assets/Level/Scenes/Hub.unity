@@ -5759,7 +5759,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 545929578}
-  m_Father: {fileID: 831773906}
+  m_Father: {fileID: 727903848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10225,6 +10225,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &621145491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621145488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
+  tableId: bottom
 --- !u!1 &634207545
 GameObject:
   m_ObjectHideFlags: 0
@@ -11607,6 +11620,7 @@ RectTransform:
   - {fileID: 2007271585}
   - {fileID: 992654286}
   - {fileID: 837937043}
+  - {fileID: 382248262}
   m_Father: {fileID: 831773906}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -11950,19 +11964,6 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
---- !u!114 &621145491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 621145488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
-  tableId: bottom
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0.08, y: 0.08, z: 0.08, w: 0.08}
@@ -11973,7 +11974,7 @@ MonoBehaviour:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &731166547
 SpriteRenderer:
@@ -12416,20 +12417,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.ServiceCounterStation
   restaurantManager: {fileID: 474882976}
   promptLabel: pot
---- !u!114 &770303013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770303008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
-  toolType: 3
-  fillRoot: {fileID: 0}
 --- !u!61 &770303011
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12535,6 +12522,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &770303013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 770303008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
+  toolType: 3
+  fillRoot: {fileID: 0}
 --- !u!1 &779993024
 GameObject:
   m_ObjectHideFlags: 0
@@ -12976,7 +12977,6 @@ RectTransform:
   m_Children:
   - {fileID: 1078267290}
   - {fileID: 727903848}
-  - {fileID: 382248262}
   m_Father: {fileID: 1633547509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -14203,20 +14203,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.ServiceCounterStation
   restaurantManager: {fileID: 474882976}
   promptLabel: pot
---- !u!114 &969813993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969813988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
-  toolType: 4
-  fillRoot: {fileID: 0}
 --- !u!61 &969813991
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14322,6 +14308,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &969813993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969813988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
+  toolType: 4
+  fillRoot: {fileID: 0}
 --- !u!1 &975760496
 GameObject:
   m_ObjectHideFlags: 0
@@ -14647,8 +14647,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280854740
-  m_fontColor: {r: 0.8314, g: 0.6588, b: 0.1569, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -15041,20 +15041,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.ServiceCounterStation
   restaurantManager: {fileID: 474882976}
   promptLabel: pot
---- !u!114 &1026610952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1026610947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
-  toolType: 5
-  fillRoot: {fileID: 0}
 --- !u!61 &1026610950
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15160,6 +15146,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1026610952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026610947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
+  toolType: 5
+  fillRoot: {fileID: 0}
 --- !u!1 &1033913024
 GameObject:
   m_ObjectHideFlags: 0
@@ -15660,20 +15660,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.ServiceCounterStation
   restaurantManager: {fileID: 474882976}
   promptLabel: pot
---- !u!114 &1060963303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1060963298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
-  toolType: 2
-  fillRoot: {fileID: 0}
 --- !u!61 &1060963301
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15779,6 +15765,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1060963303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060963298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42057c878fc4432cb17ef497bb5c27e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.ToolGaugePresenter
+  toolType: 2
+  fillRoot: {fileID: 0}
 --- !u!1 &1064012478
 GameObject:
   m_ObjectHideFlags: 0
@@ -17269,21 +17269,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1128898407}
   m_CullTransparentMesh: 1
---- !u!115 &1133473422
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: RefrigeratorStation
-  m_Namespace: Restaurant.Kitchen
-  m_AssemblyName: Jonggu.Gameplay
 --- !u!1 &1148462712
 GameObject:
   m_ObjectHideFlags: 0
@@ -17875,6 +17860,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1191066003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191066000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
+  tableId: middle
 --- !u!1 &1197292144
 GameObject:
   m_ObjectHideFlags: 0
@@ -20415,21 +20413,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
---- !u!114 &1191066003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1191066000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
-  tableId: middle
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.6
+  m_Radius: 0.5
 --- !u!1 &1366278360
 GameObject:
   m_ObjectHideFlags: 0
@@ -23539,8 +23524,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
-  m_EffectColor: {r: 0.9529, g: 0.6118, b: 0.0706, a: 1}
-  m_EffectDistance: {x: 3, y: -3}
+  m_EffectColor: {r: 0.101960786, g: 0.1254902, b: 0.4392157, a: 1}
+  m_EffectDistance: {x: 1.5, y: -1.5}
   m_UseGraphicAlpha: 0
 --- !u!114 &1583758542
 MonoBehaviour:
@@ -28318,6 +28303,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &2024770828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024770825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
+  tableId: top
 --- !u!1 &2031000001
 GameObject:
   m_ObjectHideFlags: 0
@@ -30680,19 +30678,6 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
---- !u!114 &2024770828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2024770825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f50f718c67c14b8eaa543ba440ef7414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Jonggu.Gameplay::Restaurant.Kitchen.DiningTableStation
-  tableId: top
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -30703,7 +30688,7 @@ MonoBehaviour:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.4, y: 1}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &2146000003
 MonoBehaviour:

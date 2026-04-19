@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
 
-namespace UI.Layout
+namespace Code.Scripts.UI.Layout
 {
     /// <summary>
     /// Canvas 관리 대상 이름 목록을 보관하고 명시적 에디터 레이아웃 binding을 적용합니다.
@@ -63,6 +63,31 @@ namespace UI.Layout
         };
 
         private static readonly HashSet<string> PopupCanvasObjectNames = BuildPopupCanvasObjectNames();
+        private static readonly HashSet<string> RuntimeOnlyCanvasObjectNames = new(StringComparer.Ordinal)
+        {
+            PrototypeUIObjectNames.RefrigeratorDragGhost,
+            "StorageCard",
+            "RecipeCard",
+            "UpgradeCard",
+            "StorageAccent",
+            "RecipeAccent",
+            "UpgradeAccent",
+            "StorageCaption",
+            "RecipeCaption",
+            "UpgradeCaption",
+            "OpenRestaurantButton",
+            "CloseRestaurantButton"
+        };
+
+        private static readonly string[] RuntimeOnlyCanvasObjectPrefixes =
+        {
+            "PopupLeftItemBox",
+            "PopupLeftItemIcon",
+            "PopupLeftItemText",
+            "PopupRightItemBox",
+            "PopupRightItemIcon",
+            "PopupRightItemText"
+        };
 
         /// <summary>
         /// 활성화된 editor binding 레이아웃이 있으면 적용하고, 없으면 코드 기본값을 반환합니다.
@@ -125,25 +150,106 @@ namespace UI.Layout
             return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyButton;
         }
 
+        public static bool HasHierarchyOverride(string objectName)
+        {
+            if (IsRuntimeOnlyObjectName(objectName))
+            {
+                return false;
+            }
+
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyHierarchy;
+        }
+
         public static bool HasAnyOverride(string objectName)
         {
             return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding)
-                   && (binding.ApplyRect || binding.ApplyImage || binding.ApplyText || binding.ApplyButton);
+                   && (binding.ApplyHierarchy || binding.ApplyRect || binding.ApplyImage || binding.ApplyText || binding.ApplyButton);
         }
 
-        /// <summary>
-        /// 저장 hierarchy override는 사용하지 않습니다.
-        /// </summary>
-        public static bool TryGetHierarchyOverride(string objectName, out string parentName, out int siblingIndex)
+        public static bool TryGetSceneObjectPath(string objectName, out string sceneObjectPath)
         {
-            parentName = null;
-            siblingIndex = 0;
+            if (IsRuntimeOnlyObjectName(objectName))
+            {
+                sceneObjectPath = string.Empty;
+                return false;
+            }
+
+            if (TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding)
+                && !string.IsNullOrWhiteSpace(binding.SceneObjectPath))
+            {
+                sceneObjectPath = binding.SceneObjectPath;
+                return true;
+            }
+
+            sceneObjectPath = string.Empty;
             return false;
         }
 
-        /// <summary>
-        /// 제거 목록 override는 사용하지 않습니다.
-        /// </summary>
+        public static bool TryGetHierarchyOverride(string objectName, out string parentName, out int siblingIndex)
+        {
+            return TryGetHierarchyOverride(objectName, out parentName, out siblingIndex, out _);
+        }
+
+        public static bool TryGetHierarchyOverride(
+            string objectName,
+            out string parentScenePath,
+            out int siblingIndex,
+            out bool initialActiveSelf)
+        {
+            if (IsRuntimeOnlyObjectName(objectName))
+            {
+                parentScenePath = string.Empty;
+                siblingIndex = 0;
+                initialActiveSelf = false;
+                return false;
+            }
+
+            if (TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding)
+                && binding.TryGetHierarchyOverride(out parentScenePath, out siblingIndex, out initialActiveSelf))
+            {
+                return true;
+            }
+
+            parentScenePath = string.Empty;
+            siblingIndex = 0;
+            initialActiveSelf = false;
+            return false;
+        }
+
+        public static bool TryGetHierarchyInitialActiveSelf(string objectName, out bool initialActiveSelf)
+        {
+            if (TryGetHierarchyOverride(objectName, out _, out _, out initialActiveSelf))
+            {
+                return true;
+            }
+
+            initialActiveSelf = false;
+            return false;
+        }
+
+        public static bool IsRuntimeOnlyObjectName(string objectName)
+        {
+            if (string.IsNullOrWhiteSpace(objectName))
+            {
+                return false;
+            }
+
+            if (RuntimeOnlyCanvasObjectNames.Contains(objectName))
+            {
+                return true;
+            }
+
+            for (int index = 0; index < RuntimeOnlyCanvasObjectPrefixes.Length; index++)
+            {
+                if (objectName.StartsWith(RuntimeOnlyCanvasObjectPrefixes[index], StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsObjectRemoved(string objectName) => false;
 
 #if UNITY_EDITOR

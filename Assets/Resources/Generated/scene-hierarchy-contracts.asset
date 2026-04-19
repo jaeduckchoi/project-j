@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5f7d19a9e4a4cf5b1f3d0b2144a0f61, type: 3}
+  m_Name: scene-hierarchy-contracts
+  m_EditorClassIdentifier: 
+  entries:
+  - sceneName: Hub
+    objectName: Canvas
+    sceneObjectPath: Canvas
+    parentScenePath: 
+    siblingIndex: 3
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: SceneGameplayRoot
+    sceneObjectPath: SceneGameplayRoot
+    parentScenePath: 
+    siblingIndex: 1
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: InteractionRoot
+    sceneObjectPath: SceneGameplayRoot/InteractionRoot
+    parentScenePath: SceneGameplayRoot
+    siblingIndex: 3
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: PlayerRoot
+    sceneObjectPath: SceneGameplayRoot/PlayerRoot
+    parentScenePath: SceneGameplayRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: Jonggu
+    sceneObjectPath: SceneGameplayRoot/PlayerRoot/Jonggu
+    parentScenePath: SceneGameplayRoot/PlayerRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: PortalRoot
+    sceneObjectPath: SceneGameplayRoot/PortalRoot
+    parentScenePath: SceneGameplayRoot
+    siblingIndex: 2
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: GoToBeach
+    sceneObjectPath: SceneGameplayRoot/PortalRoot/GoToBeach
+    parentScenePath: SceneGameplayRoot/PortalRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: SpawnRoot
+    sceneObjectPath: SceneGameplayRoot/SpawnRoot
+    parentScenePath: SceneGameplayRoot
+    siblingIndex: 1
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: HubEntry
+    sceneObjectPath: SceneGameplayRoot/SpawnRoot/HubEntry
+    parentScenePath: SceneGameplayRoot/SpawnRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: SceneSystemRoot
+    sceneObjectPath: SceneSystemRoot
+    parentScenePath: 
+    siblingIndex: 2
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: EventSystem
+    sceneObjectPath: SceneSystemRoot/EventSystem
+    parentScenePath: SceneSystemRoot
+    siblingIndex: 3
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: GameManager
+    sceneObjectPath: SceneSystemRoot/GameManager
+    parentScenePath: SceneSystemRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: MainCamera
+    sceneObjectPath: SceneSystemRoot/MainCamera
+    parentScenePath: SceneSystemRoot
+    siblingIndex: 2
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: RestaurantManager
+    sceneObjectPath: SceneSystemRoot/RestaurantManager
+    parentScenePath: SceneSystemRoot
+    siblingIndex: 1
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: SceneWorldRoot
+    sceneObjectPath: SceneWorldRoot
+    parentScenePath: 
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: WorldBoundsRoot
+    sceneObjectPath: SceneWorldRoot/WorldBoundsRoot
+    parentScenePath: SceneWorldRoot
+    siblingIndex: 1
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: CameraBounds
+    sceneObjectPath: SceneWorldRoot/WorldBoundsRoot/CameraBounds
+    parentScenePath: SceneWorldRoot/WorldBoundsRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: HubMovementBounds
+    sceneObjectPath: SceneWorldRoot/WorldBoundsRoot/HubMovementBounds
+    parentScenePath: SceneWorldRoot/WorldBoundsRoot
+    siblingIndex: 1
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: WorldVisualRoot
+    sceneObjectPath: SceneWorldRoot/WorldVisualRoot
+    parentScenePath: SceneWorldRoot
+    siblingIndex: 0
+    initialActiveSelf: 1
+  - sceneName: Hub
+    objectName: HubArtRoot
+    sceneObjectPath: SceneWorldRoot/WorldVisualRoot/HubArtRoot
+    parentScenePath: SceneWorldRoot/WorldVisualRoot
+    siblingIndex: 0
+    initialActiveSelf: 1

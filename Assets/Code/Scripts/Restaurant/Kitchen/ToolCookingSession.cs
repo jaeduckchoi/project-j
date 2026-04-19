@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// BackCounter 조리기구 하나의 진행 상태와 완성 결과물을 관리합니다.

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using TMPro;
-using UI.Layout;
-using UI.Style;
+using Code.Scripts.UI.Layout;
+using Code.Scripts.UI.Style;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

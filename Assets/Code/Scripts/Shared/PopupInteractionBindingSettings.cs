@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Shared
+namespace Code.Scripts.Shared
 {
     [Serializable]
     public sealed class PopupInteractionBindingEntry

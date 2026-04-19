@@ -16,6 +16,9 @@
 - 관리 대상 UI 이름 catalog는 `Assets/Code/Scripts/UI/Layout/PrototypeUISceneLayoutCatalog.cs`가 소유한다.
 - 기본 레이아웃 정본은 `Assets/Code/Scripts/UI/Layout/PrototypeUILayout*.cs` 코드 값이다.
 - 에디터에서 연결한 씬 오브젝트 값은 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다.
+- `ui-layout-bindings.asset`는 Rect/Image/TMP/Button 표시값뿐 아니라 parent/sibling/initialActive hierarchy contract도 함께 저장한다.
+- hierarchy contract의 `initialActive`는 authored 초기 baseline이며, 플레이 중 active 상태의 정답은 runtime state가 가진다.
+- runtime-only UI 예외는 `PrototypeUISceneLayoutCatalog`의 명시적 whitelist에 있는 이름만 허용한다.
 - 큰 팝업이 어느 월드 오브젝트에서 열리는지는 `Assets/Resources/Generated/popup-interaction-bindings.asset`가 정본이다.
 - 팝업 타이틀, 캡션, 콘텐츠는 `PrototypeUIObjectNames.cs`, `PrototypeUIPopupCatalog.cs`, `PrototypeUISkin*.cs`가 소유한다.
 - 프로젝트 폰트 정본은 `Assets/TextMesh Pro/Fonts/Galmuri11.ttf`, `Assets/TextMesh Pro/Fonts/Galmuri11-Bold.ttf`와 대응 TMP Font Asset이다.
@@ -39,6 +42,8 @@
 
 - 에디터에서 UI가 실제로 보이는지 확인한다.
 - 관리 대상 이름과 binding 자산이 같은 기준을 바라보는지 확인한다.
+- hierarchy contract가 있는 UI 오브젝트는 런타임이 씬 authored parent와 sibling을 유지하는지 확인한다. `PopupCloseButton`의 기준 parent는 `PopupFrame`이다.
+- `initialActive` baseline은 초기 hydrate 시점에만 적용되고, 이후 active 변화는 runtime state가 다시 소유하는지 확인한다.
 - 팝업 연결이 필요한 station 컴포넌트와 함께 유지되는지 확인한다.
 - 씬에 직접 저장된 popup 텍스트, 이미지, 폰트, 배치 값은 명시적 요청 없이는 덮어쓰지 않는다.
 - Unity 실행이나 컴파일을 직접 확인하지 못했다면 그 사실과 남은 검증 단계를 결과에 적는다.

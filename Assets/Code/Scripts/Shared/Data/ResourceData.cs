@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
 // Data 네임스페이스
-namespace Shared.Data
+namespace Code.Scripts.Shared.Data
 {
     /// <summary>
     /// 채집, 요리, 판매에 공통으로 쓰는 자원 정의 데이터다.

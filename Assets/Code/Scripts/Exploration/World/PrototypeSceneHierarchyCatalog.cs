@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 지원 씬이 공통으로 따르는 Hierarchy 그룹 이름과 부모 관계를 정의합니다.

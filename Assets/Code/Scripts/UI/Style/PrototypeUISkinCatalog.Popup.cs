@@ -1,6 +1,6 @@
 using System;
 
-namespace UI.Style
+namespace Code.Scripts.UI.Style
 {
     /// <summary>
     /// Popup 전용 프레임, 본문, 닫기 버튼 스킨 매핑을 따로 모아 관리합니다.

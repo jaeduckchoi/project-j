@@ -1,7 +1,7 @@
-using CoreLoop.Core;
+using Code.Scripts.CoreLoop.Core;
 using UnityEngine;
 
-namespace Exploration.Interaction
+namespace Code.Scripts.Exploration.Interaction
 {
     /// <summary>
     /// 이동이나 채집 없이 안내 문구만 노출하는 월드 상호작용 지점입니다.

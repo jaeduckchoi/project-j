@@ -1,4 +1,4 @@
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 주방 상호작용 지점 또는 조리기구의 역할을 구분합니다.

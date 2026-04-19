@@ -1,11 +1,11 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using UI.Content.Catalog;
-using UI.Controllers;
-using UI.Style;
+using Code.Scripts.UI.Content.Catalog;
+using Code.Scripts.UI.Controllers;
+using Code.Scripts.UI.Style;
 using UnityEngine;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     public partial class UIManager
     {

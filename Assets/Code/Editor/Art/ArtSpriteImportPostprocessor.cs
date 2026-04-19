@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Shared;
+using Code.Scripts.Shared;
 using UnityEditor;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;

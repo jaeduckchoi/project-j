@@ -1,4 +1,4 @@
-using Exploration.World;
+using Code.Scripts.Exploration.World;
 using UnityEditor;
 using UnityEngine;
 

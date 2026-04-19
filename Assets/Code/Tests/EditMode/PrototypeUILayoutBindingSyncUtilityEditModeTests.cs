@@ -1,10 +1,12 @@
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Editor.UI;
 using NUnit.Framework;
 using TMPro;
-using UI.Layout;
+using Code.Scripts.UI.Layout;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
 
 namespace Editor.Tests
@@ -34,12 +36,14 @@ namespace Editor.Tests
         {
             Scene scene = CreateIsolatedScene();
             PrototypeUILayoutBindingSettings settings = CreateSettings();
-            RectTransform guideText = CreateRectObject(scene, "GuideText");
+            RectTransform guideBackdrop = CreateRectObject(scene, "GuideBackdrop");
+            RectTransform guideText = CreateRectObject(scene, "GuideText", guideBackdrop);
             guideText.anchorMin = new Vector2(0.25f, 0f);
             guideText.anchorMax = new Vector2(0.75f, 0f);
             guideText.pivot = new Vector2(0.5f, 0f);
             guideText.anchoredPosition = new Vector2(42f, 18f);
             guideText.sizeDelta = new Vector2(320f, 64f);
+            guideText.gameObject.SetActive(false);
 
             TextMeshProUGUI text = guideText.gameObject.AddComponent<TextMeshProUGUI>();
             text.fontSize = 19f;
@@ -49,7 +53,11 @@ namespace Editor.Tests
 
             Assert.That(capturedCount, Is.GreaterThan(0));
             Assert.That(settings.TryGetEntry("GuideText", out PrototypeUILayoutBindingEntry entry), Is.True);
-            Assert.That(entry.SceneObjectPath, Is.EqualTo("GuideText"));
+            Assert.That(entry.SceneObjectPath, Is.EqualTo("GuideBackdrop/GuideText"));
+            Assert.That(entry.ApplyHierarchy, Is.True);
+            Assert.That(entry.HierarchyParentScenePath, Is.EqualTo("GuideBackdrop"));
+            Assert.That(entry.HierarchySiblingIndex, Is.EqualTo(0));
+            Assert.That(entry.HierarchyInitialActiveSelf, Is.False);
             Assert.That(entry.TryGetLayout(out PrototypeUIRect layout), Is.True);
             Assert.That(layout.AnchorMin, Is.EqualTo(new Vector2(0.25f, 0f)));
             Assert.That(layout.AnchorMax, Is.EqualTo(new Vector2(0.75f, 0f)));
@@ -75,6 +83,33 @@ namespace Editor.Tests
             GameObject resolved = PrototypeUILayoutBindingSyncUtility.ResolveLayoutPreviewObject(scene, settings, "GuideText");
             Assert.That(resolved, Is.SameAs(secondGuideText.gameObject));
             Assert.That(resolved, Is.Not.SameAs(firstGuideText.gameObject));
+        }
+
+        [Test]
+        public void SyncManagedBindingsFromScene_LogsWarningAndFallsBack_WhenExplicitBindingPathIsMissing()
+        {
+            Scene scene = CreateIsolatedScene();
+            PrototypeUILayoutBindingSettings settings = CreateSettings();
+            RectTransform guideText = CreateRectObject(scene, "GuideText");
+            settings.SetBindingSource("GuideText", "Missing/GuideText");
+
+            LogAssert.Expect(LogType.Warning, new Regex("GuideText"));
+
+            int capturedCount = PrototypeUILayoutBindingSyncUtility.SyncManagedBindingsFromScene(scene, settings);
+
+            Assert.That(capturedCount, Is.GreaterThan(0));
+            Assert.That(settings.TryGetEntry("GuideText", out PrototypeUILayoutBindingEntry entry), Is.True);
+            Assert.That(entry.SceneObjectPath, Is.EqualTo(PrototypeUILayoutBindingSyncUtility.BuildSceneObjectPath(guideText)));
+        }
+
+        [Test]
+        public void IsRuntimeOnlyObjectName_UsesExplicitWhitelistOnly()
+        {
+            Assert.That(PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName(PrototypeUIObjectNames.RefrigeratorDragGhost), Is.True);
+            Assert.That(PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName("StorageCard"), Is.True);
+            Assert.That(PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName("PopupLeftItemBox01"), Is.True);
+            Assert.That(PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName("PopupCloseButton"), Is.False);
+            Assert.That(PrototypeUISceneLayoutCatalog.IsRuntimeOnlyObjectName("GuideText"), Is.False);
         }
 
         private PrototypeUILayoutBindingSettings CreateSettings()

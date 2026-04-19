@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using CoreLoop.Core;
-using Exploration.Player;
-using Management.Inventory;
-using Shared.Data;
+using Code.Scripts.CoreLoop.Core;
+using Code.Scripts.Exploration.Player;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 허브 조리 흐름, 손 상태, PassCounter 보관 슬롯, CookingUtensils 조리 세션을 관리한다.
@@ -1059,25 +1059,6 @@ namespace Restaurant.Kitchen
                 }
 
                 if (!inventory.TryRemove(pair.Key, pair.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool ConsumeBundleInputs(KitchenBundle bundle)
-        {
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-            if (Reservations.ConsumeReservedInputs(inventory, bundle))
-            {
-                return true;
-            }
-
-            foreach (KitchenCarryItem item in bundle.Items)
-            {
-                if (item != null && item.IsInventoryReservation)
                 {
                     return false;
                 }

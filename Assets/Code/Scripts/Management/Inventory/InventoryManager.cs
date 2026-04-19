@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.Data;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
 // Inventory 네임스페이스
-namespace Management.Inventory
+namespace Code.Scripts.Management.Inventory
 {
     /// <summary>
     /// 자원 전용 슬롯 기반 인벤토리다. 시작 8칸에서 업그레이드로 12칸, 16칸까지 확장한다.

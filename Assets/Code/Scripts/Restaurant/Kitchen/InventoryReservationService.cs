@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Management.Inventory;
-using Shared.Data;
+using Code.Scripts.Management.Inventory;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 
-namespace Restaurant.Kitchen
+namespace Code.Scripts.Restaurant.Kitchen
 {
     /// <summary>
     /// 냉장고에서 꺼낸 인벤토리 재료를 BackCounter 조리 시작 전까지 예약 상태로 관리합니다.

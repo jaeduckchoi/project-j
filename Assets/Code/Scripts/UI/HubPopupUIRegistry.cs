@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UI
+namespace Code.Scripts.UI
 {
     /// <summary>
     /// UIComponent 아래에서 공통 shell과 유형별 팝업 콘텐츠를 묶어 관리합니다.

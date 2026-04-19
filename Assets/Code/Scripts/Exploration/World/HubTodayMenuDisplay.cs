@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Restaurant;
-using Shared.Data;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Shared.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace Exploration.World
+namespace Code.Scripts.Exploration.World
 {
     /// <summary>
     /// 허브 상단 메뉴판의 3칸 표시를 오늘의 메뉴 상태 기준으로 갱신한다.
