@@ -66,7 +66,7 @@ namespace Editor.Tests
                 "food_999,잘못된 메뉴,미사용,기본 주방,1,후라이팬,10,0,,true\n" +
                 "food_001,중복 메뉴,미사용,기본 주방,1,후라이팬,10,0,,true\n";
 
-            CsvGameDataImportResult result = Validate(ingredients, recipes, ValidRecipeIngredientsCsv);
+            CsvGameDataImportResult result = Validate(ingredients, recipes);
 
             Assert.That(result.Success, Is.False);
             Assert.That(ContainsError(result, "허용되지 않은 ingredient_id"), Is.True);

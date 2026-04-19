@@ -356,7 +356,7 @@ namespace Editor.GameData
                     continue;
                 }
 
-                RecipeIngredientRow ingredientRow = new(recipeId, ingredientId, quantity, sortOrder);
+                RecipeIngredientRow ingredientRow = new(ingredientId, quantity, sortOrder);
                 context.ActiveRecipeIngredients.Add(ingredientRow);
                 if (!context.RecipeIngredientsByRecipe.TryGetValue(recipeId, out List<RecipeIngredientRow> recipeIngredients))
                 {
@@ -948,15 +948,13 @@ namespace Editor.GameData
 
         private readonly struct RecipeIngredientRow
         {
-            public RecipeIngredientRow(string recipeId, string ingredientId, int quantity, int sortOrder)
+            public RecipeIngredientRow(string ingredientId, int quantity, int sortOrder)
             {
-                RecipeId = recipeId;
                 IngredientId = ingredientId;
                 Quantity = quantity;
                 SortOrder = sortOrder;
             }
 
-            public string RecipeId { get; }
             public string IngredientId { get; }
             public int Quantity { get; }
             public int SortOrder { get; }

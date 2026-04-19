@@ -389,10 +389,9 @@ namespace UI
 
         private void HandleOpenRestaurantButtonClicked()
         {
-            if (cachedRestaurant != null && cachedRestaurant.TryOpenRestaurant())
+            if (cachedRestaurant != null)
             {
-                RefreshAll();
-                return;
+                cachedRestaurant.TryOpenRestaurant();
             }
 
             RefreshAll();
@@ -401,10 +400,9 @@ namespace UI
         private void HandleCloseRestaurantButtonClicked()
         {
             int activeTicketCount = cachedCustomerService != null ? cachedCustomerService.ActiveTicketCount : 0;
-            if (cachedRestaurant != null && cachedRestaurant.TryCloseRestaurant(activeTicketCount))
+            if (cachedRestaurant != null)
             {
-                RefreshAll();
-                return;
+                cachedRestaurant.TryCloseRestaurant(activeTicketCount);
             }
 
             RefreshAll();

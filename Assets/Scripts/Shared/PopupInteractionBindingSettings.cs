@@ -65,7 +65,7 @@ namespace Shared
 
         [SerializeField] private List<PopupInteractionBindingEntry> bindings = new();
 
-        private static PopupInteractionBindingSettings cachedSettings;
+        private static PopupInteractionBindingSettings _cachedSettings;
 
         public IReadOnlyList<PopupInteractionBindingEntry> Bindings => bindings;
 
@@ -89,27 +89,27 @@ namespace Shared
         public static PopupInteractionBindingSettings GetCurrent()
         {
 #if UNITY_EDITOR
-            cachedSettings = AssetDatabase.LoadAssetAtPath<PopupInteractionBindingSettings>(AssetPath);
-            if (cachedSettings != null)
+            _cachedSettings = AssetDatabase.LoadAssetAtPath<PopupInteractionBindingSettings>(AssetPath);
+            if (_cachedSettings != null)
             {
-                return cachedSettings;
+                return _cachedSettings;
             }
 #else
-            if (cachedSettings != null)
+            if (_cachedSettings != null)
             {
-                return cachedSettings;
+                return _cachedSettings;
             }
 #endif
 
-            cachedSettings = Resources.Load<PopupInteractionBindingSettings>(ResourcesLoadPath);
-            if (cachedSettings != null)
+            _cachedSettings = Resources.Load<PopupInteractionBindingSettings>(ResourcesLoadPath);
+            if (_cachedSettings != null)
             {
-                return cachedSettings;
+                return _cachedSettings;
             }
 
-            cachedSettings = CreateInstance<PopupInteractionBindingSettings>();
-            cachedSettings.hideFlags = HideFlags.HideAndDontSave;
-            return cachedSettings;
+            _cachedSettings = CreateInstance<PopupInteractionBindingSettings>();
+            _cachedSettings.hideFlags = HideFlags.HideAndDontSave;
+            return _cachedSettings;
         }
 
 #if UNITY_EDITOR
@@ -118,7 +118,7 @@ namespace Shared
             PopupInteractionBindingSettings asset = AssetDatabase.LoadAssetAtPath<PopupInteractionBindingSettings>(AssetPath);
             if (asset != null)
             {
-                cachedSettings = asset;
+                _cachedSettings = asset;
                 return asset;
             }
 
@@ -133,7 +133,7 @@ namespace Shared
             asset.name = DefaultAssetFileName;
             AssetDatabase.CreateAsset(asset, AssetPath);
             AssetDatabase.SaveAssets();
-            cachedSettings = asset;
+            _cachedSettings = asset;
             return asset;
         }
 

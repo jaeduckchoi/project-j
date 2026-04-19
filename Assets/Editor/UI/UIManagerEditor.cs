@@ -403,62 +403,6 @@ namespace Editor.UI
             }
         }
 
-        private void DrawSharedPopupTypeTree(string foldKey, string label, int indent)
-        {
-            if (!Fold(foldKey, label, indent))
-            {
-                return;
-            }
-
-            DrawLayoutNodes(
-                new[]
-                {
-                    PrototypeUIObjectNames.PopupTitle,
-                    PrototypeUIObjectNames.PopupLeftCaption,
-                    PrototypeUIObjectNames.PopupRightCaption
-                },
-                indent + 1);
-
-            if (Fold($"{foldKey}-left", "왼쪽 목록", indent + 1))
-            {
-                LayoutNode("PopupLeftBody", indent + 2);
-                if (Fold($"{foldKey}-left-items", "PopupLeft Items", indent + 2))
-                {
-                    for (int i = 0; i < PrototypeUILayout.HubPopupBodyItemBoxCount; i++)
-                    {
-                        DrawPopupItemTree($"{foldKey}-left-item", "PopupLeftItemBox", "PopupLeftItemIcon", "PopupLeftItemText", i, indent + 3);
-                    }
-                }
-            }
-
-            if (Fold($"{foldKey}-right", "오른쪽 상세", indent + 1))
-            {
-                LayoutNode("PopupRightBody", indent + 2);
-                LayoutNode("SelectedRecipeText", indent + 2);
-            }
-        }
-
-        private void DrawPopupItemTree(
-            string foldPrefix,
-            string boxPrefix,
-            string iconPrefix,
-            string textPrefix,
-            int index,
-            int indent)
-        {
-            string boxName = $"{boxPrefix}{index + 1:00}";
-            string iconName = $"{iconPrefix}{index + 1:00}";
-            string textName = $"{textPrefix}{index + 1:00}";
-            if (!Fold($"{foldPrefix}-{index + 1:00}", boxName, indent))
-            {
-                return;
-            }
-
-            LayoutNode(boxName, indent + 1);
-            LayoutNode(iconName, indent + 1);
-            LayoutNode(textName, indent + 1);
-        }
-
         private void DrawRefrigeratorTree(int indent)
         {
             if (Fold("refrigerator-storage-tree", PrototypeUIObjectNames.RefrigeratorStorage, indent))
@@ -1192,10 +1136,10 @@ namespace Editor.UI
             return result;
         }
 
-        private void DrawSceneHierarchyPreview(string title, Transform root, string foldKey)
+        private void DrawSceneHierarchyPreview(string sectionTitle, Transform root, string foldKey)
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(sectionTitle, EditorStyles.boldLabel);
             if (root == null)
             {
                 EditorGUILayout.HelpBox("연결된 씬 오브젝트가 없습니다.", MessageType.None);
@@ -1297,23 +1241,6 @@ namespace Editor.UI
         {
             return string.IsNullOrWhiteSpace(searchText)
                    || (!string.IsNullOrWhiteSpace(text) && text.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0);
-        }
-
-        private static bool IsGeneralPopupName(string name)
-        {
-            return !string.IsNullOrWhiteSpace(name)
-                   && !IsRefrigeratorName(name)
-                   && (name.StartsWith("PopupLeft", StringComparison.Ordinal)
-                       || name.StartsWith("PopupRight", StringComparison.Ordinal)
-                       || name == "InventoryText"
-                       || name == "StorageText"
-                       || name == "SelectedRecipeText"
-                       || name == "UpgradeText");
-        }
-
-        private static bool IsRefrigeratorName(string name)
-        {
-            return !string.IsNullOrWhiteSpace(name) && name.StartsWith("Refrigerator", StringComparison.Ordinal);
         }
 
         private GameObject ResolveSceneObject(string path)

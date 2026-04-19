@@ -155,7 +155,7 @@ namespace UI
         {
             if (ShouldUseTypedPopupUi())
             {
-                ApplyTypedHubPopupLayout(bodyFont, headingFont, textColor);
+                ApplyTypedHubPopupLayout(bodyFont, headingFont);
                 SetLegacyHubPopupObjectsActive(false);
                 return;
             }
@@ -169,7 +169,7 @@ namespace UI
             ApplyPopupCloseButtonLayout(headingFont);
             NormalizeHubPopupHierarchyOrder();
             EnsurePopupBodyItemBoxes(bodyFont, textColor);
-            EnsureRefrigeratorPopupChrome(bodyFont, headingFont, textColor);
+            EnsureRefrigeratorPopupChrome(bodyFont, headingFont);
 
             ApplyManagedRectLayout(inventoryText != null ? inventoryText.rectTransform : null, PrototypeUILayout.HubPopupFrameText, preserveExistingLayout: true);
             ApplyManagedRectLayout(storageText != null ? storageText.rectTransform : null, PrototypeUILayout.HubPopupRightDetailText, preserveExistingLayout: true);
@@ -550,7 +550,7 @@ namespace UI
             }
         }
 
-        private void EnsureRefrigeratorPopupChrome(TMP_FontAsset bodyFont, TMP_FontAsset headingFont, Color textColor)
+        private void EnsureRefrigeratorPopupChrome(TMP_FontAsset bodyFont, TMP_FontAsset headingFont)
         {
             Transform popupFrame = FindNamedUiTransform(PopupFrameGroupName);
             if (popupFrame == null)

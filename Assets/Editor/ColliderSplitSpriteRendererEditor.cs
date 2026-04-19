@@ -2,7 +2,7 @@ using Exploration.World;
 using UnityEditor;
 using UnityEngine;
 
-namespace ProjectEditor
+namespace Editor
 {
     /// <summary>
     /// Collider 기반 스프라이트 분할 프리뷰를 수동으로 재생성하거나 정리하는 인스펙터입니다.

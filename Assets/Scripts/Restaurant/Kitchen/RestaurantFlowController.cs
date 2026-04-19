@@ -57,7 +57,7 @@ namespace Restaurant.Kitchen
         private bool kitchenStateEventsBound;
 
         public static RestaurantFlowController Instance { get; private set; }
-        private static bool isRuntimeShuttingDown;
+        private static bool _isRuntimeShuttingDown;
 
         public event Action KitchenStateChanged;
 
@@ -80,7 +80,7 @@ namespace Restaurant.Kitchen
         public static bool TryGetExisting(out RestaurantFlowController controller)
         {
             controller = null;
-            if (isRuntimeShuttingDown)
+            if (_isRuntimeShuttingDown)
             {
                 return false;
             }
@@ -189,7 +189,7 @@ namespace Restaurant.Kitchen
         /// </summary>
         private void OnApplicationQuit()
         {
-            isRuntimeShuttingDown = true;
+            _isRuntimeShuttingDown = true;
         }
 
         /// <summary>
@@ -659,7 +659,7 @@ namespace Restaurant.Kitchen
         /// </summary>
         private static bool CanCreateRuntimeController()
         {
-            if (!Application.isPlaying || isRuntimeShuttingDown)
+            if (!Application.isPlaying || _isRuntimeShuttingDown)
             {
                 return false;
             }
@@ -675,7 +675,7 @@ namespace Restaurant.Kitchen
         private static void ResetRuntimeState()
         {
             Instance = null;
-            isRuntimeShuttingDown = false;
+            _isRuntimeShuttingDown = false;
         }
 
         private bool IsBasicResource(ResourceData resource)

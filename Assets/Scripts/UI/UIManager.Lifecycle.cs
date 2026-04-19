@@ -86,7 +86,7 @@ namespace UI
             StorageStation.StoragePanelRequested -= HandleStoragePanelRequested;
             RefrigeratorStation.PanelRequested -= HandleRefrigeratorPanelRequested;
             FrontCounterStation.PanelRequested -= HandleFrontCounterPanelRequested;
-            if (ReferenceEquals(RefrigeratorStation.RuntimePanelOpener, (System.Action)ShowRefrigeratorPanel))
+            if (ReferenceEquals(RefrigeratorStation.RuntimePanelOpener, (Action)ShowRefrigeratorPanel))
             {
                 RefrigeratorStation.RuntimePanelOpener = null;
             }

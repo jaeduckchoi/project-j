@@ -49,8 +49,7 @@ namespace UI
 
         private void ApplyTypedHubPopupLayout(
             TMP_FontAsset bodyFont,
-            TMP_FontAsset headingFont,
-            Color textColor)
+            TMP_FontAsset headingFont)
         {
             if (!ShouldUseTypedPopupUi())
             {

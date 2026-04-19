@@ -956,7 +956,7 @@ namespace UI
                 ApplyHubPopupFrameStyle(headingFont, theme.Text);
                 if (showRefrigeratorPopup)
                 {
-                    EnsureRefrigeratorPopupChrome(bodyFont, headingFont, theme.Text);
+                    EnsureRefrigeratorPopupChrome(bodyFont, headingFont);
                 }
 
                 SetHubPopupDesignActive(showPopup);
