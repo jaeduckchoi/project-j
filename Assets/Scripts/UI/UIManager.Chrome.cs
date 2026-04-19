@@ -158,6 +158,11 @@ namespace UI
                 return;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return;
+            }
+
             GameObject backdropObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(backdropObject);
             if (existing == null)
@@ -184,30 +189,36 @@ namespace UI
                 image = backdropObject.AddComponent<Image>();
             }
 
+            bool preserveAuthoredImage = ShouldPreserveAuthoredImageStyle(objectName) && existing != null;
             bool shouldUseGeneratedUiDesign = PrototypeUISkinCatalog.UsesGeneratedUiDesignPanel(objectName);
             bool preserveSceneSprite = existing != null
                                        && IsHubPopupDisplayObject(objectName)
                                        && image.sprite != null
                                        && !shouldUseGeneratedUiDesign;
-            if (!preserveSceneSprite)
+            if (!preserveSceneSprite && !preserveAuthoredImage)
             {
                 PrototypeUISkin.ApplyPanel(image, objectName, color);
             }
 
-            // generated UI 스킨은 기본값으로 적용하고, 씬에서 저장한 이미지 오버라이드가 있으면 마지막에 우선 반영한다.
-            PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
-
-            image.raycastTarget = false;
-
-            Shadow shadow = backdropObject.GetComponent<Shadow>();
-            if (shadow == null)
+            if (!preserveAuthoredImage)
             {
-                shadow = backdropObject.AddComponent<Shadow>();
+                // generated UI 스킨은 기본값으로 적용하고, 씬에서 저장한 이미지 오버라이드가 있으면 마지막에 우선 반영한다.
+                PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, objectName);
+                image.raycastTarget = false;
             }
 
-            shadow.effectColor = new Color(0f, 0f, 0f, 0.18f);
-            shadow.effectDistance = new Vector2(0f, -4f);
-            shadow.useGraphicAlpha = true;
+            Shadow shadow = backdropObject.GetComponent<Shadow>();
+            if (!preserveAuthoredImage)
+            {
+                if (shadow == null)
+                {
+                    shadow = backdropObject.AddComponent<Shadow>();
+                }
+
+                shadow.effectColor = new Color(0f, 0f, 0f, 0.18f);
+                shadow.effectDistance = new Vector2(0f, -4f);
+                shadow.useGraphicAlpha = true;
+            }
         }
 
         private void EnsureUiBackdrop(string objectName, PrototypeUIRect layout, Color color)
@@ -330,6 +341,7 @@ namespace UI
             ApplyHubPopupObjectIdentity(captionObject);
             TextMeshProUGUI existingText = captionObject.GetComponent<TextMeshProUGUI>();
             bool preserveExistingPopupHeading = existing != null && existingText != null && IsFixedPopupHeading(objectName);
+            bool preserveAuthoredText = existing != null && ShouldPreserveAuthoredTextStyle(objectName);
             if (existing == null)
             {
                 captionObject.transform.SetParent(targetParent, false);
@@ -357,7 +369,7 @@ namespace UI
             CaptionPresentationPreset presentation = ResolveCaptionPresentation(objectName);
             TMP_FontAsset resolvedFont = ResolveCaptionFont(objectName, font);
             text.text = content;
-            if (!preserveExistingPopupHeading)
+            if (!preserveExistingPopupHeading && !preserveAuthoredText)
             {
                 ApplyScreenTextStyle(text, resolvedFont, presentation.FontSize, color, alignment, false, 0f, presentation.Margin, presentation.EnableAutoSizing);
                 text.enableAutoSizing = presentation.EnableAutoSizing;
@@ -366,7 +378,7 @@ namespace UI
                 text.fontSize = presentation.FontSize;
                 text.characterSpacing = presentation.CharacterSpacing;
             }
-            else if (resolvedFont != null)
+            else if (!preserveAuthoredText && resolvedFont != null)
             {
                 ApplyResolvedScreenFont(text, resolvedFont);
             }
@@ -535,6 +547,11 @@ namespace UI
                 return null;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject(objectName))
+            {
+                return null;
+            }
+
             GameObject textObject = existing != null ? existing.gameObject : new GameObject(objectName);
             ApplyHubPopupObjectIdentity(textObject);
             if (existing == null)
@@ -665,7 +682,7 @@ namespace UI
                 rect = fillObject.AddComponent<RectTransform>();
             }
 
-            if (!ShouldPreserveExistingEditorLayout(preserveExistingLayout: existing != null))
+            if (!ShouldPreserveManagedRectLayout(rect.name, preserveExistingLayout: existing != null))
             {
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = Vector2.one;
@@ -899,6 +916,12 @@ namespace UI
                 return;
             }
 
+            if (existing == null && ShouldSkipCreatingMissingManagedObject("GuideHelpButton"))
+            {
+                guideHelpButton = null;
+                return;
+            }
+
             GameObject buttonObject = existing != null ? existing.gameObject : new GameObject("GuideHelpButton");
             if (existing == null)
             {
@@ -956,9 +979,69 @@ namespace UI
 #endif
         }
 
+        private bool ShouldPreserveManagedRectLayout(string objectName, bool preserveExistingLayout)
+        {
+            if (ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            {
+                return true;
+            }
+
+            return Application.isPlaying
+                   && preserveExistingLayout
+                   && IsRuntimeAuthoredSceneUiObject(objectName)
+                   && !PrototypeUISceneLayoutCatalog.HasLayoutOverride(objectName);
+        }
+
+        private static bool ShouldPreserveRuntimeAuthoredHierarchy()
+        {
+            return Application.isPlaying && RuntimeAuthoredSceneUiObjectNames.Count > 0;
+        }
+
+        private static bool IsRuntimeAuthoredSceneUiObject(string objectName)
+        {
+            return Application.isPlaying
+                   && !string.IsNullOrWhiteSpace(objectName)
+                   && RuntimeAuthoredSceneUiObjectNames.Contains(objectName);
+        }
+
+        private static bool ShouldPreserveAuthoredImageStyle(string objectName)
+        {
+            return IsRuntimeAuthoredSceneUiObject(objectName)
+                   && !PrototypeUISceneLayoutCatalog.HasImageOverride(objectName);
+        }
+
+        private static bool ShouldPreserveAuthoredTextStyle(string objectName)
+        {
+            return IsRuntimeAuthoredSceneUiObject(objectName)
+                   && !PrototypeUISceneLayoutCatalog.HasTextOverride(objectName);
+        }
+
+        private static bool ShouldPreserveAuthoredButtonStyle(string objectName)
+        {
+            return IsRuntimeAuthoredSceneUiObject(objectName)
+                   && !PrototypeUISceneLayoutCatalog.HasButtonOverride(objectName);
+        }
+
+        private static bool ShouldSkipCreatingMissingManagedObject(string objectName)
+        {
+            return Application.isPlaying
+                   && IsOptionalOverlayObject(objectName)
+                   && !IsRuntimeAuthoredSceneUiObject(objectName)
+                   && !PrototypeUISceneLayoutCatalog.HasAnyOverride(objectName);
+        }
+
+        private static bool IsOptionalOverlayObject(string objectName)
+        {
+            return objectName is "GuideBackdrop"
+                or "GuideText"
+                or "ResultBackdrop"
+                or "RestaurantResultText"
+                or "GuideHelpButton";
+        }
+
         private void ApplyManagedRectLayout(RectTransform rect, PrototypeUIRect layout, bool preserveExistingLayout)
         {
-            if (rect == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            if (rect == null || ShouldPreserveManagedRectLayout(rect.name, preserveExistingLayout))
             {
                 return;
             }
@@ -975,7 +1058,7 @@ namespace UI
             Vector2 sizeDelta,
             bool preserveExistingLayout)
         {
-            if (rect == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            if (rect == null || ShouldPreserveManagedRectLayout(rect.name, preserveExistingLayout))
             {
                 return;
             }
@@ -985,7 +1068,7 @@ namespace UI
 
         private void SetManagedSiblingIndex(Transform target, int siblingIndex, bool preserveExistingLayout)
         {
-            if (target == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            if (target == null || ShouldPreserveManagedRectLayout(target.name, preserveExistingLayout))
             {
                 return;
             }
@@ -995,7 +1078,7 @@ namespace UI
 
         private void SetManagedAsLastSibling(Transform target, bool preserveExistingLayout)
         {
-            if (target == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout))
+            if (target == null || ShouldPreserveManagedRectLayout(target.name, preserveExistingLayout))
             {
                 return;
             }
@@ -1055,6 +1138,11 @@ namespace UI
             bool bold)
         {
             if (text == null)
+            {
+                return;
+            }
+
+            if (ShouldPreserveAuthoredTextStyle(text.name))
             {
                 return;
             }
@@ -1203,9 +1291,10 @@ namespace UI
                 return;
             }
 
+            bool preserveAuthoredButton = ShouldPreserveAuthoredButtonStyle(button.name);
             Image image = button.GetComponent<Image>();
             bool hasKenneySkin = false;
-            if (image != null)
+            if (image != null && !preserveAuthoredButton)
             {
                 hasKenneySkin = PrototypeUISkin.ApplyButton(image, button.name, accentColor);
                 if (PrototypeUISceneLayoutCatalog.TryApplyImageOverride(image, button.name))
@@ -1215,39 +1304,43 @@ namespace UI
             }
 
             TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
-            ApplyScreenTextStyle(label, font, 20f, Color.white, TextAlignmentOptions.Center, false, 0f, new Vector4(8f, 6f, 8f, 6f), true);
-
-            Shadow shadow = button.GetComponent<Shadow>();
-            if (shadow == null)
+            if (!preserveAuthoredButton)
             {
-                shadow = button.gameObject.AddComponent<Shadow>();
+                ApplyScreenTextStyle(label, font, 20f, Color.white, TextAlignmentOptions.Center, false, 0f, new Vector4(8f, 6f, 8f, 6f), true);
+
+                Shadow shadow = button.GetComponent<Shadow>();
+                if (shadow == null)
+                {
+                    shadow = button.gameObject.AddComponent<Shadow>();
+                }
+
+                shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
+                shadow.effectDistance = new Vector2(0f, -3f);
+                shadow.useGraphicAlpha = true;
+
+                ColorBlock colors = button.colors;
+                if (hasKenneySkin)
+                {
+                    colors.normalColor = Color.white;
+                    colors.highlightedColor = new Color(1f, 1f, 1f, 0.96f);
+                    colors.pressedColor = new Color(0.84f, 0.84f, 0.84f, 1f);
+                    colors.selectedColor = new Color(0.92f, 0.92f, 0.92f, 1f);
+                    colors.disabledColor = new Color(1f, 1f, 1f, 0.42f);
+                }
+                else
+                {
+                    colors.normalColor = accentColor;
+                    colors.highlightedColor = Color.Lerp(accentColor, Color.white, 0.14f);
+                    colors.pressedColor = Color.Lerp(accentColor, Color.black, 0.18f);
+                    colors.selectedColor = Color.Lerp(accentColor, Color.white, 0.10f);
+                    colors.disabledColor = new Color(accentColor.r * 0.55f, accentColor.g * 0.55f, accentColor.b * 0.55f, 0.45f);
+                }
+
+                colors.fadeDuration = 0.08f;
+                button.transition = Selectable.Transition.ColorTint;
+                button.colors = colors;
             }
 
-            shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
-            shadow.effectDistance = new Vector2(0f, -3f);
-            shadow.useGraphicAlpha = true;
-
-            ColorBlock colors = button.colors;
-            if (hasKenneySkin)
-            {
-                colors.normalColor = Color.white;
-                colors.highlightedColor = new Color(1f, 1f, 1f, 0.96f);
-                colors.pressedColor = new Color(0.84f, 0.84f, 0.84f, 1f);
-                colors.selectedColor = new Color(0.92f, 0.92f, 0.92f, 1f);
-                colors.disabledColor = new Color(1f, 1f, 1f, 0.42f);
-            }
-            else
-            {
-                colors.normalColor = accentColor;
-                colors.highlightedColor = Color.Lerp(accentColor, Color.white, 0.14f);
-                colors.pressedColor = Color.Lerp(accentColor, Color.black, 0.18f);
-                colors.selectedColor = Color.Lerp(accentColor, Color.white, 0.10f);
-                colors.disabledColor = new Color(accentColor.r * 0.55f, accentColor.g * 0.55f, accentColor.b * 0.55f, 0.45f);
-            }
-
-            colors.fadeDuration = 0.08f;
-            button.transition = Selectable.Transition.ColorTint;
-            button.colors = colors;
             ApplySceneButtonOverride(button);
         }
 

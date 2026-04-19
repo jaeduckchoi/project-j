@@ -85,6 +85,7 @@ namespace UI
             "OpenRestaurantButton",
             "CloseRestaurantButton"
         };
+        private static readonly HashSet<string> RuntimeAuthoredSceneUiObjectNames = new(StringComparer.Ordinal);
 
         // managed 이름 정본은 Layout catalog가 들고, 런타임 전용 HUD 보조 오브젝트만 엔트리에서 추가합니다.
         private static IEnumerable<string> EnumerateHudCanvasObjectNames(bool isHubScene)

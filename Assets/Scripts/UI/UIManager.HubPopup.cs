@@ -107,7 +107,7 @@ namespace UI
                 0f,
                 isHubScene ? new Vector4(0f, 0f, 8f, 0f) : new Vector4(6f, 2f, 6f, 2f),
                 !isHubScene);
-            if (goldText != null)
+            if (goldText != null && !ShouldPreserveAuthoredTextStyle(goldText.name))
             {
                 goldText.enableAutoSizing = true;
                 goldText.fontSizeMin = isHubScene ? 12f : goldText.fontSizeMin;
@@ -212,25 +212,31 @@ namespace UI
 
         private static void ApplyPopupDetailTextStyle(TextMeshProUGUI text, TMP_FontAsset bodyFont, Color textColor)
         {
-            ApplyScreenTextStyle(text, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
-            if (text != null)
+            if (text == null || ShouldPreserveAuthoredTextStyle(text.name))
             {
-                text.paragraphSpacing = 0f;
                 ApplySceneTextOverride(text);
+                return;
             }
+
+            ApplyScreenTextStyle(text, bodyFont, 18f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
+            text.paragraphSpacing = 0f;
+            ApplySceneTextOverride(text);
         }
 
         private static void ApplyPopupInventoryTextStyle(TextMeshProUGUI text, TMP_FontAsset bodyFont, Color textColor)
         {
-            ApplyScreenTextStyle(text, bodyFont, 19f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
-            if (text != null)
+            if (text == null || ShouldPreserveAuthoredTextStyle(text.name))
             {
-                text.fontSizeMin = 13f;
-                text.fontSizeMax = 19f;
-                text.paragraphSpacing = 0f;
-                text.overflowMode = TextOverflowModes.Masking;
                 ApplySceneTextOverride(text);
+                return;
             }
+
+            ApplyScreenTextStyle(text, bodyFont, 19f, textColor, TextAlignmentOptions.TopLeft, true, 0f, new Vector4(10f, 8f, 10f, 8f), false);
+            text.fontSizeMin = 13f;
+            text.fontSizeMax = 19f;
+            text.paragraphSpacing = 0f;
+            text.overflowMode = TextOverflowModes.Masking;
+            ApplySceneTextOverride(text);
         }
 
         private static CaptionPresentationPreset ResolveCaptionPresentation(string objectName)
@@ -300,7 +306,7 @@ namespace UI
 
         private void NormalizeHubPopupHierarchyOrder()
         {
-            if (transform == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout: true))
+            if (transform == null || ShouldPreserveRuntimeAuthoredHierarchy())
             {
                 return;
             }
@@ -400,7 +406,7 @@ namespace UI
                 rect = boxObject.AddComponent<RectTransform>();
             }
 
-            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: false);
+            ApplyManagedRectLayout(rect, layout, preserveExistingLayout: existing != null);
 
             Image image = boxObject.GetComponent<Image>();
             if (image == null)
@@ -531,12 +537,15 @@ namespace UI
             }
 
             text.raycastTarget = false;
-            ApplyScreenTextStyle(text, bodyFont, 17f, textColor, TextAlignmentOptions.TopLeft, true, 0f, Vector4.zero, false);
-            text.fontSizeMin = 12f;
-            text.fontSizeMax = 17f;
-            text.enableAutoSizing = true;
-            text.textWrappingMode = TextWrappingModes.Normal;
-            text.overflowMode = TextOverflowModes.Ellipsis;
+            if (!ShouldPreserveAuthoredTextStyle(text.name))
+            {
+                ApplyScreenTextStyle(text, bodyFont, 17f, textColor, TextAlignmentOptions.TopLeft, true, 0f, Vector4.zero, false);
+                text.fontSizeMin = 12f;
+                text.fontSizeMax = 17f;
+                text.enableAutoSizing = true;
+                text.textWrappingMode = TextWrappingModes.Normal;
+                text.overflowMode = TextOverflowModes.Ellipsis;
+            }
             ApplySceneTextOverride(text);
         }
 
@@ -951,7 +960,7 @@ namespace UI
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 objectName,
                 PrototypeUILayout.HubRefrigeratorSlotAmount);
-            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: false);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -960,9 +969,12 @@ namespace UI
             }
 
             text.raycastTarget = false;
-            ApplyScreenTextStyle(text, bodyFont, 18f, Color.white, TextAlignmentOptions.BottomRight, false, 0f, Vector4.zero, false);
-            text.fontStyle = FontStyles.Bold;
-            text.overflowMode = TextOverflowModes.Truncate;
+            if (!ShouldPreserveAuthoredTextStyle(text.name))
+            {
+                ApplyScreenTextStyle(text, bodyFont, 18f, Color.white, TextAlignmentOptions.BottomRight, false, 0f, Vector4.zero, false);
+                text.fontStyle = FontStyles.Bold;
+                text.overflowMode = TextOverflowModes.Truncate;
+            }
             ApplySceneTextOverride(text);
         }
 
@@ -1013,7 +1025,7 @@ namespace UI
             }
 
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(objectName, layout);
-            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: false);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -1023,13 +1035,16 @@ namespace UI
 
             text.text = placeholder;
             text.raycastTarget = false;
-            ApplyScreenTextStyle(text, font, fontSize, RefrigeratorInfoTextColor, TextAlignmentOptions.TopLeft, false, 0f, Vector4.zero, false);
-            text.fontStyle = FontStyles.Bold;
-            text.enableAutoSizing = true;
-            text.fontSizeMin = Mathf.Max(12f, fontSize * 0.5f);
-            text.fontSizeMax = fontSize;
-            text.textWrappingMode = TextWrappingModes.Normal;
-            text.overflowMode = TextOverflowModes.Ellipsis;
+            if (!ShouldPreserveAuthoredTextStyle(text.name))
+            {
+                ApplyScreenTextStyle(text, font, fontSize, RefrigeratorInfoTextColor, TextAlignmentOptions.TopLeft, false, 0f, Vector4.zero, false);
+                text.fontStyle = FontStyles.Bold;
+                text.enableAutoSizing = true;
+                text.fontSizeMin = Mathf.Max(12f, fontSize * 0.5f);
+                text.fontSizeMax = fontSize;
+                text.textWrappingMode = TextWrappingModes.Normal;
+                text.overflowMode = TextOverflowModes.Ellipsis;
+            }
             ApplySceneTextOverride(text);
         }
 
@@ -1057,7 +1072,7 @@ namespace UI
             PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                 PrototypeUIObjectNames.RefrigeratorRemoveText,
                 PrototypeUILayout.HubRefrigeratorRemoveText);
-            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: false);
+            ApplyManagedRectLayout(rect, resolvedLayout, preserveExistingLayout: existing != null);
 
             TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
             if (text == null)
@@ -1067,8 +1082,11 @@ namespace UI
 
             text.text = "\uC81C\uAC70";
             text.raycastTarget = false;
-            ApplyScreenTextStyle(text, headingFont, 24f, RefrigeratorRemoveTextColor, TextAlignmentOptions.Center, false, 0f, Vector4.zero, false);
-            text.fontStyle = FontStyles.Bold;
+            if (!ShouldPreserveAuthoredTextStyle(text.name))
+            {
+                ApplyScreenTextStyle(text, headingFont, 24f, RefrigeratorRemoveTextColor, TextAlignmentOptions.Center, false, 0f, Vector4.zero, false);
+                text.fontStyle = FontStyles.Bold;
+            }
             ApplySceneTextOverride(text);
         }
 
@@ -1123,7 +1141,7 @@ namespace UI
                 PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                     PopupFrameGroupName,
                     PrototypeUILayout.HubPopupFrame);
-                ApplyManagedRectLayout(popupFrameRect, resolvedLayout, preserveExistingLayout: false);
+                ApplyManagedRectLayout(popupFrameRect, resolvedLayout, preserveExistingLayout: true);
             }
         }
 
@@ -1151,7 +1169,7 @@ namespace UI
                 PrototypeUIRect resolvedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                     PrototypeUIObjectNames.PopupTitle,
                     PrototypeUILayout.HubPopupTitle);
-                ApplyManagedRectLayout(titleRect, resolvedLayout, preserveExistingLayout: false);
+                ApplyManagedRectLayout(titleRect, resolvedLayout, preserveExistingLayout: true);
             }
 
             titleTransform.gameObject.SetActive(true);
@@ -1367,7 +1385,7 @@ namespace UI
                     PrototypeUIRect selectedLayout = PrototypeUISceneLayoutCatalog.ResolveLayout(
                         selectedSlotName,
                         PrototypeUILayout.HubRefrigeratorSlot(selectedRefrigeratorSlotIndex));
-                    ApplyManagedRectLayout(selectedRect, selectedLayout, preserveExistingLayout: false);
+                    ApplyManagedRectLayout(selectedRect, selectedLayout, preserveExistingLayout: true);
                 }
             }
 

@@ -87,6 +87,32 @@ namespace UI.Layout
                    && binding.TryApplyButton(button);
         }
 
+        public static bool HasLayoutOverride(string objectName)
+        {
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyRect;
+        }
+
+        public static bool HasImageOverride(string objectName)
+        {
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyImage;
+        }
+
+        public static bool HasTextOverride(string objectName)
+        {
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyText;
+        }
+
+        public static bool HasButtonOverride(string objectName)
+        {
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding) && binding.ApplyButton;
+        }
+
+        public static bool HasAnyOverride(string objectName)
+        {
+            return TryGetBindingEntry(objectName, out PrototypeUILayoutBindingEntry binding)
+                   && (binding.ApplyRect || binding.ApplyImage || binding.ApplyText || binding.ApplyButton);
+        }
+
         /// <summary>
         /// 저장 hierarchy override는 사용하지 않습니다.
         /// </summary>

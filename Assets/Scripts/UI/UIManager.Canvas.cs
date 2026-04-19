@@ -681,7 +681,7 @@ namespace UI
 
         private void ApplySavedCanvasHierarchyOverrides()
         {
-            if (transform == null || ShouldPreserveExistingEditorLayout(preserveExistingLayout: true))
+            if (transform == null || ShouldPreserveRuntimeAuthoredHierarchy())
             {
                 return;
             }

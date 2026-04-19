@@ -60,6 +60,7 @@ namespace UI
         {
             ApplyPopupInteractionBindings(SceneManager.GetActiveScene());
             BindSceneReferences();
+            CaptureAuthoredSceneUiObjectNames();
             ApplyTextPresentation();
             BindButtons();
             RefreshAll();
@@ -119,6 +120,7 @@ namespace UI
             ApplyPopupInteractionBindings(scene);
             activeHubPanel = HubPopupPanel.None;
             BindSceneReferences();
+            CaptureAuthoredSceneUiObjectNames();
             ApplyTextPresentation();
             BindButtons();
             RefreshAll();
@@ -392,6 +394,35 @@ namespace UI
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             scaler.referencePixelsPerUnit = 100f;
+        }
+
+        private void CaptureAuthoredSceneUiObjectNames()
+        {
+            RuntimeAuthoredSceneUiObjectNames.Clear();
+            if (!Application.isPlaying || transform == null)
+            {
+                return;
+            }
+
+            CaptureAuthoredSceneUiObjectNames(transform, includeCurrent: false);
+        }
+
+        private static void CaptureAuthoredSceneUiObjectNames(Transform current, bool includeCurrent)
+        {
+            if (current == null)
+            {
+                return;
+            }
+
+            if (includeCurrent && !string.IsNullOrWhiteSpace(current.name))
+            {
+                RuntimeAuthoredSceneUiObjectNames.Add(current.name);
+            }
+
+            for (int index = 0; index < current.childCount; index++)
+            {
+                CaptureAuthoredSceneUiObjectNames(current.GetChild(index), includeCurrent: true);
+            }
         }
     }
 }

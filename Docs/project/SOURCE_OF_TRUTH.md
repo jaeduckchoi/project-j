@@ -26,6 +26,7 @@
 - 관리 대상 Canvas 기본 레이아웃 정본은 `PrototypeUILayout*.cs` 코드 값이다.
 - managed UI 이름 catalog와 런타임 binding 적용 경로의 정본은 `PrototypeUISceneLayoutCatalog`다.
 - 에디터에서 조정한 런타임 반영 레이아웃은 UI 레이아웃 편집기가 관리 ID와 씬 오브젝트를 명시적으로 연결해 `Assets/Resources/Generated/ui-layout-bindings.asset`에 저장한다. 큰 팝업이 어느 월드 오브젝트와 연결되는지는 `Assets/Resources/Generated/popup-interaction-bindings.asset`가 정본이며, 편집기는 이 자산 기준으로 씬 station 컴포넌트를 동기화한다.
+- 다만 `ui-layout-bindings.asset`에 해당 오브젝트 override가 없으면, 런타임은 씬에 이미 존재하던 managed UI 오브젝트의 RectTransform·표시값을 그대로 유지한다. 선택적 오버레이(`Guide*`, `Result*`)를 씬에서 제거했다면 override 없이 런타임이 다시 생성하지 않는다.
 - 에디터 프리뷰 흐름은 `PrototypeUIDesignController`와 `UIManager.EditorPreview.cs`가 맡는다.
 - UI entry와 partial은 `UIManager.cs`와 `UIManager.*.cs` family를 기준으로 유지한다.
 - 레이아웃, 스타일, 팝업 콘텐츠는 각각 `PrototypeUILayout*.cs`, `PrototypeUISkin*.cs`, `PrototypeUIPopupCatalog.cs`를 기준으로 유지한다.
