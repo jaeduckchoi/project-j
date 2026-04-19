@@ -48,5 +48,5 @@
 
 - 씬 직렬화 정본: `Assets/Level/Scenes/Hub.unity`
 - 논리 타일 계약: `Assets/Code/Scripts/Exploration/World/HubRoomLayout.cs`
-- 씬 가이드: `Docs/scene/GAME_SCENE_AND_SETUP.md`
-- 허브 운영 기획: `Docs/gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md`
+- 씬 가이드: [GAME_SCENE_AND_SETUP.md](GAME_SCENE_AND_SETUP.md)
+- 허브 운영 기획: [GAMEPLAY_CORE_LOOP.md](../Gameplay/GAMEPLAY_CORE_LOOP.md)

@@ -49,5 +49,5 @@
 ## 5. 정본 위치
 
 - 씬 직렬화 정본: `Assets/Level/Scenes/Beach.unity`
-- 씬 가이드: `Docs/scene/GAME_SCENE_AND_SETUP.md`
-- 탐험 기획: `Docs/gameplay/GAMEPLAY_EXPLORATION.md`
+- 씬 가이드: [GAME_SCENE_AND_SETUP.md](GAME_SCENE_AND_SETUP.md)
+- 탐험 기획: [GAMEPLAY_EXPLORATION.md](../Gameplay/GAMEPLAY_EXPLORATION.md)

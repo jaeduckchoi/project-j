@@ -208,15 +208,15 @@
 루트 README는 저장소 진입점 역할만 맡고, 세부 정본은 `Docs` 아래 문서에서 관리한다.
 
 - 작업 하네스: [Docs/README.md](Docs/README.md)
-- 게임 기획 개요 정본: [Docs/gameplay/GAME_DESIGN_OVERVIEW.md](Docs/gameplay/GAME_DESIGN_OVERVIEW.md)
-- 허브 코어 루프와 `OPEN/CLOSE`: [Docs/gameplay/GAMEPLAY_CORE_LOOP.md](Docs/gameplay/GAMEPLAY_CORE_LOOP.md)
-- 식당 영업과 성장: [Docs/gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md](Docs/gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md)
-- 탐험 시스템 기획: [Docs/gameplay/GAMEPLAY_EXPLORATION.md](Docs/gameplay/GAMEPLAY_EXPLORATION.md)
-- 정본 관계: [Docs/project/SOURCE_OF_TRUTH.md](Docs/project/SOURCE_OF_TRUTH.md)
+- 규칙과 정본 관계: [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md), [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)
+- 게임 기획 개요: [Docs/Gameplay/GAME_DESIGN_OVERVIEW.md](Docs/Gameplay/GAME_DESIGN_OVERVIEW.md)
+- 허브 코어 루프: [Docs/Gameplay/GAMEPLAY_CORE_LOOP.md](Docs/Gameplay/GAMEPLAY_CORE_LOOP.md)
+- 식당 영업과 성장: [Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md](Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md)
+- 탐험 시스템 기획: [Docs/Gameplay/GAMEPLAY_EXPLORATION.md](Docs/Gameplay/GAMEPLAY_EXPLORATION.md)
 
 ## 작업 전 확인
 
 1. [AGENTS.md](AGENTS.md)에서 세션 온보딩과 기본 작업 언어를 확인한다.
 2. [Docs/README.md](Docs/README.md)에서 문서 계층과 작업별 진입점을 확인한다.
-3. [Docs/project/GAME_ASSISTANT_RULES.md](Docs/project/GAME_ASSISTANT_RULES.md)와 [Docs/project/GAME_DOCS_INDEX.md](Docs/project/GAME_DOCS_INDEX.md)를 읽고 관련 정본 문서를 연다.
-4. 코드, 씬, generated 자산을 바꿀 때는 [Docs/project/SOURCE_OF_TRUTH.md](Docs/project/SOURCE_OF_TRUTH.md)를 먼저 따른다.
+3. [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md)와 [Docs/Project/GAME_DOCS_INDEX.md](Docs/Project/GAME_DOCS_INDEX.md)를 읽고 관련 정본 문서를 연다.
+4. 코드, 씬, generated 자산을 바꿀 때는 [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)를 먼저 따른다.

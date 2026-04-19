@@ -12,7 +12,7 @@ network_access = false
 [permissions.project-j-read-scope.filesystem]
 # .claude/settings.json permissions.deny의 디렉터리 차단 범위를
 # Codex 파일시스템 permission profile로 동기화한다.
-# Claude의 확장자 glob 제외는 Docs/project/GAME_ASSISTANT_RULES.md와
+# Claude의 확장자 glob 제외는 Docs/Project/GAME_ASSISTANT_RULES.md와
 # AGENTS.md 지침으로 유지한다.
 ":minimal" = "read"
 

@@ -6,20 +6,20 @@
 
 - Unity 기반 2D 탑다운 식당 운영 프로토타입이다.
 - 핵심 루트는 `Assets`(런타임/에디터/씬/리소스)와 `Docs`(정본 문서와 작업 하네스)다.
-- 구조와 경로의 정본은 `Docs/project/GAME_PROJECT_STRUCTURE.md`다.
+- 구조와 경로의 정본은 [Docs/Project/GAME_PROJECT_STRUCTURE.md](Docs/Project/GAME_PROJECT_STRUCTURE.md)다.
 
 ## WHY
 
 - 플레이어는 탐험으로 재료를 모으고 식당 허브에서 메뉴 선정, 조리, 서빙, 성장 루프를 진행한다.
 - 주요 플레이 계약은 `FrontCounter -> BackCounter -> FrontCounter` 조리 흐름과 `Open/Close` 식당 상태다.
-- 게임 의도는 `Docs/gameplay/GAME_DESIGN_OVERVIEW.md`에서 확인한다.
+- 게임 의도는 [Docs/Gameplay/GAME_DESIGN_OVERVIEW.md](Docs/Gameplay/GAME_DESIGN_OVERVIEW.md)에서 확인한다.
 
 ## HOW
 
-1. `Docs/README.md`를 읽어 작업 하네스와 문서 계층을 확인한다.
-2. `Docs/project/GAME_ASSISTANT_RULES.md`를 읽어 전역 가드레일과 읽기 제외 범위를 확인한다.
-3. `Docs/project/GAME_DOCS_INDEX.md`에서 현재 작업에 맞는 정본 문서 1~2개만 추가로 읽는다.
-4. 코드, 씬, generated 자산을 바꿀 때는 `Docs/project/SOURCE_OF_TRUTH.md`의 정본 관계를 먼저 따른다.
+1. [Docs/README.md](Docs/README.md)를 읽어 작업 하네스와 문서 계층을 확인한다.
+2. [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md)를 읽어 전역 가드레일과 읽기 제외 범위를 확인한다.
+3. [Docs/Project/GAME_DOCS_INDEX.md](Docs/Project/GAME_DOCS_INDEX.md)에서 현재 작업에 맞는 정본 문서 1~2개만 추가로 읽는다.
+4. 코드, 씬, generated 자산을 바꿀 때는 [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)의 정본 관계를 먼저 따른다.
 
 ## Always
 
@@ -30,4 +30,4 @@
 ## Codex Harness
 
 - Codex 설정은 `.codex/config.toml`, `AGENTS.md` 조합으로 관리한다.
-- 읽기 범위와 제외 기준의 단일 정본은 `Docs/project/GAME_ASSISTANT_RULES.md`다. Codex는 `.codex/config.toml`의 `project-j-read-scope` permission profile과 문서 지침으로 같은 범위를 지킨다.
+- 읽기 범위와 제외 기준의 단일 정본은 [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md)다. Codex는 `.codex/config.toml`의 `project-j-read-scope` permission profile과 문서 지침으로 같은 범위를 지킨다.
