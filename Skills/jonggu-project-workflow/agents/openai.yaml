@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jonggu Project Workflow"
+  short_description: "Jonggu Unity project workflow guide"
+  default_prompt: "Use this skill when working in D:\\project-j on Jonggu's Restaurant Unity project."

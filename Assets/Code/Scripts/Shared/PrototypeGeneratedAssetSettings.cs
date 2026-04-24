@@ -1,4 +1,5 @@
 using System;
+using Code.Scripts.Shared.Data;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -170,6 +171,76 @@ namespace Code.Scripts.Shared
             return extensionIndex >= 0
                 ? relativePath.Substring(0, extensionIndex)
                 : relativePath;
+        }
+    }
+
+    internal static class GeneratedSpriteResourceResolver
+    {
+        internal static Sprite LoadRecipeSprite(string recipeId)
+        {
+            if (string.IsNullOrWhiteSpace(recipeId))
+            {
+                return null;
+            }
+
+            string normalizedRecipeId = recipeId.Trim();
+            return LoadSprite(
+                $"Generated/Sprites/Item/Food/{normalizedRecipeId}",
+                $"Generated/Sprites/Recipes/{normalizedRecipeId}",
+                $"Generated/Sprites/Hub/{normalizedRecipeId}");
+        }
+
+        internal static Sprite LoadRecipeSprite(RecipeData recipe)
+        {
+            if (recipe == null)
+            {
+                return null;
+            }
+
+            return recipe.Icon != null ? recipe.Icon : LoadRecipeSprite(recipe.RecipeId);
+        }
+
+        internal static Sprite LoadCoinSprite()
+        {
+            return LoadSprite("Generated/Sprites/coin", "Generated/Sprites/Item/coin");
+        }
+
+        internal static Sprite LoadUiPanelSprite(string spriteName)
+        {
+            if (string.IsNullOrWhiteSpace(spriteName))
+            {
+                return null;
+            }
+
+            string trimmedSpriteName = spriteName.Trim();
+            return LoadSprite(
+                $"{PrototypeGeneratedAssetSettings.GetCurrent().GeneratedUiPanelResourceRoot}/{trimmedSpriteName}",
+                $"Generated/Sprites/UI/Panels/{trimmedSpriteName}");
+        }
+
+        private static Sprite LoadSprite(params string[] resourcePaths)
+        {
+            if (resourcePaths == null)
+            {
+                return null;
+            }
+
+            for (int index = 0; index < resourcePaths.Length; index++)
+            {
+                string resourcePath = resourcePaths[index];
+                if (string.IsNullOrWhiteSpace(resourcePath))
+                {
+                    continue;
+                }
+
+                Sprite sprite = Resources.Load<Sprite>(resourcePath);
+                if (sprite != null)
+                {
+                    return sprite;
+                }
+            }
+
+            return null;
         }
     }
 }

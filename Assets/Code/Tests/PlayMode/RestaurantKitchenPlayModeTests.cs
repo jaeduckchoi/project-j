@@ -142,6 +142,63 @@ namespace Tests.PlayMode
             }
         }
 
+        [UnityTest]
+        public IEnumerator FrontCounter_PlaceAndPick_RoundTripsHeldItem()
+        {
+            ResourceData fish = ScriptableObject.CreateInstance<ResourceData>();
+            fish.hideFlags = HideFlags.HideAndDontSave;
+            fish.ConfigureRuntime("fish", "생선", "테스트 재료", "테스트", 10, ResourceRarity.Common);
+
+            GameObject restaurantRoot = new("RestaurantRoot");
+            RestaurantFlowController flowController = restaurantRoot.AddComponent<RestaurantFlowController>();
+
+            yield return null;
+
+            Assert.That(flowController.Carry.TryHold(KitchenCarryItem.FromUnlimitedBasic(fish, 1)), Is.True);
+            Assert.That(flowController.TryPlaceHeldOnFrontCounter(0), Is.True);
+            Assert.That(flowController.Carry.HeldItem, Is.Null);
+            Assert.That(flowController.FrontWorkspace.Slots[0], Is.Not.Null);
+
+            Assert.That(flowController.TryPickFrontCounterSlot(0), Is.True);
+            Assert.That(flowController.Carry.HeldItem, Is.Not.Null);
+            Assert.That(flowController.FrontWorkspace.Slots[0], Is.Null);
+
+            Object.DestroyImmediate(restaurantRoot);
+            Object.DestroyImmediate(fish);
+        }
+
+        [UnityTest]
+        public IEnumerator InventoryIngredient_TakeAndReturnToRefrigerator_ReleasesReservation()
+        {
+            GameObject gameManagerObject = new("GameManager");
+            gameManagerObject.AddComponent<GameManager>();
+
+            ResourceData fish = ScriptableObject.CreateInstance<ResourceData>();
+            fish.hideFlags = HideFlags.HideAndDontSave;
+            fish.ConfigureRuntime("fish", "생선", "테스트 재료", "테스트", 10, ResourceRarity.Common);
+
+            GameObject restaurantRoot = new("RestaurantRoot");
+            RestaurantFlowController flowController = restaurantRoot.AddComponent<RestaurantFlowController>();
+
+            yield return null;
+
+            InventoryManager inventoryManager = GameManager.Instance.Inventory;
+            inventoryManager.TryAdd(fish, 3, out _);
+
+            Assert.That(flowController.TryTakeInventoryIngredient(fish), Is.True);
+            Assert.That(flowController.Reservations.GetReservedAmount(fish), Is.EqualTo(1));
+            Assert.That(flowController.Carry.HeldItem, Is.Not.Null);
+
+            Assert.That(flowController.TryReturnHeldItemToRefrigerator(), Is.True);
+            Assert.That(flowController.Reservations.GetReservedAmount(fish), Is.EqualTo(0));
+            Assert.That(flowController.Carry.HeldItem, Is.Null);
+            Assert.That(inventoryManager.GetAmount(fish), Is.EqualTo(3));
+
+            Object.DestroyImmediate(restaurantRoot);
+            Object.DestroyImmediate(gameManagerObject);
+            Object.DestroyImmediate(fish);
+        }
+
         private static DiningTableStation ResolveTable(string tableId, params DiningTableStation[] tables)
         {
             for (int index = 0; index < tables.Length; index++)

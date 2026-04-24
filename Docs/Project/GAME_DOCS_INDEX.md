@@ -5,6 +5,7 @@
 | 작업 | 1차 정본 | 함께 읽을 문서 |
 | --- | --- | --- |
 | 문서 하네스 정리 | [Docs/README.md](../README.md) | [GAME_ASSISTANT_RULES.md](GAME_ASSISTANT_RULES.md) |
+| 규칙/하네스/스킬 관리 | [Docs/README.md](../README.md) | [SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md), [GAME_PROJECT_STRUCTURE.md](GAME_PROJECT_STRUCTURE.md) |
 | 새 정본 문서 작성 | [DOC_TEMPLATE.md](DOC_TEMPLATE.md) | [Docs/README.md](../README.md) |
 | 전역 규칙 확인 | [GAME_ASSISTANT_RULES.md](GAME_ASSISTANT_RULES.md) | [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) |
 | 저장소 구조와 경로 확인 | [GAME_PROJECT_STRUCTURE.md](GAME_PROJECT_STRUCTURE.md) | [SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md) |

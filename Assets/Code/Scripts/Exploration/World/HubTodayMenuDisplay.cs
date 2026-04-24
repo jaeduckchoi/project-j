@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Code.Scripts.Restaurant;
+using Code.Scripts.Shared;
 using Code.Scripts.Shared.Data;
 using TMPro;
 using UnityEngine;
@@ -186,12 +187,7 @@ namespace Code.Scripts.Exploration.World
                 return null;
             }
 
-            string recipeId = recipe.RecipeId.Trim();
-            return recipe.Icon != null
-                ? recipe.Icon
-                : Resources.Load<Sprite>($"Generated/Sprites/Item/Food/{recipeId}")
-                ?? Resources.Load<Sprite>($"Generated/Sprites/Recipes/{recipeId}")
-                ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{recipeId}");
+            return GeneratedSpriteResourceResolver.LoadRecipeSprite(recipe);
         }
     }
 }

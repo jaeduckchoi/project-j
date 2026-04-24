@@ -10,6 +10,7 @@
 | 전역 규칙 | [GAME_ASSISTANT_RULES.md](GAME_ASSISTANT_RULES.md) | `.claude/settings.json`, `.codex/config.toml` | 읽기 제외 기준이 바뀔 때만 설정을 같이 수정한다. |
 | 저장소 구조와 대표 경로 | [GAME_PROJECT_STRUCTURE.md](GAME_PROJECT_STRUCTURE.md) | 코드 주석, 루트 README, 관련 도메인 문서 링크 | 정책 설명은 이 문서가 아니라 각 도메인 문서가 소유한다. |
 | 작업 매핑 | [GAME_DOCS_INDEX.md](GAME_DOCS_INDEX.md) | [Docs/README.md](../README.md) | 이 문서는 링크 허브만 맡고 상세 규칙은 소유하지 않는다. |
+| 에이전트 스킬 자산 | `Skills/*` | [Docs/README.md](../README.md), [GAME_PROJECT_STRUCTURE.md](GAME_PROJECT_STRUCTURE.md) | 스킬은 실행 보조 자산이며 게임 규칙과 정본 관계를 소유하지 않는다. |
 
 ## 코드와 자산 정본
 
@@ -33,5 +34,6 @@
 - generated PNG 본문과 generated 출력물 자체
 - 임시 복구 메모와 과거 감사 로그
 - 더 이상 사용하지 않는 자동 생성, 자동 감사 흐름에 대한 설명
+- `Skills/*`에 복제된 안내 문구. 상세 규칙은 `Docs/Project/*` 정본 문서가 소유한다.
 
 단, `scene-integrated metadata`처럼 scene serialization contract를 직접 성립시키는 Unity 메타데이터는 예외로 두고 이 문서와 관련 씬 문서 기준으로 함께 관리한다.

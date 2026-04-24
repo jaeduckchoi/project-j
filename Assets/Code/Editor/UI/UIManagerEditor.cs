@@ -20,68 +20,10 @@ namespace Editor.UI
     {
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-            DrawDefaultInspector();
-            serializedObject.ApplyModifiedProperties();
-
-            UIManager uiManager = target as UIManager;
-            if (uiManager == null)
-            {
-                return;
-            }
-
-            PrototypeUIDesignController controller = uiManager.GetComponent<PrototypeUIDesignController>();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("UI Design", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox(
-                "프리뷰 생성은 PrototypeUIDesignController가 처리하고, 저장 및 반영할 레이아웃 값은 UI 레이아웃 편집기에서 관리합니다.",
-                MessageType.Info);
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (GUILayout.Button("Canvas 그룹 정리"))
-                {
-                    uiManager.OrganizeCanvasHierarchyInEditor();
-                    MarkSceneDirty(uiManager.gameObject);
-                }
-
-                if (controller == null)
-                {
-                    if (GUILayout.Button("디자인 컨트롤러 추가"))
-                    {
-                        controller = uiManager.gameObject.AddComponent<PrototypeUIDesignController>();
-                        controller.Configure(uiManager);
-                        MarkSceneDirty(uiManager.gameObject);
-                        Selection.activeObject = controller;
-                    }
-                }
-                else if (GUILayout.Button("디자인 컨트롤러 선택"))
-                {
-                    Selection.activeObject = controller;
-                }
-            }
-
-            if (GUILayout.Button("UI 레이아웃 편집기 열기"))
-            {
-                PrototypeUILayoutEditorWindow.Open();
-            }
-
-            if (GUILayout.Button("에디터 UI 프리뷰 적용"))
-            {
-                if (controller == null)
-                {
-                    controller = uiManager.gameObject.AddComponent<PrototypeUIDesignController>();
-                    controller.Configure(uiManager);
-                }
-
-                PrototypeUISceneLayoutCatalog.ReloadBindingSettingsForEditor();
-                controller.ApplyEditorPreviewInEditor();
-                MarkSceneDirty(uiManager.gameObject);
-            }
+            UIManagerEditorInspectorUtility.Draw(serializedObject, target as UIManager);
         }
 
-        private static void MarkSceneDirty(GameObject targetObject)
+        internal static void MarkSceneDirty(GameObject targetObject)
         {
             if (targetObject == null)
             {
@@ -1400,17 +1342,17 @@ namespace Editor.UI
 
         private Transform ResolveSceneTransform(string path)
         {
-            return PrototypeUILayoutBindingSyncUtility.ResolveSceneTransform(activeScene, path);
+            return SceneObjectPathUtility.ResolveSceneTransform(activeScene, path);
         }
 
         private static T FindComponentInScene<T>(Scene scene) where T : Component
         {
-            return PrototypeUILayoutBindingSyncUtility.FindComponentInScene<T>(scene);
+            return SceneObjectPathUtility.FindComponentInScene<T>(scene);
         }
 
         private static string BuildSceneObjectPath(Transform transform)
         {
-            return PrototypeUILayoutBindingSyncUtility.BuildSceneObjectPath(transform);
+            return SceneObjectPathUtility.BuildSceneObjectPath(transform);
         }
 
         private static bool IsHubScene(Scene scene)
@@ -1422,6 +1364,82 @@ namespace Editor.UI
         {
             RefreshContext();
             Repaint();
+        }
+    }
+
+    internal static class UIManagerEditorInspectorUtility
+    {
+        internal static void Draw(SerializedObject serializedObject, UIManager uiManager)
+        {
+            serializedObject.Update();
+            SerializedProperty iterator = serializedObject.GetIterator();
+            bool enterChildren = true;
+            while (iterator.NextVisible(enterChildren))
+            {
+                using (new EditorGUI.DisabledScope(iterator.propertyPath == "m_Script"))
+                {
+                    EditorGUILayout.PropertyField(iterator, true);
+                }
+
+                enterChildren = false;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+
+            if (uiManager == null)
+            {
+                return;
+            }
+
+            PrototypeUIDesignController controller = uiManager.GetComponent<PrototypeUIDesignController>();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("UI Design", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "프리뷰 생성은 PrototypeUIDesignController가 처리하고, 저장 및 반영할 레이아웃 값은 UI 레이아웃 편집기에서 관리합니다.",
+                MessageType.Info);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Canvas 그룹 정리"))
+                {
+                    uiManager.OrganizeCanvasHierarchyInEditor();
+                    UIManagerEditor.MarkSceneDirty(uiManager.gameObject);
+                }
+
+                if (controller == null)
+                {
+                    if (GUILayout.Button("디자인 컨트롤러 추가"))
+                    {
+                        controller = uiManager.gameObject.AddComponent<PrototypeUIDesignController>();
+                        controller.Configure(uiManager);
+                        UIManagerEditor.MarkSceneDirty(uiManager.gameObject);
+                        Selection.activeObject = controller;
+                    }
+                }
+                else if (GUILayout.Button("디자인 컨트롤러 선택"))
+                {
+                    Selection.activeObject = controller;
+                }
+            }
+
+            if (GUILayout.Button("UI 레이아웃 편집기 열기"))
+            {
+                PrototypeUILayoutEditorWindow.Open();
+            }
+
+            if (GUILayout.Button("에디터 UI 프리뷰 적용"))
+            {
+                if (controller == null)
+                {
+                    controller = uiManager.gameObject.AddComponent<PrototypeUIDesignController>();
+                    controller.Configure(uiManager);
+                }
+
+                PrototypeUISceneLayoutCatalog.ReloadBindingSettingsForEditor();
+                controller.ApplyEditorPreviewInEditor();
+                UIManagerEditor.MarkSceneDirty(uiManager.gameObject);
+            }
         }
     }
 }

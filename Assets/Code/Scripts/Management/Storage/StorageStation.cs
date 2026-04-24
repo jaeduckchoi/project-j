@@ -30,7 +30,7 @@ namespace Code.Scripts.Management.Storage
             get
             {
                 StorageManager currentStorageManager = ResolveStorageManager();
-                InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+                InventoryManager inventory = GameRuntimeAccess.Inventory;
                 if (currentStorageManager == null || inventory == null)
                 {
                     return string.Empty;
@@ -49,7 +49,7 @@ namespace Code.Scripts.Management.Storage
         {
             if (storageManager == null)
             {
-                storageManager = FindFirstObjectByType<StorageManager>();
+                storageManager = GameRuntimeAccess.FindObject<StorageManager>();
             }
 
             ApplyUnifiedHubStoragePresentation();
@@ -75,7 +75,7 @@ namespace Code.Scripts.Management.Storage
         public bool CanInteract(GameObject interactor)
         {
             StorageManager currentStorageManager = ResolveStorageManager();
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             return currentStorageManager != null && inventory != null;
         }
 
@@ -85,14 +85,14 @@ namespace Code.Scripts.Management.Storage
         public void Interact(GameObject interactor)
         {
             StorageManager currentStorageManager = ResolveStorageManager();
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (currentStorageManager == null || inventory == null)
             {
                 return;
             }
 
             StoragePanelRequested?.Invoke();
-            GameManager.Instance?.DayCycle?.ShowHintOnce(
+            GameRuntimeAccess.DayCycle?.ShowHintOnce(
                 "first_storage_popup_open",
                 "창고 팝업에서 Q/W로 맡기기, A/S로 꺼내기를 진행할 수 있습니다.");
         }
@@ -151,14 +151,14 @@ namespace Code.Scripts.Management.Storage
         /// </summary>
         private StorageManager ResolveStorageManager()
         {
-            if (storageManager == null && GameManager.Instance != null)
+            if (storageManager == null)
             {
-                storageManager = GameManager.Instance.Storage;
+                storageManager = GameRuntimeAccess.Storage;
             }
 
             if (storageManager == null)
             {
-                storageManager = FindFirstObjectByType<StorageManager>();
+                storageManager = GameRuntimeAccess.FindObject<StorageManager>();
             }
 
             return storageManager;

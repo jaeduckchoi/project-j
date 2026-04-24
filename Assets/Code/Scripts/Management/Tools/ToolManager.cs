@@ -89,14 +89,31 @@ namespace Code.Scripts.Management.Tools
         /// </summary>
         private void RefreshRuntimeTools()
         {
-            runtimeUnlockedTools.Clear();
+            ToolRuntimeListUtility.RefreshRuntimeTools(runtimeUnlockedTools, unlockedTools);
+        }
+    }
 
-            foreach (ToolType toolType in unlockedTools)
+    internal static class ToolRuntimeListUtility
+    {
+        internal static void RefreshRuntimeTools(List<ToolType> target, IEnumerable<ToolType> source)
+        {
+            if (target == null)
             {
-                runtimeUnlockedTools.Add(toolType);
+                return;
             }
 
-            runtimeUnlockedTools.Sort((left, right) => left.CompareTo(right));
+            target.Clear();
+            if (source == null)
+            {
+                return;
+            }
+
+            foreach (ToolType toolType in source)
+            {
+                target.Add(toolType);
+            }
+
+            target.Sort((left, right) => left.CompareTo(right));
         }
     }
 }

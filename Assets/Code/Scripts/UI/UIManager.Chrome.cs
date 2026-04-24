@@ -819,8 +819,7 @@ namespace Code.Scripts.UI
 
         private static Sprite LoadHubCoinIconSprite()
         {
-            return Resources.Load<Sprite>("Generated/Sprites/coin")
-                   ?? Resources.Load<Sprite>("Generated/Sprites/Item/coin");
+            return GeneratedSpriteResourceResolver.LoadCoinSprite();
         }
 
         private static void ApplyGeneratedPanelSprite(Image image, string spriteName, Color color)
@@ -830,12 +829,7 @@ namespace Code.Scripts.UI
                 return;
             }
 
-            string resourcePath = $"{PrototypeGeneratedAssetSettings.GetCurrent().GeneratedUiPanelResourceRoot}/{spriteName}";
-            Sprite sprite = Resources.Load<Sprite>(resourcePath);
-            if (sprite == null)
-            {
-                sprite = Resources.Load<Sprite>($"Generated/Sprites/UI/Panels/{spriteName}");
-            }
+            Sprite sprite = GeneratedSpriteResourceResolver.LoadUiPanelSprite(spriteName);
 
             if (sprite != null)
             {

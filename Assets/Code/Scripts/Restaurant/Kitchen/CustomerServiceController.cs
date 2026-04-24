@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Code.Scripts.CoreLoop.Core;
 using UnityEngine;
 
 namespace Code.Scripts.Restaurant.Kitchen
@@ -212,7 +213,7 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private void BindDependencies()
         {
-            HubRuntimeContext hubContext = HubRuntimeContext.Active;
+            HubRuntimeContext hubContext = GameRuntimeAccess.HubContext;
 
             if (flowController == null)
             {
@@ -245,9 +246,10 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private IReadOnlyList<DiningTableStation> ResolveTables()
         {
-            if (HubRuntimeContext.Active != null && HubRuntimeContext.Active.DiningTables != null)
+            HubRuntimeContext hubContext = GameRuntimeAccess.HubContext;
+            if (hubContext != null && hubContext.DiningTables != null)
             {
-                return HubRuntimeContext.Active.DiningTables;
+                return hubContext.DiningTables;
             }
 
             return Array.Empty<DiningTableStation>();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Code.Scripts.CoreLoop.Core;
 using Code.Scripts.Shared.Data;
@@ -290,7 +289,7 @@ namespace Code.Scripts.Management.Storage
 
             builder.AppendLine();
 
-            InventoryEntry depositEntry = GetSelectedInventoryEntry(GameManager.Instance != null ? GameManager.Instance.Inventory : null);
+            InventoryEntry depositEntry = GetSelectedInventoryEntry(GameRuntimeAccess.Inventory);
             builder.AppendLine(depositEntry != null
                 ? $"맡길 품목: {depositEntry.resource.DisplayName} x{depositEntry.amount}"
                 : "맡길 품목: 없음");
@@ -314,10 +313,7 @@ namespace Code.Scripts.Management.Storage
             }
 
             inventory.InitializeIfNeeded();
-            return inventory.RuntimeItems
-                .Where(entry => entry != null && entry.resource != null && entry.amount > 0)
-                .Select(entry => new InventoryEntry(entry.resource, entry.amount))
-                .ToList();
+            return InventoryEntrySnapshotUtility.BuildPositiveSnapshot(inventory.RuntimeItems);
         }
 
         /// <summary>
@@ -325,10 +321,7 @@ namespace Code.Scripts.Management.Storage
         /// </summary>
         private List<InventoryEntry> GetStorageSnapshot()
         {
-            return runtimeItems
-                .Where(entry => entry != null && entry.resource != null && entry.amount > 0)
-                .Select(entry => new InventoryEntry(entry.resource, entry.amount))
-                .ToList();
+            return InventoryEntrySnapshotUtility.BuildPositiveSnapshot(runtimeItems);
         }
 
         /// <summary>
@@ -336,13 +329,7 @@ namespace Code.Scripts.Management.Storage
         /// </summary>
         private static int GetNormalizedIndex(int count, int index)
         {
-            if (count <= 0)
-            {
-                return -1;
-            }
-
-            int normalized = index % count;
-            return normalized < 0 ? normalized + count : normalized;
+            return InventoryEntrySnapshotUtility.NormalizeCyclicIndex(count, index);
         }
 
         /// <summary>
@@ -394,12 +381,7 @@ namespace Code.Scripts.Management.Storage
         /// </summary>
         private void RefreshRuntimeItems()
         {
-            runtimeItems.Clear();
-
-            foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
-            {
-                runtimeItems.Add(new InventoryEntry(pair.Key, pair.Value));
-            }
+            InventoryEntrySnapshotUtility.RefreshRuntimeEntries(runtimeItems, itemAmounts);
         }
 
         /// <summary>

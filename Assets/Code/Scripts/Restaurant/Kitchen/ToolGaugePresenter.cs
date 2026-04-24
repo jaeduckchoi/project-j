@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Code.Scripts.CoreLoop.Core;
 using UnityEngine;
 
 namespace Code.Scripts.Restaurant.Kitchen
@@ -40,8 +41,9 @@ namespace Code.Scripts.Restaurant.Kitchen
         /// </summary>
         public static void SetSceneGaugeProgress(KitchenToolType toolType, float normalizedProgress)
         {
-            if (HubRuntimeContext.Active == null
-                || !HubRuntimeContext.Active.TryGetGaugePresenter(toolType, out ToolGaugePresenter presenter))
+            HubRuntimeContext hubContext = GameRuntimeAccess.HubContext;
+            if (hubContext == null
+                || !hubContext.TryGetGaugePresenter(toolType, out ToolGaugePresenter presenter))
             {
                 return;
             }

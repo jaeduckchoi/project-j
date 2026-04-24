@@ -176,55 +176,181 @@ namespace Code.Scripts.UI
             public float FontSizeMax { get; }
         }
 
-        private sealed class PopupListEntry
-        {
-            public PopupListEntry(
-                string key,
-                string title,
-                string summary,
-                string detail,
-                Sprite icon,
-                bool isSelected,
-                Action onSelected,
-                ResourceData resource = null,
-                int amount = 0,
-                bool canRemoveFromInventory = false)
-            {
-                Key = key;
-                Title = title;
-                Summary = summary;
-                Detail = detail;
-                Icon = icon;
-                IsSelected = isSelected;
-                OnSelected = onSelected;
-                Resource = resource;
-                Amount = amount;
-                CanRemoveFromInventory = canRemoveFromInventory;
-            }
+    }
 
-            public string Key { get; }
-            public string Title { get; }
-            public string Summary { get; }
-            public string Detail { get; }
-            public Sprite Icon { get; }
-            public bool IsSelected { get; }
-            public Action OnSelected { get; }
-            public ResourceData Resource { get; }
-            public int Amount { get; }
-            public bool CanRemoveFromInventory { get; }
+    internal sealed class PopupListEntry
+    {
+        internal PopupListEntry(
+            string key,
+            string title,
+            string summary,
+            string detail,
+            Sprite icon,
+            bool isSelected,
+            Action onSelected,
+            ResourceData resource = null,
+            int amount = 0,
+            bool canRemoveFromInventory = false)
+        {
+            Key = key;
+            Title = title;
+            Summary = summary;
+            Detail = detail;
+            Icon = icon;
+            IsSelected = isSelected;
+            OnSelected = onSelected;
+            Resource = resource;
+            Amount = amount;
+            CanRemoveFromInventory = canRemoveFromInventory;
         }
 
-        private sealed class PopupPanelContent
-        {
-            public PopupPanelContent(List<PopupListEntry> entries, string detailText)
-            {
-                Entries = entries ?? new List<PopupListEntry>();
-                DetailText = detailText ?? string.Empty;
-            }
+        internal string Key { get; }
+        internal string Title { get; }
+        internal string Summary { get; }
+        internal string Detail { get; }
+        internal Sprite Icon { get; }
+        internal bool IsSelected { get; }
+        internal Action OnSelected { get; }
+        internal ResourceData Resource { get; }
+        internal int Amount { get; }
+        internal bool CanRemoveFromInventory { get; }
+    }
 
-            public List<PopupListEntry> Entries { get; }
-            public string DetailText { get; }
+    internal sealed class PopupPanelContent
+    {
+        internal PopupPanelContent(List<PopupListEntry> entries, string detailText)
+        {
+            Entries = entries ?? new List<PopupListEntry>();
+            DetailText = detailText ?? string.Empty;
         }
 
+        internal List<PopupListEntry> Entries { get; }
+        internal string DetailText { get; }
+    }
+
+    internal static class UIManagerPopupContentUtility
+    {
+        internal static RecipeData ResolveDetailRecipe(RestaurantManager restaurant)
+        {
+            if (restaurant == null)
+            {
+                return null;
+            }
+
+            RecipeData detailRecipe = restaurant.SelectedRecipe;
+            if (detailRecipe != null)
+            {
+                return detailRecipe;
+            }
+
+            IReadOnlyList<RecipeData> todayMenuRecipes = restaurant.TodayMenuRecipes;
+            for (int index = 0; index < todayMenuRecipes.Count; index++)
+            {
+                if (todayMenuRecipes[index] != null)
+                {
+                    return todayMenuRecipes[index];
+                }
+            }
+
+            IReadOnlyList<RecipeData> recipes = restaurant.AvailableRecipes;
+            for (int index = 0; index < recipes.Count; index++)
+            {
+                if (recipes[index] != null)
+                {
+                    return recipes[index];
+                }
+            }
+
+            return null;
+        }
+
+        internal static InventoryEntry ResolveDetailEntry(IEnumerable<InventoryEntry> entries, ResourceData selectedResource)
+        {
+            InventoryEntry detailEntry = null;
+            if (entries == null)
+            {
+                return null;
+            }
+
+            foreach (InventoryEntry entry in entries)
+            {
+                if (entry == null || entry.resource == null || entry.amount <= 0)
+                {
+                    continue;
+                }
+
+                if (detailEntry == null || entry.resource == selectedResource)
+                {
+                    detailEntry = entry;
+                }
+            }
+
+            return detailEntry;
+        }
+
+        internal static bool ContainsEntryKey(IReadOnlyList<PopupListEntry> entries, string key)
+        {
+            if (entries == null || string.IsNullOrWhiteSpace(key))
+            {
+                return false;
+            }
+
+            for (int index = 0; index < entries.Count; index++)
+            {
+                PopupListEntry entry = entries[index];
+                if (entry != null && entry.Key == key)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        internal static PopupPanelContent BuildSelectedPopupContent(IReadOnlyList<PopupListEntry> rawEntries, string selectedKey, string preferredKey)
+        {
+            if (rawEntries == null || rawEntries.Count == 0)
+            {
+                return new PopupPanelContent(new List<PopupListEntry>(), string.Empty);
+            }
+
+            string resolvedSelectedKey = ContainsEntryKey(rawEntries, selectedKey)
+                ? selectedKey
+                : ContainsEntryKey(rawEntries, preferredKey)
+                    ? preferredKey
+                    : rawEntries[0].Key;
+
+            List<PopupListEntry> entries = new(rawEntries.Count);
+            string detailText = rawEntries[0].Detail;
+            for (int index = 0; index < rawEntries.Count; index++)
+            {
+                PopupListEntry entry = rawEntries[index];
+                bool isSelected = entry != null && entry.Key == resolvedSelectedKey;
+                if (entry == null)
+                {
+                    continue;
+                }
+
+                entries.Add(new PopupListEntry(entry.Key, entry.Title, entry.Summary, entry.Detail, entry.Icon, isSelected, entry.OnSelected, entry.Resource, entry.Amount, entry.CanRemoveFromInventory));
+                if (isSelected)
+                {
+                    detailText = entry.Detail;
+                }
+            }
+
+            return new PopupPanelContent(entries, detailText);
+        }
+
+        internal static string BuildPopupItemSummary(string description, string fallback)
+        {
+            string source = string.IsNullOrWhiteSpace(description) ? fallback : description;
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return string.Empty;
+            }
+
+            string normalized = source.Replace("\r\n", " ").Replace('\n', ' ').Trim();
+            return normalized.Length > 32 ? $"{normalized.Substring(0, 29)}..." : normalized;
+        }
     }
 }

@@ -546,20 +546,7 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private bool CanPayCost(int goldCost, ResourceData requiredResource, int requiredAmount)
         {
-            EconomyManager economy = GetEconomy();
-            InventoryManager inventory = GetInventory();
-
-            if (goldCost > 0 && (economy == null || economy.CurrentGold < goldCost))
-            {
-                return false;
-            }
-
-            if (requiredResource != null && requiredAmount > 0 && (inventory == null || !inventory.Has(requiredResource, requiredAmount)))
-            {
-                return false;
-            }
-
-            return true;
+            return UpgradeCostTransaction.CanPay(GetEconomy(), GetInventory(), goldCost, requiredResource, requiredAmount);
         }
 
         /// <summary>
@@ -567,29 +554,27 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private bool TrySpendCost(int goldCost, ResourceData requiredResource, int requiredAmount, string actionLabel)
         {
-            if (!CanPayCost(goldCost, requiredResource, requiredAmount))
+            if (!UpgradeCostTransaction.TrySpend(
+                    GetEconomy(),
+                    GetInventory(),
+                    goldCost,
+                    requiredResource,
+                    requiredAmount,
+                    out string failureReason))
             {
-                SetMessage($"{actionLabel} 비용이 부족합니다. 필요: {BuildCostText(goldCost, requiredResource, requiredAmount)}");
-                return false;
-            }
-
-            InventoryManager inventory = GetInventory();
-            EconomyManager economy = GetEconomy();
-
-            if (requiredResource != null && requiredAmount > 0 && (inventory == null || !inventory.TryRemove(requiredResource, requiredAmount)))
-            {
-                SetMessage($"{actionLabel} 재료를 소모하지 못했습니다.");
-                return false;
-            }
-
-            if (goldCost > 0 && (economy == null || !economy.TrySpendGold(goldCost)))
-            {
-                if (requiredResource != null && requiredAmount > 0)
+                switch (failureReason)
                 {
-                    inventory?.TryAdd(requiredResource, requiredAmount, out _);
+                    case "insufficient-cost":
+                        SetMessage($"{actionLabel} 비용이 부족합니다. 필요: {BuildCostText(goldCost, requiredResource, requiredAmount)}");
+                        break;
+                    case "consume-resource-failed":
+                        SetMessage($"{actionLabel} 재료를 소모하지 못했습니다.");
+                        break;
+                    default:
+                        SetMessage($"{actionLabel} 골드가 부족합니다.");
+                        break;
                 }
 
-                SetMessage($"{actionLabel} 골드가 부족합니다.");
                 return false;
             }
 
@@ -601,15 +586,7 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private void RefundCost(int goldCost, ResourceData requiredResource, int requiredAmount)
         {
-            if (goldCost > 0)
-            {
-                GetEconomy()?.AddGold(goldCost);
-            }
-
-            if (requiredResource != null && requiredAmount > 0)
-            {
-                GetInventory()?.TryAdd(requiredResource, requiredAmount, out _);
-            }
+            UpgradeCostTransaction.Refund(GetEconomy(), GetInventory(), goldCost, requiredResource, requiredAmount);
         }
 
         /// <summary>
@@ -664,7 +641,7 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private InventoryManager GetInventory()
         {
-            return GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            return GameRuntimeAccess.Inventory;
         }
 
         /// <summary>
@@ -672,7 +649,7 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private EconomyManager GetEconomy()
         {
-            return GameManager.Instance != null ? GameManager.Instance.Economy : null;
+            return GameRuntimeAccess.Economy;
         }
 
         /// <summary>
@@ -680,7 +657,7 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private ToolManager GetTools()
         {
-            return GameManager.Instance != null ? GameManager.Instance.Tools : null;
+            return GameRuntimeAccess.Tools;
         }
 
         /// <summary>
@@ -725,5 +702,71 @@ namespace Code.Scripts.Management.Upgrade
         None,
         UnlockTool,
         UpgradeInventory
+    }
+
+    internal static class UpgradeCostTransaction
+    {
+        internal static bool CanPay(EconomyManager economy, InventoryManager inventory, int goldCost, ResourceData requiredResource, int requiredAmount)
+        {
+            if (goldCost > 0 && (economy == null || economy.CurrentGold < goldCost))
+            {
+                return false;
+            }
+
+            if (requiredResource != null && requiredAmount > 0 && (inventory == null || !inventory.Has(requiredResource, requiredAmount)))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        internal static bool TrySpend(
+            EconomyManager economy,
+            InventoryManager inventory,
+            int goldCost,
+            ResourceData requiredResource,
+            int requiredAmount,
+            out string failureReason)
+        {
+            if (!CanPay(economy, inventory, goldCost, requiredResource, requiredAmount))
+            {
+                failureReason = "insufficient-cost";
+                return false;
+            }
+
+            if (requiredResource != null && requiredAmount > 0 && (inventory == null || !inventory.TryRemove(requiredResource, requiredAmount)))
+            {
+                failureReason = "consume-resource-failed";
+                return false;
+            }
+
+            if (goldCost > 0 && (economy == null || !economy.TrySpendGold(goldCost)))
+            {
+                if (requiredResource != null && requiredAmount > 0)
+                {
+                    inventory?.TryAdd(requiredResource, requiredAmount, out _);
+                }
+
+                failureReason = "consume-gold-failed";
+                return false;
+            }
+
+            failureReason = string.Empty;
+            return true;
+        }
+
+        internal static void Refund(EconomyManager economy, InventoryManager inventory, int goldCost, ResourceData requiredResource, int requiredAmount)
+        {
+            if (goldCost > 0)
+            {
+                economy?.AddGold(goldCost);
+            }
+
+            if (requiredResource != null && requiredAmount > 0)
+            {
+                inventory?.TryAdd(requiredResource, requiredAmount, out _);
+            }
+        }
     }
 }

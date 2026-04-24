@@ -12,7 +12,7 @@ namespace Code.Scripts.UI
         // 런타임 매니저 이벤트와 선택적 UI 참조를 한 곳에서 다시 묶어 씬 재진입 시 중복 구독을 막습니다.
         private void BindSceneReferences()
         {
-            cachedPlayer = FindFirstObjectByType<PlayerController>();
+            cachedPlayer = GameRuntimeAccess.ResolvePlayer();
             BindTypedPopupUi();
             BindInventory();
             BindStorage();
@@ -28,12 +28,7 @@ namespace Code.Scripts.UI
         {
             UnbindInventory();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedInventory = GameManager.Instance.Inventory;
+            cachedInventory = GameRuntimeAccess.Inventory;
             if (cachedInventory != null)
             {
                 cachedInventory.InventoryChanged += HandleInventoryChanged;
@@ -53,12 +48,7 @@ namespace Code.Scripts.UI
         {
             UnbindStorage();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedStorage = GameManager.Instance.Storage;
+            cachedStorage = GameRuntimeAccess.Storage;
             if (cachedStorage != null)
             {
                 cachedStorage.StorageChanged += RefreshStorageText;
@@ -78,12 +68,7 @@ namespace Code.Scripts.UI
         {
             UnbindEconomy();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedEconomy = GameManager.Instance.Economy;
+            cachedEconomy = GameRuntimeAccess.Economy;
             if (cachedEconomy != null)
             {
                 cachedEconomy.GoldChanged += HandleEconomyChanged;
@@ -105,12 +90,7 @@ namespace Code.Scripts.UI
         {
             UnbindTools();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedToolManager = GameManager.Instance.Tools;
+            cachedToolManager = GameRuntimeAccess.Tools;
             if (cachedToolManager != null)
             {
                 cachedToolManager.ToolsChanged += HandleToolsChanged;
@@ -129,9 +109,9 @@ namespace Code.Scripts.UI
         private void BindRestaurant()
         {
             UnbindRestaurant();
-            cachedRestaurant = IsHubScene() && HubRuntimeContext.Active != null
-                ? HubRuntimeContext.Active.RestaurantManager
-                : FindFirstObjectByType<RestaurantManager>();
+            cachedRestaurant = IsHubScene()
+                ? GameRuntimeAccess.ResolveRestaurant()
+                : GameRuntimeAccess.FindObject<RestaurantManager>();
 
             if (cachedRestaurant != null)
             {
@@ -157,9 +137,9 @@ namespace Code.Scripts.UI
         private void BindCustomerService()
         {
             UnbindCustomerService();
-            cachedCustomerService = IsHubScene() && HubRuntimeContext.Active != null
-                ? HubRuntimeContext.Active.CustomerServiceController
-                : FindFirstObjectByType<CustomerServiceController>();
+            cachedCustomerService = IsHubScene()
+                ? GameRuntimeAccess.ResolveCustomerService()
+                : GameRuntimeAccess.FindObject<CustomerServiceController>();
             if (cachedCustomerService != null)
             {
                 cachedCustomerService.TicketsChanged += HandleCustomerTicketsChanged;
@@ -179,12 +159,7 @@ namespace Code.Scripts.UI
         {
             UnbindDayCycle();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedDayCycle = GameManager.Instance.DayCycle;
+            cachedDayCycle = GameRuntimeAccess.DayCycle;
             if (cachedDayCycle != null)
             {
                 cachedDayCycle.StateChanged += RefreshDayCycleState;
@@ -204,12 +179,7 @@ namespace Code.Scripts.UI
         {
             UnbindUpgradeManager();
 
-            if (GameManager.Instance == null)
-            {
-                return;
-            }
-
-            cachedUpgradeManager = GameManager.Instance.Upgrades;
+            cachedUpgradeManager = GameRuntimeAccess.Upgrades;
             if (cachedUpgradeManager != null)
             {
                 cachedUpgradeManager.UpgradeStateChanged += RefreshUpgradeText;

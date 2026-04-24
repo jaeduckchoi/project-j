@@ -66,9 +66,9 @@ namespace Code.Scripts.Restaurant.Kitchen
                 return true;
             }
 
-            if (HubRuntimeContext.Active != null && HubRuntimeContext.Active.RestaurantFlowController != null)
+            if (GameRuntimeAccess.HubContext != null && GameRuntimeAccess.HubContext.RestaurantFlowController != null)
             {
-                controller = HubRuntimeContext.Active.RestaurantFlowController;
+                controller = GameRuntimeAccess.HubContext.RestaurantFlowController;
                 Instance = controller;
                 return true;
             }
@@ -179,7 +179,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public void SelectCookingTool(KitchenToolType toolType)
         {
             EnsureServices();
-            if (!IsCookingTool(toolType))
+            if (!KitchenToolTypeUtility.IsCookingTool(toolType))
             {
                 return;
             }
@@ -211,7 +211,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool TryAddCookingIngredient(KitchenToolType toolType, ResourceData resource)
         {
             EnsureServices();
-            if (!IsOpen || !IsCookingTool(toolType) || resource == null)
+            if (!IsOpen || !KitchenToolTypeUtility.IsCookingTool(toolType) || resource == null)
             {
                 return false;
             }
@@ -249,38 +249,10 @@ namespace Code.Scripts.Restaurant.Kitchen
         public IReadOnlyList<ResourceData> GetSelectableIngredientsForTool(KitchenToolType toolType)
         {
             EnsureServices();
-            List<ResourceData> resources = new();
-            if (!IsCookingTool(toolType) || restaurantManager == null)
-            {
-                return resources;
-            }
-
-            HashSet<string> addedIds = new(StringComparer.OrdinalIgnoreCase);
-            foreach (RecipeData recipe in restaurantManager.TodayMenuRecipes)
-            {
-                if (recipe == null || !IsToolMatchedRecipe(toolType, recipe))
-                {
-                    continue;
-                }
-
-                IReadOnlyList<RecipeIngredient> ingredients = recipe.Ingredients;
-                for (int index = 0; index < ingredients.Count; index++)
-                {
-                    if (!TryResolveRecipeIngredientResource(ingredients[index], out ResourceData resource) || resource == null)
-                    {
-                        continue;
-                    }
-
-                    if (!addedIds.Add(resource.ResourceId))
-                    {
-                        continue;
-                    }
-
-                    resources.Add(resource);
-                }
-            }
-
-            return resources;
+            return RestaurantFlowSelectionUtility.GetSelectableIngredients(
+                toolType,
+                restaurantManager,
+                ingredient => TryResolveRecipeIngredientResource(ingredient, out ResourceData resource) ? resource : null);
         }
 
         /// <summary>
@@ -309,7 +281,7 @@ namespace Code.Scripts.Restaurant.Kitchen
                 return int.MaxValue;
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (inventory == null)
             {
                 return 0;
@@ -373,7 +345,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool ShouldShowToolPanel(KitchenToolType toolType)
         {
             EnsureServices();
-            if (!IsOpen || !IsCookingTool(toolType))
+            if (!IsOpen || !KitchenToolTypeUtility.IsCookingTool(toolType))
             {
                 return false;
             }
@@ -388,7 +360,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool TryStartSelectedCooking(KitchenToolType toolType, GameObject interactor)
         {
             EnsureServices();
-            if (!IsOpen || !IsCookingTool(toolType) || !Carry.IsEmpty)
+            if (!IsOpen || !KitchenToolTypeUtility.IsCookingTool(toolType) || !Carry.IsEmpty)
             {
                 return false;
             }
@@ -446,7 +418,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool TryTakeInventoryIngredient(ResourceData resource)
         {
             EnsureServices();
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (resource == null || !Carry.IsEmpty || inventory == null)
             {
                 return false;
@@ -627,7 +599,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool CanUseTool(KitchenToolType toolType)
         {
             EnsureServices();
-            return IsOpen && IsCookingTool(toolType);
+            return IsOpen && KitchenToolTypeUtility.IsCookingTool(toolType);
         }
 
         /// <summary>
@@ -636,7 +608,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         public bool TryUseTool(KitchenToolType toolType, GameObject interactor)
         {
             EnsureServices();
-            if (!IsOpen || !IsCookingTool(toolType))
+            if (!IsOpen || !KitchenToolTypeUtility.IsCookingTool(toolType))
             {
                 return false;
             }
@@ -713,7 +685,7 @@ namespace Code.Scripts.Restaurant.Kitchen
         {
             if (stationType != KitchenToolType.Refrigerator && !IsOpen)
             {
-                GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
+                GameRuntimeAccess.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
                 return;
             }
 
@@ -745,14 +717,7 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private string BuildPrompt(KitchenToolType stationType)
         {
-            return stationType switch
-            {
-                KitchenToolType.Refrigerator => "[E] Refrigerator",
-                KitchenToolType.FrontCounter => IsOpen ? "[E] PassCounter" : "OPEN 후 사용 가능",
-                KitchenToolType.CuttingBoard or KitchenToolType.Pot or KitchenToolType.FryingPan or KitchenToolType.Fryer
-                    => IsOpen ? BuildToolPrompt(stationType) : "OPEN 후 사용 가능",
-                _ => string.Empty
-            };
+            return KitchenStationPromptUtility.BuildPrompt(stationType, IsOpen, BuildToolPrompt);
         }
 
         private void TickToolSessions(float deltaSeconds)
@@ -782,9 +747,9 @@ namespace Code.Scripts.Restaurant.Kitchen
         {
             if (restaurantManager == null)
             {
-                if (HubRuntimeContext.Active != null && HubRuntimeContext.Active.RestaurantManager != null)
+                if (GameRuntimeAccess.HubContext != null && GameRuntimeAccess.HubContext.RestaurantManager != null)
                 {
-                    restaurantManager = HubRuntimeContext.Active.RestaurantManager;
+                    restaurantManager = GameRuntimeAccess.HubContext.RestaurantManager;
                 }
                 else
                 {
@@ -801,9 +766,9 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private RestaurantRecipeCatalog ResolveRecipeCatalog()
         {
-            if (HubRuntimeContext.Active != null)
+            if (GameRuntimeAccess.HubContext != null)
             {
-                return HubRuntimeContext.Active.RecipeCatalog;
+                return GameRuntimeAccess.HubContext.RecipeCatalog;
             }
 
             standaloneRecipeCatalog ??= RestaurantRecipeCatalog.Create(
@@ -826,20 +791,9 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private bool IsDishAvailableToday(KitchenDishData dish)
         {
-            if (dish == null || string.IsNullOrWhiteSpace(dish.RecipeId) || restaurantManager == null)
-            {
-                return false;
-            }
-
-            foreach (RecipeData recipe in restaurantManager.TodayMenuRecipes)
-            {
-                if (recipe != null && string.Equals(recipe.RecipeId, dish.RecipeId, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return dish != null
+                && !string.IsNullOrWhiteSpace(dish.RecipeId)
+                && RestaurantFlowSelectionUtility.IsRecipeAvailableToday(dish.RecipeId, restaurantManager);
         }
 
         private bool IsStageAvailableToday(KitchenStageRecipeData stage)
@@ -852,43 +806,12 @@ namespace Code.Scripts.Restaurant.Kitchen
 
         private bool IsRecipeAvailableToday(string recipeId)
         {
-            if (string.IsNullOrWhiteSpace(recipeId) || restaurantManager == null)
-            {
-                return false;
-            }
-
-            foreach (RecipeData recipe in restaurantManager.TodayMenuRecipes)
-            {
-                if (recipe != null && string.Equals(recipe.RecipeId, recipeId, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return RestaurantFlowSelectionUtility.IsRecipeAvailableToday(recipeId, restaurantManager);
         }
 
         private bool IsToolMatchedRecipe(KitchenToolType toolType, RecipeData recipe)
         {
-            if (recipe == null)
-            {
-                return false;
-            }
-
-            string method = string.IsNullOrWhiteSpace(recipe.CookingMethod) ? string.Empty : recipe.CookingMethod.Trim();
-            return toolType switch
-            {
-                KitchenToolType.CuttingBoard => method.IndexOf("도마", StringComparison.OrdinalIgnoreCase) >= 0
-                    || method.IndexOf("cutting", StringComparison.OrdinalIgnoreCase) >= 0,
-                KitchenToolType.Pot => method.IndexOf("냄비", StringComparison.OrdinalIgnoreCase) >= 0
-                    || string.Equals(method, "pot", StringComparison.OrdinalIgnoreCase),
-                KitchenToolType.FryingPan => method.IndexOf("후라이팬", StringComparison.OrdinalIgnoreCase) >= 0
-                    || method.IndexOf("프라이팬", StringComparison.OrdinalIgnoreCase) >= 0
-                    || method.IndexOf("frying", StringComparison.OrdinalIgnoreCase) >= 0,
-                KitchenToolType.Fryer => method.IndexOf("튀김기", StringComparison.OrdinalIgnoreCase) >= 0
-                    || method.IndexOf("fryer", StringComparison.OrdinalIgnoreCase) >= 0,
-                _ => false
-            };
+            return KitchenToolTypeUtility.MatchesRecipe(toolType, recipe);
         }
 
         private bool TryResolveRecipeIngredientResource(RecipeIngredient ingredient, out ResourceData resource)
@@ -934,145 +857,26 @@ namespace Code.Scripts.Restaurant.Kitchen
         private bool CanAddCookingIngredient(ResourceData resource)
         {
             RestaurantRecipeCatalog recipeCatalog = ResolveRecipeCatalog();
-            if (resource == null || recipeCatalog == null)
-            {
-                return false;
-            }
-
-            if (recipeCatalog.IsBasicIngredient(resource))
-            {
-                return true;
-            }
-
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-            if (inventory == null)
-            {
-                return false;
-            }
-
-            inventory.InitializeIfNeeded();
-            return inventory.GetAmount(resource) > GetSelectedIngredientCount(resource);
+            return RestaurantFlowSelectionUtility.CanAddIngredient(
+                resource,
+                recipeCatalog,
+                GameRuntimeAccess.Inventory,
+                selectedToolIngredients);
         }
 
         private int GetSelectedIngredientCount(ResourceData resource)
         {
-            if (resource == null)
-            {
-                return 0;
-            }
-
-            int count = 0;
-            for (int index = 0; index < selectedToolIngredients.Count; index++)
-            {
-                ResourceData selected = selectedToolIngredients[index];
-                if (selected != null && string.Equals(selected.ResourceId, resource.ResourceId, StringComparison.OrdinalIgnoreCase))
-                {
-                    count++;
-                }
-            }
-
-            return count;
+            return RestaurantFlowSelectionUtility.GetSelectedIngredientCount(selectedToolIngredients, resource);
         }
 
         private string BuildSelectedIngredientSignature()
         {
-            if (selectedToolIngredients.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            List<KitchenCarryItem> items = new List<KitchenCarryItem>(selectedToolIngredients.Count);
-            for (int index = 0; index < selectedToolIngredients.Count; index++)
-            {
-                ResourceData resource = selectedToolIngredients[index];
-                if (resource == null)
-                {
-                    continue;
-                }
-
-                items.Add(new KitchenCarryItem(
-                    null,
-                    resource,
-                    KitchenItemState.Raw,
-                    1,
-                    false,
-                    false,
-                    string.Empty,
-                    null));
-            }
-
-            return KitchenSignatureUtility.BuildSignature(items);
+            return RestaurantFlowSelectionUtility.BuildSelectedIngredientSignature(selectedToolIngredients);
         }
 
         private bool ConsumeStageInputs(KitchenStageRecipeData stage)
         {
-            RestaurantRecipeCatalog recipeCatalog = ResolveRecipeCatalog();
-            if (stage == null || recipeCatalog == null)
-            {
-                return false;
-            }
-
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
-            if (inventory != null)
-            {
-                inventory.InitializeIfNeeded();
-            }
-
-            Dictionary<ResourceData, int> required = new();
-            IReadOnlyList<KitchenItemRequirement> inputs = stage.InputItems;
-            for (int index = 0; index < inputs.Count; index++)
-            {
-                KitchenItemRequirement input = inputs[index];
-                if (input == null || input.ResourceData == null)
-                {
-                    continue;
-                }
-
-                ResourceData resource = input.ResourceData;
-                required.TryGetValue(resource, out int amount);
-                required[resource] = amount + input.Quantity;
-            }
-
-            foreach (KeyValuePair<ResourceData, int> pair in required)
-            {
-                if (pair.Key == null || pair.Value <= 0)
-                {
-                    continue;
-                }
-
-                if (recipeCatalog.IsBasicIngredient(pair.Key))
-                {
-                    continue;
-                }
-
-                if (inventory == null || inventory.GetAmount(pair.Key) < pair.Value)
-                {
-                    return false;
-                }
-            }
-
-            foreach (KeyValuePair<ResourceData, int> pair in required)
-            {
-                if (pair.Key == null || pair.Value <= 0 || recipeCatalog.IsBasicIngredient(pair.Key))
-                {
-                    continue;
-                }
-
-                if (!inventory.TryRemove(pair.Key, pair.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static bool IsCookingTool(KitchenToolType toolType)
-        {
-            return toolType == KitchenToolType.CuttingBoard
-                || toolType == KitchenToolType.Pot
-                || toolType == KitchenToolType.FryingPan
-                || toolType == KitchenToolType.Fryer;
+            return RestaurantFlowSelectionUtility.ConsumeStageInputs(stage, ResolveRecipeCatalog(), GameRuntimeAccess.Inventory);
         }
 
         private ToolCookingSession GetToolSession(KitchenToolType toolType)
@@ -1090,6 +894,141 @@ namespace Code.Scripts.Restaurant.Kitchen
         }
 
         private static bool TryResolveLegacyStationType(GameObject source, string promptLabel, out KitchenToolType stationType)
+        {
+            return KitchenStationPromptUtility.TryResolveLegacyStationType(source, promptLabel, out stationType);
+        }
+
+        private static string GetToolDisplayName(KitchenToolType toolType)
+        {
+            return KitchenToolTypeUtility.GetDisplayName(toolType);
+        }
+
+        private void ApplyMovementLock(GameObject interactor, ToolCookingSession session)
+        {
+            PlayerController player = interactor != null ? interactor.GetComponent<PlayerController>() : null;
+            if (player == null)
+            {
+                player = GameRuntimeAccess.ResolvePlayer();
+            }
+
+            if (player == null)
+            {
+                return;
+            }
+
+            ClearMovementLock();
+            movementLockedPlayer = player;
+            movementLockSession = session;
+            movementLockedPlayer.SetMovementMultiplierSource(session, 0f);
+        }
+
+        private void ClearMovementLock()
+        {
+            if (movementLockedPlayer != null && movementLockSession != null)
+            {
+                movementLockedPlayer.ClearMovementMultiplierSource(movementLockSession);
+            }
+
+            movementLockedPlayer = null;
+            movementLockSession = null;
+        }
+
+        private static bool ReadInteractHeld()
+        {
+            bool held = false;
+#if ENABLE_INPUT_SYSTEM
+            Keyboard keyboard = Keyboard.current;
+            held |= keyboard != null && (keyboard.eKey.isPressed || keyboard.enterKey.isPressed);
+#endif
+#if ENABLE_LEGACY_INPUT_MANAGER
+            held |= Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Return);
+#endif
+            return held;
+        }
+
+        private void HandleKitchenStateChanged()
+        {
+            NotifyChanged(true);
+        }
+
+        private void NotifyChanged(bool changed)
+        {
+            if (changed)
+            {
+                KitchenStateChanged?.Invoke();
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRuntimeState()
+        {
+            Instance = null;
+        }
+    }
+
+    internal static class KitchenToolTypeUtility
+    {
+        internal static bool IsCookingTool(KitchenToolType toolType)
+        {
+            return toolType == KitchenToolType.CuttingBoard
+                || toolType == KitchenToolType.Pot
+                || toolType == KitchenToolType.FryingPan
+                || toolType == KitchenToolType.Fryer;
+        }
+
+        internal static bool MatchesRecipe(KitchenToolType toolType, RecipeData recipe)
+        {
+            if (recipe == null)
+            {
+                return false;
+            }
+
+            string method = string.IsNullOrWhiteSpace(recipe.CookingMethod) ? string.Empty : recipe.CookingMethod.Trim();
+            return toolType switch
+            {
+                KitchenToolType.CuttingBoard => method.IndexOf("도마", StringComparison.OrdinalIgnoreCase) >= 0
+                    || method.IndexOf("cutting", StringComparison.OrdinalIgnoreCase) >= 0,
+                KitchenToolType.Pot => method.IndexOf("냄비", StringComparison.OrdinalIgnoreCase) >= 0
+                    || string.Equals(method, "pot", StringComparison.OrdinalIgnoreCase),
+                KitchenToolType.FryingPan => method.IndexOf("후라이팬", StringComparison.OrdinalIgnoreCase) >= 0
+                    || method.IndexOf("프라이팬", StringComparison.OrdinalIgnoreCase) >= 0
+                    || method.IndexOf("frying", StringComparison.OrdinalIgnoreCase) >= 0,
+                KitchenToolType.Fryer => method.IndexOf("튀김기", StringComparison.OrdinalIgnoreCase) >= 0
+                    || method.IndexOf("fryer", StringComparison.OrdinalIgnoreCase) >= 0,
+                _ => false
+            };
+        }
+
+        internal static string GetDisplayName(KitchenToolType toolType)
+        {
+            return toolType switch
+            {
+                KitchenToolType.CuttingBoard => "Cutting Board",
+                KitchenToolType.Pot => "Pot",
+                KitchenToolType.FryingPan => "Frying Pan",
+                KitchenToolType.Fryer => "Fryer",
+                KitchenToolType.Refrigerator => "Refrigerator",
+                KitchenToolType.FrontCounter => "PassCounter",
+                _ => toolType.ToString()
+            };
+        }
+    }
+
+    internal static class KitchenStationPromptUtility
+    {
+        internal static string BuildPrompt(KitchenToolType stationType, bool isOpen, Func<KitchenToolType, string> buildToolPrompt)
+        {
+            return stationType switch
+            {
+                KitchenToolType.Refrigerator => "[E] Refrigerator",
+                KitchenToolType.FrontCounter => isOpen ? "[E] PassCounter" : "OPEN 후 사용 가능",
+                KitchenToolType.CuttingBoard or KitchenToolType.Pot or KitchenToolType.FryingPan or KitchenToolType.Fryer
+                    => isOpen && buildToolPrompt != null ? buildToolPrompt(stationType) : "OPEN 후 사용 가능",
+                _ => string.Empty
+            };
+        }
+
+        internal static bool TryResolveLegacyStationType(GameObject source, string promptLabel, out KitchenToolType stationType)
         {
             string normalizedPrompt = string.IsNullOrWhiteSpace(promptLabel) ? string.Empty : promptLabel.Trim();
             string sourceName = source != null ? source.name : string.Empty;
@@ -1145,81 +1084,192 @@ namespace Code.Scripts.Restaurant.Kitchen
                 && !string.IsNullOrWhiteSpace(token)
                 && value.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
         }
+    }
 
-        private static string GetToolDisplayName(KitchenToolType toolType)
+    internal static class RestaurantFlowSelectionUtility
+    {
+        internal static List<ResourceData> GetSelectableIngredients(
+            KitchenToolType toolType,
+            RestaurantManager restaurantManager,
+            Func<RecipeIngredient, ResourceData> resolveIngredient)
         {
-            return toolType switch
+            List<ResourceData> resources = new();
+            if (!KitchenToolTypeUtility.IsCookingTool(toolType) || restaurantManager == null || resolveIngredient == null)
             {
-                KitchenToolType.CuttingBoard => "Cutting Board",
-                KitchenToolType.Pot => "Pot",
-                KitchenToolType.FryingPan => "Frying Pan",
-                KitchenToolType.Fryer => "Fryer",
-                KitchenToolType.Refrigerator => "Refrigerator",
-                KitchenToolType.FrontCounter => "PassCounter",
-                _ => toolType.ToString()
-            };
-        }
-
-        private void ApplyMovementLock(GameObject interactor, ToolCookingSession session)
-        {
-            PlayerController player = interactor != null ? interactor.GetComponent<PlayerController>() : null;
-            if (player == null)
-            {
-                player = FindFirstObjectByType<PlayerController>();
+                return resources;
             }
 
-            if (player == null)
+            HashSet<string> addedIds = new(StringComparer.OrdinalIgnoreCase);
+            foreach (RecipeData recipe in restaurantManager.TodayMenuRecipes)
             {
-                return;
+                if (recipe == null || !KitchenToolTypeUtility.MatchesRecipe(toolType, recipe))
+                {
+                    continue;
+                }
+
+                IReadOnlyList<RecipeIngredient> ingredients = recipe.Ingredients;
+                for (int index = 0; index < ingredients.Count; index++)
+                {
+                    ResourceData resource = resolveIngredient(ingredients[index]);
+                    if (resource == null || !addedIds.Add(resource.ResourceId))
+                    {
+                        continue;
+                    }
+
+                    resources.Add(resource);
+                }
             }
 
-            ClearMovementLock();
-            movementLockedPlayer = player;
-            movementLockSession = session;
-            movementLockedPlayer.SetMovementMultiplierSource(session, 0f);
+            return resources;
         }
 
-        private void ClearMovementLock()
+        internal static int GetSelectedIngredientCount(IReadOnlyList<ResourceData> selectedIngredients, ResourceData resource)
         {
-            if (movementLockedPlayer != null && movementLockSession != null)
+            if (selectedIngredients == null || resource == null)
             {
-                movementLockedPlayer.ClearMovementMultiplierSource(movementLockSession);
+                return 0;
             }
 
-            movementLockedPlayer = null;
-            movementLockSession = null;
-        }
-
-        private static bool ReadInteractHeld()
-        {
-            bool held = false;
-#if ENABLE_INPUT_SYSTEM
-            Keyboard keyboard = Keyboard.current;
-            held |= keyboard != null && (keyboard.eKey.isPressed || keyboard.enterKey.isPressed);
-#endif
-#if ENABLE_LEGACY_INPUT_MANAGER
-            held |= Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Return);
-#endif
-            return held;
-        }
-
-        private void HandleKitchenStateChanged()
-        {
-            NotifyChanged(true);
-        }
-
-        private void NotifyChanged(bool changed)
-        {
-            if (changed)
+            int count = 0;
+            for (int index = 0; index < selectedIngredients.Count; index++)
             {
-                KitchenStateChanged?.Invoke();
+                ResourceData selected = selectedIngredients[index];
+                if (selected != null && string.Equals(selected.ResourceId, resource.ResourceId, StringComparison.OrdinalIgnoreCase))
+                {
+                    count++;
+                }
             }
+
+            return count;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetRuntimeState()
+        internal static string BuildSelectedIngredientSignature(IReadOnlyList<ResourceData> selectedIngredients)
         {
-            Instance = null;
+            if (selectedIngredients == null || selectedIngredients.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            List<KitchenCarryItem> items = new(selectedIngredients.Count);
+            for (int index = 0; index < selectedIngredients.Count; index++)
+            {
+                ResourceData resource = selectedIngredients[index];
+                if (resource == null)
+                {
+                    continue;
+                }
+
+                items.Add(new KitchenCarryItem(
+                    null,
+                    resource,
+                    KitchenItemState.Raw,
+                    1,
+                    false,
+                    false,
+                    string.Empty,
+                    null));
+            }
+
+            return KitchenSignatureUtility.BuildSignature(items);
+        }
+
+        internal static bool CanAddIngredient(
+            ResourceData resource,
+            RestaurantRecipeCatalog recipeCatalog,
+            InventoryManager inventory,
+            IReadOnlyList<ResourceData> selectedIngredients)
+        {
+            if (resource == null || recipeCatalog == null)
+            {
+                return false;
+            }
+
+            if (recipeCatalog.IsBasicIngredient(resource))
+            {
+                return true;
+            }
+
+            if (inventory == null)
+            {
+                return false;
+            }
+
+            inventory.InitializeIfNeeded();
+            return inventory.GetAmount(resource) > GetSelectedIngredientCount(selectedIngredients, resource);
+        }
+
+        internal static bool IsRecipeAvailableToday(string recipeId, RestaurantManager restaurantManager)
+        {
+            if (string.IsNullOrWhiteSpace(recipeId) || restaurantManager == null)
+            {
+                return false;
+            }
+
+            foreach (RecipeData recipe in restaurantManager.TodayMenuRecipes)
+            {
+                if (recipe != null && string.Equals(recipe.RecipeId, recipeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        internal static bool ConsumeStageInputs(KitchenStageRecipeData stage, RestaurantRecipeCatalog recipeCatalog, InventoryManager inventory)
+        {
+            if (stage == null || recipeCatalog == null)
+            {
+                return false;
+            }
+
+            if (inventory != null)
+            {
+                inventory.InitializeIfNeeded();
+            }
+
+            Dictionary<ResourceData, int> required = new();
+            IReadOnlyList<KitchenItemRequirement> inputs = stage.InputItems;
+            for (int index = 0; index < inputs.Count; index++)
+            {
+                KitchenItemRequirement input = inputs[index];
+                if (input == null || input.ResourceData == null)
+                {
+                    continue;
+                }
+
+                ResourceData resource = input.ResourceData;
+                required.TryGetValue(resource, out int amount);
+                required[resource] = amount + input.Quantity;
+            }
+
+            foreach (KeyValuePair<ResourceData, int> pair in required)
+            {
+                if (pair.Key == null || pair.Value <= 0 || recipeCatalog.IsBasicIngredient(pair.Key))
+                {
+                    continue;
+                }
+
+                if (inventory == null || inventory.GetAmount(pair.Key) < pair.Value)
+                {
+                    return false;
+                }
+            }
+
+            foreach (KeyValuePair<ResourceData, int> pair in required)
+            {
+                if (pair.Key == null || pair.Value <= 0 || recipeCatalog.IsBasicIngredient(pair.Key))
+                {
+                    continue;
+                }
+
+                if (!inventory.TryRemove(pair.Key, pair.Value))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -7,6 +7,7 @@ using Code.Scripts.Management.Inventory;
 using Code.Scripts.Management.Storage;
 using Code.Scripts.Management.Tools;
 using Code.Scripts.Management.Upgrade;
+using Code.Scripts.Shared;
 using Code.Scripts.Shared.Data;
 using TMPro;
 using Code.Scripts.UI.Layout;
@@ -83,30 +84,7 @@ namespace Code.Scripts.UI
 
             IReadOnlyList<RecipeData> recipes = cachedRestaurant.AvailableRecipes;
             IReadOnlyList<RecipeData> todayMenuRecipes = cachedRestaurant.TodayMenuRecipes;
-            RecipeData detailRecipe = cachedRestaurant.SelectedRecipe;
-            if (detailRecipe == null)
-            {
-                for (int i = 0; i < todayMenuRecipes.Count; i++)
-                {
-                    if (todayMenuRecipes[i] != null)
-                    {
-                        detailRecipe = todayMenuRecipes[i];
-                        break;
-                    }
-                }
-            }
-
-            if (detailRecipe == null)
-            {
-                for (int i = 0; i < recipes.Count; i++)
-                {
-                    if (recipes[i] != null)
-                    {
-                        detailRecipe = recipes[i];
-                        break;
-                    }
-                }
-            }
+            RecipeData detailRecipe = UIManagerPopupContentUtility.ResolveDetailRecipe(cachedRestaurant);
 
             for (int i = 0; i < Restaurant.TodayMenuState.SlotCount; i++)
             {
@@ -115,7 +93,7 @@ namespace Code.Scripts.UI
                 entries.Add(new PopupListEntry(
                     $"today-menu-slot-{i}",
                     $"오늘의 메뉴 {i + 1}",
-                    BuildPopupItemSummary(
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(
                         assignedRecipe != null ? assignedRecipe.DisplayName : "비어 있음",
                         cachedRestaurant.IsRestaurantOpen ? "OPEN 중에는 수정 불가" : "클릭해 활성 슬롯 선택"),
                     BuildRecipePopupDetailText(detailRecipe),
@@ -147,7 +125,7 @@ namespace Code.Scripts.UI
                 entries.Add(new PopupListEntry(
                     recipe.RecipeId,
                     recipe.DisplayName,
-                    BuildPopupItemSummary(
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(
                         recipe.Description,
                         assignedSlotIndex >= 0
                             ? $"오늘의 메뉴 {assignedSlotIndex + 1} 배치됨"
@@ -181,25 +159,13 @@ namespace Code.Scripts.UI
         private PopupPanelContent BuildMaterialPopupContent()
         {
             List<PopupListEntry> entries = new();
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (inventory == null)
             {
                 return new PopupPanelContent(entries, "가방 정보를 찾지 못했습니다.");
             }
 
-            InventoryEntry detailEntry = null;
-            foreach (InventoryEntry entry in inventory.RuntimeItems)
-            {
-                if (entry == null || entry.resource == null || entry.amount <= 0)
-                {
-                    continue;
-                }
-
-                if (detailEntry == null || entry.resource == selectedMaterialPopupResource)
-                {
-                    detailEntry = entry;
-                }
-            }
+            InventoryEntry detailEntry = UIManagerPopupContentUtility.ResolveDetailEntry(inventory.RuntimeItems, selectedMaterialPopupResource);
 
             foreach (InventoryEntry entry in inventory.RuntimeItems)
             {
@@ -213,7 +179,7 @@ namespace Code.Scripts.UI
                 entries.Add(new PopupListEntry(
                     resource.ResourceId,
                     $"{resource.DisplayName} x{amount}",
-                    BuildPopupItemSummary(resource.Description, $"{resource.RegionTag} · {GetRarityLabel(resource.Rarity)}"),
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(resource.Description, $"{resource.RegionTag} · {GetRarityLabel(resource.Rarity)}"),
                     BuildMaterialPopupDetailText(resource, amount),
                     resource.Icon,
                     detailEntry != null && resource == detailEntry.resource,
@@ -237,19 +203,7 @@ namespace Code.Scripts.UI
 
             cachedStorage.InitializeIfNeeded();
 
-            InventoryEntry detailEntry = null;
-            foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
-            {
-                if (entry == null || entry.resource == null || entry.amount <= 0)
-                {
-                    continue;
-                }
-
-                if (detailEntry == null || entry.resource == selectedStoragePopupResource)
-                {
-                    detailEntry = entry;
-                }
-            }
+            InventoryEntry detailEntry = UIManagerPopupContentUtility.ResolveDetailEntry(cachedStorage.RuntimeItems, selectedStoragePopupResource);
 
             foreach (InventoryEntry entry in cachedStorage.RuntimeItems)
             {
@@ -263,7 +217,7 @@ namespace Code.Scripts.UI
                 entries.Add(new PopupListEntry(
                     resource.ResourceId,
                     $"{resource.DisplayName} x{amount}",
-                    BuildPopupItemSummary(resource.Description, "보관 중인 재료"),
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(resource.Description, "보관 중인 재료"),
                     BuildStoragePopupDetailText(entry),
                     resource.Icon,
                     detailEntry != null && resource == detailEntry.resource,
@@ -299,7 +253,7 @@ namespace Code.Scripts.UI
                 rawEntries.Add(new PopupListEntry(
                     key,
                     $"{toolType.GetDisplayName()} 해금",
-                    BuildPopupItemSummary(cost.description, BuildUpgradeAvailabilityLabel(toolType)),
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(cost.description, BuildUpgradeAvailabilityLabel(toolType)),
                     BuildToolUnlockPopupDetailText(cost),
                     ResolveUpgradePopupIcon(cost.requiredResource),
                     false,
@@ -324,7 +278,7 @@ namespace Code.Scripts.UI
                 rawEntries.Add(new PopupListEntry(
                     key,
                     BuildInventoryUpgradeTitle(upgradeIndex),
-                    BuildPopupItemSummary(cost.description, BuildInventoryUpgradeAvailabilityLabel(upgradeIndex)),
+                    UIManagerPopupContentUtility.BuildPopupItemSummary(cost.description, BuildInventoryUpgradeAvailabilityLabel(upgradeIndex)),
                     BuildInventoryUpgradePopupDetailText(upgradeIndex, cost),
                     ResolveUpgradePopupIcon(cost.requiredResource),
                     false,
@@ -340,44 +294,10 @@ namespace Code.Scripts.UI
                 return new PopupPanelContent(new List<PopupListEntry>(), "남아 있는 업그레이드가 없습니다.");
             }
 
-            string preferredKey = ResolvePreferredUpgradePopupKey();
-            string selectedKey = ContainsPopupEntryKey(rawEntries, selectedUpgradePopupKey)
-                ? selectedUpgradePopupKey
-                : ContainsPopupEntryKey(rawEntries, preferredKey)
-                    ? preferredKey
-                    : rawEntries[0].Key;
-
-            List<PopupListEntry> entries = new(rawEntries.Count);
-            string detailText = rawEntries[0].Detail;
-            foreach (PopupListEntry entry in rawEntries)
-            {
-                bool isSelected = entry.Key == selectedKey;
-                entries.Add(new PopupListEntry(entry.Key, entry.Title, entry.Summary, entry.Detail, entry.Icon, isSelected, entry.OnSelected));
-                if (isSelected)
-                {
-                    detailText = entry.Detail;
-                }
-            }
-
-            return new PopupPanelContent(entries, detailText);
-        }
-
-        private static bool ContainsPopupEntryKey(List<PopupListEntry> entries, string key)
-        {
-            if (entries == null || string.IsNullOrWhiteSpace(key))
-            {
-                return false;
-            }
-
-            foreach (PopupListEntry entry in entries)
-            {
-                if (entry != null && entry.Key == key)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return UIManagerPopupContentUtility.BuildSelectedPopupContent(
+                rawEntries,
+                selectedUpgradePopupKey,
+                ResolvePreferredUpgradePopupKey());
         }
 
         private string ResolvePreferredUpgradePopupKey()
@@ -387,7 +307,7 @@ namespace Code.Scripts.UI
                 return string.Empty;
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
 
             return cachedUpgradeManager.GetPreferredAction() switch
             {
@@ -401,14 +321,7 @@ namespace Code.Scripts.UI
 
         private static string BuildPopupItemSummary(string description, string fallback)
         {
-            string source = string.IsNullOrWhiteSpace(description) ? fallback : description;
-            if (string.IsNullOrWhiteSpace(source))
-            {
-                return string.Empty;
-            }
-
-            string normalized = source.Replace("\r\n", " ").Replace('\n', ' ').Trim();
-            return normalized.Length > 32 ? $"{normalized.Substring(0, 29)}..." : normalized;
+            return UIManagerPopupContentUtility.BuildPopupItemSummary(description, fallback);
         }
 
         private Sprite ResolveRecipePopupIcon(RecipeData recipe)
@@ -453,10 +366,7 @@ namespace Code.Scripts.UI
                 return null;
             }
 
-            string normalizedRecipeId = recipeId.Trim();
-            return Resources.Load<Sprite>($"Generated/Sprites/Item/Food/{normalizedRecipeId}")
-                ?? Resources.Load<Sprite>($"Generated/Sprites/Recipes/{normalizedRecipeId}")
-                ?? Resources.Load<Sprite>($"Generated/Sprites/Hub/{normalizedRecipeId}");
+            return GeneratedSpriteResourceResolver.LoadRecipeSprite(recipeId);
         }
 
         private static Sprite ResolveUpgradePopupIcon(ResourceData requiredResource)
@@ -557,8 +467,8 @@ namespace Code.Scripts.UI
                     continue;
                 }
 
-                int ownedAmount = GameManager.Instance != null && GameManager.Instance.Inventory != null
-                    ? GameManager.Instance.Inventory.GetAmount(resource)
+                int ownedAmount = GameRuntimeAccess.Inventory != null
+                    ? GameRuntimeAccess.Inventory.GetAmount(resource)
                     : 0;
                 builder.AppendLine($"  {displayName} {ownedAmount}/{ingredientAmount}");
             }
@@ -649,8 +559,8 @@ namespace Code.Scripts.UI
 
             bool isUnlocked = cachedUpgradeManager.IsToolUnlocked(cost.toolType);
             bool canUnlock = !isUnlocked && cachedUpgradeManager.CanUnlockTool(cost.toolType);
-            int ownedAmount = cost.requiredResource != null && GameManager.Instance != null && GameManager.Instance.Inventory != null
-                ? GameManager.Instance.Inventory.GetAmount(cost.requiredResource)
+            int ownedAmount = cost.requiredResource != null && GameRuntimeAccess.Inventory != null
+                ? GameRuntimeAccess.Inventory.GetAmount(cost.requiredResource)
                 : 0;
 
             StringBuilder builder = new();
@@ -686,7 +596,7 @@ namespace Code.Scripts.UI
                 return "업그레이드 정보를 찾지 못했습니다.";
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             int currentSlots = inventory != null ? inventory.GetSlotCapacityForLevel(index) : 0;
             int nextSlots = inventory != null ? inventory.GetSlotCapacityForLevel(index + 1) : 0;
             int ownedAmount = cost.requiredResource != null && inventory != null
@@ -715,7 +625,7 @@ namespace Code.Scripts.UI
 
         private string BuildInventoryUpgradeTitle(int index)
         {
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (inventory == null)
             {
                 return $"가방 확장 단계 {index + 1}";
@@ -726,7 +636,7 @@ namespace Code.Scripts.UI
 
         private string BuildInventoryUpgradeAvailabilityLabel(int index)
         {
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (inventory == null || cachedUpgradeManager == null)
             {
                 return "정보 없음";
@@ -795,7 +705,7 @@ namespace Code.Scripts.UI
                 return "창고 정보를 찾지 못했습니다.";
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             InventoryEntry depositEntry = cachedStorage.GetSelectedInventoryEntry(inventory);
             InventoryEntry withdrawEntry = cachedStorage.GetSelectedStoredEntry();
             depositEntry = depositEntry != null && depositEntry.resource != null ? depositEntry : null;
@@ -1071,7 +981,7 @@ namespace Code.Scripts.UI
         {
             if (cachedPlayer == null)
             {
-                cachedPlayer = FindFirstObjectByType<PlayerController>();
+                cachedPlayer = GameRuntimeAccess.ResolvePlayer();
             }
 
             InteractionDetector detector = cachedPlayer != null ? cachedPlayer.InteractionDetector : null;
@@ -1214,7 +1124,7 @@ namespace Code.Scripts.UI
 
             if (cachedPlayer == null)
             {
-                cachedPlayer = FindFirstObjectByType<PlayerController>();
+                cachedPlayer = GameRuntimeAccess.ResolvePlayer();
             }
 
             string prompt = string.Empty;
@@ -1249,16 +1159,16 @@ namespace Code.Scripts.UI
                 return;
             }
 
-            if (GameManager.Instance == null || GameManager.Instance.Inventory == null)
+            if (GameRuntimeAccess.Inventory == null)
             {
                 inventoryText.text = "인벤토리 없음";
                 RefreshHubPopupContent();
                 return;
             }
 
-            IReadOnlyList<InventoryEntry> entries = GameManager.Instance.Inventory.RuntimeItems;
-            int usedSlots = GameManager.Instance.Inventory.UsedSlotCount;
-            int maxSlots = GameManager.Instance.Inventory.MaxSlotCount;
+            IReadOnlyList<InventoryEntry> entries = GameRuntimeAccess.Inventory.RuntimeItems;
+            int usedSlots = GameRuntimeAccess.Inventory.UsedSlotCount;
+            int maxSlots = GameRuntimeAccess.Inventory.MaxSlotCount;
 
             if (entries.Count == 0)
             {
@@ -1348,11 +1258,11 @@ namespace Code.Scripts.UI
                 return;
             }
 
-            int gold = GameManager.Instance != null && GameManager.Instance.Economy != null
-                ? GameManager.Instance.Economy.CurrentGold
+            int gold = GameRuntimeAccess.Economy != null
+                ? GameRuntimeAccess.Economy.CurrentGold
                 : 0;
-            int reputation = GameManager.Instance != null && GameManager.Instance.Economy != null
-                ? GameManager.Instance.Economy.CurrentReputation
+            int reputation = GameRuntimeAccess.Economy != null
+                ? GameRuntimeAccess.Economy.CurrentReputation
                 : 0;
 
             goldText.text = IsHubScene()

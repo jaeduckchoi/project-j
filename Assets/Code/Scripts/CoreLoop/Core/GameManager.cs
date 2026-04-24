@@ -9,6 +9,8 @@ using Code.Scripts.Management.Storage;
 using Code.Scripts.Management.Tools;
 using Code.Scripts.Management.Upgrade;
 using Code.Scripts.Exploration.World;
+using Code.Scripts.Restaurant;
+using Code.Scripts.Restaurant.Kitchen;
 
 // Core 네임스페이스
 namespace Code.Scripts.CoreLoop.Core
@@ -209,6 +211,60 @@ namespace Code.Scripts.CoreLoop.Core
             }
 
             return manager;
+        }
+    }
+
+    internal static class GameRuntimeAccess
+    {
+        internal static GameManager GameManager => GameManager.Instance;
+        internal static HubRuntimeContext HubContext => HubRuntimeContext.Active;
+        internal static InventoryManager Inventory => GameManager != null ? GameManager.Inventory : null;
+        internal static StorageManager Storage => GameManager != null ? GameManager.Storage : null;
+        internal static EconomyManager Economy => GameManager != null ? GameManager.Economy : null;
+        internal static ToolManager Tools => GameManager != null ? GameManager.Tools : null;
+        internal static DayCycleManager DayCycle => GameManager != null ? GameManager.DayCycle : null;
+        internal static UpgradeManager Upgrades => GameManager != null ? GameManager.Upgrades : null;
+
+        internal static PlayerController ResolvePlayer()
+        {
+            return Object.FindFirstObjectByType<PlayerController>();
+        }
+
+        internal static RestaurantManager ResolveRestaurant()
+        {
+            if (HubContext != null && HubContext.RestaurantManager != null)
+            {
+                return HubContext.RestaurantManager;
+            }
+
+            return Object.FindFirstObjectByType<RestaurantManager>();
+        }
+
+        internal static CustomerServiceController ResolveCustomerService()
+        {
+            if (HubContext != null && HubContext.CustomerServiceController != null)
+            {
+                return HubContext.CustomerServiceController;
+            }
+
+            return Object.FindFirstObjectByType<CustomerServiceController>();
+        }
+
+        internal static RestaurantFlowController ResolveRestaurantFlow(bool allowRuntimeCreate)
+        {
+            if (HubContext != null && HubContext.RestaurantFlowController != null)
+            {
+                return HubContext.RestaurantFlowController;
+            }
+
+            return allowRuntimeCreate
+                ? RestaurantFlowController.GetOrCreate()
+                : Object.FindFirstObjectByType<RestaurantFlowController>();
+        }
+
+        internal static T FindObject<T>() where T : Object
+        {
+            return Object.FindFirstObjectByType<T>();
         }
     }
 }

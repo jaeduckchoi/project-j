@@ -1868,7 +1868,7 @@ namespace Code.Scripts.UI
                 return;
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             bool removed = inventory != null && inventory.TryRemove(resource, 1);
             if (!removed)
             {

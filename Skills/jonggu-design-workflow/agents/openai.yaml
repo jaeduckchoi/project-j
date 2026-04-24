@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jonggu Design Workflow"
+  short_description: "Design workflow for Jonggu project tasks"
+  default_prompt: "Use this skill when planning or changing design, UX, visual layout, scene composition, or UI presentation in D:\\project-j."

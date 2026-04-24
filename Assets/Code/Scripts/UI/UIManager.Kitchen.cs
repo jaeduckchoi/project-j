@@ -65,11 +65,9 @@ namespace Code.Scripts.UI
 
         private void BindKitchenFlow()
         {
-            RestaurantFlowController flow = Application.isPlaying && IsHubScene() && HubRuntimeContext.Active != null
-                ? HubRuntimeContext.Active.RestaurantFlowController
-                : Application.isPlaying
-                    ? RestaurantFlowController.GetOrCreate()
-                    : FindFirstObjectByType<RestaurantFlowController>();
+            RestaurantFlowController flow = Application.isPlaying
+                ? GameRuntimeAccess.ResolveRestaurantFlow(allowRuntimeCreate: IsHubScene())
+                : GameRuntimeAccess.FindObject<RestaurantFlowController>();
 
             if (cachedKitchenFlow == flow)
             {
@@ -147,7 +145,7 @@ namespace Code.Scripts.UI
                     basicResource));
             }
 
-            InventoryManager inventory = GameManager.Instance != null ? GameManager.Instance.Inventory : null;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             if (inventory != null)
             {
                 inventory.InitializeIfNeeded();

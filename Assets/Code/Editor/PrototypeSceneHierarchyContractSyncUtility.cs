@@ -83,48 +83,12 @@ namespace Editor
 
         public static string BuildSceneObjectPath(Transform transform)
         {
-            if (transform == null)
-            {
-                return string.Empty;
-            }
-
-            Stack<string> segments = new();
-            for (Transform current = transform; current != null; current = current.parent)
-            {
-                segments.Push(current.name);
-            }
-
-            return string.Join("/", segments);
+            return SceneObjectPathUtility.BuildSceneObjectPath(transform);
         }
 
         public static Transform ResolveSceneTransform(Scene scene, string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return null;
-            }
-
-            string[] parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (GameObject root in scene.GetRootGameObjects())
-            {
-                if (root == null || parts.Length == 0 || !string.Equals(root.name, parts[0], StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                Transform current = root.transform;
-                for (int index = 1; index < parts.Length && current != null; index++)
-                {
-                    current = current.Find(parts[index]);
-                }
-
-                if (current != null)
-                {
-                    return current;
-                }
-            }
-
-            return null;
+            return SceneObjectPathUtility.ResolveSceneTransform(scene, path);
         }
 
         private static bool TryResolveContractTarget(
@@ -170,39 +134,7 @@ namespace Editor
 
         private static Dictionary<string, List<Transform>> BuildTransformLookup(Scene scene)
         {
-            Dictionary<string, List<Transform>> lookup = new(StringComparer.Ordinal);
-            if (!scene.IsValid() || !scene.isLoaded)
-            {
-                return lookup;
-            }
-
-            foreach (GameObject root in scene.GetRootGameObjects())
-            {
-                if (root == null)
-                {
-                    continue;
-                }
-
-                Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
-                for (int index = 0; index < transforms.Length; index++)
-                {
-                    Transform current = transforms[index];
-                    if (current == null || string.IsNullOrWhiteSpace(current.name))
-                    {
-                        continue;
-                    }
-
-                    if (!lookup.TryGetValue(current.name, out List<Transform> matches))
-                    {
-                        matches = new List<Transform>();
-                        lookup[current.name] = matches;
-                    }
-
-                    matches.Add(current);
-                }
-            }
-
-            return lookup;
+            return SceneObjectPathUtility.BuildLookup(scene, root => root.GetComponentsInChildren<Transform>(true));
         }
 
         private static List<SceneAuthoredHelperContractMarker> FindHelperMarkers(Scene scene)
@@ -341,6 +273,106 @@ namespace Editor
             }
 
             return false;
+        }
+    }
+
+    internal static class SceneObjectPathUtility
+    {
+        internal static string BuildSceneObjectPath(Transform transform)
+        {
+            if (transform == null)
+            {
+                return string.Empty;
+            }
+
+            Stack<string> segments = new();
+            for (Transform current = transform; current != null; current = current.parent)
+            {
+                segments.Push(current.name);
+            }
+
+            return string.Join("/", segments);
+        }
+
+        internal static Transform ResolveSceneTransform(Scene scene, string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return null;
+            }
+
+            string[] parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                if (root == null || parts.Length == 0 || !string.Equals(root.name, parts[0], StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Transform current = root.transform;
+                for (int index = 1; index < parts.Length && current != null; index++)
+                {
+                    current = current.Find(parts[index]);
+                }
+
+                if (current != null)
+                {
+                    return current;
+                }
+            }
+
+            return null;
+        }
+
+        internal static T FindComponentInScene<T>(Scene scene) where T : Component
+        {
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                T found = root != null ? root.GetComponentInChildren<T>(true) : null;
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+
+            return null;
+        }
+
+        internal static Dictionary<string, List<T>> BuildLookup<T>(Scene scene, Func<GameObject, T[]> componentProvider) where T : Component
+        {
+            Dictionary<string, List<T>> lookup = new(StringComparer.Ordinal);
+            if (!scene.IsValid() || !scene.isLoaded || componentProvider == null)
+            {
+                return lookup;
+            }
+
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                if (root == null)
+                {
+                    continue;
+                }
+
+                T[] components = componentProvider(root);
+                for (int index = 0; index < components.Length; index++)
+                {
+                    T current = components[index];
+                    if (current == null || string.IsNullOrWhiteSpace(current.name))
+                    {
+                        continue;
+                    }
+
+                    if (!lookup.TryGetValue(current.name, out List<T> matches))
+                    {
+                        matches = new List<T>();
+                        lookup[current.name] = matches;
+                    }
+
+                    matches.Add(current);
+                }
+            }
+
+            return lookup;
         }
     }
 }

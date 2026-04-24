@@ -1,3 +1,4 @@
+using Code.Scripts.CoreLoop.Core;
 using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 
@@ -24,8 +25,8 @@ namespace Code.Scripts.Restaurant.Kitchen
                     return string.Empty;
                 }
 
-                CustomerServiceController serviceController = HubRuntimeContext.Active != null
-                    ? HubRuntimeContext.Active.CustomerServiceController
+                CustomerServiceController serviceController = GameRuntimeAccess.HubContext != null
+                    ? GameRuntimeAccess.HubContext.CustomerServiceController
                     : null;
                 if (serviceController == null)
                 {
@@ -57,8 +58,8 @@ namespace Code.Scripts.Restaurant.Kitchen
         /// </summary>
         public void Interact(GameObject interactor)
         {
-            CustomerServiceController serviceController = HubRuntimeContext.Active != null
-                ? HubRuntimeContext.Active.CustomerServiceController
+            CustomerServiceController serviceController = GameRuntimeAccess.HubContext != null
+                ? GameRuntimeAccess.HubContext.CustomerServiceController
                 : null;
             serviceController?.TryServeHeldDish(this);
         }

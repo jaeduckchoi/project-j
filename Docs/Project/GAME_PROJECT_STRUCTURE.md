@@ -10,6 +10,7 @@
 ├─ Docs
 ├─ Packages
 ├─ ProjectSettings
+├─ Skills
 ├─ AGENTS.md
 └─ CLAUDE.md
 ```
@@ -24,6 +25,7 @@
 - `Assets/Resources/Generated`: 런타임이 읽는 generated 리소스
 - `Assets/Settings`: 렌더 파이프라인, 입력, 씬 템플릿 등 설정 자산
 - `Docs`: Project, Gameplay, Scene, UI, Build 문서 정본
+- `Skills`: Codex, Claude 등 에이전트가 사용하는 워크플로 자산. 게임 규칙과 정본 관계는 `Docs/Project` 문서가 소유한다.
 
 ## Assets 구조
 

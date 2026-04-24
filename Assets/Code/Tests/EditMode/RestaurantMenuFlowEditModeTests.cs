@@ -4,11 +4,13 @@ using Code.Scripts.CoreLoop.Core;
 using Code.Scripts.Exploration.World;
 using Code.Scripts.Management.Economy;
 using Code.Scripts.Management.Inventory;
+using Code.Scripts.Management.Upgrade;
 using NUnit.Framework;
 using Code.Scripts.Restaurant;
 using Code.Scripts.Restaurant.Kitchen;
 using Code.Scripts.Shared;
 using Code.Scripts.Shared.Data;
+using Code.Scripts.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -503,6 +505,135 @@ namespace Editor.Tests
             FieldInfo field = targetType.GetField($"<{propertyName}>k__BackingField", PrivateStaticFlags);
             Assert.That(field, Is.Not.Null, $"{propertyName} 정적 backing field 를 찾을 수 없습니다.");
             field.SetValue(null, value);
+        }
+    }
+
+    public sealed class RefactorHelpersEditModeTests
+    {
+        private readonly List<Object> cleanupTargets = new();
+
+        [TearDown]
+        public void TearDown()
+        {
+            for (int index = cleanupTargets.Count - 1; index >= 0; index--)
+            {
+                if (cleanupTargets[index] != null)
+                {
+                    Object.DestroyImmediate(cleanupTargets[index]);
+                }
+            }
+
+            cleanupTargets.Clear();
+        }
+
+        [Test]
+        public void PopupContentUtility_BuildPopupItemSummary_NormalizesAndTruncates()
+        {
+            string summary = UIManagerPopupContentUtility.BuildPopupItemSummary("첫 줄\n둘째 줄과 조금 더 긴 설명 텍스트", "fallback");
+
+            Assert.That(summary, Does.StartWith("첫 줄 둘째 줄"));
+            Assert.That(summary.Length, Is.LessThanOrEqualTo(32));
+        }
+
+        [Test]
+        public void PopupContentUtility_BuildSelectedPopupContent_UsesPreferredFallback()
+        {
+            List<PopupListEntry> entries = new()
+            {
+                new PopupListEntry("one", "첫 번째", "요약", "상세-1", null, false, null),
+                new PopupListEntry("two", "두 번째", "요약", "상세-2", null, false, null)
+            };
+
+            PopupPanelContent content = UIManagerPopupContentUtility.BuildSelectedPopupContent(entries, "missing", "two");
+
+            Assert.That(content.Entries.Count, Is.EqualTo(2));
+            Assert.That(content.Entries[1].IsSelected, Is.True);
+            Assert.That(content.DetailText, Is.EqualTo("상세-2"));
+        }
+
+        [Test]
+        public void InventoryEntrySnapshotUtility_FiltersInvalidEntries_And_NormalizesIndex()
+        {
+            ResourceData shell = CreateResource("shell", "조개");
+            List<InventoryEntry> source = new()
+            {
+                new InventoryEntry(),
+                new InventoryEntry(shell, 2),
+                new InventoryEntry(shell, 0)
+            };
+
+            List<InventoryEntry> snapshot = InventoryEntrySnapshotUtility.BuildPositiveSnapshot(source);
+
+            Assert.That(snapshot.Count, Is.EqualTo(1));
+            Assert.That(snapshot[0].resource, Is.SameAs(shell));
+            Assert.That(snapshot[0].amount, Is.EqualTo(2));
+            Assert.That(InventoryEntrySnapshotUtility.NormalizeCyclicIndex(3, 4), Is.EqualTo(1));
+            Assert.That(InventoryEntrySnapshotUtility.NormalizeCyclicIndex(0, 2), Is.EqualTo(-1));
+        }
+
+        [Test]
+        public void UpgradeCostTransaction_TrySpend_And_Refund_RoundTripBalances()
+        {
+            GameObject economyObject = CreateGameObject("Economy");
+            EconomyManager economy = economyObject.AddComponent<EconomyManager>();
+            economy.InitializeIfNeeded();
+            economy.AddGold(20);
+
+            GameObject inventoryObject = CreateGameObject("Inventory");
+            InventoryManager inventory = inventoryObject.AddComponent<InventoryManager>();
+            inventory.InitializeIfNeeded();
+
+            ResourceData shell = CreateResource("shell", "조개");
+            inventory.TryAdd(shell, 3, out _);
+
+            bool spent = UpgradeCostTransaction.TrySpend(economy, inventory, 7, shell, 2, out string failureReason);
+
+            Assert.That(spent, Is.True);
+            Assert.That(failureReason, Is.Empty);
+            Assert.That(economy.CurrentGold, Is.EqualTo(13));
+            Assert.That(inventory.GetAmount(shell), Is.EqualTo(1));
+
+            UpgradeCostTransaction.Refund(economy, inventory, 7, shell, 2);
+
+            Assert.That(economy.CurrentGold, Is.EqualTo(20));
+            Assert.That(inventory.GetAmount(shell), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void SceneObjectPathUtility_BuildAndResolveSceneObjectPath_RoundTripsTransform()
+        {
+            GameObject root = CreateGameObject("Root");
+            GameObject child = CreateChild(root.transform, "Child");
+            GameObject leaf = CreateChild(child.transform, "Leaf");
+
+            string path = SceneObjectPathUtility.BuildSceneObjectPath(leaf.transform);
+            Transform resolved = SceneObjectPathUtility.ResolveSceneTransform(SceneManager.GetActiveScene(), path);
+
+            Assert.That(path, Is.EqualTo("Root/Child/Leaf"));
+            Assert.That(resolved, Is.EqualTo(leaf.transform));
+        }
+
+        private ResourceData CreateResource(string resourceId, string displayName)
+        {
+            ResourceData resource = ScriptableObject.CreateInstance<ResourceData>();
+            resource.hideFlags = HideFlags.HideAndDontSave;
+            resource.ConfigureRuntime(resourceId, displayName, "테스트 자원", "테스트", 10, ResourceRarity.Common);
+            cleanupTargets.Add(resource);
+            return resource;
+        }
+
+        private GameObject CreateGameObject(string name)
+        {
+            GameObject gameObject = new(name);
+            cleanupTargets.Add(gameObject);
+            return gameObject;
+        }
+
+        private GameObject CreateChild(Transform parent, string name)
+        {
+            GameObject child = CreateGameObject(name);
+            child.transform.SetParent(parent, false);
+            return child;
         }
     }
 }

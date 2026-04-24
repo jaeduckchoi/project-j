@@ -102,18 +102,18 @@ namespace Code.Scripts.UI
                 return;
             }
 
-            if (activeHubPanel != HubPopupPanel.Storage || cachedStorage == null || GameManager.Instance == null || GameManager.Instance.Inventory == null)
+            if (activeHubPanel != HubPopupPanel.Storage || cachedStorage == null || GameRuntimeAccess.Inventory == null)
             {
                 return;
             }
 
-            InventoryManager inventory = GameManager.Instance.Inventory;
+            InventoryManager inventory = GameRuntimeAccess.Inventory;
             bool changed = false;
 
             if (ReadPopupActionPressed(KeyCode.Q, keyboard => keyboard.qKey))
             {
                 changed |= cachedStorage.CycleInventorySelection(inventory);
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
+                GameRuntimeAccess.DayCycle?.ShowHintOnce(
                     "first_storage_select_deposit",
                     "왼쪽 목록에서 맡길 재료를 고르고 맡기기 동작으로 창고에 보관할 수 있습니다.");
             }
@@ -126,7 +126,7 @@ namespace Code.Scripts.UI
             if (ReadPopupActionPressed(KeyCode.A, keyboard => keyboard.aKey))
             {
                 changed |= cachedStorage.CycleStoredSelection();
-                GameManager.Instance?.DayCycle?.ShowHintOnce(
+                GameRuntimeAccess.DayCycle?.ShowHintOnce(
                     "first_storage_select_withdraw",
                     "보관 목록에서 꺼낼 재료를 고른 뒤 꺼내기 동작으로 가방으로 되돌릴 수 있습니다.");
             }

@@ -224,12 +224,7 @@ namespace Code.Scripts.Management.Inventory
         /// </summary>
         private void RefreshRuntimeItems()
         {
-            runtimeItems.Clear();
-
-            foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
-            {
-                runtimeItems.Add(new InventoryEntry(pair.Key, pair.Value));
-            }
+            InventoryEntrySnapshotUtility.RefreshRuntimeEntries(runtimeItems, itemAmounts);
         }
 
         /// <summary>
@@ -264,6 +259,49 @@ namespace Code.Scripts.Management.Inventory
         {
             this.resource = resource;
             this.amount = amount;
+        }
+    }
+
+    internal static class InventoryEntrySnapshotUtility
+    {
+        internal static List<InventoryEntry> BuildPositiveSnapshot(IEnumerable<InventoryEntry> entries)
+        {
+            return entries == null
+                ? new List<InventoryEntry>()
+                : entries
+                    .Where(entry => entry != null && entry.resource != null && entry.amount > 0)
+                    .Select(entry => new InventoryEntry(entry.resource, entry.amount))
+                    .ToList();
+        }
+
+        internal static void RefreshRuntimeEntries(List<InventoryEntry> targetEntries, IReadOnlyDictionary<ResourceData, int> itemAmounts)
+        {
+            if (targetEntries == null)
+            {
+                return;
+            }
+
+            targetEntries.Clear();
+            if (itemAmounts == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<ResourceData, int> pair in itemAmounts.OrderBy(entry => entry.Key.DisplayName))
+            {
+                targetEntries.Add(new InventoryEntry(pair.Key, pair.Value));
+            }
+        }
+
+        internal static int NormalizeCyclicIndex(int count, int index)
+        {
+            if (count <= 0)
+            {
+                return -1;
+            }
+
+            int normalized = index % count;
+            return normalized < 0 ? normalized + count : normalized;
         }
     }
 }

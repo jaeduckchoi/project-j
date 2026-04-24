@@ -209,6 +209,7 @@
 
 - 작업 하네스: [Docs/README.md](Docs/README.md)
 - 규칙과 정본 관계: [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md), [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)
+- 에이전트 워크플로 자산: [Skills](Skills)
 - 게임 기획 개요: [Docs/Gameplay/GAME_DESIGN_OVERVIEW.md](Docs/Gameplay/GAME_DESIGN_OVERVIEW.md)
 - 허브 코어 루프: [Docs/Gameplay/GAMEPLAY_CORE_LOOP.md](Docs/Gameplay/GAMEPLAY_CORE_LOOP.md)
 - 식당 영업과 성장: [Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md](Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md)

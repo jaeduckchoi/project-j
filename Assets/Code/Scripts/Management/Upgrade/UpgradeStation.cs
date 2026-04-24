@@ -50,7 +50,7 @@ namespace Code.Scripts.Management.Upgrade
         {
             if (upgradeManager == null)
             {
-                upgradeManager = FindFirstObjectByType<UpgradeManager>();
+                upgradeManager = GameRuntimeAccess.FindObject<UpgradeManager>();
             }
         }
 
@@ -83,13 +83,13 @@ namespace Code.Scripts.Management.Upgrade
             switch (action)
             {
                 case UpgradeWorkbenchAction.UpgradeInventory:
-                    GameManager.Instance?.DayCycle?.ShowHintOnce(
+                    GameRuntimeAccess.DayCycle?.ShowHintOnce(
                         "first_upgrade_inventory",
                         "인벤토리가 넓어지면 한 번 탐험에서 더 많은 재료를 챙겨 돌아올 수 있습니다.");
                     break;
 
                 case UpgradeWorkbenchAction.UnlockTool when unlockedToolType == ToolType.Lantern:
-                    GameManager.Instance?.DayCycle?.ShowHintOnce(
+                    GameRuntimeAccess.DayCycle?.ShowHintOnce(
                         "first_unlock_lantern",
                         "랜턴을 준비했습니다. 이제 폐광산처럼 어두운 지역에도 들어갈 수 있습니다.");
                     break;
@@ -101,14 +101,14 @@ namespace Code.Scripts.Management.Upgrade
         /// </summary>
         private UpgradeManager ResolveUpgradeManager()
         {
-            if (upgradeManager == null && GameManager.Instance != null)
+            if (upgradeManager == null)
             {
-                upgradeManager = GameManager.Instance.Upgrades;
+                upgradeManager = GameRuntimeAccess.Upgrades;
             }
 
             if (upgradeManager == null)
             {
-                upgradeManager = FindFirstObjectByType<UpgradeManager>();
+                upgradeManager = GameRuntimeAccess.FindObject<UpgradeManager>();
             }
 
             return upgradeManager;

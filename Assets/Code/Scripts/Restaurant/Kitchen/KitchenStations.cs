@@ -1,4 +1,5 @@
 using System;
+using Code.Scripts.CoreLoop.Core;
 using Code.Scripts.Exploration.Interaction;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace Code.Scripts.Restaurant.Kitchen
 
             if (!flowController.IsOpen)
             {
-                CoreLoop.Core.GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
+                GameRuntimeAccess.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
                 return;
             }
 
@@ -135,7 +136,7 @@ namespace Code.Scripts.Restaurant.Kitchen
 
             if (!flowController.IsOpen)
             {
-                CoreLoop.Core.GameManager.Instance?.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
+                GameRuntimeAccess.DayCycle?.ShowTemporaryGuide("영업을 시작하면 사용할 수 있습니다.");
                 return;
             }
 
