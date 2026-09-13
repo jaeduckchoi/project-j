@@ -1,223 +1,83 @@
-# 프로젝트 J
+# 종구의 식당 · Unreal 2D
 
-> 번아웃 끝에 섬으로 내려온 황종구가 탐험과 식당 운영을 오가며 자신만의 식당을 키워 가는 Unity 기반 2D 탑다운 운영형 게임 프로토타입이다.
+Unreal Engine 5.8.2 / Paper2D 프로젝트입니다. 루트의 `projectJ.uproject`를 열면 Hub와 원본 직교 카메라 구도로 시작합니다.
 
-## 종구의 식당 한눈에 보기
+## 저장소와 브랜치
 
-`종구의 식당`은 두 개의 축이 맞물리는 구조로 설계된다.
+[project-j 저장소](https://github.com/jaeduckchoi/project-j)에서 `main`은 Unity 프로젝트를 유지하고, `migration/unreal`은 현재 Unreal 프로젝트를 관리합니다. 이 브랜치는 Unity `main`의 이력에서 분기했습니다.
 
-| 축 | 설명 |
-| --- | --- |
-| 탐험 루프 | 섬과 주변 지역을 돌아다니며 식재료와 성장 자원을 수급한다. |
-| 운영 루프 | 식당에서 오늘의 메뉴를 정하고, 손님 주문을 조리하고 서빙한다. |
+`Config/`, `Content/`, `projectJ.uproject`를 버전 관리하며, Unreal 캐시·임시 파일과 개인 IDE·Codex 설정은 제외합니다. 아래의 `Migration/Jonggu` 변환 도구와 QA 자료는 저장소 외부의 로컬 자료입니다.
 
-탐험에서 얻은 재료는 식당 조리로 이어지고, 영업에서 얻은 보상은 다시 탐험 동선과 운영 효율 확장으로 돌아간다.
+## Codex 연결
 
-## 플레이 루프
+Epic의 내장 **Unreal MCP**와 **EditorToolset** 플러그인이 에디터 대상으로 활성화되어 있습니다. 이 프로젝트를 열면 MCP 서버가 `http://127.0.0.1:8000/mcp`에서 자동으로 시작합니다. 현재 PC의 Codex 연결은 프로젝트의 `.codex/config.toml`에 등록되어 있습니다. 이 파일은 개인 로컬 설정으로 저장소에서 제외하므로, 새 환경에서는 별도로 연결을 설정합니다.
 
-1. 식당 허브에서 보유 재료를 확인한다.
-2. 레시피와 메뉴판으로 오늘의 메뉴를 정한다.
-3. 필요한 재료가 부족하면 `Beach`와 외부 지역으로 탐험을 나간다.
-4. 허브로 돌아와 `OPEN`으로 영업을 시작한다.
-5. 손님 주문을 확인한다.
-6. 해당 `CookingUtensils`에서 재료를 선택하고 조리를 시작한다.
-7. 완성된 요리를 `PassCounter`에 적재하거나 바로 손에 든다.
-8. 주문한 손님에게 서빙하고 보상을 얻는다.
-9. 영업 종료 후 다시 준비, 탐험, 성장 루프로 돌아간다.
+언리얼 프로젝트를 연 뒤 Codex에서 이 프로젝트를 사용합니다. 설정 직후에는 Codex의 MCP 서버를 재시작하거나 Codex 앱을 다시 열어 새 도구를 불러옵니다. 액터 조회·배치·속성 변경, 에셋 검색, 블루프린트 편집 등에 사용할 수 있습니다. 예: “현재 선택한 액터를 알려줘”, “BP_JongguPlayer 에셋을 찾아줘”. 일부 편집 도구는 Play 모드를 종료한 뒤 사용해야 합니다.
 
-## 이야기와 공간 흐름
+도구는 `list_toolsets` → `describe_toolset` → `call_tool` 순서로 찾고 호출합니다. 반환된 전체 toolset 이름을 사용하고 호출은 순차 실행합니다. 여러 언리얼 프로젝트를 동시에 열 때는 각 프로젝트의 서버 포트와 Codex URL을 다르게 설정합니다. 연결은 이 PC 내부에서만 사용합니다.
 
-도시 대기업 직원이었던 황종구는 반복되는 업무와 번아웃 속에서 음식점 창업을 꿈꾼다.  
-자신만의 가게를 차릴 장소를 찾던 종구는 육지와 떨어진 작은 섬에서 새로운 시작을 결심한다.
+설정 위치는 `Config/DefaultEditorPerProjectUserSettings.ini`의 `ModelContextProtocolSettings`이며, `bAutoStartServer=False`로 자동 시작을 끌 수 있습니다. 이 기능은 Unreal 5.8의 실험적 기능입니다. [Epic 공식 안내](https://dev.epicgames.com/documentation/unreal-engine/unreal-mcp-in-unreal-editor?lang=ko) · [Codex MCP 안내](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
 
-게임의 인트로는 단순한 배경 설명이 아니라, 아래 흐름이 하나의 삶으로 이어져 있음을 보여 주는 장면으로 작동한다.
+**에디터 내부 터미널:** 내장 `Terminal` 플러그인도 활성화되어 있습니다. 플러그인 활성화 후 에디터를 재시작하고 **툴(Tools) → Terminal**을 열면 프로젝트 폴더의 명령 프롬프트가 표시됩니다. 여기서 `codex.exe`를 실행하면 에디터 안에서 Codex와 대화할 수 있습니다. 현재 PC의 `codex` 명령은 이전 npm CLI를 먼저 찾으므로 `codex.exe`를 사용합니다. 새 Terminal 탭마다 프로젝트 폴더와 `TERM=xterm-256color`를 설정하며, Codex는 직접 실행합니다.
+
+## 프로젝트 구조
 
 ```text
-식당 준비 -> 탐험 출발 -> 재료 수급 -> 영업 -> 성장 -> 다음 탐험
+D:/laeti-dev/
+├─ ProjectJ/
+│  ├─ projectJ.uproject
+│  ├─ Config/
+│  └─ Content/
+│     ├─ Jonggu/
+│     │  ├─ Maps/                 # L_Hub, L_Beach
+│     │  ├─ Blueprints/
+│     │  │  ├─ Game/              # BP_JongguGameMode
+│     │  │  ├─ Player/            # BP_JongguPlayer
+│     │  │  └─ Collision/         # BP_CollisionBox, BP_CollisionSphere
+│     │  ├─ Textures/             # 원본 이미지의 카테고리별 보관
+│     │  ├─ Sprites/              # PaperSprite, Player/Runtime 프레임
+│     │  └─ Materials/
+│     └─ Python/                 # 에디터 카메라 초기화
+└─ Migration/Jonggu/
+   ├─ migration_config.json
+   ├─ Tools/                     # 추출·임포트·Blueprint 제작 도구
+   ├─ Data/                      # 원본·정규화 manifest, collision_rules.json
+   ├─ QA/                        # 최신 검증 보고서·캡처
+   └─ Archive/                   # 백업·이전 로그·Unity 검증 복제본
 ```
 
-## 현재 허브 코어 기준
+사용하지 않는 TopDown 템플릿과 관련 외부 패키지 244개, 빈 디렉터리 200개를 참조 감사와 백업 후 정리했습니다. 제거한 파일은 총 135,667,122바이트이며 백업은 `D:/laeti-dev/Migration/Jonggu/Archive/CollisionSetup/unused_topdown_template.zip`에 보관합니다. 삭제 결과와 후속 맵 재열기 상태는 변환 도구의 `QA/cleanup_report.json`에서 확인합니다. 원본 이미지·스프라이트 라이브러리는 재생성에 필요하므로 보관합니다.
 
-현재 프로토타입의 허브 코어는 `OPEN/CLOSE` 상태 전환과 조리 동선에 초점을 둔다.
+## 화면과 플레이어
 
-### 허브 상태
+`Content/Jonggu/Maps`의 **L_Hub**, **L_Beach**를 엽니다. 카메라는 16:9 직교 투영, 폭 3,200cm입니다. 뷰포트는 **라이팅포함(Lit)**으로 사용하고, 원본 구도를 복원하려면 `SourceCamera`를 Pilot합니다. 전체 배치는 Pilot을 해제해 살펴봅니다. Beach의 저장된 시작 구도에서는 플레이어가 화면 밖에 있습니다.
 
-| 구분 | `Hub (Close)` | `Hub (Open)` |
-| --- | --- | --- |
-| 냉장고 | 활성 | 활성 |
-| 레시피 | 활성 | 활성 |
-| 메뉴판 | 활성 | 비활성 |
-| 포스기 | 구상 단계 | 비활성 |
-| `PassCounter` | 비활성 | 활성 |
-| `CookingUtensils` | 비활성 | 활성 |
-| `scene:room` 이동 | 활성 | 후속 런타임 차단 예정 |
-| `scene:beach` 이동 | 활성 | 후속 런타임 차단 예정 |
+기존 Unity `PlayerRoot`는 **BP_JongguPlayer** Pawn으로 연결합니다. Play 후 게임 뷰포트를 클릭하면 WASD·방향키로 XZ 평면을 8방향 이동합니다. 예를 들어 W+D는 오른쪽 위, S+A는 왼쪽 아래입니다. 대각선과 직선의 최고 속도는 모두 400cm/s이고, 짧은 가속·감속을 적용합니다. 바라보는 방향은 키 입력을 기준으로 하므로 위 입력만 누를 때 장애물 가장자리에서 옆으로 미끄러져도 위를 봅니다. 대각선에서는 마지막으로 바라보던 방향이 입력과 맞으면 유지합니다. 걷기·대기 전환은 실제 이동을 기준으로 합니다.
 
-### 현재 조리 흐름
+걷기는 원본 이미지의 머리·몸통·양발을 나눈 PaperSprite 4개로 8개 포즈를 재생합니다. 짧은 발의 교차, 몸통의 작은 들썩임, 조금 늦게 따라오는 머리 움직임을 사용하며 원본 픽셀과 외형을 유지합니다. 실제 이동 거리 160cm마다 한 주기가 진행됩니다. 정지하면 마지막 방향의 기존 두 대기 프레임을 0.3초 간격으로 표시합니다. 원본 PPU 80과 발밑 피벗 `(0.5, 0.08)`은 동일합니다. 시각 효과는 캐릭터 그림에 적용하고 충돌 루트는 이동 경로를 유지합니다.
 
-```text
-냉장고 확인 -> CookingUtensils에서 재료 선택 -> 조리 시작 -> 결과물 회수 -> PassCounter 적재/회수 -> 서빙
-```
+`BP_JongguPlayer`의 Player 설정에서 `move_speed`, `walk_cycle_distance`(작을수록 잦은 발걸음), `walk_bob_cm`, `walk_lean_degrees`를 조절할 수 있습니다. 이동은 8방향이며 그림은 기존 정면·후면·측면과 좌우 반전을 사용합니다.
 
-### 허브 오브젝트 역할
+`BP_JongguGameMode`는 레벨에 배치된 플레이어가 Player 0의 조작을 받도록 사용합니다. 기존 소스 카메라의 고정 구도를 유지합니다. 플레이어는 Blueprint로 실행되며 C++ 빌드 도구나 런타임 Python이 필요하지 않습니다.
 
-| 오브젝트 | 역할 |
-| --- | --- |
-| 냉장고 | 현재 조리에 사용할 수 있는 보유 재료 확인 전용 |
-| 레시피 | 해금된 요리, 필요 재료, 조리기구, 판매 가격 확인 |
-| 메뉴판 | 오늘의 메뉴 3칸 지정 |
-| `PassCounter` | 완성 요리 적재, 회수, 서빙 전 대기 |
-| `CookingUtensils` | 재료 선택, 유효 조합 확인, 조리 시작 |
+## 애셋별 충돌
 
-기본 재료 `김치`, `밥`, `고춧가루`, `밀가루`는 상시 사용 가능하고, 그 외 재료는 탐험으로 확보한다.
+Hub 가구와 벽, Beach 나무·등대·선체는 발밑이나 바닥을 차지하는 면적으로 이동을 막습니다. 테이블·의자, 메뉴판 받침, 나무 밑동에 각각 같은 애셋 규칙을 적용하므로 그림의 윗부분이나 나뭇잎이 별도 장애물이 되지 않습니다. Beach의 잔디·모래·부두는 통행 가능하고 물과 맵 외곽은 차단합니다.
 
-## 손님 주문과 운영 압박
+충돌 정본은 [collision_rules.json](D:/laeti-dev/Migration/Jonggu/Data/collision_rules.json)입니다. 재사용 Blueprint는 `/Game/Jonggu/Blueprints/Collision/BP_CollisionBox`와 `BP_CollisionSphere`이며, 스프라이트와 분리된 루트 도형을 사용합니다. `JongguObstacle` 프로필은 Pawn 차단·QueryOnly·물리 시뮬레이션 없음으로 설정합니다. 플레이어의 반지름 24cm와 최고 속도 400cm/s는 유지합니다.
 
-- 손님은 착석 후 2초 뒤 오늘의 메뉴 중 하나를 주문한다.
-- 주문은 머리 위 아이콘 말풍선으로 표시된다.
-- 기본 인내심은 10초다.
-- 플레이어는 주문과 일치하는 완성 요리를 만들어 서빙해야 한다.
+에디터에서 충돌 표시를 켜거나 충돌 Actor를 선택하면 녹색 도형을 확인할 수 있습니다. 게임 화면에는 도형을 표시하지 않습니다. 현재 Hub는 원본 99개와 충돌 16개, Beach는 원본 56개와 충돌 74개 Actor를 저장합니다. 애셋별 크기·오프셋·해안 타일 분류와 수정 방법은 [충돌 설정 안내](D:/laeti-dev/Migration/Jonggu/COLLISION_GUIDE.md)에 정리되어 있습니다.
 
-이 구조의 핵심 재미는 세 가지에 있다.
+앞뒤 가림도 발밑 위치를 기준으로 합니다. 플레이어가 메뉴판·카운터 앞에 있으면 앞에, 뒤로 이동하면 물체 뒤에 그려집니다. 메뉴판의 글·그림과 분할 카운터의 장식은 같은 물체의 기준점을 공유합니다. 플레이어 머리·몸통·발은 한 순서로 움직이고, 잔디·모래·부두 같은 바닥은 아래에 남습니다. 이 규칙은 `collision_rules.json`의 `depth_sorting`에서 관리합니다.
 
-- 어떤 메뉴를 오늘의 메뉴로 고를지 판단하는 능력
-- 주문을 빠르게 읽고 우선순위를 정하는 능력
-- 허브 안에서 동선을 줄이는 능력
+## 애셋과 재생성
 
-## 프로토타입 테스트 레시피
+원본 이미지 249개, 변환 스프라이트 정의 262개, 렌더러 41개, Beach 타일 2,504칸을 다룹니다. 플레이어의 대기 프레임 6개는 `Sprites/Player/Runtime`, 원본 텍스처 영역을 사용하는 걷기 파츠 12개는 `Sprites/Player/WalkParts`에 둡니다. 기존 플레이어 렌더러는 원본 ID와 배치를 가진 숨김 참조로 남고 Pawn의 스프라이트 컴포넌트가 화면을 표시합니다. 걷기 파츠의 재생성은 변환 도구의 `configure_player_walk.py`, 포즈와 이동 그래프는 `build_player_blueprint.py`가 관리합니다.
 
-현재 허브 코어는 아래 3종을 기준으로 테스트한다.
+원본 Unity 프로젝트 `D:\laeti-dev\project-j-temp\project-j`는 읽기만 합니다. UI 화면, 조리·서빙·탐험·저장 시스템과 수영·승선·물체 밀기·상호작용·맵 전환은 후속 범위입니다. UI 폴더에는 이미지 애셋만 있습니다. Beach의 진입·복귀 마커는 기존 물 위 좌표 (0, 0)를 유지하므로 맵 전환을 구현할 때 별도로 수정해야 합니다.
 
-| 레시피명 | 조리기구 | 재료 1 | 재료 2 |
-| --- | --- | --- | --- |
-| 김치볶음밥 | 후라이팬 | 김치 | 밥 |
-| 김치찌개 | 냄비 | 김치 | 고춧가루 |
-| 김치전 | 후라이팬 | 김치 | 밀가루 |
+재실행 방법은 [변환 도구 안내](D:/laeti-dev/Migration/Jonggu/README.md), 검증 결과는 [QA 보고서](D:/laeti-dev/Migration/Jonggu/QA/VALIDATION_REPORT.md)를 참고합니다. 관리 대상 Actor는 원본 ID로 갱신되므로 해당 Actor의 수동 편집값은 재실행 시 원본 값으로 돌아갑니다.
 
-현재 프로토타입에서는 기구 조리 완료 결과물을 곧바로 서빙 가능한 완성 요리로 취급한다.
+충돌은 JSON 설정과 변환 도구에서 재생성합니다. `run_migration.ps1`은 작성된 `collision_rules.json`을 덮어쓰지 않으며, 설정을 바꾼 뒤 재임포트 2회·맵 재열기·충돌 PIE 검증을 수행합니다. 실행별 성공 여부는 최신 QA 보고서에서 확인합니다.
 
-## 탐험 축
-
-### `scene:room` / 종구의 방
-
-식당 운영을 보조하는 성장 공간이다.
-
-- 도구 작업대: 수리와 업그레이드
-- 아이템 컬렉션: 후속 기획
-- 다이어리: 후속 기획
-
-### `scene:beach` / 바닷가
-
-허브 밖 첫 탐험 허브다.
-
-- 집 앞 도구 상자에서 낡은 어망, 낡은 호미를 획득한다.
-- 아래쪽 갯바위에서는 `Space` 홀드 5초로 채집한다.
-- `김`, `바지락`, `홍합` 중 랜덤 2개를 획득한다.
-- 좌측 부두와 어선은 바다 탐험의 진입점 역할을 한다.
-
-### `scene:sea` / 바다
-
-`Beach`에서 이동하는 독립 채집 루프다.
-
-- 어망을 투척하고 일정 시간 뒤 회수한다.
-- `우럭`, `고등어`, `새우`, `꽃게`, `오징어` 중 랜덤 2개를 획득한다.
-
-### 후속 탐험 씬
-
-- `DeepForest`: 야채 자원, 길 읽기 압박
-- `WindHill`: 육류 자원, 돌풍 리듬
-- `Shortcut`: 왕복 피로를 줄이는 개방 경로
-- `AbandonedMine`: 희귀 재료 중심의 고위험/고보상 지역
-
-## 현재 범위와 후속 범위
-
-현재 문서와 런타임은 허브 코어 우선 범위를 기준으로 맞춰져 있다.
-
-- 포함: `OPEN/CLOSE`, 냉장고, 레시피, 메뉴판, `PassCounter`, `CookingUtensils`, 테스트 레시피 3종
-- 후속: 총 12명 방문 제한, 2인 1조 연출 강화, 포스기 상세 기능, `Open` 중 외부 이동 완전 차단, 좌석 확장 규칙, 심화 탐험 지역
-
-## 개발 예정 내용
-
-아래 항목은 현재 기획에 포함되어 있지만, 허브 코어 바깥의 후속 개발 범위로 분류한다.
-
-### 1. 허브 운영 확장
-
-- 손님 2인 1조 입장 연출과 총 방문 12명 기준 운영
-- 2인용 테이블 3개 기준 좌석 배정 규칙과 확장 좌석 규칙
-- `Open` 중 `scene:room`, `scene:beach` 이동 완전 차단
-- `PassCounter`와 향후 아르바이트생 자동 서빙 연결
-- 주문 인내심 10초 기준 검증과 동선 난이도 밸런싱
-
-### 2. 식당 시스템 확장
-
-- 포스기 상세 기능 추가
-- 매출 집계와 하루 정산 흐름
-- 리뷰 시스템
-- 테이블 수, 손님 수, 가게 상태 업그레이드
-- 메뉴 선정이 운영 난도와 수익 구조에 미치는 영향 강화
-
-### 3. 성장과 개인 공간
-
-- `scene:room` 작업대의 단계별 수리와 업그레이드
-- 아이템 컬렉션 보상
-- 다이어리 기록과 스토리 연출 연결
-- 도구 성장과 내구도 관리
-
-### 4. 탐험 지역 확장
-
-- `DeepForest`: 야채 중심 채집 지역
-- `WindHill`: 육류 중심 채집 지역
-- `Shortcut`: 골드로 여는 편의 경로
-- `AbandonedMine`: 희귀 재료 중심의 고난도 지역
-- 각 지역의 고유 위험 요소와 귀환 가치 설계
-
-### 5. 레벨 디자인과 월드 읽기
-
-- `Hub (Close)`는 준비 공간, `Hub (Open)`은 압박 공간으로 더 선명하게 분리
-- `Beach`를 첫 외부 허브답게 읽히는 맵으로 강화
-- 부두, 등대, 갯바위, 숲 방향, 지름길 방향의 시선 유도 개선
-- 메뉴 선정에 따라 탐험 루프 가치가 달라지는 구조 강화
-
-### 6. 고객 AI와 동선 규칙
-
-- 입장 위치와 좌석 배정 우선순위
-- 주문 후 대기와 퇴장 흐름 정교화
-- 테이블 추가 시 AI 경로 꼬임 방지
-- 혼잡 상황에서의 동선 충돌 최소화
-
-### 7. UI와 상호작용 규칙
-
-- 냉장고 카테고리 탭 확장
-- 포스기 팝업과 정산 UI
-- 허브 화이트박스 기준의 실제 상호작용 배치 정리
-- 팝업이 시간을 멈추는지 여부와 예외 규칙 정리
-- 조리, 주문, 탐험 중 팝업 충돌 처리 기준 정리
-
-### 8. 별도 분리 예정 문서
-
-- 허브 화이트박스 문서
-- `Beach` 화이트박스 문서
-- 탐험 리스크-보상 표
-- 고객 동선 및 좌석 확장 규칙 문서
-- 포스기 후속 기획 문서
-- `room` 후속 기획 문서
-- 팝업/시간 정지 규칙 문서
-
-## 문서 지도
-
-루트 README는 저장소 진입점 역할만 맡고, 세부 정본은 `Docs` 아래 문서에서 관리한다.
-
-- 작업 하네스: [Docs/README.md](Docs/README.md)
-- 규칙과 정본 관계: [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md), [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)
-- 에이전트 워크플로 자산: [Skills](Skills)
-- 게임 기획 개요: [Docs/Gameplay/GAME_DESIGN_OVERVIEW.md](Docs/Gameplay/GAME_DESIGN_OVERVIEW.md)
-- 허브 코어 루프: [Docs/Gameplay/GAMEPLAY_CORE_LOOP.md](Docs/Gameplay/GAMEPLAY_CORE_LOOP.md)
-- 식당 영업과 성장: [Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md](Docs/Gameplay/GAMEPLAY_RESTAURANT_AND_GROWTH.md)
-- 탐험 시스템 기획: [Docs/Gameplay/GAMEPLAY_EXPLORATION.md](Docs/Gameplay/GAMEPLAY_EXPLORATION.md)
-
-## 작업 전 확인
-
-1. [AGENTS.md](AGENTS.md)에서 세션 온보딩과 기본 작업 언어를 확인한다.
-2. [Docs/README.md](Docs/README.md)에서 문서 계층과 작업별 진입점을 확인한다.
-3. [Docs/Project/GAME_ASSISTANT_RULES.md](Docs/Project/GAME_ASSISTANT_RULES.md)와 [Docs/Project/GAME_DOCS_INDEX.md](Docs/Project/GAME_DOCS_INDEX.md)를 읽고 관련 정본 문서를 연다.
-4. 코드, 씬, generated 자산을 바꿀 때는 [Docs/Project/SOURCE_OF_TRUTH.md](Docs/Project/SOURCE_OF_TRUTH.md)를 먼저 따른다.
+실제 Unity 엔진 캡처는 라이선스 오류 198로 수행하지 못했습니다. 원본 데이터의 소프트웨어 참조와 Unreal 실제 렌더 캡처를 구분해 검증합니다.

@@ -1,97 +1,33 @@
-# Unity가 재생성하는 캐시/임시 폴더
-.utmp/
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Uu]ser[Ss]ettings/
-/[Mm]emoryCaptures/
-/[Rr]ecordings/
-/TestResults/
+# Unreal Engine caches and generated output
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
 
-# 로그 및 로컬 진단 산출물
-*.log
-*.coverage
-*.coveragexml
-sysinfo.txt
-mono_crash.*
-
-# Blender 임포트 중 생기는 백업 파일
-*.blend1
-*.blend1.meta
-
-# IDE 및 개인 로컬 설정
+# Local editor, IDE, and Codex settings
+.codex/
+.idea/
 .vs/
 .vscode/
-.idea/
-.consulo/
-.gradle/
-*.DotSettings.user
-*.suo
-*.tmp
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.svd
-*.opendb
-*.VC.db
-
-# Unity가 자동 생성하는 솔루션/프로젝트 파일
-*.csproj
-*.unityproj
 *.sln
+*.slnx
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+*.VC.db
+*.VC.opendb
+/Content/Developers/
+/Content/Collections/
 
-# Unity/Mono 디버그 심볼과 메타 파일
-*.pdb
-*.mdb
-*.pdb.meta
-*.mdb.meta
-*.pidb.meta
+# Python cache and local output
+__pycache__/
+*.py[cod]
+*.log
+*.tmp
 
-# 빌드 산출물
-*.apk
-*.aab
-*.app
-*.unitypackage
-*.unitypackage.meta
-crashlytics-build.properties
-ExportedObj/
-
-# 필요할 때만 사용: Asset Store Tools 플러그인
-# /[Aa]ssets/AssetStoreTools*
-
-# Rider가 자동 생성하는 Unity 플러그인
-/[Aa]ssets/Plugins/Editor/JetBrains*
-
-# Addressables 기본 생성물
-/ServerData
-/[Aa]ssets/StreamingAssets/aa*
-/[Aa]ssets/AddressableAssetsData/link.xml*
-/[Aa]ssets/AddressableAssetsData/*/*.bin*
-/[Aa]ssets/Addressables_Temp*
-
-# Visual Scripting 자동 생성 파일
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db.meta
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
-
-# Play Mode 테스트 중 생성되는 씬
-InitTestScene*.unity*
-/[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
-
-# Unity 복구/임시 저장 폴더
-/[Aa]ssets/_Recovery/
-/[Aa]ssets/_Recovery.meta
-
-# OS / 머지 임시 파일
+# Operating system files
 .DS_Store
 Thumbs.db
 Desktop.ini
-*.orig
-*.rej
-
-/.claude/settings.local.json

@@ -1,8 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <!-- Unity 생성 csproj를 외부 MSBuild로 열 때 소스 생성기 분석기 의존성 경고를 막는다. -->
-    <RunAnalyzers>false</RunAnalyzers>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-  </PropertyGroup>
-</Project>
