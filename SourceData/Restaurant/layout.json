@@ -1,0 +1,736 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "Unreal world centimetres; every position is [X,Y,Z]; movement is XZ at Y=0",
+  "ownership": "New nonblocking prototype actors only; do not assign JongguMigration ownership tags or move source art, collision, markers, or cameras.",
+  "player_radius_cm": 24.0,
+  "point_and_path_required_extra_clearance_cm": 2.0,
+  "maps": {
+    "Hub": {
+      "package": "/Game/Jonggu/Maps/L_Hub",
+      "player_spawn_cm": [
+        -715,
+        0,
+        -415
+      ],
+      "player_return_cm": [
+        -715,
+        0,
+        -520
+      ],
+      "camera_visible_bounds_xz_cm": [
+        -1600,
+        -900,
+        1600,
+        900
+      ],
+      "interactions": [
+        {
+          "id": "hub_menu",
+          "kind": "menu",
+          "position_cm": [
+            542,
+            0,
+            225
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "source_art_group_id": "Hub:210100033"
+        },
+        {
+          "id": "hub_pan",
+          "kind": "pan",
+          "position_cm": [
+            -376,
+            0,
+            480
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "source_art_group_id": "Hub:404239666"
+        },
+        {
+          "id": "hub_pot",
+          "kind": "pot",
+          "position_cm": [
+            -578,
+            0,
+            480
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "source_art_group_id": "Hub:283699445"
+        },
+        {
+          "id": "hub_discard",
+          "kind": "discard",
+          "position_cm": [
+            -1180,
+            0,
+            200
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false
+        },
+        {
+          "id": "hub_beach_portal",
+          "kind": "portal",
+          "position_cm": [
+            -715,
+            0,
+            -700
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "target_map": "Beach",
+          "target_spawn_cm": [
+            550,
+            0,
+            400
+          ]
+        },
+        {
+          "id": "hub_seat_1",
+          "kind": "serve",
+          "position_cm": [
+            -880,
+            0,
+            -380
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "seat_id": "seat_1"
+        },
+        {
+          "id": "hub_seat_2",
+          "kind": "serve",
+          "position_cm": [
+            0,
+            0,
+            -380
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "seat_id": "seat_2"
+        }
+      ],
+      "seats": [
+        {
+          "id": "seat_1",
+          "table_art_group_id": "Hub:1276978612",
+          "table_center_cm": [
+            -879.99996,
+            0,
+            -261.6667
+          ],
+          "service_position_cm": [
+            -880,
+            0,
+            -380
+          ],
+          "customer_position_cm": [
+            -880,
+            0,
+            -120
+          ],
+          "arrival_path_cm": [
+            [
+              -715,
+              0,
+              -700
+            ],
+            [
+              -450,
+              0,
+              -620
+            ],
+            [
+              -450,
+              0,
+              -120
+            ],
+            [
+              -880,
+              0,
+              -120
+            ]
+          ],
+          "customer_collision_enabled": false,
+          "departure_path_cm": [
+            [
+              -880,
+              0,
+              -120
+            ],
+            [
+              -450,
+              0,
+              -120
+            ],
+            [
+              -450,
+              0,
+              -620
+            ],
+            [
+              -715,
+              0,
+              -700
+            ]
+          ]
+        },
+        {
+          "id": "seat_2",
+          "table_art_group_id": "Hub:1336547639",
+          "table_center_cm": [
+            0.000216,
+            0,
+            -261.6667
+          ],
+          "service_position_cm": [
+            0,
+            0,
+            -380
+          ],
+          "customer_position_cm": [
+            0,
+            0,
+            -120
+          ],
+          "arrival_path_cm": [
+            [
+              -715,
+              0,
+              -700
+            ],
+            [
+              -450,
+              0,
+              -620
+            ],
+            [
+              -450,
+              0,
+              -120
+            ],
+            [
+              0,
+              0,
+              -120
+            ]
+          ],
+          "customer_collision_enabled": false,
+          "departure_path_cm": [
+            [
+              0,
+              0,
+              -120
+            ],
+            [
+              -450,
+              0,
+              -120
+            ],
+            [
+              -450,
+              0,
+              -620
+            ],
+            [
+              -715,
+              0,
+              -700
+            ]
+          ]
+        }
+      ],
+      "safe_routes_cm": {
+        "entrance_to_aisle": [
+          [
+            -715,
+            0,
+            -700
+          ],
+          [
+            -715,
+            0,
+            -520
+          ],
+          [
+            -450,
+            0,
+            -520
+          ],
+          [
+            -450,
+            0,
+            150
+          ]
+        ],
+        "initial_spawn_to_aisle": [
+          [
+            -715,
+            0,
+            -415
+          ],
+          [
+            -450,
+            0,
+            -415
+          ],
+          [
+            -450,
+            0,
+            150
+          ]
+        ],
+        "aisle_to_pan": [
+          [
+            -450,
+            0,
+            150
+          ],
+          [
+            0,
+            0,
+            150
+          ],
+          [
+            0,
+            0,
+            470
+          ],
+          [
+            -376,
+            0,
+            470
+          ],
+          [
+            -376,
+            0,
+            480
+          ]
+        ],
+        "aisle_to_pot": [
+          [
+            -450,
+            0,
+            150
+          ],
+          [
+            0,
+            0,
+            150
+          ],
+          [
+            0,
+            0,
+            470
+          ],
+          [
+            -578,
+            0,
+            470
+          ],
+          [
+            -578,
+            0,
+            480
+          ]
+        ],
+        "aisle_to_menu": [
+          [
+            -450,
+            0,
+            150
+          ],
+          [
+            542,
+            0,
+            150
+          ],
+          [
+            542,
+            0,
+            225
+          ]
+        ],
+        "aisle_to_discard": [
+          [
+            -450,
+            0,
+            150
+          ],
+          [
+            -1180,
+            0,
+            150
+          ],
+          [
+            -1180,
+            0,
+            200
+          ]
+        ],
+        "service_seat_1": [
+          [
+            -450,
+            0,
+            -415
+          ],
+          [
+            -880,
+            0,
+            -415
+          ],
+          [
+            -880,
+            0,
+            -380
+          ]
+        ],
+        "service_seat_2": [
+          [
+            -450,
+            0,
+            -415
+          ],
+          [
+            0,
+            0,
+            -415
+          ],
+          [
+            0,
+            0,
+            -380
+          ]
+        ],
+        "seat_1_arrival": [
+          [
+            -715,
+            0,
+            -700
+          ],
+          [
+            -450,
+            0,
+            -620
+          ],
+          [
+            -450,
+            0,
+            -120
+          ],
+          [
+            -880,
+            0,
+            -120
+          ]
+        ],
+        "seat_2_arrival": [
+          [
+            -715,
+            0,
+            -700
+          ],
+          [
+            -450,
+            0,
+            -620
+          ],
+          [
+            -450,
+            0,
+            -120
+          ],
+          [
+            0,
+            0,
+            -120
+          ]
+        ]
+      }
+    },
+    "Beach": {
+      "package": "/Game/Jonggu/Maps/L_Beach",
+      "player_spawn_cm": [
+        550,
+        0,
+        400
+      ],
+      "player_return_cm": [
+        550,
+        0,
+        400
+      ],
+      "camera_visible_bounds_xz_cm": [
+        -1600,
+        -900,
+        1600,
+        900
+      ],
+      "interactions": [
+        {
+          "id": "beach_hub_portal",
+          "kind": "portal",
+          "position_cm": [
+            350,
+            0,
+            400
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "target_map": "Hub",
+          "target_spawn_cm": [
+            -715,
+            0,
+            -520
+          ]
+        },
+        {
+          "id": "beach_clam_1",
+          "kind": "gather",
+          "position_cm": [
+            250,
+            0,
+            150
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "ingredient_id": "clam",
+          "quantity": 1
+        },
+        {
+          "id": "beach_clam_2",
+          "kind": "gather",
+          "position_cm": [
+            800,
+            0,
+            -50
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "ingredient_id": "clam",
+          "quantity": 1
+        },
+        {
+          "id": "beach_clam_3",
+          "kind": "gather",
+          "position_cm": [
+            1350,
+            0,
+            200
+          ],
+          "interaction_radius_cm": 130.0,
+          "requires_interact": true,
+          "blocks_player": false,
+          "ingredient_id": "clam",
+          "quantity": 1
+        }
+      ],
+      "safe_routes_cm": {
+        "visible_sand_loop": [
+          [
+            350,
+            0,
+            400
+          ],
+          [
+            550,
+            0,
+            400
+          ],
+          [
+            250,
+            0,
+            150
+          ],
+          [
+            800,
+            0,
+            -50
+          ],
+          [
+            1350,
+            0,
+            200
+          ],
+          [
+            550,
+            0,
+            400
+          ]
+        ]
+      }
+    }
+  },
+  "notes": [
+    "Interaction positions are safe floor hotspots, not replacement positions for original furniture sprites.",
+    "Hub kitchen entry is the existing gap at X=0, then Z=470. Direct north travel from dining to the stove intersects the serving counter.",
+    "Customer positions are free ground just behind two existing tables. These are nonblocking prototype seat anchors, not a new sitting animation or changes to chair art.",
+    "Customer paths reverse for departure and must never gate order completion or final summary.",
+    "Both portals require an explicit interaction press. Hub return is 180cm from its 130cm portal hotspot; Beach spawn is 200cm from its portal.",
+    "All three clam nodes are on visible sand; old BeachEntry and ReturnToHub at water origin remain untouched.",
+    "The 130cm pan and pot interaction discs overlap. Select nearest valid target, with stable ID tie-breaking and only one interaction per input press.",
+    "These are host geometry and existing-render checks. Root must perform PIE visibility, physical-keyboard, focus and travel checks after authoring."
+  ],
+  "validation": {
+    "method": "Rebuilt collision_rules+render_manifest primitives compared with prior actual PIE shapes; independent signed distances and 26cm circle/OBB overlaps at <=5cm path spacing. Existing GPU render inspected; no new editor execution.",
+    "success": true,
+    "path_sample_count": 2496,
+    "sources": {
+      "Saved/CollisionWork/Data/render_manifest.json": "633c6741d345aab1f2ee75979a097bf5149cff7e3cdfad83527146c5a69fe8ac",
+      "Saved/CollisionWork/Data/collision_rules.json": "e34a6a5404bd6c377a4c4aaefe4cbdda133199988eeb8c1df795530ef26ac11a",
+      "Saved/CollisionWork/QA/collision_pie_report.json": "6d61724f3f752e06becf066cdadb133f36b69570e4dec0a906cab9c667598784"
+    },
+    "results": {
+      "Hub": {
+        "collision_primitives": 16,
+        "points": [
+          {
+            "id": "player_spawn",
+            "extra_clearance_cm": 62.667
+          },
+          {
+            "id": "player_return",
+            "extra_clearance_cm": 167.667
+          },
+          {
+            "id": "hub_menu",
+            "extra_clearance_cm": 20.026
+          },
+          {
+            "id": "hub_pan",
+            "extra_clearance_cm": 32.73
+          },
+          {
+            "id": "hub_pot",
+            "extra_clearance_cm": 32.73
+          },
+          {
+            "id": "hub_discard",
+            "extra_clearance_cm": 39.38
+          },
+          {
+            "id": "hub_beach_portal",
+            "extra_clearance_cm": 157.165
+          },
+          {
+            "id": "hub_seat_1",
+            "extra_clearance_cm": 27.667
+          },
+          {
+            "id": "hub_seat_2",
+            "extra_clearance_cm": 27.667
+          },
+          {
+            "id": "seat_1_customer",
+            "extra_clearance_cm": 51.0
+          },
+          {
+            "id": "seat_2_customer",
+            "extra_clearance_cm": 51.0
+          }
+        ],
+        "routes": [
+          {
+            "id": "entrance_to_aisle",
+            "samples": 226,
+            "minimum_extra_clearance_cm": 89.38
+          },
+          {
+            "id": "initial_spawn_to_aisle",
+            "samples": 168,
+            "minimum_extra_clearance_cm": 62.667
+          },
+          {
+            "id": "aisle_to_pan",
+            "samples": 236,
+            "minimum_extra_clearance_cm": 32.73
+          },
+          {
+            "id": "aisle_to_pot",
+            "samples": 276,
+            "minimum_extra_clearance_cm": 32.73
+          },
+          {
+            "id": "aisle_to_menu",
+            "samples": 216,
+            "minimum_extra_clearance_cm": 20.026
+          },
+          {
+            "id": "aisle_to_discard",
+            "samples": 158,
+            "minimum_extra_clearance_cm": 39.38
+          },
+          {
+            "id": "service_seat_1",
+            "samples": 95,
+            "minimum_extra_clearance_cm": 27.667
+          },
+          {
+            "id": "service_seat_2",
+            "samples": 99,
+            "minimum_extra_clearance_cm": 27.667
+          },
+          {
+            "id": "seat_1_arrival",
+            "samples": 245,
+            "minimum_extra_clearance_cm": 51.0
+          },
+          {
+            "id": "seat_2_arrival",
+            "samples": 249,
+            "minimum_extra_clearance_cm": 51.0
+          }
+        ]
+      },
+      "Beach": {
+        "collision_primitives": 74,
+        "points": [
+          {
+            "id": "player_spawn",
+            "extra_clearance_cm": 518.033
+          },
+          {
+            "id": "player_return",
+            "extra_clearance_cm": 518.033
+          },
+          {
+            "id": "beach_hub_portal",
+            "extra_clearance_cm": 330.683
+          },
+          {
+            "id": "beach_clam_1",
+            "extra_clearance_cm": 128.643
+          },
+          {
+            "id": "beach_clam_2",
+            "extra_clearance_cm": 156.0
+          },
+          {
+            "id": "beach_clam_3",
+            "extra_clearance_cm": 407.045
+          }
+        ],
+        "routes": [
+          {
+            "id": "visible_sand_loop",
+            "samples": 528,
+            "minimum_extra_clearance_cm": 128.643
+          }
+        ]
+      }
+    }
+  }
+}

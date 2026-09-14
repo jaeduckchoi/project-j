@@ -1,0 +1,6041 @@
+{
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "started": "2026-09-13T22:02:09",
+  "assets": {
+    "textures": 249,
+    "textures_reimported": 0,
+    "sprites": 262,
+    "player_runtime_sprites": 6
+  },
+  "scenes": [
+    {
+      "name": "Hub",
+      "path": "/Game/Jonggu/Maps/L_Hub",
+      "owned_actors": 115,
+      "source_actors": 99,
+      "collision_actors": 16,
+      "obsolete_removed": 0,
+      "groups": [
+        {
+          "source_id": "Hub:1026610951",
+          "actor_id": "render:Hub:1026610951",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1060963302",
+          "actor_id": "render:Hub:1060963302",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1069871639",
+          "actor_id": "render:Hub:1069871639",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1170162319",
+          "actor_id": "render:Hub:1170162319",
+          "status": "suppressed_split_source",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1276978612",
+          "actor_id": "render:Hub:1276978612",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1336547639",
+          "actor_id": "render:Hub:1336547639",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1526965162",
+          "actor_id": "render:Hub:1526965162",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1531594859",
+          "actor_id": "render:Hub:1531594859",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1723958469",
+          "actor_id": "render:Hub:1723958469",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1738489783",
+          "actor_id": "render:Hub:1738489783",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1853236465",
+          "actor_id": "render:Hub:1853236465",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:1996009074",
+          "actor_id": "render:Hub:1996009074",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:2031000003",
+          "actor_id": "render:Hub:2031000003",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:2031000013",
+          "actor_id": "render:Hub:2031000013",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:2031000033",
+          "actor_id": "render:Hub:2031000033",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:2031000043",
+          "actor_id": "render:Hub:2031000043",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:210100003",
+          "actor_id": "render:Hub:210100003",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:210100013",
+          "actor_id": "render:Hub:210100013",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:210100023",
+          "actor_id": "render:Hub:210100023",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:210100033",
+          "actor_id": "render:Hub:210100033",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:218489564",
+          "actor_id": "render:Hub:218489564",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 66
+        },
+        {
+          "source_id": "Hub:27645660",
+          "actor_id": "render:Hub:27645660",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:283699445",
+          "actor_id": "render:Hub:283699445",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:404239666",
+          "actor_id": "render:Hub:404239666",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:412686207",
+          "actor_id": "render:Hub:412686207",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:448144653",
+          "actor_id": "render:Hub:448144653",
+          "status": "missing_sprite",
+          "kind": "sprite",
+          "instances": 0
+        },
+        {
+          "source_id": "Hub:655320554",
+          "actor_id": "render:Hub:655320554",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:731166547",
+          "actor_id": "render:Hub:731166547",
+          "status": "disabled",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:770303012",
+          "actor_id": "render:Hub:770303012",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Hub:969813992",
+          "actor_id": "render:Hub:969813992",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        }
+      ],
+      "cameras": [
+        {
+          "actor_id": "camera:Hub:210280132",
+          "ortho_width": 3200.0,
+          "preview_look": {
+            "camera": "/Game/Jonggu/Maps/L_Hub.L_Hub:PersistentLevel.CameraActor_0.CameraComponent",
+            "material": "/Game/Jonggu/Materials/M_Jonggu_PreviewDisplay.M_Jonggu_PreviewDisplay",
+            "display_gamma": 2.2,
+            "exposure": "manual",
+            "film_curve": "replaced",
+            "matching_blendables": 1,
+            "validation": "authoring_fields_only"
+          }
+        }
+      ],
+      "player": {
+        "scene": "Hub",
+        "pawn_actor_id": "node:Hub:457226398",
+        "placeholder_actor_id": "render:Hub:655320554",
+        "source_root_id": "Hub:457226398",
+        "source_visual_id": "Hub:655320554",
+        "source_root_world_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -7.15
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -4.15
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "target_root_world_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -7.15
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -4.15
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "root_rebased": false,
+        "target_root_world_transform": {
+          "translation": [
+            -715.0,
+            0.0,
+            -415.00000000000006
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "source_visual_world_transform": {
+          "translation": [
+            -715.0,
+            0.0,
+            -415.00000000000006
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        },
+        "initial_visual_world_transform": {
+          "translation": [
+            -715.0,
+            0.0,
+            -415.00000000000006
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        },
+        "child_attachment_rule": "KEEP_WORLD",
+        "placeholder_hidden": true,
+        "frame_assets": {
+          "front": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Front/S_Player_Front_0.S_Player_Front_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Front/S_Player_Front_1.S_Player_Front_1"
+          ],
+          "back": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Back/S_Player_Back_0.S_Player_Back_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Back/S_Player_Back_1.S_Player_Back_1"
+          ],
+          "side": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Side/S_Player_Side_0.S_Player_Side_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Side/S_Player_Side_1.S_Player_Side_1"
+          ]
+        },
+        "auto_possess_player": "PLAYER0",
+        "move_speed_cm_per_second": 400.0,
+        "sprite_color": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "material": "/Game/Jonggu/Materials/MI_Jonggu_TranslucentUnlit.MI_Jonggu_TranslucentUnlit",
+        "sort_priority": 415,
+        "idle_frame_seconds": 0.3,
+        "walking_poses": 8,
+        "walk_cycle_distance_cm": 160.0,
+        "walk_parts_from_original_texture": true,
+        "source_manifest_modified": false,
+        "saved_level_reopen_verified": true,
+        "sort_mode": "ground-anchor:-floor(feet_z_cm+0.5)",
+        "reopened_visual_world_transform": {
+          "translation": [
+            -715.0,
+            0.0,
+            -415.00000000000006
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        }
+      },
+      "collision": {
+        "name": "Hub",
+        "specs": [
+          {
+            "id": "collision:Hub:1069871639:0",
+            "parent_id": "Hub:1069871637",
+            "category": "furniture",
+            "label": "Table and chair base",
+            "shape": "box",
+            "center_cm": [
+              920.0004,
+              0.0,
+              -261.6667
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1276978612:0",
+            "parent_id": "Hub:1276978610",
+            "category": "furniture",
+            "label": "Table and chair base",
+            "shape": "box",
+            "center_cm": [
+              -879.99996,
+              0.0,
+              -261.6667
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1336547639:0",
+            "parent_id": "Hub:1336547637",
+            "category": "furniture",
+            "label": "Table and chair base",
+            "shape": "box",
+            "center_cm": [
+              0.000216,
+              0.0,
+              -261.6667
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1531594859:0",
+            "parent_id": "Hub:1531594857",
+            "category": "furniture",
+            "label": "Recipe stand base",
+            "shape": "box",
+            "center_cm": [
+              230.0,
+              0.0,
+              325.87965
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              78.125,
+              100.0,
+              62.5
+            ]
+          },
+          {
+            "id": "collision:Hub:2031000003:0",
+            "parent_id": "Hub:2031000001",
+            "category": "furniture",
+            "label": "Serving counter base",
+            "shape": "box",
+            "center_cm": [
+              -720.0,
+              0.0,
+              325.87965
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              625.0,
+              100.0,
+              62.5
+            ]
+          },
+          {
+            "id": "collision:Hub:210100003:0",
+            "parent_id": "Hub:210100001",
+            "category": "furniture",
+            "label": "Cooking counter base",
+            "shape": "box",
+            "center_cm": [
+              -580.0,
+              0.0,
+              580.4796
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              900.0,
+              100.0,
+              43.75
+            ]
+          },
+          {
+            "id": "collision:Hub:210100033:0",
+            "parent_id": "Hub:210100031",
+            "category": "furniture",
+            "label": "Menu board feet",
+            "shape": "box",
+            "center_cm": [
+              542.3333,
+              0.0,
+              298.626351
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              148.0,
+              100.0,
+              29.6
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:0",
+            "parent_id": "Hub:27645658",
+            "category": "wall",
+            "label": "Restaurant authored wall outline",
+            "shape": "box",
+            "center_cm": [
+              -237.000024,
+              0.0,
+              757.181181
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1363.000136,
+              100.0,
+              150.226359
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:1",
+            "parent_id": "Hub:27645658",
+            "category": "wall",
+            "label": "Restaurant authored wall outline",
+            "shape": "box",
+            "center_cm": [
+              -1541.000154,
+              0.0,
+              0.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              59.500006,
+              100.0,
+              907.40754
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:2",
+            "parent_id": "Hub:27645658",
+            "category": "wall",
+            "label": "Restaurant authored wall outline",
+            "shape": "box",
+            "center_cm": [
+              1541.000154,
+              0.0,
+              0.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              59.500006,
+              100.0,
+              907.40754
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:3",
+            "parent_id": "Hub:27645658",
+            "category": "wall",
+            "label": "Restaurant authored wall outline",
+            "shape": "box",
+            "center_cm": [
+              -1244.000124,
+              0.0,
+              -829.773784
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              355.500036,
+              100.0,
+              77.633756
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:4",
+            "parent_id": "Hub:27645658",
+            "category": "wall",
+            "label": "Restaurant authored wall outline",
+            "shape": "box",
+            "center_cm": [
+              533.000053,
+              0.0,
+              -829.773784
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1066.500107,
+              100.0,
+              77.633756
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:bottom",
+            "parent_id": "Hub:1423383936",
+            "category": "boundary",
+            "label": "Map boundary bottom",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -925.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1600.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:left",
+            "parent_id": "Hub:1423383936",
+            "category": "boundary",
+            "label": "Map boundary left",
+            "shape": "box",
+            "center_cm": [
+              -1625.0,
+              0.0,
+              0.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              25.0,
+              100.0,
+              950.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:right",
+            "parent_id": "Hub:1423383936",
+            "category": "boundary",
+            "label": "Map boundary right",
+            "shape": "box",
+            "center_cm": [
+              1625.0,
+              0.0,
+              0.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              25.0,
+              100.0,
+              950.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:top",
+            "parent_id": "Hub:1423383936",
+            "category": "boundary",
+            "label": "Map boundary top",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              925.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1600.0,
+              100.0,
+              25.0
+            ]
+          }
+        ],
+        "snapshot": [
+          {
+            "id": "collision:Hub:1069871639:0",
+            "parent_id": "Hub:1069871637",
+            "shape": "box",
+            "center_cm": [
+              920.0004,
+              0.0,
+              -261.6667
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1276978612:0",
+            "parent_id": "Hub:1276978610",
+            "shape": "box",
+            "center_cm": [
+              -879.99996,
+              0.0,
+              -261.6667
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1336547639:0",
+            "parent_id": "Hub:1336547637",
+            "shape": "box",
+            "center_cm": [
+              0.000216,
+              0.0,
+              -261.6667
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              253.333384,
+              100.0,
+              66.66668
+            ]
+          },
+          {
+            "id": "collision:Hub:1531594859:0",
+            "parent_id": "Hub:1531594857",
+            "shape": "box",
+            "center_cm": [
+              230.0,
+              0.0,
+              325.87965
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              78.125,
+              100.0,
+              62.5
+            ]
+          },
+          {
+            "id": "collision:Hub:2031000003:0",
+            "parent_id": "Hub:2031000001",
+            "shape": "box",
+            "center_cm": [
+              -720.0,
+              0.0,
+              325.87965
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              625.0,
+              100.0,
+              62.5
+            ]
+          },
+          {
+            "id": "collision:Hub:210100003:0",
+            "parent_id": "Hub:210100001",
+            "shape": "box",
+            "center_cm": [
+              -580.0,
+              0.0,
+              580.4796
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              900.0,
+              100.0,
+              43.75
+            ]
+          },
+          {
+            "id": "collision:Hub:210100033:0",
+            "parent_id": "Hub:210100031",
+            "shape": "box",
+            "center_cm": [
+              542.3333,
+              0.0,
+              298.626351
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              148.0,
+              100.0,
+              29.6
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:0",
+            "parent_id": "Hub:27645658",
+            "shape": "box",
+            "center_cm": [
+              -237.000024,
+              0.0,
+              757.181181
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1363.000136,
+              100.0,
+              150.226359
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:1",
+            "parent_id": "Hub:27645658",
+            "shape": "box",
+            "center_cm": [
+              -1541.000154,
+              0.0,
+              0.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              59.500006,
+              100.0,
+              907.40754
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:2",
+            "parent_id": "Hub:27645658",
+            "shape": "box",
+            "center_cm": [
+              1541.000154,
+              0.0,
+              0.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              59.500006,
+              100.0,
+              907.40754
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:3",
+            "parent_id": "Hub:27645658",
+            "shape": "box",
+            "center_cm": [
+              -1244.000124,
+              0.0,
+              -829.773784
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              355.500036,
+              100.0,
+              77.633756
+            ]
+          },
+          {
+            "id": "collision:Hub:27645658:4",
+            "parent_id": "Hub:27645658",
+            "shape": "box",
+            "center_cm": [
+              533.000053,
+              0.0,
+              -829.773784
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1066.500107,
+              100.0,
+              77.633756
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:bottom",
+            "parent_id": "Hub:1423383936",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -925.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1600.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:left",
+            "parent_id": "Hub:1423383936",
+            "shape": "box",
+            "center_cm": [
+              -1625.0,
+              0.0,
+              0.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              25.0,
+              100.0,
+              950.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:right",
+            "parent_id": "Hub:1423383936",
+            "shape": "box",
+            "center_cm": [
+              1625.0,
+              0.0,
+              0.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              25.0,
+              100.0,
+              950.0
+            ]
+          },
+          {
+            "id": "collision:Hub:boundary:top",
+            "parent_id": "Hub:1423383936",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              925.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1600.0,
+              100.0,
+              25.0
+            ]
+          }
+        ],
+        "reopen_verified": true
+      },
+      "expected_actor_ids": [
+        "camera:Hub:210280132",
+        "collision:Hub:1069871639:0",
+        "collision:Hub:1276978612:0",
+        "collision:Hub:1336547639:0",
+        "collision:Hub:1531594859:0",
+        "collision:Hub:2031000003:0",
+        "collision:Hub:210100003:0",
+        "collision:Hub:210100033:0",
+        "collision:Hub:27645658:0",
+        "collision:Hub:27645658:1",
+        "collision:Hub:27645658:2",
+        "collision:Hub:27645658:3",
+        "collision:Hub:27645658:4",
+        "collision:Hub:boundary:bottom",
+        "collision:Hub:boundary:left",
+        "collision:Hub:boundary:right",
+        "collision:Hub:boundary:top",
+        "node:Hub:1026610947",
+        "node:Hub:1060963298",
+        "node:Hub:1069871637",
+        "node:Hub:1125614384",
+        "node:Hub:1170162317",
+        "node:Hub:1191066000",
+        "node:Hub:1248902159",
+        "node:Hub:1276978610",
+        "node:Hub:1295887425",
+        "node:Hub:1336547637",
+        "node:Hub:1365768331",
+        "node:Hub:1422991998",
+        "node:Hub:1423383936",
+        "node:Hub:1465137478",
+        "node:Hub:1474898439",
+        "node:Hub:1526965160",
+        "node:Hub:1531594857",
+        "node:Hub:164265874",
+        "node:Hub:1723958467",
+        "node:Hub:1738489779",
+        "node:Hub:1782547911",
+        "node:Hub:1784805685",
+        "node:Hub:184991826",
+        "node:Hub:1853236461",
+        "node:Hub:1941598406",
+        "node:Hub:1986405028",
+        "node:Hub:1996009070",
+        "node:Hub:2020429311",
+        "node:Hub:2024770825",
+        "node:Hub:2031000001",
+        "node:Hub:2031000011",
+        "node:Hub:2031000031",
+        "node:Hub:2031000041",
+        "node:Hub:2045425418",
+        "node:Hub:210100001",
+        "node:Hub:210100004",
+        "node:Hub:210100011",
+        "node:Hub:210100021",
+        "node:Hub:210100031",
+        "node:Hub:210280132",
+        "node:Hub:2146000000",
+        "node:Hub:218489562",
+        "node:Hub:245323853",
+        "node:Hub:27645658",
+        "node:Hub:283699441",
+        "node:Hub:330658212",
+        "node:Hub:343560797",
+        "node:Hub:400271043",
+        "node:Hub:404239662",
+        "node:Hub:412686205",
+        "node:Hub:448144651",
+        "node:Hub:457226398",
+        "node:Hub:474882975",
+        "node:Hub:518191039",
+        "node:Hub:565821035",
+        "node:Hub:621145488",
+        "node:Hub:644239747",
+        "node:Hub:655320552",
+        "node:Hub:674777033",
+        "node:Hub:731166543",
+        "node:Hub:740251884",
+        "node:Hub:770303008",
+        "node:Hub:78441099",
+        "node:Hub:870554644",
+        "node:Hub:916316596",
+        "node:Hub:933271596",
+        "node:Hub:969813988",
+        "node:Hub:983101717",
+        "render:Hub:1026610951",
+        "render:Hub:1060963302",
+        "render:Hub:1069871639",
+        "render:Hub:1170162319",
+        "render:Hub:1276978612",
+        "render:Hub:1336547639",
+        "render:Hub:1526965162",
+        "render:Hub:1531594859",
+        "render:Hub:1723958469",
+        "render:Hub:1738489783",
+        "render:Hub:1853236465",
+        "render:Hub:1996009074",
+        "render:Hub:2031000003",
+        "render:Hub:2031000013",
+        "render:Hub:2031000033",
+        "render:Hub:2031000043",
+        "render:Hub:210100003",
+        "render:Hub:210100013",
+        "render:Hub:210100023",
+        "render:Hub:210100033",
+        "render:Hub:218489564",
+        "render:Hub:27645660",
+        "render:Hub:283699445",
+        "render:Hub:404239666",
+        "render:Hub:412686207",
+        "render:Hub:448144653",
+        "render:Hub:655320554",
+        "render:Hub:731166547",
+        "render:Hub:770303012",
+        "render:Hub:969813992"
+      ],
+      "depth_sorting": {
+        "specs": [
+          {
+            "group_id": "Hub:1026610951",
+            "object_id": "Hub:1026610947",
+            "category": "depth",
+            "priority": -576,
+            "source_priority": 8,
+            "anchor_z_cm": 580.4796,
+            "suborder": 4,
+            "anchor_group_id": "Hub:210100003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ]
+          },
+          {
+            "group_id": "Hub:1060963302",
+            "object_id": "Hub:1060963298",
+            "category": "depth",
+            "priority": -576,
+            "source_priority": 8,
+            "anchor_z_cm": 580.4796,
+            "suborder": 4,
+            "anchor_group_id": "Hub:210100003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ]
+          },
+          {
+            "group_id": "Hub:1069871639",
+            "object_id": "Hub:1069871637",
+            "category": "depth",
+            "priority": 262,
+            "source_priority": 4,
+            "anchor_z_cm": -261.6667,
+            "suborder": 0,
+            "anchor_group_id": "Hub:1069871639",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              0
+            ]
+          },
+          {
+            "group_id": "Hub:1170162319",
+            "object_id": "Hub:1170162317",
+            "category": "source",
+            "priority": -29987,
+            "source_priority": 13,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:1276978612",
+            "object_id": "Hub:1276978610",
+            "category": "depth",
+            "priority": 262,
+            "source_priority": 4,
+            "anchor_z_cm": -261.6667,
+            "suborder": 0,
+            "anchor_group_id": "Hub:1276978612",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              0
+            ]
+          },
+          {
+            "group_id": "Hub:1336547639",
+            "object_id": "Hub:1336547637",
+            "category": "depth",
+            "priority": 262,
+            "source_priority": 4,
+            "anchor_z_cm": -261.6667,
+            "suborder": 0,
+            "anchor_group_id": "Hub:1336547639",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              0
+            ]
+          },
+          {
+            "group_id": "Hub:1526965162",
+            "object_id": "Hub:1526965160",
+            "category": "depth",
+            "priority": -297,
+            "source_priority": 8,
+            "anchor_z_cm": 298.6263512,
+            "suborder": 2,
+            "anchor_group_id": "Hub:210100033",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ]
+          },
+          {
+            "group_id": "Hub:1531594859",
+            "object_id": "Hub:1531594857",
+            "category": "depth",
+            "priority": -326,
+            "source_priority": 11,
+            "anchor_z_cm": 325.87964999999997,
+            "suborder": 0,
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ]
+          },
+          {
+            "group_id": "Hub:1723958469",
+            "object_id": "Hub:1723958467",
+            "category": "depth",
+            "priority": -297,
+            "source_priority": 8,
+            "anchor_z_cm": 298.6263512,
+            "suborder": 2,
+            "anchor_group_id": "Hub:210100033",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ]
+          },
+          {
+            "group_id": "Hub:1738489783",
+            "object_id": "Hub:1738489779",
+            "category": "source",
+            "priority": -29987,
+            "source_priority": 13,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:1853236465",
+            "object_id": "Hub:1853236461",
+            "category": "source",
+            "priority": -29992,
+            "source_priority": 8,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:1996009074",
+            "object_id": "Hub:1996009070",
+            "category": "source",
+            "priority": -29992,
+            "source_priority": 8,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:2031000003",
+            "object_id": "Hub:2031000001",
+            "category": "depth",
+            "priority": -326,
+            "source_priority": 11,
+            "anchor_z_cm": 325.87964999999997,
+            "suborder": 0,
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ]
+          },
+          {
+            "group_id": "Hub:2031000013",
+            "object_id": "Hub:2031000011",
+            "category": "depth",
+            "priority": -324,
+            "source_priority": 13,
+            "anchor_z_cm": 325.87964999999997,
+            "suborder": 2,
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ]
+          },
+          {
+            "group_id": "Hub:2031000033",
+            "object_id": "Hub:2031000031",
+            "category": "depth",
+            "priority": -326,
+            "source_priority": 11,
+            "anchor_z_cm": 325.87964999999997,
+            "suborder": 0,
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ]
+          },
+          {
+            "group_id": "Hub:2031000043",
+            "object_id": "Hub:2031000041",
+            "category": "depth",
+            "priority": -326,
+            "source_priority": 11,
+            "anchor_z_cm": 325.87964999999997,
+            "suborder": 0,
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ]
+          },
+          {
+            "group_id": "Hub:210100003",
+            "object_id": "Hub:210100001",
+            "category": "depth",
+            "priority": -580,
+            "source_priority": 4,
+            "anchor_z_cm": 580.4796,
+            "suborder": 0,
+            "anchor_group_id": "Hub:210100003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ]
+          },
+          {
+            "group_id": "Hub:210100013",
+            "object_id": "Hub:210100011",
+            "category": "background",
+            "priority": -29999,
+            "source_priority": 1,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:210100023",
+            "object_id": "Hub:210100021",
+            "category": "background",
+            "priority": -29998,
+            "source_priority": 2,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:210100033",
+            "object_id": "Hub:210100031",
+            "category": "depth",
+            "priority": -299,
+            "source_priority": 6,
+            "anchor_z_cm": 298.6263512,
+            "suborder": 0,
+            "anchor_group_id": "Hub:210100033",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ]
+          },
+          {
+            "group_id": "Hub:218489564",
+            "object_id": "Hub:218489562",
+            "category": "background",
+            "priority": -30030,
+            "source_priority": -30,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:27645660",
+            "object_id": "Hub:27645658",
+            "category": "source",
+            "priority": -29997,
+            "source_priority": 3,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:283699445",
+            "object_id": "Hub:283699441",
+            "category": "source",
+            "priority": -29992,
+            "source_priority": 8,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:404239666",
+            "object_id": "Hub:404239662",
+            "category": "source",
+            "priority": -29992,
+            "source_priority": 8,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:412686207",
+            "object_id": "Hub:412686205",
+            "category": "depth",
+            "priority": -297,
+            "source_priority": 8,
+            "anchor_z_cm": 298.6263512,
+            "suborder": 2,
+            "anchor_group_id": "Hub:210100033",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ]
+          },
+          {
+            "group_id": "Hub:448144653",
+            "object_id": "Hub:448144651",
+            "category": "source",
+            "priority": -29991,
+            "source_priority": 9,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:655320554",
+            "object_id": "Hub:655320552",
+            "category": "player",
+            "priority": 415,
+            "source_priority": 12,
+            "anchor_z_cm": -415.00000000000006,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": "Hub:78441099",
+            "anchor_local_xy": [
+              0,
+              0
+            ]
+          },
+          {
+            "group_id": "Hub:731166547",
+            "object_id": "Hub:731166543",
+            "category": "source",
+            "priority": -29992,
+            "source_priority": 8,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Hub:770303012",
+            "object_id": "Hub:770303008",
+            "category": "depth",
+            "priority": -576,
+            "source_priority": 8,
+            "anchor_z_cm": 580.4796,
+            "suborder": 4,
+            "anchor_group_id": "Hub:210100003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ]
+          },
+          {
+            "group_id": "Hub:969813992",
+            "object_id": "Hub:969813988",
+            "category": "depth",
+            "priority": -576,
+            "source_priority": 8,
+            "anchor_z_cm": 580.4796,
+            "suborder": 4,
+            "anchor_group_id": "Hub:210100003",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ]
+          }
+        ],
+        "initial_player_priority": 415,
+        "reopen_verified": true
+      },
+      "reopen_verified": true
+    },
+    {
+      "name": "Beach",
+      "path": "/Game/Jonggu/Maps/L_Beach",
+      "owned_actors": 130,
+      "source_actors": 56,
+      "collision_actors": 74,
+      "obsolete_removed": 0,
+      "groups": [
+        {
+          "source_id": "Beach:100512",
+          "actor_id": "render:Beach:100512",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:1216085743",
+          "actor_id": "render:Beach:1216085743",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:1219935412",
+          "actor_id": "render:Beach:1219935412",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:1317604602",
+          "actor_id": "render:Beach:1317604602",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:1715948720",
+          "actor_id": "render:Beach:1715948720",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:1957722353",
+          "actor_id": "render:Beach:1957722353",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:393565041",
+          "actor_id": "render:Beach:393565041",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:515152441",
+          "actor_id": "render:Beach:515152441",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:781787690",
+          "actor_id": "render:Beach:781787690",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:907298847",
+          "actor_id": "render:Beach:907298847",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:965311528",
+          "actor_id": "render:Beach:965311528",
+          "status": "visible",
+          "kind": "sprite",
+          "instances": 1
+        },
+        {
+          "source_id": "Beach:41280233",
+          "actor_id": "render:Beach:41280233",
+          "status": "visible",
+          "kind": "tilemap",
+          "instances": 2304
+        },
+        {
+          "source_id": "Beach:2049905414",
+          "actor_id": "render:Beach:2049905414",
+          "status": "visible",
+          "kind": "tilemap",
+          "instances": 200
+        }
+      ],
+      "cameras": [
+        {
+          "actor_id": "camera:Beach:100120",
+          "ortho_width": 3200.0,
+          "preview_look": {
+            "camera": "/Game/Jonggu/Maps/L_Beach.L_Beach:PersistentLevel.CameraActor_0.CameraComponent",
+            "material": "/Game/Jonggu/Materials/M_Jonggu_PreviewDisplay.M_Jonggu_PreviewDisplay",
+            "display_gamma": 2.2,
+            "exposure": "manual",
+            "film_curve": "replaced",
+            "matching_blendables": 1,
+            "validation": "authoring_fields_only"
+          }
+        }
+      ],
+      "player": {
+        "scene": "Beach",
+        "pawn_actor_id": "node:Beach:100040",
+        "placeholder_actor_id": "render:Beach:100512",
+        "source_root_id": "Beach:100040",
+        "source_visual_id": "Beach:100512",
+        "source_root_world_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "target_root_world_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            17.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            12.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "root_rebased": true,
+        "target_root_world_transform": {
+          "translation": [
+            1750.0,
+            0.0,
+            1200.0
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "source_visual_world_transform": {
+          "translation": [
+            1750.0,
+            0.0,
+            1200.0
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        },
+        "initial_visual_world_transform": {
+          "translation": [
+            1750.0,
+            0.0,
+            1200.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        },
+        "child_attachment_rule": "KEEP_WORLD",
+        "placeholder_hidden": true,
+        "frame_assets": {
+          "front": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Front/S_Player_Front_0.S_Player_Front_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Front/S_Player_Front_1.S_Player_Front_1"
+          ],
+          "back": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Back/S_Player_Back_0.S_Player_Back_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Back/S_Player_Back_1.S_Player_Back_1"
+          ],
+          "side": [
+            "/Game/Jonggu/Sprites/Player/Runtime/Side/S_Player_Side_0.S_Player_Side_0",
+            "/Game/Jonggu/Sprites/Player/Runtime/Side/S_Player_Side_1.S_Player_Side_1"
+          ]
+        },
+        "auto_possess_player": "PLAYER0",
+        "move_speed_cm_per_second": 400.0,
+        "sprite_color": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "material": "/Game/Jonggu/Materials/MI_Jonggu_TranslucentUnlit.MI_Jonggu_TranslucentUnlit",
+        "sort_priority": -1200,
+        "idle_frame_seconds": 0.3,
+        "walking_poses": 8,
+        "walk_cycle_distance_cm": 160.0,
+        "walk_parts_from_original_texture": true,
+        "source_manifest_modified": false,
+        "saved_level_reopen_verified": true,
+        "sort_mode": "ground-anchor:-floor(feet_z_cm+0.5)",
+        "reopened_visual_world_transform": {
+          "translation": [
+            1750.0,
+            0.0,
+            1200.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.67,
+            1.0,
+            1.67
+          ]
+        }
+      },
+      "collision": {
+        "name": "Beach",
+        "specs": [
+          {
+            "id": "collision:Beach:1216085743:0",
+            "parent_id": "Beach:1216085741",
+            "category": "nature",
+            "label": "Tree trunk base",
+            "shape": "sphere",
+            "center_cm": [
+              2820.0,
+              0.0,
+              1352.0
+            ],
+            "rotation_degrees": 0.0,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:1219935412:0",
+            "parent_id": "Beach:1219935410",
+            "category": "building",
+            "label": "Lighthouse rock base",
+            "shape": "box",
+            "center_cm": [
+              -2500.0,
+              0.0,
+              925.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              155.0,
+              100.0,
+              52.5
+            ]
+          },
+          {
+            "id": "collision:Beach:1317604602:0",
+            "parent_id": "Beach:1317604600",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -1660.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1317604602:1",
+            "parent_id": "Beach:1317604600",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -1660.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1715948720:0",
+            "parent_id": "Beach:1715948718",
+            "category": "nature",
+            "label": "Tree trunk base",
+            "shape": "sphere",
+            "center_cm": [
+              650.0,
+              0.0,
+              1390.0
+            ],
+            "rotation_degrees": 0.0,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:1957722353:0",
+            "parent_id": "Beach:1957722351",
+            "category": "vessel",
+            "label": "Passenger ship hull",
+            "shape": "box",
+            "center_cm": [
+              -1503.0,
+              0.0,
+              -360.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1090.0,
+              100.0,
+              410.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1957722353:1",
+            "parent_id": "Beach:1957722351",
+            "category": "vessel",
+            "label": "Passenger ship hull",
+            "shape": "sphere",
+            "center_cm": [
+              -2588.0,
+              0.0,
+              -300.0
+            ],
+            "rotation_degrees": 0.0,
+            "radius_cm": 200.0
+          },
+          {
+            "id": "collision:Beach:393565041:0",
+            "parent_id": "Beach:393565039",
+            "category": "nature",
+            "label": "Tree trunk base",
+            "shape": "sphere",
+            "center_cm": [
+              2584.0,
+              0.0,
+              1304.0
+            ],
+            "rotation_degrees": 0.0,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:515152441:0",
+            "parent_id": "Beach:515152439",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -860.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:515152441:1",
+            "parent_id": "Beach:515152439",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -860.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:781787690:0",
+            "parent_id": "Beach:781787688",
+            "category": "nature",
+            "label": "Tree trunk base",
+            "shape": "sphere",
+            "center_cm": [
+              833.0001,
+              0.0,
+              1128.0
+            ],
+            "rotation_degrees": 0.0,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:907298847:0",
+            "parent_id": "Beach:907298846",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -2060.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:907298847:1",
+            "parent_id": "Beach:907298846",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -2060.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:965311528:0",
+            "parent_id": "Beach:965311526",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -1260.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:965311528:1",
+            "parent_id": "Beach:965311526",
+            "category": "vessel",
+            "label": "Small boat hull",
+            "shape": "box",
+            "center_cm": [
+              -1260.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:bottom",
+            "parent_id": "Beach:100210",
+            "category": "boundary",
+            "label": "Map boundary bottom",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -1775.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:left",
+            "parent_id": "Beach:100210",
+            "category": "boundary",
+            "label": "Map boundary left",
+            "shape": "box",
+            "center_cm": [
+              -3225.0,
+              0.0,
+              50.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              25.0,
+              100.0,
+              1850.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:right",
+            "parent_id": "Beach:100210",
+            "category": "boundary",
+            "label": "Map boundary right",
+            "shape": "box",
+            "center_cm": [
+              3225.0,
+              0.0,
+              50.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              25.0,
+              100.0,
+              1850.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:top",
+            "parent_id": "Beach:100210",
+            "category": "boundary",
+            "label": "Map boundary top",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              1875.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:0:640:142",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -1040.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              710.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:142:457:144",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -915.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              2285.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:144:456:145",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -920.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              2280.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:145:454:146",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -930.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              2270.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:146:453:150",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -935.0,
+              0.0,
+              -270.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              2265.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:150:452:152",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -940.0,
+              0.0,
+              -240.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              2260.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:152:357:154",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1415.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1785.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:154:356:155",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1420.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1780.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:155:354:156",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1430.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1770.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:156:353:160",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1435.0,
+              0.0,
+              -170.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1765.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:160:352:162",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1440.0,
+              0.0,
+              -140.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1760.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:162:347:164",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1465.0,
+              0.0,
+              -120.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1735.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:164:346:165",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1470.0,
+              0.0,
+              -105.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1730.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:165:344:166",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1480.0,
+              0.0,
+              -95.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1720.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:166:343:170",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1485.0,
+              0.0,
+              -70.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1715.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:170:342:172",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1490.0,
+              0.0,
+              -40.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1710.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:172:337:174",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1515.0,
+              0.0,
+              -20.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1685.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:174:336:175",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1520.0,
+              0.0,
+              -5.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1680.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:175:334:176",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1530.0,
+              0.0,
+              5.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1670.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:176:333:180",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1535.0,
+              0.0,
+              30.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1665.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:180:332:182",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1540.0,
+              0.0,
+              60.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1660.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:182:327:184",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1565.0,
+              0.0,
+              80.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1635.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:184:326:185",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1570.0,
+              0.0,
+              95.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1630.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:185:324:186",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1580.0,
+              0.0,
+              105.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1620.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:186:323:190",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1585.0,
+              0.0,
+              130.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1615.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:190:322:202",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1590.0,
+              0.0,
+              210.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1610.0,
+              100.0,
+              60.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:202:317:204",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1615.0,
+              0.0,
+              280.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1585.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:204:316:205",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1620.0,
+              0.0,
+              295.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1580.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:205:314:206",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1630.0,
+              0.0,
+              305.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1570.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:206:313:210",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1635.0,
+              0.0,
+              330.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1565.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:210:312:216",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1640.0,
+              0.0,
+              380.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1560.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:216:60:274",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -2900.0,
+              0.0,
+              700.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              300.0,
+              100.0,
+              290.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:274:260:336",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1900.0,
+              0.0,
+              1300.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1300.0,
+              100.0,
+              310.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:336:80:354",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -2800.0,
+              0.0,
+              1700.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              400.0,
+              100.0,
+              90.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:354:312:360",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1640.0,
+              0.0,
+              1820.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              1560.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:280:234:312:354",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -240.0,
+              0.0,
+              1190.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              160.0,
+              100.0,
+              600.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:513:142:587:144",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              370.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:514:144:586:145",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              360.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:516:145:584:146",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              340.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:518:146:583:150",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2305.0,
+              0.0,
+              -270.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              325.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:518:150:582:152",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -240.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              320.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:533:152:577:154",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              220.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:534:154:576:155",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              210.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:536:155:574:156",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              190.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:538:156:573:160",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2355.0,
+              0.0,
+              -170.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              175.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:538:160:572:162",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -140.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              170.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:613:142:640:144",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3065.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              135.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:614:144:640:145",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3070.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              130.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:616:145:640:146",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3080.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              120.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:618:146:640:152",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3090.0,
+              0.0,
+              -260.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              110.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:623:152:640:154",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3115.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              85.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:624:154:640:155",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3120.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              80.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:626:155:640:156",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3130.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              70.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:628:156:640:162",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              3140.0,
+              0.0,
+              -160.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              60.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:80:234:260:274",
+            "parent_id": "Beach:41280230",
+            "category": "water",
+            "label": "Water and shore edge",
+            "shape": "box",
+            "center_cm": [
+              -1500.0,
+              0.0,
+              790.0
+            ],
+            "rotation_degrees": 0.0,
+            "extent_cm": [
+              900.0,
+              100.0,
+              200.0
+            ]
+          }
+        ],
+        "snapshot": [
+          {
+            "id": "collision:Beach:1216085743:0",
+            "parent_id": "Beach:1216085741",
+            "shape": "sphere",
+            "center_cm": [
+              2820.0,
+              0.0,
+              1352.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:1219935412:0",
+            "parent_id": "Beach:1219935410",
+            "shape": "box",
+            "center_cm": [
+              -2500.0,
+              0.0,
+              925.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              155.0,
+              100.0,
+              52.5
+            ]
+          },
+          {
+            "id": "collision:Beach:1317604602:0",
+            "parent_id": "Beach:1317604600",
+            "shape": "box",
+            "center_cm": [
+              -1660.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1317604602:1",
+            "parent_id": "Beach:1317604600",
+            "shape": "box",
+            "center_cm": [
+              -1660.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1715948720:0",
+            "parent_id": "Beach:1715948718",
+            "shape": "sphere",
+            "center_cm": [
+              650.0,
+              0.0,
+              1390.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:1957722353:0",
+            "parent_id": "Beach:1957722351",
+            "shape": "box",
+            "center_cm": [
+              -1503.0,
+              0.0,
+              -360.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1090.0,
+              100.0,
+              410.0
+            ]
+          },
+          {
+            "id": "collision:Beach:1957722353:1",
+            "parent_id": "Beach:1957722351",
+            "shape": "sphere",
+            "center_cm": [
+              -2588.0,
+              0.0,
+              -300.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "radius_cm": 200.0
+          },
+          {
+            "id": "collision:Beach:393565041:0",
+            "parent_id": "Beach:393565039",
+            "shape": "sphere",
+            "center_cm": [
+              2584.0,
+              0.0,
+              1304.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:515152441:0",
+            "parent_id": "Beach:515152439",
+            "shape": "box",
+            "center_cm": [
+              -860.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:515152441:1",
+            "parent_id": "Beach:515152439",
+            "shape": "box",
+            "center_cm": [
+              -860.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:781787690:0",
+            "parent_id": "Beach:781787688",
+            "shape": "sphere",
+            "center_cm": [
+              833.0001,
+              0.0,
+              1128.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "radius_cm": 52.0
+          },
+          {
+            "id": "collision:Beach:907298847:0",
+            "parent_id": "Beach:907298846",
+            "shape": "box",
+            "center_cm": [
+              -2060.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:907298847:1",
+            "parent_id": "Beach:907298846",
+            "shape": "box",
+            "center_cm": [
+              -2060.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:965311528:0",
+            "parent_id": "Beach:965311526",
+            "shape": "box",
+            "center_cm": [
+              -1260.0,
+              0.0,
+              1325.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              115.0,
+              100.0,
+              170.0
+            ]
+          },
+          {
+            "id": "collision:Beach:965311528:1",
+            "parent_id": "Beach:965311526",
+            "shape": "box",
+            "center_cm": [
+              -1260.0,
+              0.0,
+              1515.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              90.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:bottom",
+            "parent_id": "Beach:100210",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -1775.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:left",
+            "parent_id": "Beach:100210",
+            "shape": "box",
+            "center_cm": [
+              -3225.0,
+              0.0,
+              50.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              25.0,
+              100.0,
+              1850.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:right",
+            "parent_id": "Beach:100210",
+            "shape": "box",
+            "center_cm": [
+              3225.0,
+              0.0,
+              50.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              25.0,
+              100.0,
+              1850.0
+            ]
+          },
+          {
+            "id": "collision:Beach:boundary:top",
+            "parent_id": "Beach:100210",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              1875.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              25.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:0:640:142",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              0.0,
+              0.0,
+              -1040.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              3200.0,
+              100.0,
+              710.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:142:457:144",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -915.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              2285.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:144:456:145",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -920.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              2280.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:145:454:146",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -930.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              2270.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:146:453:150",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -935.0,
+              0.0,
+              -270.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              2265.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:150:452:152",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -940.0,
+              0.0,
+              -240.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              2260.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:152:357:154",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1415.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1785.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:154:356:155",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1420.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1780.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:155:354:156",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1430.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1770.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:156:353:160",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1435.0,
+              0.0,
+              -170.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1765.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:160:352:162",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1440.0,
+              0.0,
+              -140.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1760.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:162:347:164",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1465.0,
+              0.0,
+              -120.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1735.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:164:346:165",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1470.0,
+              0.0,
+              -105.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1730.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:165:344:166",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1480.0,
+              0.0,
+              -95.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1720.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:166:343:170",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1485.0,
+              0.0,
+              -70.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1715.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:170:342:172",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1490.0,
+              0.0,
+              -40.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1710.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:172:337:174",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1515.0,
+              0.0,
+              -20.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1685.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:174:336:175",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1520.0,
+              0.0,
+              -5.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1680.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:175:334:176",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1530.0,
+              0.0,
+              5.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1670.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:176:333:180",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1535.0,
+              0.0,
+              30.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1665.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:180:332:182",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1540.0,
+              0.0,
+              60.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1660.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:182:327:184",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1565.0,
+              0.0,
+              80.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1635.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:184:326:185",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1570.0,
+              0.0,
+              95.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1630.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:185:324:186",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1580.0,
+              0.0,
+              105.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1620.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:186:323:190",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1585.0,
+              0.0,
+              130.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1615.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:190:322:202",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1590.0,
+              0.0,
+              210.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1610.0,
+              100.0,
+              60.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:202:317:204",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1615.0,
+              0.0,
+              280.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1585.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:204:316:205",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1620.0,
+              0.0,
+              295.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1580.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:205:314:206",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1630.0,
+              0.0,
+              305.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1570.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:206:313:210",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1635.0,
+              0.0,
+              330.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1565.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:210:312:216",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1640.0,
+              0.0,
+              380.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1560.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:216:60:274",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -2900.0,
+              0.0,
+              700.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              300.0,
+              100.0,
+              290.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:274:260:336",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1900.0,
+              0.0,
+              1300.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1300.0,
+              100.0,
+              310.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:336:80:354",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -2800.0,
+              0.0,
+              1700.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              400.0,
+              100.0,
+              90.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:0:354:312:360",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1640.0,
+              0.0,
+              1820.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              1560.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:280:234:312:354",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -240.0,
+              0.0,
+              1190.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              160.0,
+              100.0,
+              600.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:513:142:587:144",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              370.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:514:144:586:145",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              360.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:516:145:584:146",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              340.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:518:146:583:150",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2305.0,
+              0.0,
+              -270.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              325.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:518:150:582:152",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2300.0,
+              0.0,
+              -240.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              320.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:533:152:577:154",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              220.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:534:154:576:155",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              210.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:536:155:574:156",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              190.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:538:156:573:160",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2355.0,
+              0.0,
+              -170.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              175.0,
+              100.0,
+              20.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:538:160:572:162",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              2350.0,
+              0.0,
+              -140.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              170.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:613:142:640:144",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3065.0,
+              0.0,
+              -320.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              135.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:614:144:640:145",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3070.0,
+              0.0,
+              -305.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              130.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:616:145:640:146",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3080.0,
+              0.0,
+              -295.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              120.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:618:146:640:152",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3090.0,
+              0.0,
+              -260.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              110.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:623:152:640:154",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3115.0,
+              0.0,
+              -220.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              85.0,
+              100.0,
+              10.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:624:154:640:155",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3120.0,
+              0.0,
+              -205.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              80.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:626:155:640:156",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3130.0,
+              0.0,
+              -195.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              70.0,
+              100.0,
+              5.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:628:156:640:162",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              3140.0,
+              0.0,
+              -160.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              60.0,
+              100.0,
+              30.0
+            ]
+          },
+          {
+            "id": "collision:Beach:water:80:234:260:274",
+            "parent_id": "Beach:41280230",
+            "shape": "box",
+            "center_cm": [
+              -1500.0,
+              0.0,
+              790.0
+            ],
+            "rotation_quat": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "profile": "JongguObstacle",
+            "enabled": "<CollisionEnabled.QUERY_ONLY: 1>",
+            "object_type": "<CollisionChannel.ECC_WORLD_STATIC: 0>",
+            "pawn_response": "<CollisionResponseType.ECR_BLOCK: 2>",
+            "overlap": false,
+            "simulate_physics": false,
+            "extent_cm": [
+              900.0,
+              100.0,
+              200.0
+            ]
+          }
+        ],
+        "reopen_verified": true
+      },
+      "expected_actor_ids": [
+        "camera:Beach:100120",
+        "collision:Beach:1216085743:0",
+        "collision:Beach:1219935412:0",
+        "collision:Beach:1317604602:0",
+        "collision:Beach:1317604602:1",
+        "collision:Beach:1715948720:0",
+        "collision:Beach:1957722353:0",
+        "collision:Beach:1957722353:1",
+        "collision:Beach:393565041:0",
+        "collision:Beach:515152441:0",
+        "collision:Beach:515152441:1",
+        "collision:Beach:781787690:0",
+        "collision:Beach:907298847:0",
+        "collision:Beach:907298847:1",
+        "collision:Beach:965311528:0",
+        "collision:Beach:965311528:1",
+        "collision:Beach:boundary:bottom",
+        "collision:Beach:boundary:left",
+        "collision:Beach:boundary:right",
+        "collision:Beach:boundary:top",
+        "collision:Beach:water:0:0:640:142",
+        "collision:Beach:water:0:142:457:144",
+        "collision:Beach:water:0:144:456:145",
+        "collision:Beach:water:0:145:454:146",
+        "collision:Beach:water:0:146:453:150",
+        "collision:Beach:water:0:150:452:152",
+        "collision:Beach:water:0:152:357:154",
+        "collision:Beach:water:0:154:356:155",
+        "collision:Beach:water:0:155:354:156",
+        "collision:Beach:water:0:156:353:160",
+        "collision:Beach:water:0:160:352:162",
+        "collision:Beach:water:0:162:347:164",
+        "collision:Beach:water:0:164:346:165",
+        "collision:Beach:water:0:165:344:166",
+        "collision:Beach:water:0:166:343:170",
+        "collision:Beach:water:0:170:342:172",
+        "collision:Beach:water:0:172:337:174",
+        "collision:Beach:water:0:174:336:175",
+        "collision:Beach:water:0:175:334:176",
+        "collision:Beach:water:0:176:333:180",
+        "collision:Beach:water:0:180:332:182",
+        "collision:Beach:water:0:182:327:184",
+        "collision:Beach:water:0:184:326:185",
+        "collision:Beach:water:0:185:324:186",
+        "collision:Beach:water:0:186:323:190",
+        "collision:Beach:water:0:190:322:202",
+        "collision:Beach:water:0:202:317:204",
+        "collision:Beach:water:0:204:316:205",
+        "collision:Beach:water:0:205:314:206",
+        "collision:Beach:water:0:206:313:210",
+        "collision:Beach:water:0:210:312:216",
+        "collision:Beach:water:0:216:60:274",
+        "collision:Beach:water:0:274:260:336",
+        "collision:Beach:water:0:336:80:354",
+        "collision:Beach:water:0:354:312:360",
+        "collision:Beach:water:280:234:312:354",
+        "collision:Beach:water:513:142:587:144",
+        "collision:Beach:water:514:144:586:145",
+        "collision:Beach:water:516:145:584:146",
+        "collision:Beach:water:518:146:583:150",
+        "collision:Beach:water:518:150:582:152",
+        "collision:Beach:water:533:152:577:154",
+        "collision:Beach:water:534:154:576:155",
+        "collision:Beach:water:536:155:574:156",
+        "collision:Beach:water:538:156:573:160",
+        "collision:Beach:water:538:160:572:162",
+        "collision:Beach:water:613:142:640:144",
+        "collision:Beach:water:614:144:640:145",
+        "collision:Beach:water:616:145:640:146",
+        "collision:Beach:water:618:146:640:152",
+        "collision:Beach:water:623:152:640:154",
+        "collision:Beach:water:624:154:640:155",
+        "collision:Beach:water:626:155:640:156",
+        "collision:Beach:water:628:156:640:162",
+        "collision:Beach:water:80:234:260:274",
+        "node:Beach:100000",
+        "node:Beach:100010",
+        "node:Beach:100020",
+        "node:Beach:100030",
+        "node:Beach:100040",
+        "node:Beach:100050",
+        "node:Beach:100060",
+        "node:Beach:100070",
+        "node:Beach:100080",
+        "node:Beach:100090",
+        "node:Beach:100110",
+        "node:Beach:100120",
+        "node:Beach:100130",
+        "node:Beach:100200",
+        "node:Beach:100210",
+        "node:Beach:100220",
+        "node:Beach:100230",
+        "node:Beach:100240",
+        "node:Beach:100250",
+        "node:Beach:100500",
+        "node:Beach:100510",
+        "node:Beach:100520",
+        "node:Beach:100600",
+        "node:Beach:100610",
+        "node:Beach:100620",
+        "node:Beach:1216085741",
+        "node:Beach:1219935410",
+        "node:Beach:1317604600",
+        "node:Beach:1715948718",
+        "node:Beach:1957722351",
+        "node:Beach:2049905411",
+        "node:Beach:2061000000",
+        "node:Beach:2061000010",
+        "node:Beach:2061000020",
+        "node:Beach:393565039",
+        "node:Beach:41280230",
+        "node:Beach:478889277",
+        "node:Beach:515152439",
+        "node:Beach:518467496",
+        "node:Beach:781787688",
+        "node:Beach:907298846",
+        "node:Beach:965311526",
+        "render:Beach:100512",
+        "render:Beach:1216085743",
+        "render:Beach:1219935412",
+        "render:Beach:1317604602",
+        "render:Beach:1715948720",
+        "render:Beach:1957722353",
+        "render:Beach:2049905414",
+        "render:Beach:393565041",
+        "render:Beach:41280233",
+        "render:Beach:515152441",
+        "render:Beach:781787690",
+        "render:Beach:907298847",
+        "render:Beach:965311528"
+      ],
+      "depth_sorting": {
+        "specs": [
+          {
+            "group_id": "Beach:100512",
+            "object_id": "Beach:100510",
+            "category": "player",
+            "priority": -1200,
+            "source_priority": 12,
+            "anchor_z_cm": 1200.0,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": "Beach:100500",
+            "anchor_local_xy": [
+              0,
+              0
+            ]
+          },
+          {
+            "group_id": "Beach:1216085743",
+            "object_id": "Beach:1216085741",
+            "category": "depth",
+            "priority": -1352,
+            "source_priority": 10,
+            "anchor_z_cm": 1352.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:1216085743",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ]
+          },
+          {
+            "group_id": "Beach:1219935412",
+            "object_id": "Beach:1219935410",
+            "category": "depth",
+            "priority": -925,
+            "source_priority": 12,
+            "anchor_z_cm": 925.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:1219935412",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -1.95
+            ]
+          },
+          {
+            "group_id": "Beach:1317604602",
+            "object_id": "Beach:1317604600",
+            "category": "depth",
+            "priority": -1325,
+            "source_priority": 20,
+            "anchor_z_cm": 1325.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:1317604602",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ]
+          },
+          {
+            "group_id": "Beach:1715948720",
+            "object_id": "Beach:1715948718",
+            "category": "depth",
+            "priority": -1390,
+            "source_priority": 10,
+            "anchor_z_cm": 1389.9999999999998,
+            "suborder": 0,
+            "anchor_group_id": "Beach:1715948720",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ]
+          },
+          {
+            "group_id": "Beach:1957722353",
+            "object_id": "Beach:1957722351",
+            "category": "depth",
+            "priority": 360,
+            "source_priority": 20,
+            "anchor_z_cm": -360.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:1957722353",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0.65,
+              -1.6
+            ]
+          },
+          {
+            "group_id": "Beach:2049905414",
+            "object_id": "Beach:2049905411",
+            "category": "background",
+            "priority": -29990,
+            "source_priority": 10,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Beach:393565041",
+            "object_id": "Beach:393565039",
+            "category": "depth",
+            "priority": -1304,
+            "source_priority": 10,
+            "anchor_z_cm": 1304.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:393565041",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ]
+          },
+          {
+            "group_id": "Beach:41280233",
+            "object_id": "Beach:41280230",
+            "category": "background",
+            "priority": -30000,
+            "source_priority": 0,
+            "anchor_z_cm": null,
+            "suborder": 0,
+            "anchor_group_id": null,
+            "anchor_object_id": null,
+            "anchor_local_xy": null
+          },
+          {
+            "group_id": "Beach:515152441",
+            "object_id": "Beach:515152439",
+            "category": "depth",
+            "priority": -1325,
+            "source_priority": 20,
+            "anchor_z_cm": 1325.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:515152441",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ]
+          },
+          {
+            "group_id": "Beach:781787690",
+            "object_id": "Beach:781787688",
+            "category": "depth",
+            "priority": -1128,
+            "source_priority": 10,
+            "anchor_z_cm": 1128.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:781787690",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ]
+          },
+          {
+            "group_id": "Beach:907298847",
+            "object_id": "Beach:907298846",
+            "category": "depth",
+            "priority": -1325,
+            "source_priority": 20,
+            "anchor_z_cm": 1325.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:907298847",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ]
+          },
+          {
+            "group_id": "Beach:965311528",
+            "object_id": "Beach:965311526",
+            "category": "depth",
+            "priority": -1325,
+            "source_priority": 20,
+            "anchor_z_cm": 1325.0,
+            "suborder": 0,
+            "anchor_group_id": "Beach:965311528",
+            "anchor_object_id": null,
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ]
+          }
+        ],
+        "initial_player_priority": -1200,
+        "reopen_verified": true
+      },
+      "reopen_verified": true
+    }
+  ],
+  "warnings": [],
+  "manifest_sha256": "633c6741d345aab1f2ee75979a097bf5149cff7e3cdfad83527146c5a69fe8ac",
+  "collision_rules_sha256": "e34a6a5404bd6c377a4c4aaefe4cbdda133199988eeb8c1df795530ef26ac11a",
+  "idempotency_verified": true,
+  "success": true,
+  "finished": "2026-09-13T22:02:11"
+}

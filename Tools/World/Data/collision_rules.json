@@ -1,0 +1,936 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "Sprite-local XY in Unity units; output Unreal XZ centimetres; UV origin bottom-left",
+  "default_depth_half_extent_cm": 100.0,
+  "player_radius_cm": 24.0,
+  "path_clearance_cm": 26.0,
+  "sprite_rules": {
+    "75f2a42a5b970604abfdc0f50d1dd2e3:21300000": {
+      "label": "Table and chair base",
+      "category": "furniture",
+      "scenes": [
+        "Hub"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            0
+          ],
+          "size": [
+            1.52,
+            0.4
+          ]
+        }
+      ],
+      "authoring_note": "Original three authored table collider footprints; shared source sprite-local rule."
+    },
+    "8ec1919575f74bdb8ea162c21b9d2965:21300000": {
+      "label": "Cooking counter base",
+      "category": "furniture",
+      "scenes": [
+        "Hub"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -0.2
+          ],
+          "size": [
+            5.76,
+            0.28
+          ]
+        }
+      ],
+      "authoring_note": "Original CookingUtensilsCollider projected into owner sprite coordinates."
+    },
+    "a8c8ff16667a86e4fbda8ec9539d62c0:740100100100100001": {
+      "label": "Serving counter base",
+      "category": "furniture",
+      "scenes": [
+        "Hub"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -0.005
+          ],
+          "size": [
+            4,
+            0.4
+          ]
+        }
+      ],
+      "authoring_note": "Use visible KitchenCounterArea child, not suppressed full source or decorative split pieces. Original counter width and height."
+    },
+    "a8c8ff16667a86e4fbda8ec9539d62c0:1981662131": {
+      "label": "Recipe stand base",
+      "category": "furniture",
+      "scenes": [
+        "Hub"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -0.12
+          ],
+          "size": [
+            0.5,
+            0.4
+          ]
+        }
+      ],
+      "authoring_note": "Original RecipeCollectionCollider footprint."
+    },
+    "e4e5ac50afeb4c268d528110123bd19c:21300000": {
+      "label": "Menu board feet",
+      "category": "furniture",
+      "scenes": [
+        "Hub"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -0.64
+          ],
+          "size": [
+            0.8,
+            0.16
+          ]
+        }
+      ],
+      "authoring_note": "Only the bottom feet of the freestanding board, not its tall display surface."
+    },
+    "c15d08a92359ea34fbcd0df9d27d9a09:5354429476588687777": {
+      "label": "Tree trunk base",
+      "category": "nature",
+      "scenes": [
+        "Beach"
+      ],
+      "footprints": [
+        {
+          "shape": "sphere",
+          "center": [
+            0,
+            -1.88
+          ],
+          "radius": 0.52
+        }
+      ],
+      "authoring_note": "Shared by all four trees; trunk/root footprint only, canopy remains passable."
+    },
+    "e735e5c8b495d2049a911764aded432c:-8799214790008778917": {
+      "label": "Lighthouse rock base",
+      "category": "building",
+      "scenes": [
+        "Beach"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -1.95
+          ],
+          "size": [
+            3.1,
+            1.05
+          ]
+        }
+      ],
+      "authoring_note": "Bottom rock foundation only; allow walking behind the tower."
+    },
+    "4e07cbe396e254047bbcc6f514ae6c3d:-4548796474974412338": {
+      "label": "Small boat hull",
+      "category": "vessel",
+      "scenes": [
+        "Beach"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0,
+            -0.35
+          ],
+          "size": [
+            2.3,
+            3.4
+          ]
+        },
+        {
+          "shape": "box",
+          "center": [
+            0,
+            1.55
+          ],
+          "size": [
+            1.8,
+            0.5
+          ]
+        }
+      ],
+      "authoring_note": "Hull body and narrow bow; shared by four boats. Not a walkable surface."
+    },
+    "f3cd8df6341e8b24ebfe5deae8a5b9a5:-2536705521432918366": {
+      "label": "Passenger ship hull",
+      "category": "vessel",
+      "scenes": [
+        "Beach"
+      ],
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            0.65,
+            -1.6
+          ],
+          "size": [
+            21.8,
+            8.2
+          ]
+        },
+        {
+          "shape": "sphere",
+          "center": [
+            -10.2,
+            -1.0
+          ],
+          "radius": 2.0
+        }
+      ],
+      "authoring_note": "Ship hull base with rounded bow, not the raised superstructure."
+    }
+  },
+  "object_rules": {
+    "Hub:27645658": {
+      "label": "Restaurant authored wall outline",
+      "category": "wall",
+      "footprints": [
+        {
+          "shape": "box",
+          "center": [
+            -2.37,
+            7.51
+          ],
+          "size": [
+            27.26,
+            2.98
+          ]
+        },
+        {
+          "shape": "box",
+          "center": [
+            -15.41,
+            0
+          ],
+          "size": [
+            1.19,
+            18
+          ]
+        },
+        {
+          "shape": "box",
+          "center": [
+            15.41,
+            0
+          ],
+          "size": [
+            1.19,
+            18
+          ]
+        },
+        {
+          "shape": "box",
+          "center": [
+            -12.44,
+            -8.23
+          ],
+          "size": [
+            7.11,
+            1.54
+          ]
+        },
+        {
+          "shape": "box",
+          "center": [
+            5.33,
+            -8.23
+          ],
+          "size": [
+            21.33,
+            1.54
+          ]
+        }
+      ],
+      "authoring_note": "Original five boxes retained with full object world transform. Portal approach inside remains reachable. Final outer map boundary prevents leaving the map; no portal mechanics are activated."
+    }
+  },
+  "terrain_sprite_rules": {
+    "17b0daab6ee542b4798e24869fb1c3bf:6284004534969553270": {
+      "label": "Grass Tile 5_0",
+      "category": "grass",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "2c311c7d7f75f4744b8665e10c1fffe0:17418822086399208": {
+      "label": "Sea Tile (Shallow) inner 4_0",
+      "category": "sand_inner_corner",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          0.75,
+          0.25
+        ],
+        [
+          0,
+          0.25,
+          1,
+          1
+        ]
+      ]
+    },
+    "859ac0e65b803554b8fc8022b01a9721:-6940818412785305320": {
+      "label": "Sea Tile (Shallow) 4_0",
+      "category": "sand_left_shore",
+      "walkable_uv": [
+        [
+          0.25,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "88601738d5cf5124bb002775af1b0efa:-3334243568501985007": {
+      "label": "Sea Tile_0",
+      "category": "water",
+      "walkable_uv": []
+    },
+    "8cad2469f4a072e4381c6d697695d2e7:-5939318246468995227": {
+      "label": "Sea Tile (Shallow) 9_0",
+      "category": "sand_outer_corner_left",
+      "walkable_uv": [
+        [
+          0,
+          0.25,
+          0.3125,
+          0.375
+        ],
+        [
+          0,
+          0.375,
+          0.4375,
+          0.5
+        ],
+        [
+          0,
+          0.5,
+          0.5625,
+          0.625
+        ],
+        [
+          0,
+          0.625,
+          0.75,
+          1
+        ]
+      ]
+    },
+    "982bae5426b43c9448ca23b2b8b775af:-7447705947305772749": {
+      "label": "Grass Sea Tile 1_0",
+      "category": "grass_sand_edge",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "b065fd057f9ea9c4fb65a872c6d50760:-8873031640051623384": {
+      "label": "Sea Tile (Shallow) 7_0",
+      "category": "sand_outer_corner_right",
+      "walkable_uv": [
+        [
+          0.6875,
+          0.25,
+          1,
+          0.375
+        ],
+        [
+          0.5625,
+          0.375,
+          1,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5,
+          1,
+          0.625
+        ],
+        [
+          0.3125,
+          0.625,
+          1,
+          1
+        ]
+      ]
+    },
+    "d1537f10a5b22c44b9d9e538cdf5c1e6:-533833138844409840": {
+      "label": "Grass Sea Tile 5_0",
+      "category": "grass_sand_edge",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "daca398a64e14ed49bbee7910f71a28b:-8634741951954872040": {
+      "label": "Sea Tile (Shallow) 2_0",
+      "category": "sand_top_shore",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          0.75
+        ]
+      ]
+    },
+    "db3037f1e4354804b86ce2622ed0fcf7:5503082062045213439": {
+      "label": "Sea Tile (Shallow) inner 3_0",
+      "category": "sand_inner_corner",
+      "walkable_uv": [
+        [
+          0.25,
+          0,
+          1,
+          0.25
+        ],
+        [
+          0,
+          0.25,
+          1,
+          1
+        ]
+      ]
+    },
+    "e60a7be8165c1fa4ebcbe57ec40d8445:-5152048064702599940": {
+      "label": "Sea Tile (Shallow) 5_0",
+      "category": "sand",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "eebf7798de1f1b149a3f796da6899838:7833507262936759112": {
+      "label": "Grass Sea Tile 2_0",
+      "category": "grass_sand_edge",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "20605f413bc57f64ab43af5a784228dd:6970431700466401471": {
+      "label": "Dock Bridge 3_0",
+      "category": "dock_surface_edge",
+      "walkable_uv": [
+        [
+          0,
+          0.25,
+          1,
+          1
+        ]
+      ]
+    },
+    "3f2a132288795bf4086abc42a7d1f075:-2917222875489455817": {
+      "label": "Dock Bridge L1_0",
+      "category": "dock_visual_support",
+      "walkable_uv": []
+    },
+    "415b10ad1bca805409c30569d7a94a02:-1250943821549191128": {
+      "label": "Dock Bridge 2-1_0",
+      "category": "dock_surface",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "48d59a06e5300494abcff14bbf15669b:1285141735152593853": {
+      "label": "Dock Bridge R3_0",
+      "category": "dock_visual_support",
+      "walkable_uv": []
+    },
+    "55db120d2ed69274983eb53498d318e4:-5628154761031814824": {
+      "label": "Dock Bridge 2-2_0",
+      "category": "dock_surface",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "562000d8fc20c1a49bd7d0a81d51aff7:7620349903337201876": {
+      "label": "Dock Bridge L2_0",
+      "category": "dock_visual_support",
+      "walkable_uv": []
+    },
+    "904ebaa56c0145b41a384cf615d945f3:-3753813329041909045": {
+      "label": "Dock Bridge M3_0",
+      "category": "dock_visual_support",
+      "walkable_uv": []
+    },
+    "a3a181708f97d834f87c71c75bda00ab:-166142475523111145": {
+      "label": "Dock Bridge 1_0",
+      "category": "dock_surface",
+      "walkable_uv": [
+        [
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    "bd276b6ffd52c324aa85adac01ac7aa7:7767363211249114315": {
+      "label": "Dock Bridge CL2_0",
+      "category": "dock_visual_support",
+      "walkable_uv": []
+    }
+  },
+  "scenes": {
+    "Hub": {
+      "bounds": [
+        -16,
+        -9,
+        16,
+        9
+      ],
+      "boundary_thickness": 0.5,
+      "bounds_parent_id": "Hub:1423383936",
+      "object_rule_ids": [
+        "Hub:27645658"
+      ],
+      "semantic_landmarks": {
+        "player_spawn": [
+          -7.15,
+          -4.15
+        ],
+        "exit_approach": [
+          -13,
+          -6.9
+        ]
+      },
+      "notes": [
+        "Keep authored five-piece wall outline; supplementary original outer walls would duplicate those walls and the map boundary.",
+        "Approach the existing lower-left portal marker from inside; map-changing portal behavior is out of scope."
+      ]
+    },
+    "Beach": {
+      "bounds": [
+        -32,
+        -17.5,
+        32,
+        18.5
+      ],
+      "boundary_thickness": 0.5,
+      "bounds_parent_id": "Beach:100210",
+      "object_rule_ids": [],
+      "terrain": {
+        "bounds": [
+          -32,
+          -17.5,
+          32,
+          18.5
+        ],
+        "grid_step": 0.1,
+        "group_ids": [
+          "Beach:41280233",
+          "Beach:2049905414"
+        ],
+        "parent_id": "Beach:41280230",
+        "max_rectangles": 1000
+      },
+      "semantic_landmarks": {
+        "player_spawn": [
+          17.5,
+          12
+        ]
+      },
+      "notes": [
+        "Sea Tile (Shallow) 5 is dry sand, verified from source pixels.",
+        "Dock bridge light paving is walkable; dark rock supports are visual only.",
+        "Terrain uses world coordinates, preserving the dock 0.4-unit (40cm) offset.",
+        "Water/shore raster grid is 10cm; edge approximation is at most 5cm per axis.",
+        "Original BeachEntry and ReturnToHub markers at [0,0] lie in water. They remain unmodified and inactive for this collision-only task."
+      ]
+    }
+  },
+  "depth_sorting": {
+    "schema_version": 1,
+    "gameplay_base": 0,
+    "units_per_cm": 1,
+    "rounding": "floor_plus_half",
+    "background_base": -30000,
+    "scenes": {
+      "Hub": {
+        "groups": {
+          "Hub:1069871639": {
+            "category": "depth",
+            "anchor_group_id": "Hub:1069871639",
+            "anchor_local_xy": [
+              0,
+              0
+            ],
+            "suborder": 0
+          },
+          "Hub:1170162319": {
+            "category": "source"
+          },
+          "Hub:1276978612": {
+            "category": "depth",
+            "anchor_group_id": "Hub:1276978612",
+            "anchor_local_xy": [
+              0,
+              0
+            ],
+            "suborder": 0
+          },
+          "Hub:1336547639": {
+            "category": "depth",
+            "anchor_group_id": "Hub:1336547639",
+            "anchor_local_xy": [
+              0,
+              0
+            ],
+            "suborder": 0
+          },
+          "Hub:1531594859": {
+            "category": "depth",
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ],
+            "suborder": 0
+          },
+          "Hub:1738489783": {
+            "category": "source"
+          },
+          "Hub:1853236465": {
+            "category": "source"
+          },
+          "Hub:1996009074": {
+            "category": "source"
+          },
+          "Hub:2031000003": {
+            "category": "depth",
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ],
+            "suborder": 0
+          },
+          "Hub:210100003": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100003",
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ],
+            "suborder": 0
+          },
+          "Hub:210100013": {
+            "category": "background"
+          },
+          "Hub:210100023": {
+            "category": "background"
+          },
+          "Hub:210100033": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100033",
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ],
+            "suborder": 0
+          },
+          "Hub:218489564": {
+            "category": "background"
+          },
+          "Hub:27645660": {
+            "category": "source"
+          },
+          "Hub:283699445": {
+            "category": "source"
+          },
+          "Hub:404239666": {
+            "category": "source"
+          },
+          "Hub:448144653": {
+            "category": "source"
+          },
+          "Hub:655320554": {
+            "category": "player",
+            "anchor_object_id": "Hub:78441099",
+            "anchor_local_xy": [
+              0,
+              0
+            ],
+            "suborder": 0
+          },
+          "Hub:731166547": {
+            "category": "source"
+          },
+          "Hub:2031000013": {
+            "category": "depth",
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ],
+            "suborder": 2
+          },
+          "Hub:2031000033": {
+            "category": "depth",
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ],
+            "suborder": 0
+          },
+          "Hub:2031000043": {
+            "category": "depth",
+            "anchor_group_id": "Hub:2031000003",
+            "anchor_local_xy": [
+              0,
+              -0.005
+            ],
+            "suborder": 0
+          },
+          "Hub:1526965162": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100033",
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ],
+            "suborder": 2
+          },
+          "Hub:1723958469": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100033",
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ],
+            "suborder": 2
+          },
+          "Hub:412686207": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100033",
+            "anchor_local_xy": [
+              0,
+              -0.64
+            ],
+            "suborder": 2
+          },
+          "Hub:1026610951": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100003",
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ],
+            "suborder": 4
+          },
+          "Hub:1060963302": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100003",
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ],
+            "suborder": 4
+          },
+          "Hub:770303012": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100003",
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ],
+            "suborder": 4
+          },
+          "Hub:969813992": {
+            "category": "depth",
+            "anchor_group_id": "Hub:210100003",
+            "anchor_local_xy": [
+              0,
+              -0.2
+            ],
+            "suborder": 4
+          }
+        }
+      },
+      "Beach": {
+        "groups": {
+          "Beach:100512": {
+            "category": "player",
+            "anchor_object_id": "Beach:100500",
+            "anchor_local_xy": [
+              0,
+              0
+            ],
+            "suborder": 0
+          },
+          "Beach:1216085743": {
+            "category": "depth",
+            "anchor_group_id": "Beach:1216085743",
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ],
+            "suborder": 0
+          },
+          "Beach:1219935412": {
+            "category": "depth",
+            "anchor_group_id": "Beach:1219935412",
+            "anchor_local_xy": [
+              0,
+              -1.95
+            ],
+            "suborder": 0
+          },
+          "Beach:1317604602": {
+            "category": "depth",
+            "anchor_group_id": "Beach:1317604602",
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ],
+            "suborder": 0
+          },
+          "Beach:1715948720": {
+            "category": "depth",
+            "anchor_group_id": "Beach:1715948720",
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ],
+            "suborder": 0
+          },
+          "Beach:1957722353": {
+            "category": "depth",
+            "anchor_group_id": "Beach:1957722353",
+            "anchor_local_xy": [
+              0.65,
+              -1.6
+            ],
+            "suborder": 0
+          },
+          "Beach:393565041": {
+            "category": "depth",
+            "anchor_group_id": "Beach:393565041",
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ],
+            "suborder": 0
+          },
+          "Beach:515152441": {
+            "category": "depth",
+            "anchor_group_id": "Beach:515152441",
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ],
+            "suborder": 0
+          },
+          "Beach:781787690": {
+            "category": "depth",
+            "anchor_group_id": "Beach:781787690",
+            "anchor_local_xy": [
+              0,
+              -1.88
+            ],
+            "suborder": 0
+          },
+          "Beach:907298847": {
+            "category": "depth",
+            "anchor_group_id": "Beach:907298847",
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ],
+            "suborder": 0
+          },
+          "Beach:965311528": {
+            "category": "depth",
+            "anchor_group_id": "Beach:965311528",
+            "anchor_local_xy": [
+              0,
+              -0.35
+            ],
+            "suborder": 0
+          },
+          "Beach:41280233": {
+            "category": "background"
+          },
+          "Beach:2049905414": {
+            "category": "background"
+          }
+        }
+      }
+    },
+    "notes": [
+      "Higher Unreal Z is farther from the viewer: priority = -floor(feet_Z_cm + 0.5). Gameplay base 0 and 1 priority unit per cm match the player Blueprint.",
+      "Unreal stores translucent sort priority as signed int16 inside FPrimitiveSceneProxy. Every compiled priority must remain in [-32768,32767]; int32 editor properties alone do not prove effective rendering order.",
+      "Draw anchors follow collision foot/base centers. When an authored footprint is moved, update its matching depth anchor.",
+      "Logical furniture uses one anchor; source sublayers differ by at most four priority units, corresponding to a 4cm tie band.",
+      "All backgrounds and source-only groups share priority -30000 plus original source layer/order. The unsplit HubFrontOutline stays above floor/wall decor but below gameplay props, preserving the original composition.",
+      "Floor, shore and dock sprites always stay below gameplay sprites; no geometry, tint, source slice, or visibility is altered."
+    ],
+    "engine_priority_min": -32768,
+    "engine_priority_max": 32767
+  }
+}
