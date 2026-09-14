@@ -1,0 +1,4071 @@
+{
+  "L_Hub": [
+    {
+      "object_name": "StaticMeshActor_0",
+      "label": "SceneGameplayRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1784805685",
+        "UnityPath:SceneGameplayRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_21",
+      "label": "SceneSystemRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1941598406",
+        "UnityPath:SceneSystemRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_26",
+      "label": "SceneWorldRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:916316596",
+        "UnityPath:SceneWorldRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "CameraActor_0",
+      "label": "SourceCamera",
+      "class": "/Script/Engine.CameraActor",
+      "tags": [
+        "JongguMigration:camera:Hub:210280132",
+        "UnityPath:Camera/SourceCamera",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        1000.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeManager_C_0",
+      "label": "Prototype_manager",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeManager.BP_PrototypeManager_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:manager"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_0",
+      "label": "Prototype_marker_hub_menu",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_menu"
+      ],
+      "location": [
+        542.0,
+        0.0,
+        225.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_1",
+      "label": "Prototype_marker_hub_pan",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_pan"
+      ],
+      "location": [
+        -376.0,
+        0.0,
+        480.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_2",
+      "label": "Prototype_marker_hub_pot",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_pot"
+      ],
+      "location": [
+        -578.0,
+        0.0,
+        480.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_3",
+      "label": "Prototype_marker_hub_discard",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_discard"
+      ],
+      "location": [
+        -1180.0,
+        0.0,
+        200.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_4",
+      "label": "Prototype_marker_hub_beach_portal",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_beach_portal"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -700.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_5",
+      "label": "Prototype_marker_hub_seat_1",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_seat_1"
+      ],
+      "location": [
+        -880.0,
+        0.0,
+        -380.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_6",
+      "label": "Prototype_marker_hub_seat_2",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:hub_seat_2"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -380.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_28",
+      "label": "Prototype_customer_seat_1",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:customer:seat_1"
+      ],
+      "location": [
+        -880.0,
+        0.0,
+        -120.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_29",
+      "label": "Prototype_customer_seat_2",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:customer:seat_2"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -120.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_1",
+      "label": "InteractionRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1295887425",
+        "UnityPath:SceneGameplayRoot/InteractionRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_17",
+      "label": "PortalRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:400271043",
+        "UnityPath:SceneGameplayRoot/PortalRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_19",
+      "label": "SpawnRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:184991826",
+        "UnityPath:SceneGameplayRoot/SpawnRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_22",
+      "label": "EventSystem",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2020429311",
+        "UnityPath:SceneSystemRoot/EventSystem",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_23",
+      "label": "GameManager",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:518191039",
+        "UnityPath:SceneSystemRoot/GameManager",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_24",
+      "label": "MainCamera",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210280132",
+        "UnityPath:SceneSystemRoot/MainCamera",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        1000.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_25",
+      "label": "RestaurantManager",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:474882975",
+        "UnityPath:SceneSystemRoot/RestaurantManager",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_27",
+      "label": "WorldBoundsRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1248902159",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_30",
+      "label": "WorldVisualRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1986405028",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_JongguPlayer_C_0",
+      "label": "PlayerRoot",
+      "class": "/Game/Jonggu/Blueprints/Player/BP_JongguPlayer.BP_JongguPlayer_C",
+      "tags": [
+        "JongguMigration:node:Hub:457226398",
+        "UnityPath:SceneGameplayRoot/PlayerRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_2",
+      "label": "CuttingBoard",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1853236461",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/CuttingBoard",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -782.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_4",
+      "label": "Fryer",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:731166543",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Fryer",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -174.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_6",
+      "label": "FryingPan",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:404239662",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/FryingPan",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -376.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_8",
+      "label": "PassCounter",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1738489779",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/PassCounter",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -718.0,
+        0.0,
+        358.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_9",
+      "label": "Pot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:283699441",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Pot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -578.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_11",
+      "label": "Refrigerator",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1996009070",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Refrigerator",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1380.0,
+        0.0,
+        640.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_13",
+      "label": "Jonggu",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:78441099",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_18",
+      "label": "GoToBeach",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2146000000",
+        "UnityPath:SceneGameplayRoot/PortalRoot/GoToBeach",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1300.0,
+        0.0,
+        -696.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_20",
+      "label": "HubEntry",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1465137478",
+        "UnityPath:SceneGameplayRoot/SpawnRoot/HubEntry",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1191.6667,
+        0.0,
+        -691.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_28",
+      "label": "CameraBounds",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:565821035",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/CameraBounds",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_29",
+      "label": "HubMovementBounds",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1423383936",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/HubMovementBounds",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -25.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_31",
+      "label": "HubArtRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1125614384",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_3",
+      "label": "CuttingBoardGauge",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1060963298",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/CuttingBoard/CuttingBoardGauge",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -782.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_5",
+      "label": "FryerGauge",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1026610947",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Fryer/FryerGauge",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -174.0,
+        0.0,
+        818.0000299999999
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_7",
+      "label": "FryingPanGauge",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:969813988",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/FryingPan/FryingPanGauge",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -376.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_10",
+      "label": "PotGauge",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:770303008",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Pot/PotGauge",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -578.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_14",
+      "label": "InteractionRange",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1365768331",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/InteractionRange",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_15",
+      "label": "PlayerVisual",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:655320552",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/PlayerVisual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_16",
+      "label": "Shadow",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:448144651",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/Shadow",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_32",
+      "label": "HubBackgroundLayer",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1474898439",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_40",
+      "label": "HubForegroundLayer",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:330658212",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubForegroundLayer",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_42",
+      "label": "HubObjectLayer",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:870554644",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_9",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1738489783",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/PassCounter/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -718.0,
+        0.0,
+        358.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_10",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1853236465",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/CuttingBoard/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -782.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_11",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1996009074",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Refrigerator/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -1380.0,
+        0.0,
+        640.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_21",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:283699445",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Pot/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -578.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_22",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:404239666",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/FryingPan/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -376.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_25",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:731166547",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Fryer/Visual",
+        "UnityStatus:disabled"
+      ],
+      "location": [
+        -174.0,
+        0.0,
+        590.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_12",
+      "label": "Map boundary bottom",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:boundary:bottom",
+        "UnityPath:Collision/boundary/Map boundary bottom",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -925.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_13",
+      "label": "Map boundary left",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:boundary:left",
+        "UnityPath:Collision/boundary/Map boundary left",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        -1625.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_14",
+      "label": "Map boundary right",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:boundary:right",
+        "UnityPath:Collision/boundary/Map boundary right",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        1625.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_15",
+      "label": "Map boundary top",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:boundary:top",
+        "UnityPath:Collision/boundary/Map boundary top",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        925.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_33",
+      "label": "HubFloorBackground",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:218489562",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_38",
+      "label": "MosaicTileFloor",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210100011",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/MosaicTileFloor",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -382.0,
+        0.0,
+        431.1796
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_39",
+      "label": "MosaicTileWall",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210100021",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/MosaicTileWall",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -382.0,
+        0.0,
+        692.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_41",
+      "label": "HubFrontOutline",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:27645658",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubForegroundLayer/HubFrontOutline",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_43",
+      "label": "CookingUtensils",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210100001",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/CookingUtensils",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -580.0,
+        0.0,
+        642.9796
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_45",
+      "label": "HubTableGroup",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:933271596",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1080.0,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_55",
+      "label": "HubTodayMenuBoard",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:674777033",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1208.3333,
+        0.0,
+        516.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_60",
+      "label": "PassCounter",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1170162317",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -520.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_0",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1026610951",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Fryer/FryerGauge/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -174.0,
+        0.0,
+        818.0000299999999
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_1",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1060963302",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/CuttingBoard/CuttingBoardGauge/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -782.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "PaperGroupedSpriteActor_1",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperGroupedSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:448144653",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/Shadow/Visual",
+        "UnityStatus:missing_sprite"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_24",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:655320554",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/PlayerVisual/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -715.0,
+        0.0,
+        -415.00000000000006
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_26",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:770303012",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/Pot/PotGauge/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -578.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_27",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:969813992",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/FryingPan/FryingPanGauge/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -376.0,
+        0.0,
+        818.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_34",
+      "label": "HubBottomWallCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:740251884",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground/HubBottomWallCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -980.0000000000001
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_35",
+      "label": "HubLeftWallCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:164265874",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground/HubLeftWallCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1630.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_36",
+      "label": "HubRightWallCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:983101717",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground/HubRightWallCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1630.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_37",
+      "label": "HubTopWallCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:644239747",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground/HubTopWallCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        980.0000000000001
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_44",
+      "label": "CookingUtensilsCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210100004",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/CookingUtensils/CookingUtensilsCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -580.0,
+        0.0,
+        580.4796
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_46",
+      "label": "HubTableBottomGroup",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2045425418",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableBottomGroup",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1080.0,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_49",
+      "label": "HubTableMiddleGroup",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1422991998",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableMiddleGroup",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1080.0,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_52",
+      "label": "HubTableTopGroup",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1782547911",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableTopGroup",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1080.0,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_56",
+      "label": "AccountBoard",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:210100031",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/AccountBoard",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        542.3333000000002,
+        0.0,
+        535.4263512
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_57",
+      "label": "HubTodayMenuEntryItem1",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1723958467",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem1",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.81839400000035,
+        0.0,
+        617.5663549000001
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_58",
+      "label": "HubTodayMenuEntryItem2",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1526965160",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem2",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.81839400000035,
+        0.0,
+        493.24635490000003
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_59",
+      "label": "HubTodayMenuEntryItem3",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:412686205",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem3",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.81839400000035,
+        0.0,
+        419.2463512
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_61",
+      "label": "KitchenCounterArea",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2031000001",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterArea",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        327.44214999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_62",
+      "label": "KitchenCounterLeft",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2031000031",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterLeft",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1345.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_63",
+      "label": "KitchenCounterRight",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2031000041",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterRight",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -95.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_64",
+      "label": "KitchenCounterTop",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2031000011",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterTop",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        424.31714999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_65",
+      "label": "PassCounterCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:343560797",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/PassCounterCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        325.87964999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_66",
+      "label": "RecipeCollection",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1531594857",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/RecipeCollection",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        230.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_67",
+      "label": "RecipeCollectionCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:245323853",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/RecipeCollectionCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        230.0,
+        0.0,
+        325.87964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_3",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1170162319",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/Visual",
+        "UnityStatus:suppressed_split_source"
+      ],
+      "location": [
+        -520.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_16",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:210100003",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/CookingUtensils/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -580.0,
+        0.0,
+        642.9796
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_17",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:210100013",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/MosaicTileFloor/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -382.0,
+        0.0,
+        431.1796
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_18",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:210100023",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/MosaicTileWall/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -382.0,
+        0.0,
+        692.0
+      ]
+    },
+    {
+      "object_name": "PaperGroupedSpriteActor_0",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperGroupedSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:218489564",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubBackgroundLayer/HubFloorBackground/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_20",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:27645660",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubForegroundLayer/HubFrontOutline/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_5",
+      "label": "Cooking counter base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:210100003:0",
+        "UnityPath:Collision/furniture/Cooking counter base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        -580.0,
+        0.0,
+        580.4796
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_7",
+      "label": "Restaurant authored wall outline",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:27645658:0",
+        "UnityPath:Collision/wall/Restaurant authored wall outline",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:wall"
+      ],
+      "location": [
+        -237.000024,
+        0.0,
+        757.181181
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_8",
+      "label": "Restaurant authored wall outline",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:27645658:1",
+        "UnityPath:Collision/wall/Restaurant authored wall outline",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:wall"
+      ],
+      "location": [
+        -1541.000154,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_9",
+      "label": "Restaurant authored wall outline",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:27645658:2",
+        "UnityPath:Collision/wall/Restaurant authored wall outline",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:wall"
+      ],
+      "location": [
+        1541.000154,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_10",
+      "label": "Restaurant authored wall outline",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:27645658:3",
+        "UnityPath:Collision/wall/Restaurant authored wall outline",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:wall"
+      ],
+      "location": [
+        -1244.000124,
+        0.0,
+        -829.773784
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_11",
+      "label": "Restaurant authored wall outline",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:27645658:4",
+        "UnityPath:Collision/wall/Restaurant authored wall outline",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:wall"
+      ],
+      "location": [
+        533.000053,
+        0.0,
+        -829.773784
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_47",
+      "label": "TableChair2Bottom",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1069871637",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableBottomGroup/TableChair2Bottom",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        920.0003999999994,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_50",
+      "label": "TableChair2Middle",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1276978610",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableMiddleGroup/TableChair2Middle",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -879.9999600000001,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_53",
+      "label": "TableChair2Top",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1336547637",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableTopGroup/TableChair2Top",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.00021599999990939978,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_6",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1526965162",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem2/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.818394,
+        0.0,
+        493.24635490000003
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_7",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1531594859",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/RecipeCollection/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        229.99999999999997,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_8",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1723958469",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem1/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.818394,
+        0.0,
+        617.5663549000001
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_12",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:2031000003",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterArea/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        327.44214999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_13",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:2031000013",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterTop/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        424.31714999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_14",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:2031000033",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterLeft/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1345.0,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_15",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:2031000043",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/PassCounter/KitchenCounterRight/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -95.00000000000001,
+        0.0,
+        363.37964999999997
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_19",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:210100033",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/AccountBoard/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        542.3333,
+        0.0,
+        535.4263512
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_23",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:412686207",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTodayMenuBoard/HubTodayMenuEntryItem3/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        481.818394,
+        0.0,
+        419.2463512
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_3",
+      "label": "Recipe stand base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:1531594859:0",
+        "UnityPath:Collision/furniture/Recipe stand base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        230.0,
+        0.0,
+        325.87965
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_4",
+      "label": "Serving counter base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:2031000003:0",
+        "UnityPath:Collision/furniture/Serving counter base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        -720.0,
+        0.0,
+        325.87965
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_6",
+      "label": "Menu board feet",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:210100033:0",
+        "UnityPath:Collision/furniture/Menu board feet",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        542.3333,
+        0.0,
+        298.626351
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_48",
+      "label": "HubTableBottomCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:621145488",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableBottomGroup/TableChair2Bottom/HubTableBottomCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        920.0003999999997,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_51",
+      "label": "HubTableMiddleCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:1191066000",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableMiddleGroup/TableChair2Middle/HubTableMiddleCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -879.9999600000001,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_54",
+      "label": "HubTableTopCollider",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Hub:2024770825",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableTopGroup/TableChair2Top/HubTableTopCollider",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.00021599999993071606,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_2",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1069871639",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableBottomGroup/TableChair2Bottom/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        920.0003999999997,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_4",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1276978612",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableMiddleGroup/TableChair2Middle/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -879.9999600000001,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_5",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Hub:1336547639",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/HubArtRoot/HubObjectLayer/HubTableGroup/HubTableTopGroup/TableChair2Top/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.00021599999993071606,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_0",
+      "label": "Table and chair base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:1069871639:0",
+        "UnityPath:Collision/furniture/Table and chair base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        920.0004,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_1",
+      "label": "Table and chair base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:1276978612:0",
+        "UnityPath:Collision/furniture/Table and chair base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        -879.99996,
+        0.0,
+        -261.6667
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_2",
+      "label": "Table and chair base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Hub:1336547639:0",
+        "UnityPath:Collision/furniture/Table and chair base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:furniture"
+      ],
+      "location": [
+        0.000216,
+        0.0,
+        -261.6667
+      ]
+    }
+  ],
+  "L_Beach": [
+    {
+      "object_name": "StaticMeshActor_0",
+      "label": "SceneGameplayRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100030",
+        "UnityPath:SceneGameplayRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_12",
+      "label": "SceneSystemRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100090",
+        "UnityPath:SceneSystemRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_16",
+      "label": "SceneWorldRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100000",
+        "UnityPath:SceneWorldRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "CameraActor_0",
+      "label": "SourceCamera",
+      "class": "/Script/Engine.CameraActor",
+      "tags": [
+        "JongguMigration:camera:Beach:100120",
+        "UnityPath:Camera/SourceCamera",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        100.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeManager_C_0",
+      "label": "Prototype_manager",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeManager.BP_PrototypeManager_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:manager"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_0",
+      "label": "Prototype_marker_beach_hub_portal",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:beach_hub_portal"
+      ],
+      "location": [
+        350.0,
+        0.0,
+        400.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_1",
+      "label": "Prototype_marker_beach_clam_1",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:beach_clam_1"
+      ],
+      "location": [
+        250.0,
+        0.0,
+        150.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_2",
+      "label": "Prototype_marker_beach_clam_2",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:beach_clam_2"
+      ],
+      "location": [
+        800.0,
+        0.0,
+        -50.0
+      ]
+    },
+    {
+      "object_name": "BP_PrototypeInteractable_C_3",
+      "label": "Prototype_marker_beach_clam_3",
+      "class": "/Game/Jonggu/Prototype/BP_PrototypeInteractable.BP_PrototypeInteractable_C",
+      "tags": [
+        "JongguPrototype",
+        "JongguPrototypeId:marker:beach_clam_3"
+      ],
+      "location": [
+        1350.0,
+        0.0,
+        200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_1",
+      "label": "InteractionRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100080",
+        "UnityPath:SceneGameplayRoot/InteractionRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_7",
+      "label": "PortalRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100060",
+        "UnityPath:SceneGameplayRoot/PortalRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_9",
+      "label": "ResourceRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100070",
+        "UnityPath:SceneGameplayRoot/ResourceRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_10",
+      "label": "SpawnRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100050",
+        "UnityPath:SceneGameplayRoot/SpawnRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_13",
+      "label": "EventSystem",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100130",
+        "UnityPath:SceneSystemRoot/EventSystem",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_14",
+      "label": "GameManager",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100110",
+        "UnityPath:SceneSystemRoot/GameManager",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_15",
+      "label": "MainCamera",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100120",
+        "UnityPath:SceneSystemRoot/MainCamera",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        100.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_17",
+      "label": "WorldBoundsRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100020",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_24",
+      "label": "WorldVisualRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100010",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "BP_JongguPlayer_C_0",
+      "label": "PlayerRoot",
+      "class": "/Game/Jonggu/Blueprints/Player/BP_JongguPlayer.BP_JongguPlayer_C",
+      "tags": [
+        "JongguMigration:node:Beach:100040",
+        "UnityPath:SceneGameplayRoot/PlayerRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1750.0,
+        0.0,
+        1200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_2",
+      "label": "BoatInteraction",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100620",
+        "UnityPath:SceneGameplayRoot/InteractionRoot/BoatInteraction",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -2250.0,
+        0.0,
+        1520.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_4",
+      "label": "Jonggu",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100500",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1750.0,
+        0.0,
+        1200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_8",
+      "label": "ReturnToHub",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100610",
+        "UnityPath:SceneGameplayRoot/PortalRoot/ReturnToHub",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_11",
+      "label": "BeachEntry",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100600",
+        "UnityPath:SceneGameplayRoot/SpawnRoot/BeachEntry",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_18",
+      "label": "BeachMovementBounds",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100210",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/BeachMovementBounds",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_19",
+      "label": "BottomWall",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100230",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/BottomWall",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -1850.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_20",
+      "label": "CameraBounds",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100200",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/CameraBounds",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_21",
+      "label": "LeftWall",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100240",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/LeftWall",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -3100.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_22",
+      "label": "RightWall",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100250",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/RightWall",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        3300.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_23",
+      "label": "TopWall",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100220",
+        "UnityPath:SceneWorldRoot/WorldBoundsRoot/TopWall",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        1950.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_25",
+      "label": "BeachDecorRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:518467496",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_39",
+      "label": "BeachTilemapRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:478889277",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachTilemapRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1550.0,
+        0.0,
+        900.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_5",
+      "label": "InteractionRange",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100520",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/InteractionRange",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1750.0,
+        0.0,
+        1200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_6",
+      "label": "PlayerVisual",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:100510",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/PlayerVisual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1750.0,
+        0.0,
+        1200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_26",
+      "label": "BeachBoatRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:2061000000",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_32",
+      "label": "BeachLandmarkRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:2061000010",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachLandmarkRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_34",
+      "label": "BeachTreeRoot",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:2061000020",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_40",
+      "label": "BeachBaseTilemap",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:41280230",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachTilemapRoot/BeachBaseTilemap",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1550.0,
+        0.0,
+        900.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_41",
+      "label": "BeachDockTilemap",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:2049905411",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachTilemapRoot/BeachDockTilemap",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -450.0,
+        0.0,
+        1040.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_10",
+      "label": "Map boundary bottom",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:boundary:bottom",
+        "UnityPath:Collision/boundary/Map boundary bottom",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -1775.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_11",
+      "label": "Map boundary left",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:boundary:left",
+        "UnityPath:Collision/boundary/Map boundary left",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        -3225.0,
+        0.0,
+        50.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_12",
+      "label": "Map boundary right",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:boundary:right",
+        "UnityPath:Collision/boundary/Map boundary right",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        3225.0,
+        0.0,
+        50.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_13",
+      "label": "Map boundary top",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:boundary:top",
+        "UnityPath:Collision/boundary/Map boundary top",
+        "UnityStatus:visible",
+        "JongguCollisionKind:boundary",
+        "JongguCollisionCategory:boundary"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        1875.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_27",
+      "label": "BeachBoat01",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:907298846",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat01",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -2060.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_28",
+      "label": "BeachBoat02",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:1317604600",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat02",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1660.0000000000002,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_29",
+      "label": "BeachBoat03",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:965311526",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat03",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1260.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_30",
+      "label": "BeachBoat04",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:515152439",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat04",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -860.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_31",
+      "label": "BeachPassengerShip",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:1957722351",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachPassengerShip",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1568.0,
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_33",
+      "label": "BeachLighthouse",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:1219935410",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachLandmarkRoot/BeachLighthouse",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -2500.0,
+        0.0,
+        1120.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_35",
+      "label": "BeachTree01",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:393565039",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree01",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        2584.0,
+        0.0,
+        1492.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_36",
+      "label": "BeachTree02",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:1715948718",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree02",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        650.0,
+        0.0,
+        1578.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_37",
+      "label": "BeachTree03",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:781787688",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree03",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        833.0001,
+        0.0,
+        1316.0
+      ]
+    },
+    {
+      "object_name": "StaticMeshActor_38",
+      "label": "BeachTree04",
+      "class": "/Script/Engine.StaticMeshActor",
+      "tags": [
+        "JongguMigration:node:Beach:1216085741",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree04",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        2820.0,
+        0.0,
+        1540.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_0",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:100512",
+        "UnityPath:SceneGameplayRoot/PlayerRoot/Jonggu/PlayerVisual/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1750.0,
+        0.0,
+        1200.0
+      ]
+    },
+    {
+      "object_name": "PaperGroupedSpriteActor_0",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperGroupedSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:41280233",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachTilemapRoot/BeachBaseTilemap/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        1550.0,
+        0.0,
+        900.0
+      ]
+    },
+    {
+      "object_name": "PaperGroupedSpriteActor_1",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperGroupedSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:2049905414",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachTilemapRoot/BeachDockTilemap/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -450.0,
+        0.0,
+        1040.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_14",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:0:640:142",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        0.0,
+        0.0,
+        -1040.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_15",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:142:457:144",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -915.0,
+        0.0,
+        -320.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_16",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:144:456:145",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -920.0,
+        0.0,
+        -305.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_17",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:145:454:146",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -930.0,
+        0.0,
+        -295.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_18",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:146:453:150",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -935.0,
+        0.0,
+        -270.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_19",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:150:452:152",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -940.0,
+        0.0,
+        -240.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_20",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:152:357:154",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1415.0,
+        0.0,
+        -220.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_21",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:154:356:155",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1420.0,
+        0.0,
+        -205.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_22",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:155:354:156",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1430.0,
+        0.0,
+        -195.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_23",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:156:353:160",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1435.0,
+        0.0,
+        -170.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_24",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:160:352:162",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1440.0,
+        0.0,
+        -140.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_25",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:162:347:164",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1465.0,
+        0.0,
+        -120.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_26",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:164:346:165",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1470.0,
+        0.0,
+        -105.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_27",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:165:344:166",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1480.0,
+        0.0,
+        -95.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_28",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:166:343:170",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1485.0,
+        0.0,
+        -70.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_29",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:170:342:172",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1490.0,
+        0.0,
+        -40.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_30",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:172:337:174",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1515.0,
+        0.0,
+        -20.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_31",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:174:336:175",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1520.0,
+        0.0,
+        -5.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_32",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:175:334:176",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1530.0,
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_33",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:176:333:180",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1535.0,
+        0.0,
+        30.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_34",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:180:332:182",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1540.0,
+        0.0,
+        60.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_35",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:182:327:184",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1565.0,
+        0.0,
+        80.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_36",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:184:326:185",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1570.0,
+        0.0,
+        95.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_37",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:185:324:186",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1580.0,
+        0.0,
+        105.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_38",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:186:323:190",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1585.0,
+        0.0,
+        130.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_39",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:190:322:202",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1590.0,
+        0.0,
+        210.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_40",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:202:317:204",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1615.0,
+        0.0,
+        280.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_41",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:204:316:205",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1620.0,
+        0.0,
+        295.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_42",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:205:314:206",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1630.0,
+        0.0,
+        305.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_43",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:206:313:210",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1635.0,
+        0.0,
+        330.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_44",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:210:312:216",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1640.0,
+        0.0,
+        380.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_45",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:216:60:274",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -2900.0,
+        0.0,
+        700.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_46",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:274:260:336",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1900.0,
+        0.0,
+        1300.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_47",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:336:80:354",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -2800.0,
+        0.0,
+        1700.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_48",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:0:354:312:360",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1640.0,
+        0.0,
+        1820.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_49",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:280:234:312:354",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -240.0,
+        0.0,
+        1190.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_50",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:513:142:587:144",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2300.0,
+        0.0,
+        -320.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_51",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:514:144:586:145",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2300.0,
+        0.0,
+        -305.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_52",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:516:145:584:146",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2300.0,
+        0.0,
+        -295.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_53",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:518:146:583:150",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2305.0,
+        0.0,
+        -270.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_54",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:518:150:582:152",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2300.0,
+        0.0,
+        -240.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_55",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:533:152:577:154",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2350.0,
+        0.0,
+        -220.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_56",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:534:154:576:155",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2350.0,
+        0.0,
+        -205.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_57",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:536:155:574:156",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2350.0,
+        0.0,
+        -195.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_58",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:538:156:573:160",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2355.0,
+        0.0,
+        -170.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_59",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:538:160:572:162",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        2350.0,
+        0.0,
+        -140.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_60",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:613:142:640:144",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3065.0,
+        0.0,
+        -320.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_61",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:614:144:640:145",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3070.0,
+        0.0,
+        -305.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_62",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:616:145:640:146",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3080.0,
+        0.0,
+        -295.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_63",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:618:146:640:152",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3090.0,
+        0.0,
+        -260.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_64",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:623:152:640:154",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3115.0,
+        0.0,
+        -220.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_65",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:624:154:640:155",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3120.0,
+        0.0,
+        -205.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_66",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:626:155:640:156",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3130.0,
+        0.0,
+        -195.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_67",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:628:156:640:162",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        3140.0,
+        0.0,
+        -160.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_68",
+      "label": "Water and shore edge",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:water:80:234:260:274",
+        "UnityPath:Collision/water/Water and shore edge",
+        "UnityStatus:visible",
+        "JongguCollisionKind:terrain",
+        "JongguCollisionCategory:water"
+      ],
+      "location": [
+        -1500.0,
+        0.0,
+        790.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_1",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:1216085743",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree04/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        2820.0,
+        0.0,
+        1540.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_2",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:1219935412",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachLandmarkRoot/BeachLighthouse/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -2500.0,
+        0.0,
+        1120.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_3",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:1317604602",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat02/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1660.0000000000002,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_4",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:1715948720",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree02/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        650.0,
+        0.0,
+        1578.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_5",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:1957722353",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachPassengerShip/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1568.0,
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_6",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:393565041",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree01/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        2584.0,
+        0.0,
+        1492.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_7",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:515152441",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat04/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -860.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_8",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:781787690",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachTreeRoot/BeachTree03/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        833.0001,
+        0.0,
+        1316.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_9",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:907298847",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat01/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -2060.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "PaperSpriteActor_10",
+      "label": "Visual",
+      "class": "/Script/Paper2D.PaperSpriteActor",
+      "tags": [
+        "JongguMigration:render:Beach:965311528",
+        "UnityPath:SceneWorldRoot/WorldVisualRoot/BeachDecorRoot/BeachBoatRoot/BeachBoat03/Visual",
+        "UnityStatus:visible"
+      ],
+      "location": [
+        -1260.0,
+        0.0,
+        1360.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionSphere_C_0",
+      "label": "Tree trunk base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionSphere.BP_CollisionSphere_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1216085743:0",
+        "UnityPath:Collision/nature/Tree trunk base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:nature"
+      ],
+      "location": [
+        2820.0,
+        0.0,
+        1352.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_0",
+      "label": "Lighthouse rock base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1219935412:0",
+        "UnityPath:Collision/building/Lighthouse rock base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:building"
+      ],
+      "location": [
+        -2500.0,
+        0.0,
+        925.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_1",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1317604602:0",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -1660.0,
+        0.0,
+        1325.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_2",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1317604602:1",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -1660.0,
+        0.0,
+        1515.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionSphere_C_1",
+      "label": "Tree trunk base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionSphere.BP_CollisionSphere_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1715948720:0",
+        "UnityPath:Collision/nature/Tree trunk base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:nature"
+      ],
+      "location": [
+        650.0,
+        0.0,
+        1390.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_3",
+      "label": "Passenger ship hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1957722353:0",
+        "UnityPath:Collision/vessel/Passenger ship hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -1503.0,
+        0.0,
+        -360.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionSphere_C_2",
+      "label": "Passenger ship hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionSphere.BP_CollisionSphere_C",
+      "tags": [
+        "JongguMigration:collision:Beach:1957722353:1",
+        "UnityPath:Collision/vessel/Passenger ship hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -2588.0,
+        0.0,
+        -300.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionSphere_C_3",
+      "label": "Tree trunk base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionSphere.BP_CollisionSphere_C",
+      "tags": [
+        "JongguMigration:collision:Beach:393565041:0",
+        "UnityPath:Collision/nature/Tree trunk base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:nature"
+      ],
+      "location": [
+        2584.0,
+        0.0,
+        1304.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_4",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:515152441:0",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -860.0,
+        0.0,
+        1325.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_5",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:515152441:1",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -860.0,
+        0.0,
+        1515.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionSphere_C_4",
+      "label": "Tree trunk base",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionSphere.BP_CollisionSphere_C",
+      "tags": [
+        "JongguMigration:collision:Beach:781787690:0",
+        "UnityPath:Collision/nature/Tree trunk base",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:nature"
+      ],
+      "location": [
+        833.0001,
+        0.0,
+        1128.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_6",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:907298847:0",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -2060.0,
+        0.0,
+        1325.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_7",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:907298847:1",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -2060.0,
+        0.0,
+        1515.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_8",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:965311528:0",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -1260.0,
+        0.0,
+        1325.0
+      ]
+    },
+    {
+      "object_name": "BP_CollisionBox_C_9",
+      "label": "Small boat hull",
+      "class": "/Game/Jonggu/Blueprints/Collision/BP_CollisionBox.BP_CollisionBox_C",
+      "tags": [
+        "JongguMigration:collision:Beach:965311528:1",
+        "UnityPath:Collision/vessel/Small boat hull",
+        "UnityStatus:visible",
+        "JongguCollisionKind:object",
+        "JongguCollisionCategory:vessel"
+      ],
+      "location": [
+        -1260.0,
+        0.0,
+        1515.0
+      ]
+    }
+  ]
+}

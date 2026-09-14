@@ -1,7 +1,13 @@
 """Frame the migrated Hub once when this project opens in the interactive editor."""
+import os
 import time
 import re
 import unreal
+
+from jonggu.paths import ROOT
+
+# ConPTY inherits this editor-process value; nothing is written to user/global settings.
+os.environ['JONGGU_PROJECT_DIR'] = str(ROOT)
 
 _command_line = unreal.SystemLibrary.get_command_line().lower()
 _jonggu_automated = re.search(r'(?:^|\s)-(?:run|executepythonscript|game|nullrhi|unattended)(?:=|\s|$)', _command_line)

@@ -1,6 +1,8 @@
 # 월드·플레이어 작성 자료
 
-현재 저장된 Hub·Beach 충돌, 발밑 정렬, 기존 플레이어 걷기의 작성 원본입니다. `Saved/CollisionWork`에서 코드·데이터·필수 검증 기준만 승격했습니다. 원래 로컬 작업 폴더는 이번 승격에서 변경하지 않았습니다.
+이 문서의 파일 목록은 `Tools/World/` 기준이며 명령·`Saved/` 경로는 프로젝트 루트 기준입니다. 공통 실행과 보고서는 [제작 안내](../../Docs/Development/AUTHORING.md), 전체 문서는 [문서 안내](../../Docs/README.md)에서 확인합니다.
+
+현재 저장된 Hub·Beach 충돌, 발밑 정렬, 기존 플레이어 걷기의 작성 원본입니다. `Saved/CollisionWork`에서 코드·데이터·필수 검증 기준만 승격했습니다. 이전 로컬 작업 폴더는 `Saved/Archives/CollisionWorkBeforeRefactor.zip`에 보관했습니다.
 
 - `Data/collision_rules.json`: 사람이 작성한 충돌·정렬 규칙
 - `Data/render_manifest.json`: 원본 Unity 배치·이미지 ID·변환·해시의 고정 입력
@@ -22,9 +24,9 @@ python Tools/World/test_collision_geometry.py --manifest Tools/World/Data/render
 python Tools/World/test_depth_sorting.py --manifest Tools/World/Data/render_manifest.json --rules-root Tools/World/Data
 ```
 
-기존 Beach 모서리 사례는 공통 `Tools/Unreal` 런처의 `Baseline` 작업으로 실행합니다. 그 외 `QA/verify_*`는 소스 상단에 지정한 새 에디터·QA 마커를 사용하며 원본 에셋과 맵을 저장하지 않습니다. `QA/analyze_occlusion_captures.py`, `QA/analyze_static_depth_render.py`의 호스트 픽셀 분석에는 NumPy와 Pillow가 필요합니다.
+기존 Beach 모서리 사례는 공통 `Tools/Unreal` 런처의 `Baseline` 작업으로 실행합니다. `QA/verify_collision_pie.py`, `verify_walk_pie.py`, `verify_occlusion_pie.py`는 소스 상단의 인수에 맞춰 새 검증 전용 에디터와 해당 QA 마커로 실행합니다. `QA/verify_static_depth_render.py`는 별도 QA 마커 없이 렌더링 가능한 UnrealEditor-Cmd 커맨드릿에서 실행하며 `-NullRHI`를 사용하지 않습니다. 이 검증들은 원본 에셋과 맵을 저장하지 않습니다. `QA/analyze_occlusion_captures.py`, `QA/analyze_static_depth_render.py`의 호스트 픽셀 분석에는 NumPy와 Pillow가 필요합니다.
 
-**전체 마이그레이션은 식당 Build에 포함하지 않습니다.** `import_unreal.py`는 명시적인 `-JongguFullWorldImport`가 있어야 실행됩니다. 이 경로는 두 맵과 원본 소유 액터를 재작성하므로 식당 오버레이와 별도의 검토가 필요합니다. `configure_player.py`의 직접 실행도 이 전체 임포트 경로를 사용합니다. 일반적인 식당 변경은 `Content/Python/jonggu/build.py`를 사용합니다.
+**전체 마이그레이션은 식당 Build에 포함하지 않습니다.** `import_unreal.py`는 명시적인 `-JongguFullWorldImport`가 있어야 실행됩니다. 이 경로는 두 맵과 원본 소유 액터를 재작성하므로 식당 오버레이와 별도의 검토가 필요합니다. `configure_player.py`의 직접 실행도 이 전체 임포트 경로를 사용합니다. 일반적인 식당 변경은 [Tools/Unreal/entry.py](../Unreal/entry.py) 또는 프로젝트 루트의 `./Tools/Unreal/run.ps1 -Task Build`로 실행합니다. `Content/Python/jonggu/build.py`는 호출되는 라이브러리이므로 파일만 직접 실행해도 Build가 시작되지는 않습니다.
 
 `validate_unreal.py`는 이전 원본 임포트 계약을 확인하는 도구입니다. 최신 `Saved/WorldQA/import_report.json`이 없으면 보존한 Fixture를 기준으로 삼으므로 보고서의 기준 해시와 검사 범위를 확인합니다. 현재 식당 기능·저장·맵 연결의 완료 여부는 `jonggu.validation` 검증 결과를 따릅니다.
 

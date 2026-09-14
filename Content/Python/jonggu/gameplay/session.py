@@ -15,9 +15,9 @@ from jonggu.blueprints.graph import (
 from jonggu.assets import asset_path, generated_class_path
 
 SESSION_PATH = asset_path('BP_RestaurantGameInstance')
-SAVE_PATH = asset_path('BP_RestaurantSaveGame')
+SAVE_PATH = asset_path('BP_PrototypeSave')
 SESSION_CLASS = generated_class_path('BP_RestaurantGameInstance')
-SAVE_CLASS = generated_class_path('BP_RestaurantSaveGame')
+SAVE_CLASS = generated_class_path('BP_PrototypeSave')
 GAMEPLAY = "/Script/Engine.GameplayStatics."
 SYSTEM = "/Script/Engine.KismetSystemLibrary."
 STRING = "/Script/Engine.KismetStringLibrary."
@@ -225,7 +225,7 @@ def _build_next_day(bp):
 
 def build_session():
     """Create/rebuild prototype-owned assets; does not touch maps or config."""
-    save = ensure_bp("BP_RestaurantSaveGame", unreal.SaveGame)
+    save = ensure_bp("BP_PrototypeSave", unreal.SaveGame)
     add_vars(save, [("schema_version", "int", SCHEMA_VERSION)] + PERSISTED_FIELDS)
     compile_bp(save)
     save_bp(save)

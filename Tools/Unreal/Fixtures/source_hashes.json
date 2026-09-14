@@ -1,0 +1,8 @@
+{
+  "Content/Jonggu/Maps/L_Hub.umap": "4c649a1582bd9af8e64b53ef3c91691f1fedb064cbd70484edbd5e2fbc5622d7",
+  "Content/Jonggu/Maps/L_Beach.umap": "d9defa21cefe474f9fe0ad47f7297b9f6395d6fa1ecbfd2e77e0a64d0b4a1aed",
+  "Content/Jonggu/Blueprints/Player/BP_JongguPlayer.uasset": "4d5488d098ec00dd96eaccb66bb7b582b5d7888f8026cae787ec571b638f096e",
+  "Content/Jonggu/Blueprints/Game/BP_JongguGameMode.uasset": "66f658663c69b24a4c7d4659f6d81ac70350a510e416c5e5a352ba0890ca5d4f",
+  "Config/DefaultEngine.ini": "03ffba943bb72a4cd4dcc98dc104bf2e80e65a4eed77b639795d59cd6cc44599",
+  "README.md": "88ea640eb6fa91df497c259e2a4e419a5e285c60ab835b34531ebcbd404c1307"
+}

@@ -1,0 +1,21 @@
+{
+  "slot": "JongguRefactorLegacyFixture",
+  "old_class_path": "/Game/Jonggu/Prototype/BP_PrototypeSave.BP_PrototypeSave_C",
+  "expected": {
+    "day": 7,
+    "clams": 5,
+    "harvested_mask": 3,
+    "menu_mask": 5,
+    "guest_target": 6,
+    "total_revenue": 123,
+    "checkpoint_phase": 0,
+    "checkpoint_map": "L_Hub",
+    "entry_marker": "hub",
+    "summary_served": 4,
+    "summary_base": 40,
+    "summary_bonus": 7,
+    "summary_clams_used": 1,
+    "summary_special_served": 2
+  },
+  "file_sha256": "db3ff558b3abdeb56e7064a1e6799b18852ba5540fd0bd87f03d8f211ca2a5d6"
+}

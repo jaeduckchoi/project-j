@@ -99,7 +99,7 @@ def validate_session_runtime(session):
               and get("event_log").count("checkpoint_load_failed_state_preserved") == failures + 1)
         # A well-formed save with an unsupported schema takes the validation
         # branch rather than the cast-failure branch, and must behave identically.
-        schema_class = unreal.load_class(None, generated_class_path("BP_RestaurantSaveGame"))
+        schema_class = unreal.load_class(None, generated_class_path("BP_PrototypeSave"))
         schema_save = unreal.GameplayStatics.create_save_game_object(schema_class)
         schema_save.set_editor_property("schema_version", 999)
         schema_slot = slot + "_unsupported_schema"
